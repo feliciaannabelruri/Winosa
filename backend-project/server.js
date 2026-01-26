@@ -12,10 +12,17 @@ app.use(express.json());
 // Connect Database
 connectDB();
 
-// Test Route
+// Import Routes
+const portfolioRoutes = require('./routes/portfolioRoutes');
+const blogRoutes = require('./routes/blogRoutes');
+
+// Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Backend API is running! 🚀' });
+  res.json({ message: 'Backend API is running!' });
 });
+
+app.use('/api/portfolio', portfolioRoutes);
+app.use('/api/blog', blogRoutes);
 
 const PORT = process.env.PORT || 5000;
 
