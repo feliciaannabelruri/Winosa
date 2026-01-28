@@ -2,12 +2,14 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Portfolio = require('../models/Portfolio');
 const Blog = require('../models/Blog');
+const Service = require('../models/Service');
+const Subscription = require('../models/Subscription');
 const connectDB = require('../config/db');
 
 // Connect DB
 connectDB();
 
-// Dummy Portfolios
+// Dummy Portfolios (sama seperti sebelumnya)
 const portfolios = [
   {
     title: 'E-Commerce Website',
@@ -61,7 +63,7 @@ const portfolios = [
   }
 ];
 
-// Dummy Blogs
+// Dummy Blogs (sama seperti sebelumnya)
 const blogs = [
   {
     title: 'Getting Started with React',
@@ -115,18 +117,123 @@ const blogs = [
   }
 ];
 
+// Dummy Services
+const services = [
+  {
+    title: 'Web Development',
+    slug: 'web-development',
+    description: 'Custom website development with modern technologies',
+    icon: 'code',
+    features: ['Responsive Design', 'SEO Optimized', 'Fast Performance', 'Secure'],
+    price: 'Starting from $999',
+    isActive: true
+  },
+  {
+    title: 'Mobile App Development',
+    slug: 'mobile-app-development',
+    description: 'Native and cross-platform mobile applications',
+    icon: 'mobile',
+    features: ['iOS & Android', 'User-Friendly UI', 'Push Notifications', 'Offline Support'],
+    price: 'Starting from $1,999',
+    isActive: true
+  },
+  {
+    title: 'UI/UX Design',
+    slug: 'ui-ux-design',
+    description: 'Beautiful and intuitive user interface design',
+    icon: 'palette',
+    features: ['User Research', 'Wireframing', 'Prototyping', 'Design Systems'],
+    price: 'Starting from $499',
+    isActive: true
+  },
+  {
+    title: 'Digital Marketing',
+    slug: 'digital-marketing',
+    description: 'Grow your business with effective digital strategies',
+    icon: 'trending-up',
+    features: ['SEO', 'Social Media', 'Content Marketing', 'Email Campaigns'],
+    price: 'Starting from $299/month',
+    isActive: true
+  },
+  {
+    title: 'E-Commerce Solutions',
+    slug: 'ecommerce-solutions',
+    description: 'Complete online store setup and management',
+    icon: 'shopping-cart',
+    features: ['Payment Integration', 'Inventory Management', 'Analytics', 'Customer Support'],
+    price: 'Starting from $1,499',
+    isActive: true
+  }
+];
+
+// Dummy Subscriptions
+const subscriptions = [
+  {
+    name: 'Basic Plan',
+    price: 29,
+    duration: 'monthly',
+    features: [
+      '5 Projects',
+      'Basic Support',
+      '10GB Storage',
+      'Community Access'
+    ],
+    isPopular: false,
+    isActive: true
+  },
+  {
+    name: 'Pro Plan',
+    price: 79,
+    duration: 'monthly',
+    features: [
+      'Unlimited Projects',
+      'Priority Support',
+      '100GB Storage',
+      'Advanced Analytics',
+      'Team Collaboration',
+      'Custom Domain'
+    ],
+    isPopular: true,
+    isActive: true
+  },
+  {
+    name: 'Enterprise Plan',
+    price: 199,
+    duration: 'monthly',
+    features: [
+      'Unlimited Everything',
+      '24/7 Dedicated Support',
+      '1TB Storage',
+      'Advanced Security',
+      'Custom Integrations',
+      'SLA Guarantee',
+      'Training & Onboarding'
+    ],
+    isPopular: false,
+    isActive: true
+  }
+];
+
 // Import Data
 const importData = async () => {
   try {
     // Clear existing data
     await Portfolio.deleteMany();
     await Blog.deleteMany();
+    await Service.deleteMany();
+    await Subscription.deleteMany();
 
     // Insert new data
     await Portfolio.insertMany(portfolios);
     await Blog.insertMany(blogs);
+    await Service.insertMany(services);
+    await Subscription.insertMany(subscriptions);
 
     console.log('Data Imported Successfully!');
+    console.log(`- ${portfolios.length} Portfolios`);
+    console.log(`- ${blogs.length} Blogs`);
+    console.log(`- ${services.length} Services`);
+    console.log(`- ${subscriptions.length} Subscriptions`);
     process.exit();
   } catch (error) {
     console.error('Error importing data:', error);
@@ -139,6 +246,8 @@ const deleteData = async () => {
   try {
     await Portfolio.deleteMany();
     await Blog.deleteMany();
+    await Service.deleteMany();
+    await Subscription.deleteMany();
 
     console.log('Data Deleted Successfully!');
     process.exit();

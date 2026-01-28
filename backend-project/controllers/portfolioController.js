@@ -1,23 +1,38 @@
 const Portfolio = require('../models/Portfolio');
 
-// @desc    Get all portfolios with optional category filter
-// @route   GET /api/portfolio?category=web
+// @desc    Get all portfolios with optional category filter and pagination
+// @route   GET /api/portfolio?category=web&page=1&limit=10
 // @access  Public
 exports.getPortfolios = async (req, res) => {
   try {
     const { category } = req.query;
     
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     // Build filter
     let filter = { isActive: true };
     if (category) {
       filter.category = category;
     }
 
-    const portfolios = await Portfolio.find(filter).sort({ createdAt: -1 });
+    // Get total count
+    const total = await Portfolio.countDocuments(filter);
+
+    // Get portfolios
+    const portfolios = await Portfolio.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
     
     res.json({
       success: true,
       count: portfolios.length,
+      total: total,
+      page: page,
+      pages: Math.ceil(total / limit),
       data: portfolios
     });
   } catch (error) {

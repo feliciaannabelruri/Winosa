@@ -1,15 +1,30 @@
 const Blog = require('../models/Blog');
 
-// @desc    Get all blogs
-// @route   GET /api/blog
+// @desc    Get all blogs with pagination
+// @route   GET /api/blog?page=1&limit=10
 // @access  Public
 exports.getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find({ isPublished: true }).sort({ createdAt: -1 });
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Get total count
+    const total = await Blog.countDocuments({ isPublished: true });
+
+    // Get blogs
+    const blogs = await Blog.find({ isPublished: true })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
     
     res.json({
       success: true,
       count: blogs.length,
+      total: total,
+      page: page,
+      pages: Math.ceil(total / limit),
       data: blogs
     });
   } catch (error) {

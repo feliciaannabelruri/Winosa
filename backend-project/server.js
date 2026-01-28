@@ -17,6 +17,8 @@ const portfolioRoutes = require('./routes/portfolioRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const newsletterRoutes = require('./routes/newsletterRoutes');
+const serviceRoutes = require('./routes/serviceRoutes');
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
 
 // Routes
 app.get('/', (req, res) => {
@@ -27,6 +29,8 @@ app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 const PORT = process.env.PORT || 5000;
 
