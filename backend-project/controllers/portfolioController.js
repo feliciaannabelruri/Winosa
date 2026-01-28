@@ -1,11 +1,19 @@
 const Portfolio = require('../models/Portfolio');
 
-// @desc    Get all portfolios
-// @route   GET /api/portfolio
+// @desc    Get all portfolios with optional category filter
+// @route   GET /api/portfolio?category=web
 // @access  Public
 exports.getPortfolios = async (req, res) => {
   try {
-    const portfolios = await Portfolio.find({ isActive: true }).sort({ createdAt: -1 });
+    const { category } = req.query;
+    
+    // Build filter
+    let filter = { isActive: true };
+    if (category) {
+      filter.category = category;
+    }
+
+    const portfolios = await Portfolio.find(filter).sort({ createdAt: -1 });
     
     res.json({
       success: true,

@@ -15,6 +15,8 @@ connectDB();
 // Import Routes
 const portfolioRoutes = require('./routes/portfolioRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const contactRoutes = require('./routes/contactRoutes');
+const newsletterRoutes = require('./routes/newsletterRoutes');
 
 // Routes
 app.get('/', (req, res) => {
@@ -23,6 +25,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 const PORT = process.env.PORT || 5000;
 
