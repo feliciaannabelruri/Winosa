@@ -14,9 +14,11 @@ const { createServiceSchema, updateServiceSchema } = require('../../validators/s
 router.use(protect);
 router.use(admin);
 
-router.route('/')
-  .get(getAllServices)
-  .post(validate(createServiceSchema), createService);
+// GET tidak perlu validation
+router.get('/', getAllServices);
+
+// POST dan PUT pakai validation
+router.post('/', validate(createServiceSchema), createService);
 
 router.route('/:id')
   .put(validate(updateServiceSchema), updateService)

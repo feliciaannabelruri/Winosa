@@ -25,6 +25,7 @@ const authRoutes = require('./routes/authRoutes');
 
 // Admin Routes
 const adminServiceRoutes = require('./routes/admin/adminServiceRoutes');
+const adminPortfolioRoutes = require('./routes/admin/adminPortfolioRoutes');
 
 // Routes
 app.get('/', (req, res) => {
@@ -42,6 +43,7 @@ app.use('/api/auth', authRoutes);
 
 // Admin Routes
 app.use('/api/admin/services', adminServiceRoutes);
+app.use('/api/admin/portfolio', adminPortfolioRoutes);
 
 const PORT = process.env.PORT || 5000;
 
