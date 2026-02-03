@@ -2,12 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const { setLanguage } = require('./middleware/language');
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(setLanguage); // Add language middleware
 
 // Connect Database
 connectDB();
@@ -19,6 +21,7 @@ const contactRoutes = require('./routes/contactRoutes');
 const newsletterRoutes = require('./routes/newsletterRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // Routes
 app.get('/', (req, res) => {
@@ -31,6 +34,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;
 

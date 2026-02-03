@@ -1,11 +1,13 @@
 const Newsletter = require('../models/Newsletter');
+const { getTranslation } = require('../middleware/language');
 
 // @desc    Subscribe to newsletter
-// @route   POST /api/newsletter
+// @route   POST /api/newsletter?lang=id
 // @access  Public
 exports.subscribeNewsletter = async (req, res) => {
   try {
     const { email } = req.body;
+    const lang = req.language || 'en';
 
     // Validation
     if (!email) {
@@ -31,7 +33,7 @@ exports.subscribeNewsletter = async (req, res) => {
       if (existingSubscriber.isActive) {
         return res.status(400).json({
           success: false,
-          message: 'This email is already subscribed to our newsletter'
+          message: getTranslation(lang, 'newsletterExists')
         });
       } else {
         // Reactivate subscription
@@ -52,21 +54,21 @@ exports.subscribeNewsletter = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Successfully subscribed to our newsletter!',
+      message: getTranslation(lang, 'newsletterSuccess'),
       data: subscriber
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Server Error',
+      message: getTranslation(req.language || 'en', 'serverError'),
       error: error.message
     });
   }
 };
 
-// @desc    Get all newsletter subscribers (for admin later)
+// @desc    Get all newsletter subscribers
 // @route   GET /api/newsletter
-// @access  Private (Admin only - will add auth later)
+// @access  Private (Admin only)
 exports.getSubscribers = async (req, res) => {
   try {
     const subscribers = await Newsletter.find({ isActive: true }).sort({ createdAt: -1 });
@@ -79,7 +81,7 @@ exports.getSubscribers = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Server Error',
+      message: getTranslation(req.language || 'en', 'serverError'),
       error: error.message
     });
   }

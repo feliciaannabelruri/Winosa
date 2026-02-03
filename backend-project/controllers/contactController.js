@@ -1,11 +1,13 @@
 const Contact = require('../models/Contact');
+const { getTranslation } = require('../middleware/language');
 
 // @desc    Create new contact message
-// @route   POST /api/contact
+// @route   POST /api/contact?lang=id
 // @access  Public
 exports.createContact = async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
+    const lang = req.language || 'en';
 
     // Validation
     if (!name || !email || !message) {
@@ -33,21 +35,21 @@ exports.createContact = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Thank you for contacting us! We will get back to you soon.',
+      message: getTranslation(lang, 'contactSuccess'),
       data: contact
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Server Error',
+      message: getTranslation(req.language || 'en', 'serverError'),
       error: error.message
     });
   }
 };
 
-// @desc    Get all contact messages (for admin later)
+// @desc    Get all contact messages
 // @route   GET /api/contact
-// @access  Private (Admin only - will add auth later)
+// @access  Private (Admin only)
 exports.getContacts = async (req, res) => {
   try {
     const contacts = await Contact.find().sort({ createdAt: -1 });
@@ -60,7 +62,7 @@ exports.getContacts = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Server Error',
+      message: getTranslation(req.language || 'en', 'serverError'),
       error: error.message
     });
   }
