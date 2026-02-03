@@ -9,7 +9,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(setLanguage); // Add language middleware
+app.use(setLanguage);
 
 // Connect Database
 connectDB();
@@ -23,11 +23,15 @@ const serviceRoutes = require('./routes/serviceRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const authRoutes = require('./routes/authRoutes');
 
+// Admin Routes
+const adminServiceRoutes = require('./routes/admin/adminServiceRoutes');
+
 // Routes
 app.get('/', (req, res) => {
   res.json({ message: 'Backend API is running!' });
 });
 
+// Public Routes
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/contact', contactRoutes);
@@ -35,6 +39,9 @@ app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/auth', authRoutes);
+
+// Admin Routes
+app.use('/api/admin/services', adminServiceRoutes);
 
 const PORT = process.env.PORT || 5000;
 
