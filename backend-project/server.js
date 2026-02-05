@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const { setLanguage } = require('./middleware/language');
+const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -46,6 +47,17 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin/services', adminServiceRoutes);
 app.use('/api/admin/portfolio', adminPortfolioRoutes);
 app.use('/api/admin/blog', adminBlogRoutes);
+
+// 404 Handler - harus setelah semua routes
+app.use((req, res, next) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`
+  });
+});
+
+// Error Handler - harus paling akhir
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
