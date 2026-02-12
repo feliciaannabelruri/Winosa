@@ -1,5 +1,7 @@
 const Contact = require('../models/Contact');
 const { getTranslation } = require('../middleware/language');
+const sendEmail = require('../utils/sendEmail');
+const { contactFormTemplate } = require('../utils/emailTemplates');
 
 // @desc    Create new contact message
 // @route   POST /api/contact?lang=id
@@ -26,12 +28,31 @@ exports.createContact = async (req, res) => {
       });
     }
 
+    // Save contact to database
     const contact = await Contact.create({
       name,
       email,
       subject,
       message
     });
+
+    // Send email notification to admin
+    try {
+      await sendEmail({
+        to: process.env.EMAIL_USER, // Admin email
+        subject: `New Contact Form Submission${subject ? ': ' + subject : ''}`,
+        html: contactFormTemplate({
+          name,
+          email,
+          subject,
+          message
+        })
+      });
+      console.log('✅ Contact form notification email sent to admin');
+    } catch (emailError) {
+      console.error('❌ Failed to send email notification:', emailError.message);
+      // Don't fail the request if email fails
+    }
 
     res.status(201).json({
       success: true,

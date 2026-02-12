@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { createContact, getContacts } = require('../controllers/contactController');
 const { protect, admin } = require('../middleware/auth');
+const { contactLimiter } = require('../middleware/rateLimiter');
 
-router.post('/', createContact); // Public
-router.get('/', protect, admin, getContacts); // Protected
+router.post('/', contactLimiter, createContact); // Apply rate limit
+router.get('/', protect, admin, getContacts);
 
 module.exports = router;

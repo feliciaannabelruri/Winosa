@@ -1,5 +1,7 @@
 const Newsletter = require('../models/Newsletter');
 const { getTranslation } = require('../middleware/language');
+const sendEmail = require('../utils/sendEmail');
+const { newsletterWelcomeTemplate, newsletterAdminTemplate } = require('../utils/emailTemplates');
 
 // @desc    Subscribe to newsletter
 // @route   POST /api/newsletter?lang=id
@@ -40,6 +42,20 @@ exports.subscribeNewsletter = async (req, res) => {
         existingSubscriber.isActive = true;
         await existingSubscriber.save();
         
+        // Send welcome email
+        try {
+          await sendEmail({
+            to: email,
+            subject: lang === 'id' ? 'Selamat Datang di Newsletter Winosa!' : 
+                     lang === 'nl' ? 'Welkom bij Winosa Nieuwsbrief!' :
+                     'Welcome to Winosa Newsletter!',
+            html: newsletterWelcomeTemplate(email, lang)
+          });
+          console.log('✅ Welcome email sent to subscriber');
+        } catch (emailError) {
+          console.error('❌ Failed to send welcome email:', emailError.message);
+        }
+        
         return res.json({
           success: true,
           message: 'Welcome back! Your subscription has been reactivated.'
@@ -51,6 +67,32 @@ exports.subscribeNewsletter = async (req, res) => {
     const subscriber = await Newsletter.create({
       email: email.toLowerCase()
     });
+
+    // Send welcome email to subscriber
+    try {
+      await sendEmail({
+        to: email,
+        subject: lang === 'id' ? 'Selamat Datang di Newsletter Winosa!' : 
+                 lang === 'nl' ? 'Welkom bij Winosa Nieuwsbrief!' :
+                 'Welcome to Winosa Newsletter!',
+        html: newsletterWelcomeTemplate(email, lang)
+      });
+      console.log('✅ Welcome email sent to new subscriber');
+    } catch (emailError) {
+      console.error('❌ Failed to send welcome email:', emailError.message);
+    }
+
+    // Send notification to admin
+    try {
+      await sendEmail({
+        to: process.env.EMAIL_USER, // Admin email
+        subject: 'New Newsletter Subscriber',
+        html: newsletterAdminTemplate(email)
+      });
+      console.log('✅ Admin notification sent');
+    } catch (emailError) {
+      console.error('❌ Failed to send admin notification:', emailError.message);
+    }
 
     res.status(201).json({
       success: true,
