@@ -24,6 +24,7 @@ const serviceRoutes = require('./routes/serviceRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const authRoutes = require('./routes/authRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const emailTestRoutes = require('./routes/emailTestRoutes');
 
 // Admin Routes
 const adminServiceRoutes = require('./routes/admin/adminServiceRoutes');
@@ -44,8 +45,9 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/auth', authRoutes);
 
-// Upload Test Routes
+// Upload & Email Test Routes
 app.use('/api/upload', uploadRoutes);
+app.use('/api/email', emailTestRoutes);
 
 // Admin Routes
 app.use('/api/admin/services', adminServiceRoutes);
