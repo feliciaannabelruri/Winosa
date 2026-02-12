@@ -23,6 +23,7 @@ const newsletterRoutes = require('./routes/newsletterRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const authRoutes = require('./routes/authRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 // Admin Routes
 const adminServiceRoutes = require('./routes/admin/adminServiceRoutes');
@@ -43,12 +44,15 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/auth', authRoutes);
 
+// Upload Test Routes
+app.use('/api/upload', uploadRoutes);
+
 // Admin Routes
 app.use('/api/admin/services', adminServiceRoutes);
 app.use('/api/admin/portfolio', adminPortfolioRoutes);
 app.use('/api/admin/blog', adminBlogRoutes);
 
-// 404 Handler - harus setelah semua routes
+// 404 Handler
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
@@ -56,7 +60,7 @@ app.use((req, res, next) => {
   });
 });
 
-// Error Handler - harus paling akhir
+// Error Handler
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
