@@ -12,6 +12,7 @@ const portfolioSchema = new mongoose.Schema({
   },
   description: String,
   image: String,
+  imageId: String,
   category: String,
   client: String,
   projectUrl: String,
