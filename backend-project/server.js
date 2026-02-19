@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const { setLanguage } = require('./middleware/language');
 const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./middleware/logger');
+const searchRoutes = require('./routes/searchRoutes')
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/search', searchRoutes);
 
 // Upload & Email Test Routes
 app.use('/api/upload', uploadRoutes);

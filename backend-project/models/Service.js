@@ -9,7 +9,7 @@ const serviceSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    index: true // Add index
+    index: true
   },
   description: {
     type: String,
@@ -21,10 +21,32 @@ const serviceSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true,
-    index: true // Add index
+    index: true
+  },
+  order: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true
 });
+
+// Indexes
+serviceSchema.index({ isActive: 1, order: 1 });
+serviceSchema.index({ createdAt: -1 });
+
+// Text search
+serviceSchema.index({ 
+  title: 'text', 
+  description: 'text' 
+});
+
+// Virtual for feature count
+serviceSchema.virtual('featureCount').get(function() {
+  return this.features ? this.features.length : 0;
+});
+
+serviceSchema.set('toJSON', { virtuals: true });
+serviceSchema.set('toObject', { virtuals: true });
 
 module.exports = mongoose.model('Service', serviceSchema);
