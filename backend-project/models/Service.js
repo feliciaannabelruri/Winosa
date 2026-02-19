@@ -8,7 +8,8 @@ const serviceSchema = new mongoose.Schema({
   slug: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    index: true // Add index
   },
   description: {
     type: String,
@@ -19,7 +20,8 @@ const serviceSchema = new mongoose.Schema({
   price: String,
   isActive: {
     type: Boolean,
-    default: true
+    default: true,
+    index: true // Add index
   }
 }, {
   timestamps: true

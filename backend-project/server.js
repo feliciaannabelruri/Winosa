@@ -4,12 +4,14 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const { setLanguage } = require('./middleware/language');
 const { errorHandler } = require('./middleware/errorHandler');
+const logger = require('./middleware/logger');
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(logger); // Add request logger
 app.use(setLanguage);
 
 // Connect Database
@@ -60,6 +62,45 @@ app.use((req, res, next) => {
     success: false,
     message: `Route ${req.originalUrl} not found`
   });
+});
+// Routes
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Backend API is running!',
+    version: '1.0.0',
+    environment: process.env.NODE_ENV
+  });
+});
+
+// Health check endpoint
+app.get('/health', async (req, res) => {
+  const healthCheck = {
+    uptime: process.uptime(),
+    status: 'OK',
+    timestamp: Date.now(),
+    environment: process.env.NODE_ENV,
+    database: 'disconnected',
+    email: 'unknown'
+  };
+
+  try {
+    // Check database connection
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      healthCheck.database = 'connected';
+    }
+
+    // Check email service
+    const transporter = require('./config/email');
+    await transporter.verify();
+    healthCheck.email = 'ready';
+  } catch (error) {
+    healthCheck.status = 'ERROR';
+    healthCheck.error = error.message;
+    return res.status(503).json(healthCheck);
+  }
+
+  res.json(healthCheck);
 });
 
 // Error Handler

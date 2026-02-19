@@ -8,16 +8,18 @@ const imagekit = new ImageKit({
   urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
 });
 
-// Multer Memory Storage (upload ke RAM dulu, baru ke ImageKit)
+// Multer Memory Storage
 const storage = multer.memoryStorage();
 
-// File Filter
+// Improved File Filter
 const fileFilter = (req, file, cb) => {
-  // Accept images only
-  if (file.mimetype.startsWith('image/')) {
+  // Allowed image types
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+  
+  if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Not an image! Please upload only images.'), false);
+    cb(new Error(`Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed. You uploaded: ${file.mimetype}`), false);
   }
 };
 
@@ -26,7 +28,8 @@ const uploadSingle = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB max
+    fileSize: 5 * 1024 * 1024, // 5MB max
+    files: 1
   }
 }).single('image');
 
@@ -35,37 +38,62 @@ const uploadMultiple = (maxCount = 5) => multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB max per file
+    fileSize: 5 * 1024 * 1024, // 5MB max per file
+    files: maxCount
   }
 }).array('images', maxCount);
 
-// Upload to ImageKit
+// Upload to ImageKit with error handling
 const uploadToImageKit = async (file, folder = 'general') => {
   try {
+    // Validate file size again (double check)
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error('File size exceeds 5MB limit');
+    }
+
     const result = await imagekit.upload({
-      file: file.buffer, // File buffer dari multer
+      file: file.buffer,
       fileName: `${Date.now()}_${file.originalname}`,
       folder: `winosa/${folder}`,
-      useUniqueFileName: true
+      useUniqueFileName: true,
+      transformation: {
+        pre: 'l-text,i-Winosa,fs-50,l-end', // Optional watermark
+        post: [
+          {
+            type: 'transformation',
+            value: 'w-1200,h-800,c-at_max' // Max dimensions
+          }
+        ]
+      }
     });
 
     return {
       url: result.url,
       fileId: result.fileId,
-      name: result.name
+      name: result.name,
+      size: result.size
     };
   } catch (error) {
+    console.error('ImageKit upload error:', error);
     throw new Error(`ImageKit upload failed: ${error.message}`);
   }
 };
 
-// Delete from ImageKit
-const deleteFromImageKit = async (fileId) => {
-  try {
-    await imagekit.deleteFile(fileId);
-    return { success: true };
-  } catch (error) {
-    throw new Error(`ImageKit delete failed: ${error.message}`);
+// Delete from ImageKit with retry
+const deleteFromImageKit = async (fileId, retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await imagekit.deleteFile(fileId);
+      console.log(`✅ Image deleted from ImageKit: ${fileId}`);
+      return { success: true };
+    } catch (error) {
+      console.error(`Attempt ${i + 1} - Failed to delete image:`, error.message);
+      if (i === retries - 1) {
+        throw new Error(`ImageKit delete failed after ${retries} attempts: ${error.message}`);
+      }
+      // Wait before retry
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
   }
 };
 
@@ -73,13 +101,9 @@ const deleteFromImageKit = async (fileId) => {
 const extractFileId = (url) => {
   if (!url || !url.includes('ik.imagekit.io')) return null;
   
-  // URL format: https://ik.imagekit.io/your_id/winosa/folder/file_id.jpg
-  // FileId biasanya ada di path setelah folder
   const parts = url.split('/');
   const filename = parts[parts.length - 1];
   
-  // Return filename without extension as potential fileId
-  // Note: ImageKit fileId lebih kompleks, might need to store it in DB
   return filename.split('.')[0];
 };
 

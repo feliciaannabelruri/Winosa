@@ -8,7 +8,8 @@ const blogSchema = new mongoose.Schema({
   slug: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    index: true // Add index
   },
   content: {
     type: String,
@@ -17,14 +18,21 @@ const blogSchema = new mongoose.Schema({
   excerpt: String,
   image: String,
   imageId: String,
-  author: String,
+  author: {
+    type: String,
+    index: true // Add index for author filter
+  },
   tags: [String],
   isPublished: {
     type: Boolean,
-    default: true
+    default: true,
+    index: true // Add index
   }
 }, {
   timestamps: true
 });
+
+// Compound index
+blogSchema.index({ isPublished: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Blog', blogSchema);
