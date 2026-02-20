@@ -10,7 +10,7 @@ const searchRoutes = require('./routes/searchRoutes')
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5173'] }));
 app.use(express.json());
 app.use(logger); // Add request logger
 app.use(setLanguage);
@@ -33,6 +33,7 @@ const emailTestRoutes = require('./routes/emailTestRoutes');
 const adminServiceRoutes = require('./routes/admin/adminServiceRoutes');
 const adminPortfolioRoutes = require('./routes/admin/adminPortfolioRoutes');
 const adminBlogRoutes = require('./routes/admin/adminBlogRoutes');
+const adminAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
 
 // Routes
 app.get('/', (req, res) => {
@@ -57,6 +58,7 @@ app.use('/api/email', emailTestRoutes);
 app.use('/api/admin/services', adminServiceRoutes);
 app.use('/api/admin/portfolio', adminPortfolioRoutes);
 app.use('/api/admin/blog', adminBlogRoutes);
+app.use('/api/admin/analytics', adminAnalyticsRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
