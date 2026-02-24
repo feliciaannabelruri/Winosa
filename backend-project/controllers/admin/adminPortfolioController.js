@@ -8,7 +8,6 @@ const { uploadSingle, uploadToImageKit, deleteFromImageKit } = require('../../co
 // @route   POST /api/admin/portfolio
 // @access  Private/Admin
 exports.createPortfolio = asyncHandler(async (req, res, next) => {
-  // Handle file upload first
   uploadSingle(req, res, async (err) => {
     if (err) {
       return next(new ErrorResponse(err.message, 400));
@@ -17,7 +16,6 @@ exports.createPortfolio = asyncHandler(async (req, res, next) => {
     try {
       const { title, slug, description, category, client, projectUrl, isActive } = req.body;
 
-      // Check if slug already exists
       const existingPortfolio = await Portfolio.findOne({ slug });
       if (existingPortfolio) {
         return next(new ErrorResponse('Portfolio with this slug already exists', 400));
@@ -26,7 +24,6 @@ exports.createPortfolio = asyncHandler(async (req, res, next) => {
       let imageUrl = null;
       let imageId = null;
 
-      // Upload image to ImageKit if file exists
       if (req.file) {
         const uploadResult = await uploadToImageKit(req.file, 'portfolio');
         imageUrl = uploadResult.url;
@@ -34,14 +31,10 @@ exports.createPortfolio = asyncHandler(async (req, res, next) => {
       }
 
       const portfolio = await Portfolio.create({
-        title,
-        slug,
-        description,
+        title, slug, description,
         image: imageUrl,
         imageId: imageId,
-        category,
-        client,
-        projectUrl,
+        category, client, projectUrl,
         isActive: isActive !== undefined ? isActive : true
       });
 
@@ -56,6 +49,26 @@ exports.createPortfolio = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Get single portfolio by ID (admin)
+// @route   GET /api/admin/portfolio/:id
+// @access  Private/Admin
+exports.getPortfolioById = asyncHandler(async (req, res, next) => {
+  try {
+    const portfolio = await Portfolio.findById(req.params.id);
+
+    if (!portfolio) {
+      return next(new ErrorResponse('Portfolio not found', 404));
+    }
+
+    res.json({
+      success: true,
+      data: portfolio
+    });
+  } catch (error) {
+    return next(new ErrorResponse(error.message, 500));
+  }
+});
+
 // @desc    Update portfolio
 // @route   PUT /api/admin/portfolio/:id
 // @access  Private/Admin
@@ -68,14 +81,11 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
     try {
       const lang = req.language || 'en';
 
-      // Check if portfolio exists
       let portfolio = await Portfolio.findById(req.params.id);
-      
       if (!portfolio) {
         return next(new ErrorResponse(getTranslation(lang, 'portfolioNotFound'), 404));
       }
 
-      // If updating slug, check if new slug already exists
       if (req.body.slug && req.body.slug !== portfolio.slug) {
         const existingPortfolio = await Portfolio.findOne({ slug: req.body.slug });
         if (existingPortfolio) {
@@ -83,9 +93,7 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
         }
       }
 
-      // Handle new image upload
       if (req.file) {
-        // Delete old image from ImageKit if exists
         if (portfolio.imageId) {
           try {
             await deleteFromImageKit(portfolio.imageId);
@@ -93,21 +101,15 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
             console.log('Error deleting old image:', error.message);
           }
         }
-
-        // Upload new image
         const uploadResult = await uploadToImageKit(req.file, 'portfolio');
         req.body.image = uploadResult.url;
         req.body.imageId = uploadResult.fileId;
       }
 
-      // Update portfolio
       portfolio = await Portfolio.findByIdAndUpdate(
         req.params.id,
         req.body,
-        {
-          new: true,
-          runValidators: true
-        }
+        { new: true, runValidators: true }
       );
 
       res.json({
@@ -128,12 +130,10 @@ exports.deletePortfolio = asyncHandler(async (req, res, next) => {
   const lang = req.language || 'en';
 
   const portfolio = await Portfolio.findById(req.params.id);
-
   if (!portfolio) {
     return next(new ErrorResponse(getTranslation(lang, 'portfolioNotFound'), 404));
   }
 
-  // Delete image from ImageKit if exists
   if (portfolio.imageId) {
     try {
       await deleteFromImageKit(portfolio.imageId);
@@ -150,25 +150,20 @@ exports.deletePortfolio = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Get all portfolios (for admin - includes inactive)
+// @desc    Get all portfolios (admin - includes inactive)
 // @route   GET /api/admin/portfolio
 // @access  Private/Admin
 exports.getAllPortfolios = asyncHandler(async (req, res, next) => {
-  // Pagination
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
-  // Filter
   let filter = {};
   if (req.query.category) {
     filter.category = req.query.category;
   }
 
-  // Get total count
   const total = await Portfolio.countDocuments(filter);
-
-  // Get portfolios
   const portfolios = await Portfolio.find(filter)
     .sort({ createdAt: -1 })
     .skip(skip)
@@ -177,8 +172,8 @@ exports.getAllPortfolios = asyncHandler(async (req, res, next) => {
   res.json({
     success: true,
     count: portfolios.length,
-    total: total,
-    page: page,
+    total,
+    page,
     pages: Math.ceil(total / limit),
     data: portfolios
   });
