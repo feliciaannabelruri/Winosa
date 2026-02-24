@@ -10,6 +10,10 @@ import BlogsPage from './pages/BlogsPage';
 import PortfolioPage from './pages/PortfolioPage';
 import ServicesPage from './pages/ServicesPage';
 import ContactsPage from './pages/ContactsPage';
+import PortfolioDetailPage from './pages/PortfolioDetailPage';
+import PortfolioFormPage from './pages/PortfolioFormPage';
+
+// tambah di dalam nested routes
 
 function App() {
   return (
@@ -44,6 +48,9 @@ function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="blogs" element={<BlogsPage />} />
             <Route path="portfolio" element={<PortfolioPage />} />
+            <Route path="portfolio/:slug" element={<PortfolioDetailPage />} />
+            <Route path="portfolio/add" element={<PortfolioFormPage />} />
+            <Route path="portfolio/edit/:id" element={<PortfolioFormPage />} />
             <Route path="services" element={<ServicesPage />} />
             <Route path="contacts" element={<ContactsPage />} />
           </Route>

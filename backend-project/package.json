@@ -26,6 +26,8 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "@vitejs/plugin-react": "^5.1.4",
+    "nodemon": "^3.1.11",
+    "vite": "^7.3.1"
   }
 }

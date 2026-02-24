@@ -7,20 +7,29 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Warna aksen utama - yellow-500 sesuai style baru
         primary: {
-          DEFAULT: '#C4A832',
-          dark: '#9E8520',
-          light: '#D4BC52',
+          DEFAULT: '#EAB308', // yellow-500
+          dark: '#CA8A04',    // yellow-600
+          light: '#FDE047',   // yellow-300
         },
+        // Dark colors
         dark: {
-          DEFAULT: '#1A1A1A',
-          sidebar: '#111111',
-          card: '#242424',
+          DEFAULT: '#111111',
+          sidebar: '#000000', // full black seperti style baru
+          card: '#1F2937',
         }
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
-        display: ['Playfair Display', 'serif'],
+        // Ganti ke Inter sesuai style baru
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        // Tetap ada display tapi tidak dominan
+        display: ['Inter', 'sans-serif'],
+      },
+      borderRadius: {
+        // Tambah custom radius untuk sidebar
+        '4xl': '2rem',
+        '5xl': '2.5rem',
       }
     },
   },

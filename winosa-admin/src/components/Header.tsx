@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 const Header: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -15,21 +15,25 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 fixed top-0 right-0 left-0 z-40 ml-56">
-      <div className="flex items-center gap-3">
-        <div className="w-7 h-7 bg-dark rounded-full flex items-center justify-center">
-          <span className="text-primary font-bold text-xs">W</span>
+    <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50 h-16">
+      <div className="flex items-center justify-between h-full px-6">
+        <div className="flex items-center gap-3">
+          <img
+            src="/images/logo.png"
+            alt="Winosa"
+            className="w-10 h-10 object-contain"
+          />
+          <span className="text-lg font-semibold text-gray-900">Winosa Admin</span>
         </div>
-        <span className="font-semibold text-dark text-sm tracking-wide">Winosa Admin</span>
-      </div>
 
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-2 text-sm text-gray-500 hover:text-dark transition-colors"
-      >
-        <span>Logout</span>
-        <LogOut size={15} />
-      </button>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
+        >
+          <span className="hidden sm:inline text-sm font-medium">Logout</span>
+          <LogOut className="w-5 h-5" />
+        </button>
+      </div>
     </header>
   );
 };

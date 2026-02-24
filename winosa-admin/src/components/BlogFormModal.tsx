@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Upload } from 'lucide-react';
+import { X, Upload, Image } from 'lucide-react';
 import { Blog } from '../types';
 import { blogService } from '../services/blogService';
 import toast from 'react-hot-toast';
@@ -97,15 +97,16 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({ isOpen, blog, onClose, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end">
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
       <div className="relative bg-white h-full w-full max-w-xl overflow-y-auto shadow-2xl">
+        {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
           <div>
             <h2 className="text-xl font-display font-bold text-dark">Blog</h2>
             <p className="text-xs text-gray-400 italic">Manage Winosa blog content</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-dark">
-            <X size={20} />
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-dark hover:bg-gray-100 transition-colors">
+            <X size={18} />
           </button>
         </div>
 
@@ -118,7 +119,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({ isOpen, blog, onClose, on
               placeholder="Enter blog title"
               value={form.title}
               onChange={handleTitleChange}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50"
+              className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 transition-colors"
             />
           </div>
 
@@ -130,11 +131,11 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({ isOpen, blog, onClose, on
               placeholder="blog-slug"
               value={form.slug}
               onChange={e => setForm(prev => ({ ...prev, slug: e.target.value }))}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50"
+              className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 transition-colors"
             />
           </div>
 
-          {/* Category / Tags */}
+          {/* Category/Tags */}
           <div>
             <label className="block text-sm font-semibold text-dark mb-2">Category :</label>
             <input
@@ -142,7 +143,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({ isOpen, blog, onClose, on
               placeholder="e.g. Insight, Technology (comma separated)"
               value={form.tags}
               onChange={e => setForm(prev => ({ ...prev, tags: e.target.value }))}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50"
+              className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 transition-colors"
             />
           </div>
 
@@ -151,16 +152,17 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({ isOpen, blog, onClose, on
             <label className="block text-sm font-semibold text-dark mb-2">Thumbnail Image :</label>
             <div
               onClick={() => fileRef.current?.click()}
-              className="border border-gray-200 rounded-xl p-6 bg-gray-50 cursor-pointer hover:border-primary transition-colors"
+              className="border-2 border-dashed border-gray-200 rounded-2xl p-6 bg-gray-50 cursor-pointer hover:border-primary transition-colors group"
             >
               {imagePreview ? (
-                <img src={imagePreview} alt="preview" className="w-full h-32 object-cover rounded-lg" />
+                <img src={imagePreview} alt="preview" className="w-full h-36 object-cover rounded-xl" />
               ) : (
-                <div className="flex flex-col items-center gap-2 text-gray-400">
-                  <p className="text-xs">Upload blog thumbnail</p>
-                  <button type="button" className="px-4 py-1.5 bg-white border border-gray-200 rounded-lg text-xs hover:border-primary">
-                    <Upload size={12} className="inline mr-1" /> Upload
-                  </button>
+                <div className="flex flex-col items-center gap-3 text-gray-400 group-hover:text-primary transition-colors">
+                  <Image size={28} />
+                  <p className="text-xs italic">Upload blog thumbnail</p>
+                  <span className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-xs flex items-center gap-1.5 hover:border-primary transition-colors">
+                    <Upload size={11} /> Upload
+                  </span>
                 </div>
               )}
             </div>
@@ -175,7 +177,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({ isOpen, blog, onClose, on
               value={form.content}
               onChange={e => setForm(prev => ({ ...prev, content: e.target.value }))}
               rows={8}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 resize-none"
+              className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 resize-none transition-colors"
             />
           </div>
 
@@ -187,7 +189,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({ isOpen, blog, onClose, on
               value={form.excerpt}
               onChange={e => setForm(prev => ({ ...prev, excerpt: e.target.value }))}
               rows={3}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 resize-none"
+              className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 resize-none transition-colors"
             />
           </div>
 
@@ -199,23 +201,23 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({ isOpen, blog, onClose, on
               placeholder="Admin"
               value={form.author}
               onChange={e => setForm(prev => ({ ...prev, author: e.target.value }))}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50"
+              className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 transition-colors"
             />
           </div>
 
-          {/* Action Buttons */}
+          {/* Buttons */}
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => handleSubmit(false)}
               disabled={loading}
-              className="flex-1 py-3 bg-gray-200 text-gray-600 rounded-xl text-sm font-medium italic hover:bg-gray-300 transition-colors disabled:opacity-50"
+              className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-2xl text-sm font-semibold italic hover:bg-gray-200 transition-colors disabled:opacity-50"
             >
               Draft
             </button>
             <button
               onClick={() => handleSubmit(true)}
               disabled={loading}
-              className="flex-1 py-3 bg-green-500 text-white rounded-xl text-sm font-medium italic hover:bg-green-600 transition-colors disabled:opacity-50"
+              className="flex-1 py-3 bg-green-500 text-white rounded-2xl text-sm font-semibold italic hover:bg-green-600 transition-colors disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Published'}
             </button>

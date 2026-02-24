@@ -7,6 +7,16 @@ export const portfolioService = {
     return response.data;
   },
 
+  getById: async (id: string) => {
+    const response = await api.get<ApiResponse<Portfolio>>(`/admin/portfolio/${id}`);
+    return response.data;
+  },
+
+  getBySlug: async (slug: string) => {
+    const response = await api.get<ApiResponse<Portfolio>>(`/portfolio/${slug}`);
+    return response.data;
+  },
+
   create: async (formData: FormData) => {
     const response = await api.post<ApiResponse<Portfolio>>('/admin/portfolio', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },

@@ -2,11 +2,6 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Briefcase, FolderOpen, FileText, Mail, Menu } from 'lucide-react';
 
-interface SidebarProps {
-  collapsed: boolean;
-  onToggle: () => void;
-}
-
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/services', icon: Briefcase, label: 'Services' },
@@ -15,65 +10,55 @@ const navItems = [
   { to: '/contacts', icon: Mail, label: 'Contacts' },
 ];
 
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   return (
     <aside
-      className={`fixed left-0 top-0 h-full bg-dark-sidebar transition-all duration-300 z-50 flex flex-col ${
-        collapsed ? 'w-16' : 'w-56'
+      className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-black transition-all duration-300 ease-in-out z-40 ${
+        collapsed ? 'w-20' : 'w-64'
       }`}
+      style={{ borderTopRightRadius: '100px' }}
     >
-      {/* Logo area */}
-      <div className="flex items-center h-16 px-4 border-b border-white/5">
-        {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-black font-bold text-sm">
-              W
-            </div>
-            <span className="text-white font-display font-semibold text-sm">Winosa Admin</span>
-          </div>
-        )}
-        {collapsed && (
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-black font-bold text-sm mx-auto">
-            W
-          </div>
-        )}
-      </div>
+      <nav className="py-6 px-4 h-full flex flex-col">
+        {/* Hamburger Button */}
+        <button
+          onClick={onToggle}
+          className="flex items-center justify-center w-12 h-12 mb-8 text-white hover:bg-gray-800 rounded-lg transition-colors"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
 
-      {/* Toggle button */}
-      <button
-        onClick={onToggle}
-        className="absolute -right-3 top-20 bg-dark-sidebar border border-white/10 rounded-full p-1 text-white/60 hover:text-white transition-colors z-10"
-      >
-        <Menu size={12} />
-      </button>
-
-      {/* Nav Items */}
-      <nav className="flex-1 py-6 px-2 space-y-1">
-        {navItems.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                isActive
-                  ? 'bg-primary/15 text-primary'
-                  : 'text-white/50 hover:text-white hover:bg-white/5'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <Icon
-                  size={18}
-                  className={`flex-shrink-0 ${isActive ? 'text-primary' : ''}`}
-                />
+        {/* Menu Items */}
+        <ul className="space-y-3 flex-1">
+          {navItems.map(({ to, icon: Icon, label }) => (
+            <li key={to} className={collapsed ? 'flex justify-center' : ''}>
+              <NavLink
+                to={to}
+                className={({ isActive }) =>
+                  collapsed
+                    ? `flex items-center justify-center w-12 h-12 rounded-full transition-all duration-200 ${
+                        isActive ? 'bg-white text-yellow-500' : 'text-white hover:bg-gray-800'
+                      }`
+                    : `flex items-center gap-4 px-5 py-3 rounded-full transition-all duration-200 ${
+                        isActive
+                          ? 'bg-white text-yellow-500 font-semibold'
+                          : 'text-white hover:bg-gray-800'
+                      }`
+                }
+                title={collapsed ? label : undefined}
+              >
+                <Icon className={`flex-shrink-0 ${collapsed ? 'w-6 h-6' : 'w-5 h-5'}`} />
                 {!collapsed && (
-                  <span className="text-sm font-medium truncate">{label}</span>
+                  <span className="whitespace-nowrap text-[15px]">{label}</span>
                 )}
-              </>
-            )}
-          </NavLink>
-        ))}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </nav>
     </aside>
   );
