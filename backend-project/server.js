@@ -6,6 +6,8 @@ const { setLanguage } = require('./middleware/language');
 const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./middleware/logger');
 const searchRoutes = require('./routes/searchRoutes')
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app = express();
 
@@ -34,6 +36,7 @@ const adminServiceRoutes = require('./routes/admin/adminServiceRoutes');
 const adminPortfolioRoutes = require('./routes/admin/adminPortfolioRoutes');
 const adminBlogRoutes = require('./routes/admin/adminBlogRoutes');
 const adminAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
+const adminSubscriptionRoutes = require('./routes/admin/adminSubscriptionRoutes');
 
 // Routes
 app.get('/', (req, res) => {
@@ -59,6 +62,7 @@ app.use('/api/admin/services', adminServiceRoutes);
 app.use('/api/admin/portfolio', adminPortfolioRoutes);
 app.use('/api/admin/blog', adminBlogRoutes);
 app.use('/api/admin/analytics', adminAnalyticsRoutes);
+app.use('/api/admin/subscriptions', adminSubscriptionRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {

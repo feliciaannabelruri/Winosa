@@ -12,8 +12,7 @@ import ServicesPage from './pages/ServicesPage';
 import ContactsPage from './pages/ContactsPage';
 import PortfolioDetailPage from './pages/PortfolioDetailPage';
 import PortfolioFormPage from './pages/PortfolioFormPage';
-
-// tambah di dalam nested routes
+import SubscriptionsPage from './pages/SubscriptionsPage';
 
 function App() {
   return (
@@ -53,6 +52,7 @@ function App() {
             <Route path="portfolio/edit/:id" element={<PortfolioFormPage />} />
             <Route path="services" element={<ServicesPage />} />
             <Route path="contacts" element={<ContactsPage />} />
+            <Route path="subscriptions" element={<SubscriptionsPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>

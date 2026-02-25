@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, FolderOpen, FileText, Mail, Menu } from 'lucide-react';
+import { LayoutDashboard, Briefcase, FolderOpen, FileText, Mail, Menu, Crown } from 'lucide-react';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -8,6 +8,7 @@ const navItems = [
   { to: '/portfolio', icon: FolderOpen, label: 'Portofolio' },
   { to: '/blogs', icon: FileText, label: 'Blogs' },
   { to: '/contacts', icon: Mail, label: 'Contacts' },
+  { to: '/subscriptions', icon: Crown, label: 'Subscriptions' },
 ];
 
 interface SidebarProps {

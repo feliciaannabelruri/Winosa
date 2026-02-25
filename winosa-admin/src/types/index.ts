@@ -94,6 +94,28 @@ export interface ServiceFormData {
   isActive: boolean;
 }
 
+// Subscription Types
+export interface Subscription {
+  _id: string;
+  name: string;
+  price: number;
+  duration: 'monthly' | 'yearly';
+  features: string[];
+  isPopular: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SubscriptionFormData {
+  name: string;
+  price: number;
+  duration: 'monthly' | 'yearly';
+  features: string[];
+  isPopular: boolean;
+  isActive: boolean;
+}
+
 // Contact Types
 export interface Contact {
   _id: string;
@@ -139,3 +161,4 @@ export interface PaginatedResponse<T> {
 // Filter Types
 export type BlogFilter = 'all' | 'published' | 'draft';
 export type PortfolioFilter = 'all' | 'published' | 'draft';
+export type SubscriptionFilter = 'all' | 'monthly' | 'yearly';
