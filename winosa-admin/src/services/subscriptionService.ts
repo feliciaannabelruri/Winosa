@@ -1,9 +1,12 @@
 import api from './api';
-import { Subscription, ApiResponse, PaginatedResponse } from '../types';
+import { Subscription, ApiResponse } from '../types';
 
 export const subscriptionService = {
-  getAll: async (params?: { isActive?: boolean; duration?: 'monthly' | 'yearly' }) => {
-    const response = await api.get<PaginatedResponse<Subscription>>('/admin/subscriptions', { params });
+  getAll: async (params?: { isActive?: boolean; duration?: number }) => {
+    const response = await api.get<{ success: boolean; count: number; data: Subscription[] }>(
+      '/admin/subscriptions',
+      { params }
+    );
     return response.data;
   },
 

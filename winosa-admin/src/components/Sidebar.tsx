@@ -1,14 +1,15 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, FolderOpen, FileText, Mail, Menu, Crown } from 'lucide-react';
+import { LayoutDashboard, Briefcase, FolderOpen, FileText, Mail, Menu, Crown, Users } from 'lucide-react';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/services', icon: Briefcase, label: 'Services' },
   { to: '/portfolio', icon: FolderOpen, label: 'Portofolio' },
   { to: '/blogs', icon: FileText, label: 'Blogs' },
-  { to: '/contacts', icon: Mail, label: 'Contacts' },
   { to: '/subscriptions', icon: Crown, label: 'Subscriptions' },
+  { to: '/contacts', icon: Mail, label: 'Contacts' },
+  { to: '/newsletter', icon: Users, label: 'Newsletter' },
 ];
 
 interface SidebarProps {
@@ -34,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
         </button>
 
         {/* Menu Items */}
-        <ul className="space-y-3 flex-1">
+        <ul className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
           {navItems.map(({ to, icon: Icon, label }) => (
             <li key={to} className={collapsed ? 'flex justify-center' : ''}>
               <NavLink

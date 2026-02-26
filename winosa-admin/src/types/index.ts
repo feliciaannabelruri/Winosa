@@ -94,26 +94,37 @@ export interface ServiceFormData {
   isActive: boolean;
 }
 
-// Subscription Types
+/// Subscription Types
 export interface Subscription {
   _id: string;
   name: string;
+  description?: string;
   price: number;
   duration: 'monthly' | 'yearly';
-  features: string[];
-  isPopular: boolean;
+  features?: string[];
   isActive: boolean;
+  isPopular?: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface SubscriptionFormData {
   name: string;
+  description?: string;
   price: number;
   duration: 'monthly' | 'yearly';
-  features: string[];
-  isPopular: boolean;
+  features?: string[];
   isActive: boolean;
+  isPopular?: boolean;
+}
+
+// Subscriber (Newsletter) Types
+export interface Subscriber {
+  _id: string;
+  email: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Contact Types

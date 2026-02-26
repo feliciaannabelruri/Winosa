@@ -13,6 +13,8 @@ import ContactsPage from './pages/ContactsPage';
 import PortfolioDetailPage from './pages/PortfolioDetailPage';
 import PortfolioFormPage from './pages/PortfolioFormPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
+import SubscriptionFormPage from './pages/SubscriptionFormPage';
+import NewsletterPage from './pages/NewsletterPage';
 
 function App() {
   return (
@@ -46,13 +48,23 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="blogs" element={<BlogsPage />} />
+
+            {/* Portfolio - specific routes BEFORE :slug */}
             <Route path="portfolio" element={<PortfolioPage />} />
-            <Route path="portfolio/:slug" element={<PortfolioDetailPage />} />
             <Route path="portfolio/add" element={<PortfolioFormPage />} />
             <Route path="portfolio/edit/:id" element={<PortfolioFormPage />} />
+            <Route path="portfolio/:slug" element={<PortfolioDetailPage />} />
+
             <Route path="services" element={<ServicesPage />} />
             <Route path="contacts" element={<ContactsPage />} />
+
+            {/* Subscriptions - specific routes BEFORE :id */}
             <Route path="subscriptions" element={<SubscriptionsPage />} />
+            <Route path="subscriptions/add" element={<SubscriptionFormPage />} />
+            <Route path="subscriptions/edit/:id" element={<SubscriptionFormPage />} />
+
+            {/* Newsletter */}
+            <Route path="newsletter" element={<NewsletterPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
