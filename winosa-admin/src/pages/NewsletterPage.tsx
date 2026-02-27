@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, Search, Trash2, Download, Mail, Filter } from 'lucide-react';
+import { Users, Search, Trash2, Download, Mail } from 'lucide-react';
 import { subscriberService } from '../services/subscriberService';
 import { Subscriber } from '../types';
 import toast from 'react-hot-toast';
@@ -43,8 +43,9 @@ const NewsletterPage: React.FC = () => {
   };
 
   const handleExport = () => {
-    subscriberService.export();
-    toast.success('Exporting subscriber emails...');
+    if (!subscribers.length) return;
+    subscriberService.exportFromData(subscribers);
+    toast.success(`Exported ${subscribers.length} subscribers to CSV`);
   };
 
   const filtered = subscribers.filter(s => {
@@ -68,10 +69,11 @@ const NewsletterPage: React.FC = () => {
         </div>
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit"
+          disabled={subscribers.length === 0}
+          className="flex items-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
         >
           <Download size={16} />
-          Export Emails
+          Export CSV
         </button>
       </div>
 

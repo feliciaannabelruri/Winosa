@@ -2,7 +2,7 @@ import api from './api';
 import { Subscription, ApiResponse } from '../types';
 
 export const subscriptionService = {
-  getAll: async (params?: { isActive?: boolean; duration?: number }) => {
+  getAll: async (params?: { isActive?: boolean; duration?: string }) => {
     const response = await api.get<{ success: boolean; count: number; data: Subscription[] }>(
       '/admin/subscriptions',
       { params }

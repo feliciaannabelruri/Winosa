@@ -15,6 +15,7 @@ const SubscriptionsPage: React.FC = () => {
   const navigate = useNavigate();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
+
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterType>('all');
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null; loading: boolean }>({
@@ -68,7 +69,7 @@ const SubscriptionsPage: React.FC = () => {
         </div>
         <button
           onClick={() => navigate('/subscriptions/add')}
-          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit"
+          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm"
         >
           <Plus size={16} />
           Add Subscription
@@ -159,7 +160,7 @@ const SubscriptionsPage: React.FC = () => {
                   <p className="text-sm text-gray-500 leading-relaxed">{sub.description}</p>
                 )}
 
-                {/* Features — semua ditampilkan */}
+                {/* Features */}
                 {sub.features && sub.features.length > 0 && (
                   <ul className="space-y-1.5">
                     {sub.features.map((feat, i) => (

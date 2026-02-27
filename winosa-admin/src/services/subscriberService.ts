@@ -1,5 +1,6 @@
 import api from './api';
 import { Subscriber, ApiResponse } from '../types';
+import { exportToCSV } from '../utils/exportToCSV';
 
 export const subscriberService = {
   getAll: async (params?: { isActive?: boolean }) => {
@@ -15,16 +16,22 @@ export const subscriberService = {
     return response.data;
   },
 
-  export: async () => {
-    // Returns CSV or list of emails
-    const response = await api.get<{ success: boolean; count: number; data: Subscriber[] }>('/newsletter');
-    const emails = response.data.data.map((s: Subscriber) => s.email).join('\n');
-    const blob = new Blob([emails], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `subscribers-${new Date().toISOString().split('T')[0]}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+  exportFromData: (subscribers: Subscriber[]) => {
+    exportToCSV(subscribers, [
+      { label: 'Email', key: 'email' },
+      {
+        label: 'Status',
+        key: 'isActive',
+        format: (val) => (val ? 'Active' : 'Inactive'),
+      },
+      {
+        label: 'Subscribed At',
+        key: 'createdAt',
+        format: (val) =>
+          new Date(String(val)).toLocaleDateString('id-ID', {
+            day: '2-digit', month: 'short', year: 'numeric',
+          }),
+      },
+    ], 'winosa-subscribers');
   },
 };

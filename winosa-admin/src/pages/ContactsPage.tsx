@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Mail, User, Clock, Inbox, Search, CheckCheck, Circle } from 'lucide-react';
+import { Mail, User, Clock, Inbox, Search, CheckCheck, Circle, Download } from 'lucide-react';
 import { contactService } from '../services/analyticsService';
 import { Contact } from '../types';
 import toast from 'react-hot-toast';
@@ -32,19 +32,22 @@ const ContactsPage: React.FC = () => {
     if (selected?._id === contactId) {
       setSelected(prev => prev ? { ...prev, isRead: !prev.isRead } : null);
     }
-    // Optionally call API: contactService.toggleRead(contactId)
   };
 
   const handleSelect = (contact: Contact) => {
     setSelected(contact);
-    // Mark as read when opened
     if (!contact.isRead) {
       setContacts(prev =>
         prev.map(c => c._id === contact._id ? { ...c, isRead: true } : c)
       );
       setSelected({ ...contact, isRead: true });
-      // Optionally call API to persist: contactService.markRead(contact._id)
     }
+  };
+
+  const handleExport = () => {
+    if (!contacts.length) return;
+    contactService.exportFromData(contacts);
+    toast.success(`Exported ${contacts.length} contacts to CSV`);
   };
 
   const filtered = contacts.filter(c => {
@@ -76,6 +79,14 @@ const ContactsPage: React.FC = () => {
           </h1>
           <p className="text-gray-400 text-sm mt-1 italic">View messages from website visitors</p>
         </div>
+        <button
+          onClick={handleExport}
+          disabled={contacts.length === 0}
+          className="flex items-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Download size={16} />
+          Export CSV
+        </button>
       </div>
 
       {/* Search + Filter */}
@@ -137,7 +148,6 @@ const ContactsPage: React.FC = () => {
                     {contact.name}
                   </p>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    {/* Toggle read button */}
                     <button
                       onClick={e => { e.stopPropagation(); toggleRead(contact._id); }}
                       className="text-gray-300 hover:text-primary transition-colors"
@@ -166,7 +176,6 @@ const ContactsPage: React.FC = () => {
           <div className="lg:col-span-2">
             {selected ? (
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6 h-full">
-                {/* Read status */}
                 <div className="flex items-center justify-end mb-4">
                   <button
                     onClick={() => toggleRead(selected._id)}
@@ -181,7 +190,6 @@ const ContactsPage: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Sender Info */}
                 <div className="flex items-start gap-4 mb-6 pb-6 border-b border-gray-100">
                   <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
                     <User size={20} className="text-primary" />
@@ -209,7 +217,6 @@ const ContactsPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Message */}
                 {selected.subject && (
                   <h4 className="font-bold text-dark mb-3 text-lg">{selected.subject}</h4>
                 )}
@@ -217,7 +224,6 @@ const ContactsPage: React.FC = () => {
                   {selected.message}
                 </p>
 
-                {/* Reply Button */}
                 <div className="mt-8">
                   <a
                     href={`mailto:${selected.email}?subject=Re: ${selected.subject || 'Your inquiry'}`}
