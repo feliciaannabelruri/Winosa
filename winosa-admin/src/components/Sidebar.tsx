@@ -1,16 +1,19 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, FolderOpen, FileText, Mail, Menu, Crown, Users } from 'lucide-react';
+import {
+  LayoutDashboard, Briefcase, FolderOpen, FileText,
+  Mail, Menu, Crown, Users, Settings,
+} from 'lucide-react';
 
-// FIX: label 'Portofolio' → 'Portfolio' (konsisten dengan heading page)
 const navItems = [
   { to: '/dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/services',      icon: Briefcase,       label: 'Services' },
-  { to: '/portfolio',     icon: FolderOpen,      label: 'Portfolio' },   // ← fix typo
+  { to: '/portfolio',     icon: FolderOpen,      label: 'Portfolio' },
   { to: '/blogs',         icon: FileText,        label: 'Blogs' },
   { to: '/subscriptions', icon: Crown,           label: 'Subscriptions' },
   { to: '/contacts',      icon: Mail,            label: 'Contacts' },
   { to: '/newsletter',    icon: Users,           label: 'Newsletter' },
+  { to: '/settings',      icon: Settings,        label: 'Settings' },  // ← NEW
 ];
 
 interface SidebarProps {

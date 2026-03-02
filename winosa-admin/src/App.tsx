@@ -15,6 +15,7 @@ import PortfolioFormPage from './pages/PortfolioFormPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import SubscriptionFormPage from './pages/SubscriptionFormPage';
 import NewsletterPage from './pages/NewsletterPage';
+import SettingsPage from './pages/SettingsPage';
 
 function App() {
   return (
@@ -65,6 +66,8 @@ function App() {
 
             {/* Newsletter */}
             <Route path="newsletter" element={<NewsletterPage />} />
+
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
