@@ -4,11 +4,10 @@ import { ArrowLeft, Upload, Image } from 'lucide-react';
 import { portfolioService } from '../services/portfolioService';
 import { Portfolio } from '../types';
 import toast from 'react-hot-toast';
+import { PORTFOLIO_CATEGORIES } from '../constants'; // FIX: import dari constants
 
 const generateSlug = (title: string) =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
-const CATEGORIES = ['Web Application', 'Mobile App', 'UI/UX Design', 'Branding'];
 
 const PortfolioFormPage: React.FC = () => {
   const navigate = useNavigate();
@@ -38,13 +37,13 @@ const PortfolioFormPage: React.FC = () => {
         const data = await portfolioService.getById(id!);
         const p: Portfolio = data.data!;
         setForm({
-          title: p.title,
-          slug: p.slug,
+          title:      p.title,
+          slug:       p.slug,
           description: p.description || '',
-          category: p.category || '',
-          client: p.client || '',
+          category:   p.category || '',
+          client:     p.client || '',
           projectUrl: p.projectUrl || '',
-          isActive: p.isActive,
+          isActive:   p.isActive,
         });
         setImagePreview(p.image || null);
       } catch {
@@ -73,13 +72,13 @@ const PortfolioFormPage: React.FC = () => {
     setLoading(true);
     try {
       const fd = new FormData();
-      fd.append('title', form.title);
-      fd.append('slug', form.slug);
+      fd.append('title',      form.title);
+      fd.append('slug',       form.slug);
       fd.append('description', form.description);
-      fd.append('category', form.category);
-      fd.append('client', form.client);
+      fd.append('category',   form.category);
+      fd.append('client',     form.client);
       fd.append('projectUrl', form.projectUrl);
-      fd.append('isActive', String(isActive));
+      fd.append('isActive',   String(isActive));
       if (imageFile) fd.append('image', imageFile);
 
       if (isEdit) {
@@ -125,8 +124,9 @@ const PortfolioFormPage: React.FC = () => {
           <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
           Back to Portfolio
         </button>
+        {/* FIX: konsisten 'Portfolio' bukan 'Portofolio' */}
         <h1 className="text-4xl font-display font-bold text-dark">
-          {isEdit ? 'Edit Portofolio' : 'Add Portofolio'}
+          {isEdit ? 'Edit Portfolio' : 'Add Portfolio'}
         </h1>
         <p className="text-gray-400 text-sm mt-1 italic">Manage study case and project</p>
       </div>
@@ -174,7 +174,7 @@ const PortfolioFormPage: React.FC = () => {
           />
         </div>
 
-        {/* Category */}
+        {/* FIX: Category pakai PORTFOLIO_CATEGORIES dari constants */}
         <div>
           <label className="block text-sm font-semibold text-dark mb-2">Category :</label>
           <select
@@ -183,7 +183,7 @@ const PortfolioFormPage: React.FC = () => {
             className={inputClass}
           >
             <option value="">Select Category</option>
-            {CATEGORIES.map(cat => (
+            {PORTFOLIO_CATEGORIES.map(cat => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
@@ -208,7 +208,7 @@ const PortfolioFormPage: React.FC = () => {
             ) : (
               <div className="flex flex-col items-center gap-3 text-gray-400 group-hover:text-dark transition-colors py-4">
                 <Image size={32} />
-                <p className="text-xs italic">Displayed on portofolio card</p>
+                <p className="text-xs italic">Displayed on portfolio card</p>
                 <span className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-xs flex items-center gap-1.5">
                   <Upload size={11} />
                   Upload Image

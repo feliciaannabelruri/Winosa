@@ -5,10 +5,12 @@ import { portfolioService } from '../services/portfolioService';
 import { Portfolio } from '../types';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
+import { PORTFOLIO_CATEGORIES } from '../constants';
 
 type FilterType = 'all' | 'draft' | 'published';
 
-const CATEGORIES = ['All', 'Web Application', 'Mobile App', 'UI/UX Design', 'Branding'];
+// FIX: 'All' sebagai opsi filter UI saja, PORTFOLIO_CATEGORIES tidak lagi duplikat
+const CATEGORY_FILTER_OPTIONS = ['All', ...PORTFOLIO_CATEGORIES];
 
 interface DropdownOption {
   label: string;
@@ -102,7 +104,7 @@ const PortfolioPage: React.FC = () => {
   const filtered = portfolios.filter(p => {
     const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
     const matchStatus =
-      filter === 'all' ? true :
+      filter === 'all'       ? true :
       filter === 'published' ? !!p.isActive :
       !p.isActive;
     const matchCategory = category === 'All' ? true : p.category === category;
@@ -111,11 +113,11 @@ const PortfolioPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-display font-bold text-dark">Portofolio</h1>
+          {/* FIX: konsisten pakai 'Portfolio' bukan 'Portofolio' di heading */}
+          <h1 className="text-4xl font-display font-bold text-dark">Portfolio</h1>
           <p className="text-gray-400 text-sm mt-1 italic">Manage study case and project</p>
         </div>
         <button
@@ -123,7 +125,7 @@ const PortfolioPage: React.FC = () => {
           className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit"
         >
           <Plus size={16} />
-          Add Portofolio
+          Add Portfolio
         </button>
       </div>
 
@@ -146,14 +148,14 @@ const PortfolioPage: React.FC = () => {
           onChange={(val) => setFilter(val as FilterType)}
           options={[
             { label: 'All Status', value: 'all' },
-            { label: 'Published', value: 'published' },
-            { label: 'Draft', value: 'draft' },
+            { label: 'Published',  value: 'published' },
+            { label: 'Draft',      value: 'draft' },
           ]}
         />
         <CustomDropdown
           value={category}
           onChange={setCategory}
-          options={CATEGORIES.map(cat => ({ label: cat, value: cat }))}
+          options={CATEGORY_FILTER_OPTIONS.map(cat => ({ label: cat, value: cat }))}
         />
       </div>
 
@@ -182,7 +184,7 @@ const PortfolioPage: React.FC = () => {
                 ) : (
                   <div className="text-center">
                     <Image size={36} className="text-gray-200 mx-auto mb-2" />
-                    <p className="text-xs text-gray-300 italic">Logo / thumbnail</p>
+                    <p className="text-xs text-gray-300 italic">No thumbnail</p>
                   </div>
                 )}
 
@@ -206,7 +208,7 @@ const PortfolioPage: React.FC = () => {
                     <p className="text-xs text-gray-400 mt-0.5 truncate">{portfolio.description}</p>
                   )}
                   <p className="text-sm text-dark font-medium mt-2">
-                    {portfolio.category || 'Web Application'}
+                    {portfolio.category || '—'}
                   </p>
                 </div>
 
@@ -247,7 +249,6 @@ const PortfolioPage: React.FC = () => {
         onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
         loading={deleteModal.loading}
       />
-
     </div>
   );
 };

@@ -7,6 +7,10 @@ import ConfirmModal from '../components/ConfirmModal';
 
 type FilterType = 'all' | 'draft' | 'published';
 
+// FIX: ekstrak generateSlug ke fungsi terpisah (konsisten dengan BlogFormModal & PortfolioFormPage)
+const generateSlug = (title: string) =>
+  title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
 const ServicesPage: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,12 +44,12 @@ const ServicesPage: React.FC = () => {
     if (service) {
       setEditService(service);
       setForm({
-        title: service.title,
-        slug: service.slug,
+        title:       service.title,
+        slug:        service.slug,
         description: service.description,
-        icon: service.icon || '',
-        price: service.price || '',
-        isActive: service.isActive,
+        icon:        service.icon || '',
+        price:       service.price || '',
+        isActive:    service.isActive,
       });
     } else {
       setEditService(null);
@@ -95,7 +99,7 @@ const ServicesPage: React.FC = () => {
   const filtered = services.filter(s => {
     const matchSearch = s.title.toLowerCase().includes(search.toLowerCase());
     const matchStatus =
-      filter === 'all' ? true :
+      filter === 'all'       ? true :
       filter === 'published' ? !!s.isActive :
       !s.isActive;
     return matchSearch && matchStatus;
@@ -246,7 +250,8 @@ const ServicesPage: React.FC = () => {
                   onChange={e => setForm(p => ({
                     ...p,
                     title: e.target.value,
-                    slug: !editService ? e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') : p.slug,
+                    // FIX: pakai fungsi generateSlug yang sudah diekstrak
+                    slug: !editService ? generateSlug(e.target.value) : p.slug,
                   }))}
                   className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50"
                 />

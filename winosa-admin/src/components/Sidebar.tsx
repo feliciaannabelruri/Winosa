@@ -2,14 +2,15 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Briefcase, FolderOpen, FileText, Mail, Menu, Crown, Users } from 'lucide-react';
 
+// FIX: label 'Portofolio' → 'Portfolio' (konsisten dengan heading page)
 const navItems = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/services', icon: Briefcase, label: 'Services' },
-  { to: '/portfolio', icon: FolderOpen, label: 'Portofolio' },
-  { to: '/blogs', icon: FileText, label: 'Blogs' },
-  { to: '/subscriptions', icon: Crown, label: 'Subscriptions' },
-  { to: '/contacts', icon: Mail, label: 'Contacts' },
-  { to: '/newsletter', icon: Users, label: 'Newsletter' },
+  { to: '/dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/services',      icon: Briefcase,       label: 'Services' },
+  { to: '/portfolio',     icon: FolderOpen,      label: 'Portfolio' },   // ← fix typo
+  { to: '/blogs',         icon: FileText,        label: 'Blogs' },
+  { to: '/subscriptions', icon: Crown,           label: 'Subscriptions' },
+  { to: '/contacts',      icon: Mail,            label: 'Contacts' },
+  { to: '/newsletter',    icon: Users,           label: 'Newsletter' },
 ];
 
 interface SidebarProps {
@@ -30,6 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
         <button
           onClick={onToggle}
           className="flex items-center justify-center w-12 h-12 mb-8 text-white hover:bg-gray-800 rounded-lg transition-colors"
+          aria-label="Toggle sidebar"
         >
           <Menu className="w-6 h-6" />
         </button>

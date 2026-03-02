@@ -15,15 +15,16 @@ interface StatCardProps {
   iconColor: string;
 }
 
+// FIX: value default ke 0 jika undefined/null
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon, bg, iconColor }) => (
-  <div className={`rounded-3xl border-2 border-yellow-100 bg-white p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}>
+  <div className="rounded-3xl border-2 border-yellow-100 bg-white p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
     <div className="flex items-center justify-between mb-4">
       <p className="text-sm font-medium text-gray-500">{label}</p>
       <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${bg}`}>
         <span className={iconColor}>{icon}</span>
       </div>
     </div>
-    <p className="text-5xl font-display font-bold text-dark">{value}</p>
+    <p className="text-5xl font-display font-bold text-dark">{value ?? 0}</p>
   </div>
 );
 
@@ -36,9 +37,10 @@ const DashboardPage: React.FC = () => {
     const fetchAnalytics = async () => {
       try {
         const data = await analyticsService.getAnalytics();
+        // FIX: cek data.data sebelum set (bukan hanya data.success)
         if (data.success && data.data) setAnalytics(data.data);
-      } catch {
-        console.error('Failed to fetch analytics');
+      } catch (err) {
+        console.error('Failed to fetch analytics:', err);
       } finally {
         setLoading(false);
       }
@@ -54,6 +56,11 @@ const DashboardPage: React.FC = () => {
     );
   }
 
+  // FIX: destructure dengan default 0 untuk semua count agar tidak ada undefined
+  const counts = analytics?.counts ?? {
+    portfolios: 0, blogs: 0, services: 0, subscribers: 0, contacts: 0,
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -61,7 +68,7 @@ const DashboardPage: React.FC = () => {
         <h1 className="text-4xl font-display font-bold text-dark">Dashboard</h1>
         <p className="text-gray-400 text-sm mt-1 italic">
           Overview of Winosa website activity — Welcome back,{' '}
-          <span className="text-dark font-medium not-italic">{user?.name}</span>
+          <span className="text-dark font-medium not-italic">{user?.name ?? 'Admin'}</span>
         </p>
       </div>
 
@@ -69,54 +76,52 @@ const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
           label="Portfolios"
-          value={analytics?.counts.portfolios ?? 0}
+          value={counts.portfolios}
           icon={<FolderOpen size={20} />}
           bg="bg-blue-50"
           iconColor="text-blue-500"
         />
         <StatCard
           label="Blogs"
-          value={analytics?.counts.blogs ?? 0}
+          value={counts.blogs}
           icon={<FileText size={20} />}
           bg="bg-primary/10"
           iconColor="text-primary"
         />
         <StatCard
           label="Services"
-          value={analytics?.counts.services ?? 0}
+          value={counts.services}
           icon={<Briefcase size={20} />}
           bg="bg-purple-50"
           iconColor="text-purple-500"
         />
         <StatCard
           label="Subscribers"
-          value={analytics?.counts.subscribers ?? 0}
+          value={counts.subscribers}
           icon={<Users size={20} />}
           bg="bg-green-50"
           iconColor="text-green-500"
         />
         <StatCard
           label="Contacts"
-          value={analytics?.counts.contacts ?? 0}
+          value={counts.contacts}
           icon={<Mail size={20} />}
           bg="bg-red-50"
           iconColor="text-red-500"
         />
       </div>
 
-      {/* Recent Activities Section */}
+      {/* Recent Activities */}
       <div>
         <h2 className="text-2xl font-display font-bold text-dark mb-5">Recent Activities</h2>
 
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-          {/* Table header */}
           <div className="grid grid-cols-4 bg-gray-50 border-b border-gray-100 px-6 py-4">
-            {['Type', 'Title / Name', 'Date', 'Status'].map((h) => (
+            {['Type', 'Title / Name', 'Date', 'Status'].map(h => (
               <span key={h} className="text-sm font-semibold text-primary">{h}</span>
             ))}
           </div>
 
-          {/* Recent Blogs as activities */}
           {analytics?.recentBlogs && analytics.recentBlogs.length > 0 ? (
             analytics.recentBlogs.map((blog, i) => (
               <div
@@ -147,7 +152,7 @@ const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Popular Blogs */}
+      {/* Popular Blogs + Recent Blogs */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Blogs */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
@@ -203,7 +208,7 @@ const DashboardPage: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <Eye size={12} className="text-gray-400" />
-                    <span className="text-xs font-medium text-gray-500">{blog.views}</span>
+                    <span className="text-xs font-medium text-gray-500">{blog.views ?? 0}</span>
                   </div>
                 </div>
               ))}
