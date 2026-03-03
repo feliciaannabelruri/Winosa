@@ -37,6 +37,7 @@ const adminPortfolioRoutes = require('./routes/admin/adminPortfolioRoutes');
 const adminBlogRoutes = require('./routes/admin/adminBlogRoutes');
 const adminAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
 const adminSubscriptionRoutes = require('./routes/admin/adminSubscriptionRoutes');
+const adminSettingsRoutes = require('./routes/admin/adminSettingsRoutes');
 
 // Routes
 app.get('/', (req, res) => {
@@ -63,6 +64,7 @@ app.use('/api/admin/portfolio', adminPortfolioRoutes);
 app.use('/api/admin/blog', adminBlogRoutes);
 app.use('/api/admin/analytics', adminAnalyticsRoutes);
 app.use('/api/admin/subscriptions', adminSubscriptionRoutes);
+app.use('/api/admin/settings', adminSettingsRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
