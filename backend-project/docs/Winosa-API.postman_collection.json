@@ -1,0 +1,336 @@
+{
+  "info": {
+    "name": "Winosa API",
+    "description": "Complete API documentation for Winosa Backend.\n\n**Base URL:** `http://localhost:5000`\n\n**Auth:** Most admin endpoints require Bearer token.\nGet token from `POST /api/auth/login`, then set as `Authorization: Bearer <token>`.",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "BASE_URL", "value": "http://localhost:5000", "type": "string" },
+    { "key": "TOKEN",    "value": "",                       "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json(); if (r.token) pm.collectionVariables.set('TOKEN', r.token);"], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@winosa.com\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Admin\",\n  \"email\": \"admin@winosa.com\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/api/auth/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }]
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/auth/logout",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public — Blog",
+      "item": [
+        {
+          "name": "Get All Blogs",
+          "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/api/blog?page=1&limit=10", "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] } }
+        },
+        {
+          "name": "Get Blog by Slug",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/blog/getting-started-with-react" }
+        }
+      ]
+    },
+    {
+      "name": "Public — Portfolio",
+      "item": [
+        {
+          "name": "Get All Portfolios",
+          "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/api/portfolio?page=1&limit=10&category=web", "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "category", "value": "web", "disabled": true }] } }
+        },
+        {
+          "name": "Get Portfolio by Slug",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/portfolio/ecommerce-website" }
+        }
+      ]
+    },
+    {
+      "name": "Public — Services",
+      "item": [
+        {
+          "name": "Get All Services",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/services" }
+        },
+        {
+          "name": "Get Service by Slug",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/services/web-development" }
+        }
+      ]
+    },
+    {
+      "name": "Public — Subscriptions",
+      "item": [
+        {
+          "name": "Get All Subscriptions",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/subscriptions" }
+        },
+        {
+          "name": "Get Subscription by ID",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/subscriptions/:id" }
+        }
+      ]
+    },
+    {
+      "name": "Public — Contact & Newsletter",
+      "item": [
+        {
+          "name": "Submit Contact Form",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/contact",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"subject\": \"Inquiry\",\n  \"message\": \"Hello, I would like to know more about your services.\"\n}" }
+          }
+        },
+        {
+          "name": "Subscribe Newsletter",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/newsletter",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"subscriber@example.com\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public — Search",
+      "item": [
+        {
+          "name": "Search All",
+          "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/api/search?q=web&type=all", "query": [{ "key": "q", "value": "web" }, { "key": "type", "value": "all", "description": "all | portfolio | blog | service" }] } }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Blog",
+      "item": [
+        {
+          "name": "Get All Blogs (Admin)",
+          "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/api/admin/blog?page=1&limit=10&isPublished=true", "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "isPublished", "value": "true", "disabled": true }] }, "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Get Blog by ID (Admin)",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/admin/blog/:id", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Create Blog",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/admin/blog",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "title", "value": "My New Blog Post", "type": "text" }, { "key": "slug", "value": "my-new-blog-post", "type": "text" }, { "key": "content", "value": "This is the blog content, must be at least 50 characters long.", "type": "text" }, { "key": "excerpt", "value": "Short summary of the blog post for previews.", "type": "text" }, { "key": "author", "value": "Admin", "type": "text" }, { "key": "tags", "value": "[\"react\",\"javascript\"]", "type": "text" }, { "key": "isPublished", "value": "true", "type": "text" }, { "key": "image", "type": "file", "src": [], "disabled": true }] }
+          }
+        },
+        {
+          "name": "Update Blog",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/api/admin/blog/:id",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "title", "value": "Updated Title", "type": "text" }, { "key": "isPublished", "value": "false", "type": "text" }] }
+          }
+        },
+        {
+          "name": "Delete Blog",
+          "request": { "method": "DELETE", "url": "{{BASE_URL}}/api/admin/blog/:id", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Portfolio",
+      "item": [
+        {
+          "name": "Get All Portfolios (Admin)",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/admin/portfolio", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Get Portfolio by ID (Admin)",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/admin/portfolio/:id", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Create Portfolio",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/admin/portfolio",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "title", "value": "New Project", "type": "text" }, { "key": "slug", "value": "new-project", "type": "text" }, { "key": "description", "value": "Project description here", "type": "text" }, { "key": "category", "value": "Web Application", "type": "text" }, { "key": "client", "value": "Client Name", "type": "text" }, { "key": "projectUrl", "value": "https://example.com", "type": "text" }, { "key": "isActive", "value": "true", "type": "text" }, { "key": "image", "type": "file", "src": [], "disabled": true }] }
+          }
+        },
+        {
+          "name": "Update Portfolio",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/api/admin/portfolio/:id",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "title", "value": "Updated Project", "type": "text" }] }
+          }
+        },
+        {
+          "name": "Delete Portfolio",
+          "request": { "method": "DELETE", "url": "{{BASE_URL}}/api/admin/portfolio/:id", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Services",
+      "item": [
+        {
+          "name": "Get All Services (Admin)",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/admin/services", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Create Service",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/admin/services",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"New Service\",\n  \"slug\": \"new-service\",\n  \"description\": \"Service description here, at least 10 chars\",\n  \"icon\": \"💻\",\n  \"features\": [\"Feature 1\", \"Feature 2\"],\n  \"price\": \"Starting from $999\",\n  \"isActive\": true\n}" }
+          }
+        },
+        {
+          "name": "Update Service",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/api/admin/services/:id",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Updated Service\",\n  \"isActive\": false\n}" }
+          }
+        },
+        {
+          "name": "Delete Service",
+          "request": { "method": "DELETE", "url": "{{BASE_URL}}/api/admin/services/:id", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Subscriptions",
+      "item": [
+        {
+          "name": "Get All Subscriptions (Admin)",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/admin/subscriptions", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Get Subscription by ID",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/admin/subscriptions/:id", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Create Subscription",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/admin/subscriptions",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Starter Plan\",\n  \"price\": 19,\n  \"duration\": \"monthly\",\n  \"features\": [\"3 Projects\", \"Basic Support\"],\n  \"isPopular\": false,\n  \"isActive\": true\n}" }
+          }
+        },
+        {
+          "name": "Update Subscription",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/api/admin/subscriptions/:id",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 24,\n  \"isActive\": false\n}" }
+          }
+        },
+        {
+          "name": "Delete Subscription",
+          "request": { "method": "DELETE", "url": "{{BASE_URL}}/api/admin/subscriptions/:id", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Settings",
+      "item": [
+        {
+          "name": "Get Settings",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/admin/settings", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Update Settings",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/api/admin/settings",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "siteTitle", "value": "PT. Winosa Mitra Bharatadjaya", "type": "text" }, { "key": "siteDescription", "value": "Digital solutions company", "type": "text" }, { "key": "metaTitle", "value": "Winosa — Digital Solutions", "type": "text" }, { "key": "metaDescription", "value": "We build modern web and mobile applications.", "type": "text" }, { "key": "instagram", "value": "https://instagram.com/winosa", "type": "text" }, { "key": "email", "value": "hello@winosa.com", "type": "text" }, { "key": "logo", "type": "file", "src": [], "disabled": true }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Analytics",
+      "item": [
+        {
+          "name": "Get Dashboard Analytics",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/admin/analytics", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Contacts & Newsletter",
+      "item": [
+        {
+          "name": "Get All Contacts",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/contact", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Get All Subscribers",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/newsletter", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        },
+        {
+          "name": "Delete Subscriber",
+          "request": { "method": "DELETE", "url": "{{BASE_URL}}/api/newsletter/:id", "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }] }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/health" }
+        },
+        {
+          "name": "Test Send Email",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/api/email/send-test",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"to\": \"test@example.com\",\n  \"subject\": \"Test Email\",\n  \"message\": \"This is a test.\"\n}" }
+          }
+        }
+      ]
+    }
+  ]
+}

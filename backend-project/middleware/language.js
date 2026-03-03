@@ -3,22 +3,16 @@ const supportedLanguages = ['id', 'en', 'nl'];
 const defaultLanguage = 'en';
 
 exports.setLanguage = (req, res, next) => {
-  // Get language from query parameter
   let lang = req.query.lang || defaultLanguage;
-  
-  // Validate language
   if (!supportedLanguages.includes(lang)) {
     lang = defaultLanguage;
   }
-  
-  // Set language in request object
   req.language = lang;
-  
   next();
 };
 
-// Translation helper
-exports.translations = {
+// ─── Translation dictionary ───────────────────────────────────────────────────
+const translations = {
   en: {
     success: 'Success',
     error: 'Error',
@@ -35,7 +29,7 @@ exports.translations = {
     portfolioNotFound: 'Portfolio not found',
     blogNotFound: 'Blog not found',
     serviceNotFound: 'Service not found',
-    subscriptionNotFound: 'Subscription not found'
+    subscriptionNotFound: 'Subscription not found',
   },
   id: {
     success: 'Berhasil',
@@ -53,7 +47,7 @@ exports.translations = {
     portfolioNotFound: 'Portfolio tidak ditemukan',
     blogNotFound: 'Blog tidak ditemukan',
     serviceNotFound: 'Service tidak ditemukan',
-    subscriptionNotFound: 'Subscription tidak ditemukan'
+    subscriptionNotFound: 'Subscription tidak ditemukan',
   },
   nl: {
     success: 'Succes',
@@ -71,11 +65,13 @@ exports.translations = {
     portfolioNotFound: 'Portfolio niet gevonden',
     blogNotFound: 'Blog niet gevonden',
     serviceNotFound: 'Service niet gevonden',
-    subscriptionNotFound: 'Abonnement niet gevonden'
-  }
+    subscriptionNotFound: 'Abonnement niet gevonden',
+  },
 };
 
-// Get translation
+exports.translations = translations;
+
 exports.getTranslation = (lang, key) => {
-  return this.translations[lang][key] || this.translations['en'][key];
+  const safeLang = translations[lang] ? lang : 'en';
+  return translations[safeLang][key] ?? translations['en'][key] ?? key;
 };
