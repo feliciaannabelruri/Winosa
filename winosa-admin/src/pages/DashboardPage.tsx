@@ -15,16 +15,15 @@ interface StatCardProps {
   iconColor: string;
 }
 
-// FIX: value default ke 0 jika undefined/null
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon, bg, iconColor }) => (
-  <div className="rounded-3xl border-2 border-yellow-100 bg-white p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
-    <div className="flex items-center justify-between mb-4">
-      <p className="text-sm font-medium text-gray-500">{label}</p>
-      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${bg}`}>
+  <div className="rounded-3xl border-2 border-yellow-100 bg-white p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+    <div className="flex items-center justify-between mb-3">
+      <p className="text-xs sm:text-sm font-medium text-gray-500">{label}</p>
+      <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center ${bg}`}>
         <span className={iconColor}>{icon}</span>
       </div>
     </div>
-    <p className="text-5xl font-display font-bold text-dark">{value ?? 0}</p>
+    <p className="text-3xl sm:text-5xl font-display font-bold text-dark">{value ?? 0}</p>
   </div>
 );
 
@@ -37,7 +36,6 @@ const DashboardPage: React.FC = () => {
     const fetchAnalytics = async () => {
       try {
         const data = await analyticsService.getAnalytics();
-        // FIX: cek data.data sebelum set (bukan hanya data.success)
         if (data.success && data.data) setAnalytics(data.data);
       } catch (err) {
         console.error('Failed to fetch analytics:', err);
@@ -56,67 +54,38 @@ const DashboardPage: React.FC = () => {
     );
   }
 
-  // FIX: destructure dengan default 0 untuk semua count agar tidak ada undefined
   const counts = analytics?.counts ?? {
     portfolios: 0, blogs: 0, services: 0, subscribers: 0, contacts: 0,
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
+
       {/* Header */}
       <div>
-        <h1 className="text-4xl font-display font-bold text-dark">Dashboard</h1>
+        <h1 className="text-3xl sm:text-4xl font-display font-bold text-dark">Dashboard</h1>
         <p className="text-gray-400 text-sm mt-1 italic">
           Overview of Winosa website activity — Welcome back,{' '}
           <span className="text-dark font-medium not-italic">{user?.name ?? 'Admin'}</span>
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <StatCard
-          label="Portfolios"
-          value={counts.portfolios}
-          icon={<FolderOpen size={20} />}
-          bg="bg-blue-50"
-          iconColor="text-blue-500"
-        />
-        <StatCard
-          label="Blogs"
-          value={counts.blogs}
-          icon={<FileText size={20} />}
-          bg="bg-primary/10"
-          iconColor="text-primary"
-        />
-        <StatCard
-          label="Services"
-          value={counts.services}
-          icon={<Briefcase size={20} />}
-          bg="bg-purple-50"
-          iconColor="text-purple-500"
-        />
-        <StatCard
-          label="Subscribers"
-          value={counts.subscribers}
-          icon={<Users size={20} />}
-          bg="bg-green-50"
-          iconColor="text-green-500"
-        />
-        <StatCard
-          label="Contacts"
-          value={counts.contacts}
-          icon={<Mail size={20} />}
-          bg="bg-red-50"
-          iconColor="text-red-500"
-        />
+      {/* Stats Grid — 2 cols mobile, 5 cols desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <StatCard label="Portfolios" value={counts.portfolios} icon={<FolderOpen size={18} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
+        <StatCard label="Blogs"      value={counts.blogs}      icon={<FileText size={18} />}   bg="bg-primary/10" iconColor="text-primary"    />
+        <StatCard label="Services"   value={counts.services}   icon={<Briefcase size={18} />}  bg="bg-purple-50"  iconColor="text-purple-500" />
+        <StatCard label="Subscribers" value={counts.subscribers} icon={<Users size={18} />}   bg="bg-green-50"   iconColor="text-green-500"  />
+        <StatCard label="Contacts"   value={counts.contacts}   icon={<Mail size={18} />}       bg="bg-red-50"     iconColor="text-red-500"    />
       </div>
 
       {/* Recent Activities */}
       <div>
-        <h2 className="text-2xl font-display font-bold text-dark mb-5">Recent Activities</h2>
+        <h2 className="text-xl sm:text-2xl font-display font-bold text-dark mb-4 sm:mb-5">Recent Activities</h2>
 
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="grid grid-cols-4 bg-gray-50 border-b border-gray-100 px-6 py-4">
+          {/* Table header — hidden on mobile, shown on sm+ */}
+          <div className="hidden sm:grid sm:grid-cols-4 bg-gray-50 border-b border-gray-100 px-6 py-4">
             {['Type', 'Title / Name', 'Date', 'Status'].map(h => (
               <span key={h} className="text-sm font-semibold text-primary">{h}</span>
             ))}
@@ -126,37 +95,48 @@ const DashboardPage: React.FC = () => {
             analytics.recentBlogs.map((blog, i) => (
               <div
                 key={i}
-                className={`grid grid-cols-4 px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
+                className={`px-4 sm:px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
                   i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
                 }`}
               >
-                <span className="text-sm font-medium text-dark">Blog</span>
-                <span className="text-sm text-gray-700 truncate pr-4">{blog.title}</span>
-                <span className="text-sm text-gray-500">
-                  {new Date(blog.createdAt).toLocaleDateString('id-ID', {
-                    day: '2-digit', month: 'short', year: '2-digit'
-                  })}
-                </span>
-                <span>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-600">
+                {/* Mobile layout */}
+                <div className="sm:hidden flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-dark truncate">{blog.title}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {new Date(blog.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' })}
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-600 flex-shrink-0">
                     Published
                   </span>
-                </span>
+                </div>
+                {/* Desktop layout */}
+                <div className="hidden sm:grid sm:grid-cols-4">
+                  <span className="text-sm font-medium text-dark">Blog</span>
+                  <span className="text-sm text-gray-700 truncate pr-4">{blog.title}</span>
+                  <span className="text-sm text-gray-500">
+                    {new Date(blog.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' })}
+                  </span>
+                  <span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-600">
+                      Published
+                    </span>
+                  </span>
+                </div>
               </div>
             ))
           ) : (
-            <div className="px-6 py-12 text-center text-gray-400 text-sm">
-              No recent activities yet
-            </div>
+            <div className="px-6 py-12 text-center text-gray-400 text-sm">No recent activities yet</div>
           )}
         </div>
       </div>
 
-      {/* Popular Blogs + Recent Blogs */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Popular + Recent Blogs */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Blogs */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-          <div className="flex items-center justify-between mb-5">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-5">
             <div className="flex items-center gap-2">
               <Clock size={16} className="text-gray-400" />
               <h3 className="font-semibold text-dark text-sm">Recent Blogs</h3>
@@ -166,15 +146,10 @@ const DashboardPage: React.FC = () => {
           {analytics?.recentBlogs && analytics.recentBlogs.length > 0 ? (
             <div className="space-y-3">
               {analytics.recentBlogs.map((blog, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0"
-                >
+                <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
                   <p className="text-sm text-dark font-medium truncate flex-1 mr-4">{blog.title}</p>
                   <span className="text-xs text-gray-400 flex-shrink-0">
-                    {new Date(blog.createdAt).toLocaleDateString('id-ID', {
-                      day: '2-digit', month: 'short'
-                    })}
+                    {new Date(blog.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
                   </span>
                 </div>
               ))}
@@ -185,8 +160,8 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Popular Blogs */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-          <div className="flex items-center justify-between mb-5">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-5">
             <div className="flex items-center gap-2">
               <TrendingUp size={16} className="text-primary" />
               <h3 className="font-semibold text-dark text-sm">Popular Blogs</h3>
@@ -196,14 +171,9 @@ const DashboardPage: React.FC = () => {
           {analytics?.popularBlogs && analytics.popularBlogs.length > 0 ? (
             <div className="space-y-3">
               {analytics.popularBlogs.map((blog, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0"
-                >
+                <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
                   <div className="flex items-center gap-3 flex-1 mr-4">
-                    <span className="text-xs font-bold text-gray-200 w-5 text-right flex-shrink-0">
-                      {i + 1}
-                    </span>
+                    <span className="text-xs font-bold text-gray-200 w-5 text-right flex-shrink-0">{i + 1}</span>
                     <p className="text-sm text-dark font-medium truncate">{blog.title}</p>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
@@ -218,6 +188,7 @@ const DashboardPage: React.FC = () => {
           )}
         </div>
       </div>
+
     </div>
   );
 };

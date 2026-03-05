@@ -16,6 +16,7 @@ import SubscriptionsPage from './pages/SubscriptionsPage';
 import SubscriptionFormPage from './pages/SubscriptionFormPage';
 import NewsletterPage from './pages/NewsletterPage';
 import SettingsPage from './pages/SettingsPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
             <Route path="newsletter" element={<NewsletterPage />} />
 
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="account" element={<ProfilePage />} />
           </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>

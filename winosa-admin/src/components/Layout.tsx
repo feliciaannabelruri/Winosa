@@ -6,19 +6,19 @@ import Header from './Header';
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
-  const sidebarWidth = collapsed ? 'ml-20' : 'ml-64';
+  const sidebarWidth = collapsed ? 'ml-20' : 'ml-20 lg:ml-56';
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <Header />
 
-      {/* Sidebar */}
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+      <Sidebar
+        collapsed={collapsed}
+        onToggle={() => setCollapsed(!collapsed)}
+      />
 
-      {/* Main Content */}
       <main className={`transition-all duration-300 ${sidebarWidth} pt-16 min-h-screen`}>
-        <div className="p-8">
+        <div className="p-4 sm:p-6 lg:p-8">
           <Outlet />
         </div>
       </main>

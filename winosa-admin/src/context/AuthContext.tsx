@@ -5,6 +5,7 @@ import { authService } from '../services/authService';
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -59,8 +60,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setState({ user: null, token: null, isAuthenticated: false, loading: false });
   };
 
+  const updateUser = (updatedUser: User) => {
+    localStorage.setItem('winosa_user', JSON.stringify(updatedUser));
+    setState(prev => ({ ...prev, user: updatedUser }));
+  };
+
   return (
-    <AuthContext.Provider value={{ ...state, login, logout }}>
+    <AuthContext.Provider value={{ ...state, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

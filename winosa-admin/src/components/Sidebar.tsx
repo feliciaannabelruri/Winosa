@@ -10,10 +10,10 @@ const navItems = [
   { to: '/services',      icon: Briefcase,       label: 'Services' },
   { to: '/portfolio',     icon: FolderOpen,      label: 'Portfolio' },
   { to: '/blogs',         icon: FileText,        label: 'Blogs' },
-  { to: '/subscriptions', icon: Crown,           label: 'Subscriptions' },
+  { to: '/subscriptions', icon: Crown,           label: 'Subs' },
   { to: '/contacts',      icon: Mail,            label: 'Contacts' },
   { to: '/newsletter',    icon: Users,           label: 'Newsletter' },
-  { to: '/settings',      icon: Settings,        label: 'Settings' },  // ← NEW
+  { to: '/settings',      icon: Settings,        label: 'Settings' },
 ];
 
 interface SidebarProps {
@@ -24,44 +24,45 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   return (
     <aside
-      className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-black transition-all duration-300 ease-in-out z-40 ${
-        collapsed ? 'w-20' : 'w-64'
+      style={{ top: '4rem', bottom: 0, borderTopRightRadius: '100px' }}
+      className={`fixed left-0 z-40 bg-black transition-all duration-300 ease-in-out w-20 ${
+        collapsed ? 'lg:w-20' : 'lg:w-56'
       }`}
-      style={{ borderTopRightRadius: '100px' }}
     >
-      <nav className="py-6 px-4 h-full flex flex-col">
-        {/* Hamburger Button */}
+      <nav className="py-6 px-2 lg:px-3 flex flex-col h-full">
+
+        {/* Desktop only: hamburger toggle */}
         <button
           onClick={onToggle}
-          className="flex items-center justify-center w-12 h-12 mb-8 text-white hover:bg-gray-800 rounded-lg transition-colors"
+          className="hidden lg:flex items-center justify-center w-12 h-12 mb-8 text-white hover:bg-gray-800 rounded-lg transition-colors"
           aria-label="Toggle sidebar"
         >
           <Menu className="w-6 h-6" />
         </button>
 
-        {/* Menu Items */}
-        <ul className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
+        {/* Mobile only: spacer */}
+        <div className="lg:hidden h-4 mb-4" />
+
+        {/* Nav items */}
+        <ul className="space-y-1 flex-1 overflow-y-auto scrollbar-hide">
           {navItems.map(({ to, icon: Icon, label }) => (
-            <li key={to} className={collapsed ? 'flex justify-center' : ''}>
+            <li key={to}>
               <NavLink
                 to={to}
                 className={({ isActive }) =>
-                  collapsed
-                    ? `flex items-center justify-center w-12 h-12 rounded-full transition-all duration-200 ${
-                        isActive ? 'bg-white text-yellow-500' : 'text-white hover:bg-gray-800'
-                      }`
-                    : `flex items-center gap-4 px-5 py-3 rounded-full transition-all duration-200 ${
-                        isActive
-                          ? 'bg-white text-yellow-500 font-semibold'
-                          : 'text-white hover:bg-gray-800'
-                      }`
+                  `transition-all duration-200 flex flex-col items-center justify-center py-2 rounded-xl mx-1 lg:mx-0 lg:flex-row lg:justify-start lg:gap-3 lg:px-3 lg:py-3 lg:rounded-full ${
+                    collapsed ? 'lg:flex-col lg:justify-center lg:px-0 lg:w-12 lg:h-12 lg:mx-auto' : ''
+                  } ${
+                    isActive ? 'bg-white text-yellow-500 font-semibold' : 'text-white hover:bg-gray-800'
+                  }`
                 }
-                title={collapsed ? label : undefined}
+                title={label}
               >
-                <Icon className={`flex-shrink-0 ${collapsed ? 'w-6 h-6' : 'w-5 h-5'}`} />
-                {!collapsed && (
-                  <span className="whitespace-nowrap text-[15px]">{label}</span>
-                )}
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                <span className="text-[10px] mt-1 leading-tight text-center lg:hidden">{label}</span>
+                <span className={`hidden whitespace-nowrap text-[15px] ${collapsed ? '' : 'lg:inline'}`}>
+                  {label}
+                </span>
               </NavLink>
             </li>
           ))}
