@@ -1,0 +1,341 @@
+/* ========== SCOPED RESET KHUSUS LOGIN PAGE ========== */
+.login-container,
+.login-container * {
+  box-sizing: border-box;
+}
+
+.login-container {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  min-height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+
+/* ========== LEFT SECTION ========== */
+.left-section {
+  flex: 1;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 3vw;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-container {
+  width: min(28vw, 350px);
+  height: min(28vw, 350px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4vh;
+  position: relative;
+}
+
+.logo-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(14px, 1.2vw, 18px);
+  color: #666;
+  text-align: center;
+  padding: 30px;
+  border: 3px dashed #ccc;
+}
+
+.company-name {
+  font-size: clamp(24px, 3vw, 48px);
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  padding: 0 20px;
+}
+
+
+/* ========== RIGHT SECTION ========== */
+.right-section {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.background-layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+  border-radius: min(80px, 5vw) 0 0 min(80px, 5vw);
+}
+
+.yellow-layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 95%;
+  height: 100%;
+  background: linear-gradient(135deg, #d4b942 0%, #c9a832 100%);
+  border-radius: min(80px, 5vw) 0 0 min(80px, 5vw);
+}
+
+
+/* ========== FORM WRAPPER ========== */
+.login-form-wrapper {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: min(540px, 90%);
+  padding: 4vh 3vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.login-form-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+.login-form-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+
+/* ========== TEXT ========== */
+.welcome-text {
+  font-size: clamp(32px, 4.5vw, 56px);
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 1vh;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  font-size: clamp(14px, 1.5vw, 18px);
+  color: #1a1a1a;
+  margin-bottom: 4vh;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+
+/* ========== FORM INPUT ========== */
+.form-group {
+  margin-bottom: 2vh;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: clamp(14px, 1.5vh, 18px) clamp(18px, 2vw, 24px);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.input-wrapper:focus-within {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.input-icon {
+  width: clamp(20px, 2vw, 24px);
+  height: clamp(20px, 2vw, 24px);
+  margin-right: 16px;
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.form-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: clamp(14px, 1.2vw, 16px);
+  color: #1a1a1a;
+  background: transparent;
+}
+
+.form-input::placeholder {
+  color: #999;
+  font-weight: 300;
+}
+
+
+/* ========== CHECKBOX ========== */
+.remember-me-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3vh;
+  margin-top: 1.5vh;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-input {
+  display: none;
+}
+
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #1a1a1a;
+  border-radius: 5px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.checkbox-input:checked + .custom-checkbox {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+.checkbox-checkmark {
+  width: 12px;
+  height: 12px;
+  stroke: #ffffff;
+  stroke-width: 3;
+  fill: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.checkbox-input:checked + .custom-checkbox .checkbox-checkmark {
+  opacity: 1;
+}
+
+.remember-label {
+  font-size: clamp(13px, 1.2vw, 15px);
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+
+/* ========== BUTTON ========== */
+.login-button {
+  width: 100%;
+  padding: clamp(16px, 2vh, 20px);
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  font-size: clamp(16px, 1.8vw, 20px);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 3vh;
+  letter-spacing: 0.5px;
+}
+
+.login-button:hover {
+  background: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+
+/* ========== FOOTER TEXT ========== */
+.restriction-note {
+  text-align: center;
+  font-size: clamp(13px, 1.2vw, 15px);
+  color: #1a1a1a;
+  font-style: italic;
+  opacity: 0.7;
+  margin-bottom: 3vh;
+}
+
+.copyright {
+  text-align: center;
+  font-size: clamp(13px, 1.2vw, 15px);
+  color: #1a1a1a;
+  opacity: 0.6;
+}
+
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) and (orientation: portrait) {
+  .login-container {
+    flex-direction: column;
+  }
+  .left-section {
+    flex: 0 0 35vh;
+  }
+  .right-section {
+    flex: 1;
+  }
+  .background-layer,
+  .yellow-layer {
+    border-radius: 40px 40px 0 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  .left-section {
+    flex: 0 0 30vh;
+  }
+  .background-layer,
+  .yellow-layer {
+    border-radius: 30px 30px 0 0;
+  }
+}
+
+/* ========== ERROR MESSAGE ========== */
+.error-message {
+  margin: 10px 4px 18px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  color: #b91c1c;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
+  animation: errorFade 0.25s ease-in-out;
+}
+
+@keyframes errorFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

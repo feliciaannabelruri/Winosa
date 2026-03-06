@@ -1,0 +1,545 @@
+/* ========== HERO SECTION ========== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  background-image: url("/images/bgportohero.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.5) 80%,
+    rgba(255, 255, 255, 0.95) 100%
+  );
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 720px;
+  padding: 0 24px;
+}
+
+.title {
+  font-size: clamp(2.8rem, 5.5vw, 4.2rem);
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.title span {
+  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  margin-top: 16px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin-top: 20px;
+  font-size: 1.15rem;
+  color: #1a1a1a;
+  line-height: 1.7;
+}
+
+.heroButton {
+  margin-top: 40px;
+  padding: 16px 36px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  color: white;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.heroButton:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  color: #1a1a1a;
+  box-shadow: 0 12px 32px rgba(244, 196, 48, 0.4);
+}
+
+.arrow {
+  font-size: 1.3rem;
+  transition: transform 0.3s ease;
+}
+
+.heroButton:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* ========== PORTFOLIO CARDS SECTION ========== */
+.cardsSection {
+  padding: 120px 20px 120px;
+  max-width: 1440px;
+  margin: 0 auto;
+  overflow: hidden;
+  scroll-margin-top: 80px;
+}
+
+/* Filter Buttons */
+.filterContainer {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 90px;
+}
+
+.filterBtn {
+  padding: 13px 30px;
+  border-radius: 999px;
+  border: 2px solid rgba(244, 196, 48, 0.2);
+  background: white;
+  color: #1a1a1a;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.filterBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(244, 196, 48, 0.25);
+  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  border-color: #f4c430;
+  color: #1a1a1a;
+}
+
+.filterActive {
+  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  color: #1a1a1a;
+  border-color: #f4c430;
+  box-shadow: 0 4px 12px rgba(244, 196, 48, 0.3);
+}
+
+/* Carousel */
+.carouselWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 50px;
+  padding: 0 90px;
+}
+
+.carouselContainer {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  height: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carouselCard {
+  position: absolute;
+  width: 100%;
+  max-width: 420px;
+  height: 560px;
+  background: white;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(244, 196, 48, 0.1);
+}
+
+.carouselCard:hover {
+  box-shadow: 0 16px 56px rgba(244, 196, 48, 0.25);
+}
+
+/* Navigation Buttons */
+.navButton {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid rgba(244, 196, 48, 0.3);
+  background: white;
+  color: #1a1a1a;
+  font-size: 2.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 20;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.navButton:hover {
+  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  border-color: #f4c430;
+  color: #1a1a1a;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(244, 196, 48, 0.4);
+}
+
+.navLeft { left: 0; }
+.navRight { right: 0; }
+
+/* Card Content */
+.cardImage {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #f9f9f9 0%, #f5f5f5 100%);
+  z-index: 0;
+}
+
+.cardContent {
+  position: relative;
+  margin-top: auto;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  border-radius: 28px;
+  z-index: 1;
+  border-top: 3px solid rgba(244, 196, 48, 0.3);
+}
+
+.cardTitle {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.cardDescription {
+  font-size: 0.98rem;
+  color: #1a1a1a;
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardCategory {
+  font-size: 0.88rem;
+  color: #1a1a1a;
+  font-weight: 600;
+  padding: 6px 14px;
+  background: rgba(244, 196, 48, 0.1);
+  border-radius: 999px;
+}
+
+.learnMore {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #1a1a1a;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.learnMore:hover {
+  gap: 12px;
+  color: #daa520;
+}
+
+/* Dots */
+.dotsContainer {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 80px;
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid rgba(244, 196, 48, 0.4);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot:hover {
+  background: rgba(244, 196, 48, 0.3);
+}
+
+.dotActive {
+  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  border-color: #f4c430;
+  transform: scale(1.2);
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 120px 20px;
+}
+
+.emptyState h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.emptyState p {
+  font-size: 1.1rem;
+  color: #1a1a1a;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ========== BRIDGE SECTION ========== */
+.bridgeSection {
+  padding: 80px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #fffef8 0%, #fffdf0 100%);
+}
+
+.bigTitle h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700;
+  max-width: 980px;
+  margin: 0 auto;
+  line-height: 1.5;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
+}
+
+/* ========== EXPLANATION SECTION ========== */
+.explanationSection {
+  padding: 120px 20px;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 50%, #fafafa 100%);
+}
+
+.explanationContainer {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.explanationBadge {
+  display: inline-block;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, rgba(244, 196, 48, 0.15) 0%, rgba(218, 165, 32, 0.1) 100%);
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 28px;
+  color: #1a1a1a;
+  border: 1px solid rgba(244, 196, 48, 0.2);
+}
+
+.explanationTitle {
+  font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-weight: 800;
+  margin-bottom: 36px;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.explanationTitle span {
+  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.explanationText {
+  font-size: 1.18rem;
+  color: #1a1a1a;
+  line-height: 1.8;
+  margin-bottom: 70px;
+}
+
+.highlightStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+}
+
+.highlightItem {
+  padding: 40px 24px;
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(244, 196, 48, 0.1);
+}
+
+.highlightItem:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(244, 196, 48, 0.2);
+  border-color: rgba(244, 196, 48, 0.3);
+}
+
+.highlightNumber {
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.highlightLabel {
+  font-size: 1rem;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+/* ===============================
+   CARD RESPONSIVE FIX
+================================ */
+
+/* Tablet */
+@media (max-width: 1024px) {
+
+  .carouselContainer {
+    height: 520px;
+    max-width: 380px;
+  }
+
+  .carouselCard {
+    max-width: 380px;
+    height: 520px;
+  }
+
+  .cardContent {
+    padding: 26px;
+  }
+
+  .cardTitle {
+    font-size: 1.45rem;
+  }
+
+  .cardDescription {
+    font-size: 0.92rem;
+  }
+
+  .cardCategory {
+    font-size: 0.8rem;
+    padding: 5px 12px;
+  }
+
+  .learnMore {
+    font-size: 0.88rem;
+  }
+
+}
+
+
+/* Mobile */
+@media (max-width: 768px) {
+
+  .carouselWrapper {
+    padding: 0 40px;
+  }
+
+  .carouselContainer {
+    max-width: 320px;
+    height: 480px;
+  }
+
+  .carouselCard {
+    max-width: 320px;
+    height: 480px;
+  }
+
+  .cardContent {
+    padding: 22px;
+  }
+
+  .cardTitle {
+    font-size: 1.25rem;
+  }
+
+  .cardDescription {
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .cardFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .cardCategory {
+    font-size: 0.75rem;
+  }
+
+  .learnMore {
+    font-size: 0.82rem;
+  }
+
+}
+
+
+/* Small Mobile */
+@media (max-width: 480px) {
+
+  .carouselContainer {
+    max-width: 260px;
+    height: 420px;
+  }
+
+  .carouselCard {
+    max-width: 260px;
+    height: 420px;
+  }
+
+  .cardContent {
+    padding: 18px;
+  }
+
+  .cardTitle {
+    font-size: 1.05rem;
+  }
+
+  .cardDescription {
+    font-size: 0.78rem;
+  }
+
+  .learnMore {
+    font-size: 0.75rem;
+  }
+
+}
