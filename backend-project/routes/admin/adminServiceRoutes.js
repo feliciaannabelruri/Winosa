@@ -4,7 +4,8 @@ const {
   createService,
   updateService,
   deleteService,
-  getAllServices
+  getAllServices,
+  getServiceById,
 } = require('../../controllers/admin/adminServiceController');
 const { protect, admin } = require('../../middleware/auth');
 const { validate } = require('../../middleware/validate');
@@ -21,6 +22,7 @@ router.get('/', getAllServices);
 router.post('/', validate(createServiceSchema), createService);
 
 router.route('/:id')
+  .get(getServiceById)
   .put(validate(updateServiceSchema), updateService)
   .delete(deleteService);
 

@@ -31,20 +31,34 @@ exports.createService = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Get service by ID
+// @route   GET /api/admin/services/:id
+// @access  Private/Admin
+exports.getServiceById = asyncHandler(async (req, res, next) => {
+  const service = await Service.findById(req.params.id);
+
+  if (!service) {
+    return next(new ErrorResponse('Service not found', 404));
+  }
+
+  res.json({
+    success: true,
+    data: service
+  });
+});
+
 // @desc    Update service
 // @route   PUT /api/admin/services/:id
 // @access  Private/Admin
 exports.updateService = asyncHandler(async (req, res, next) => {
   const lang = req.language || 'en';
 
-  // Check if service exists
   let service = await Service.findById(req.params.id);
-  
+
   if (!service) {
     return next(new ErrorResponse(getTranslation(lang, 'serviceNotFound'), 404));
   }
 
-  // If updating slug, check if new slug already exists
   if (req.body.slug && req.body.slug !== service.slug) {
     const existingService = await Service.findOne({ slug: req.body.slug });
     if (existingService) {
@@ -52,14 +66,10 @@ exports.updateService = asyncHandler(async (req, res, next) => {
     }
   }
 
-  // Update service
   service = await Service.findByIdAndUpdate(
     req.params.id,
     req.body,
-    {
-      new: true,
-      runValidators: true
-    }
+    { new: true, runValidators: true }
   );
 
   res.json({
