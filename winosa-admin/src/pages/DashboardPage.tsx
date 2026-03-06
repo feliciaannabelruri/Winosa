@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   FolderOpen, FileText, Briefcase, Users, Mail,
-  TrendingUp, Eye, Clock, ArrowRight
+  TrendingUp, Eye, Clock, ArrowRight,
+  Globe, Wrench, UserPlus, MessageSquare
 } from 'lucide-react';
 import { analyticsService } from '../services/analyticsService';
 import { Analytics } from '../types';
@@ -16,21 +18,47 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon, bg, iconColor }) => (
-  <div className="rounded-3xl border-2 border-yellow-100 bg-white p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
-    <div className="flex items-center justify-between mb-3">
-      <p className="text-xs sm:text-sm font-medium text-gray-500">{label}</p>
-      <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center ${bg}`}>
+  <div className="rounded-3xl border-2 border-yellow-100 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+    <div className="flex items-center justify-between mb-2 sm:mb-3">
+      <p className="text-xs font-medium text-gray-500 leading-tight">{label}</p>
+      <div className={`w-8 h-8 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center flex-shrink-0 ${bg}`}>
         <span className={iconColor}>{icon}</span>
       </div>
     </div>
-    <p className="text-3xl sm:text-5xl font-display font-bold text-dark">{value ?? 0}</p>
+    <p className="text-2xl sm:text-5xl font-display font-bold text-dark">{value ?? 0}</p>
   </div>
 );
+
+// Badge color per activity type
+const typeConfig: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
+  Blog:       { bg: 'bg-primary/10',  text: 'text-primary',    icon: <FileText size={12} /> },
+  Service:    { bg: 'bg-purple-50',   text: 'text-purple-500', icon: <Wrench size={12} /> },
+  Subscriber: { bg: 'bg-green-50',    text: 'text-green-500',  icon: <UserPlus size={12} /> },
+  Contact:    { bg: 'bg-red-50',      text: 'text-red-500',    icon: <MessageSquare size={12} /> },
+};
+
+const statusConfig: Record<string, string> = {
+  Published:    'bg-green-50 text-green-600',
+  Draft:        'bg-gray-100 text-gray-500',
+  Active:       'bg-green-50 text-green-600',
+  Unsubscribed: 'bg-gray-100 text-gray-500',
+  Unread:       'bg-primary/10 text-primary',
+  Read:         'bg-gray-100 text-gray-500',
+};
+
+interface Activity {
+  type: string;
+  title: string;
+  subtitle?: string;
+  status: string;
+  createdAt: string;
+}
 
 const DashboardPage: React.FC = () => {
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -58,6 +86,8 @@ const DashboardPage: React.FC = () => {
     portfolios: 0, blogs: 0, services: 0, subscribers: 0, contacts: 0,
   };
 
+  const recentActivities: Activity[] = (analytics as any)?.recentActivities ?? [];
+
   return (
     <div className="space-y-6 sm:space-y-8">
 
@@ -70,65 +100,84 @@ const DashboardPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Stats Grid — 2 cols mobile, 5 cols desktop */}
+      {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-        <StatCard label="Portfolios" value={counts.portfolios} icon={<FolderOpen size={18} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
-        <StatCard label="Blogs"      value={counts.blogs}      icon={<FileText size={18} />}   bg="bg-primary/10" iconColor="text-primary"    />
-        <StatCard label="Services"   value={counts.services}   icon={<Briefcase size={18} />}  bg="bg-purple-50"  iconColor="text-purple-500" />
-        <StatCard label="Subscribers" value={counts.subscribers} icon={<Users size={18} />}   bg="bg-green-50"   iconColor="text-green-500"  />
-        <StatCard label="Contacts"   value={counts.contacts}   icon={<Mail size={18} />}       bg="bg-red-50"     iconColor="text-red-500"    />
+        <StatCard label="Portfolios"  value={counts.portfolios}  icon={<FolderOpen size={16} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
+        <StatCard label="Blogs"       value={counts.blogs}       icon={<FileText size={16} />}   bg="bg-primary/10" iconColor="text-primary"    />
+        <StatCard label="Services"    value={counts.services}    icon={<Briefcase size={16} />}  bg="bg-purple-50"  iconColor="text-purple-500" />
+        <StatCard label="Subscribers" value={counts.subscribers} icon={<Users size={16} />}      bg="bg-green-50"   iconColor="text-green-500"  />
+        <StatCard label="Contacts"    value={counts.contacts}    icon={<Mail size={16} />}       bg="bg-red-50"     iconColor="text-red-500"    />
       </div>
 
       {/* Recent Activities */}
       <div>
         <h2 className="text-xl sm:text-2xl font-display font-bold text-dark mb-4 sm:mb-5">Recent Activities</h2>
-
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-          {/* Table header — hidden on mobile, shown on sm+ */}
-          <div className="hidden sm:grid sm:grid-cols-4 bg-gray-50 border-b border-gray-100 px-6 py-4">
-            {['Type', 'Title / Name', 'Date', 'Status'].map(h => (
-              <span key={h} className="text-sm font-semibold text-primary">{h}</span>
-            ))}
-          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[520px]">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-100">
+                  {['Type', 'Title / Name', 'Date', 'Status'].map(h => (
+                    <th key={h} className="text-left text-sm font-semibold text-primary py-4 px-4 first:pl-6">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {recentActivities.length > 0 ? (
+                  recentActivities.map((activity, i) => {
+                    const cfg = typeConfig[activity.type] ?? { bg: 'bg-gray-100', text: 'text-gray-500', icon: <Globe size={12} /> };
+                    const statusCls = statusConfig[activity.status] ?? 'bg-gray-100 text-gray-500';
+                    return (
+                      <tr
+                        key={i}
+                        className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
+                          i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                        }`}
+                      >
+                        {/* Type badge */}
+                        <td className="py-3 px-4 pl-6 whitespace-nowrap">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.bg} ${cfg.text}`}>
+                            {cfg.icon}
+                            {activity.type}
+                          </span>
+                        </td>
 
-          {analytics?.recentBlogs && analytics.recentBlogs.length > 0 ? (
-            analytics.recentBlogs.map((blog, i) => (
-              <div
-                key={i}
-                className={`px-4 sm:px-6 py-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
-                  i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
-                }`}
-              >
-                {/* Mobile layout */}
-                <div className="sm:hidden flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-dark truncate">{blog.title}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {new Date(blog.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' })}
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-600 flex-shrink-0">
-                    Published
-                  </span>
-                </div>
-                {/* Desktop layout */}
-                <div className="hidden sm:grid sm:grid-cols-4">
-                  <span className="text-sm font-medium text-dark">Blog</span>
-                  <span className="text-sm text-gray-700 truncate pr-4">{blog.title}</span>
-                  <span className="text-sm text-gray-500">
-                    {new Date(blog.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' })}
-                  </span>
-                  <span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-600">
-                      Published
-                    </span>
-                  </span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="px-6 py-12 text-center text-gray-400 text-sm">No recent activities yet</div>
-          )}
+                        {/* Title */}
+                        <td className="py-3 px-4 max-w-[200px]">
+                          <p className="text-sm text-dark font-medium truncate">{activity.title}</p>
+                          {activity.subtitle && (
+                            <p className="text-xs text-gray-400 truncate mt-0.5">{activity.subtitle}</p>
+                          )}
+                        </td>
+
+                        {/* Date */}
+                        <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">
+                          {new Date(activity.createdAt).toLocaleDateString('id-ID', {
+                            day: '2-digit', month: 'short', year: '2-digit'
+                          })}
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-3 px-4">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusCls}`}>
+                            {activity.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-gray-400 text-sm">
+                      No recent activities yet
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -136,13 +185,16 @@ const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Blogs */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6">
-          <div className="flex items-center justify-between mb-4 sm:mb-5">
+          <button
+            onClick={() => navigate('/blogs')}
+            className="flex items-center justify-between mb-4 sm:mb-5 w-full group"
+          >
             <div className="flex items-center gap-2">
               <Clock size={16} className="text-gray-400" />
               <h3 className="font-semibold text-dark text-sm">Recent Blogs</h3>
             </div>
-            <ArrowRight size={14} className="text-gray-300" />
-          </div>
+            <ArrowRight size={14} className="text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+          </button>
           {analytics?.recentBlogs && analytics.recentBlogs.length > 0 ? (
             <div className="space-y-3">
               {analytics.recentBlogs.map((blog, i) => (
@@ -161,13 +213,16 @@ const DashboardPage: React.FC = () => {
 
         {/* Popular Blogs */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6">
-          <div className="flex items-center justify-between mb-4 sm:mb-5">
+          <button
+            onClick={() => navigate('/blogs')}
+            className="flex items-center justify-between mb-4 sm:mb-5 w-full group"
+          >
             <div className="flex items-center gap-2">
               <TrendingUp size={16} className="text-primary" />
               <h3 className="font-semibold text-dark text-sm">Popular Blogs</h3>
             </div>
-            <ArrowRight size={14} className="text-gray-300" />
-          </div>
+            <ArrowRight size={14} className="text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+          </button>
           {analytics?.popularBlogs && analytics.popularBlogs.length > 0 ? (
             <div className="space-y-3">
               {analytics.popularBlogs.map((blog, i) => (

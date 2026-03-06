@@ -9,7 +9,6 @@ const asyncHandler = require('../middleware/asyncHandler');
 // @route   GET /api/admin/analytics
 // @access  Private/Admin
 exports.getAnalytics = asyncHandler(async (req, res, next) => {
-  // Execute all queries in parallel
   const [
     portfolioCount,
     blogCount,
@@ -17,7 +16,11 @@ exports.getAnalytics = asyncHandler(async (req, res, next) => {
     newsletterCount,
     contactCount,
     recentBlogs,
-    popularBlogs
+    popularBlogs,
+    recentBlogsActivity,
+    recentServices,
+    recentSubscribers,
+    recentContacts,
   ] = await Promise.all([
     Portfolio.countDocuments({ isActive: true }),
     Blog.countDocuments({ isPublished: true }),
@@ -33,8 +36,58 @@ exports.getAnalytics = asyncHandler(async (req, res, next) => {
       .sort({ views: -1 })
       .limit(5)
       .select('title slug views')
-      .lean()
+      .lean(),
+    Blog.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('title isPublished createdAt')
+      .lean(),
+    Service.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('title isActive createdAt')
+      .lean(),
+    Newsletter.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('email isActive createdAt')
+      .lean(),
+    Contact.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('name subject email isRead createdAt')
+      .lean(),
   ]);
+
+  const activities = [
+    ...recentBlogsActivity.map(b => ({
+      type: 'Blog',
+      title: b.title,
+      status: b.isPublished ? 'Published' : 'Draft',
+      createdAt: b.createdAt,
+    })),
+    ...recentServices.map(s => ({
+      type: 'Service',
+      title: s.title,
+      status: s.isActive ? 'Published' : 'Draft',
+      createdAt: s.createdAt,
+    })),
+    ...recentSubscribers.map(s => ({
+      type: 'Subscriber',
+      title: s.email,
+      status: s.isActive ? 'Active' : 'Unsubscribed',
+      createdAt: s.createdAt,
+    })),
+    ...recentContacts.map(c => ({
+      type: 'Contact',
+      title: c.name,
+      subtitle: c.subject || c.email,
+      status: c.isRead ? 'Read' : 'Unread',
+      createdAt: c.createdAt,
+    })),
+  ]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 10);
 
   res.json({
     success: true,
@@ -44,10 +97,11 @@ exports.getAnalytics = asyncHandler(async (req, res, next) => {
         blogs: blogCount,
         services: serviceCount,
         subscribers: newsletterCount,
-        contacts: contactCount
+        contacts: contactCount,
       },
       recentBlogs,
-      popularBlogs
-    }
+      popularBlogs,
+      recentActivities: activities,
+    },
   });
 });

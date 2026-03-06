@@ -9,6 +9,7 @@ import DashboardPage from './pages/DashboardPage';
 import BlogsPage from './pages/BlogsPage';
 import PortfolioPage from './pages/PortfolioPage';
 import ServicesPage from './pages/ServicesPage';
+import ServiceFormPage from './pages/ServiceFormPage';
 import ContactsPage from './pages/ContactsPage';
 import PortfolioDetailPage from './pages/PortfolioDetailPage';
 import PortfolioFormPage from './pages/PortfolioFormPage';
@@ -51,16 +52,20 @@ function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="blogs" element={<BlogsPage />} />
 
-            {/* Portfolio - specific routes BEFORE :slug */}
+            {/* Portfolio */}
             <Route path="portfolio" element={<PortfolioPage />} />
             <Route path="portfolio/add" element={<PortfolioFormPage />} />
             <Route path="portfolio/edit/:id" element={<PortfolioFormPage />} />
             <Route path="portfolio/:slug" element={<PortfolioDetailPage />} />
 
+            {/* Services — specific routes BEFORE :id */}
             <Route path="services" element={<ServicesPage />} />
+            <Route path="services/add" element={<ServiceFormPage />} />
+            <Route path="services/edit/:id" element={<ServiceFormPage />} />
+
             <Route path="contacts" element={<ContactsPage />} />
 
-            {/* Subscriptions - specific routes BEFORE :id */}
+            {/* Subscriptions */}
             <Route path="subscriptions" element={<SubscriptionsPage />} />
             <Route path="subscriptions/add" element={<SubscriptionFormPage />} />
             <Route path="subscriptions/edit/:id" element={<SubscriptionFormPage />} />

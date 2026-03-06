@@ -88,12 +88,12 @@ const BlogsPage: React.FC = () => {
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-2">
         {(['all', 'draft', 'published'] as FilterType[]).map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-8 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
+            className={`px-6 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
               filter === f
                 ? 'bg-dark border-dark text-white shadow-sm'
                 : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
@@ -104,82 +104,90 @@ const BlogsPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Table */}
+      {/* Table — scrollable on mobile */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              {['No.', 'Image', 'Title', 'Category', 'Date', 'Author', 'Action'].map(h => (
-                <th key={h} className="text-left text-sm font-semibold text-dark py-4 px-5 first:pl-6">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={7} className="text-center py-16">
-                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px]">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4 pl-6 w-10">No.</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4 w-16">Image</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Title</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Category</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Date</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Author</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Action</th>
               </tr>
-            ) : filteredBlogs.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="text-center py-16 text-gray-400 text-sm">
-                  No blogs found
-                </td>
-              </tr>
-            ) : (
-              filteredBlogs.map((blog, idx) => (
-                <tr
-                  key={blog._id}
-                  className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
-                    idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
-                  }`}
-                >
-                  <td className="py-4 px-5 pl-6 text-sm text-gray-500">{idx + 1}.</td>
-                  <td className="py-4 px-5">
-                    {blog.image ? (
-                      <img
-                        src={blog.image}
-                        alt={blog.title}
-                        className="w-14 h-12 object-cover rounded-xl"
-                      />
-                    ) : (
-                      <div className="w-14 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                        <FileText size={16} className="text-gray-300" />
-                      </div>
-                    )}
-                  </td>
-                  <td className="py-4 px-5 text-sm text-dark font-medium max-w-[200px] truncate">
-                    {blog.title}
-                  </td>
-                  <td className="py-4 px-5 text-sm text-gray-500">
-                    {blog.tags?.[0] || 'Insight'}
-                  </td>
-                  <td className="py-4 px-5 text-sm text-gray-500">{formatDate(blog.createdAt)}</td>
-                  <td className="py-4 px-5 text-sm text-gray-500">{blog.author || '—'}</td>
-                  <td className="py-4 px-5">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setDeleteModal({ open: true, id: blog._id, loading: false })}
-                        className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                      <button
-                        onClick={() => setFormModal({ open: true, blog })}
-                        className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
-                      >
-                        <Edit2 size={14} />
-                      </button>
-                    </div>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-16">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : filteredBlogs.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-16 text-gray-400 text-sm">
+                    No blogs found
+                  </td>
+                </tr>
+              ) : (
+                filteredBlogs.map((blog, idx) => (
+                  <tr
+                    key={blog._id}
+                    className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
+                      idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                    }`}
+                  >
+                    <td className="py-4 px-4 pl-6 text-sm text-gray-500">{idx + 1}.</td>
+                    <td className="py-4 px-4">
+                      {blog.image ? (
+                        <img
+                          src={blog.image}
+                          alt={blog.title}
+                          className="w-12 h-10 object-cover rounded-xl"
+                        />
+                      ) : (
+                        <div className="w-12 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                          <FileText size={14} className="text-gray-300" />
+                        </div>
+                      )}
+                    </td>
+                    <td className="py-4 px-4 text-sm text-dark font-medium max-w-[180px]">
+                      <p className="truncate">{blog.title}</p>
+                    </td>
+                    <td className="py-4 px-4 text-sm text-gray-500 whitespace-nowrap">
+                      {blog.tags?.[0] || 'Insight'}
+                    </td>
+                    <td className="py-4 px-4 text-sm text-gray-500 whitespace-nowrap">
+                      {formatDate(blog.createdAt)}
+                    </td>
+                    <td className="py-4 px-4 text-sm text-gray-500 whitespace-nowrap">
+                      {blog.author || '—'}
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setDeleteModal({ open: true, id: blog._id, loading: false })}
+                          className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => setFormModal({ open: true, blog })}
+                          className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <ConfirmModal

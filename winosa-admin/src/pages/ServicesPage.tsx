@@ -1,30 +1,66 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Plus, Trash2, Edit2, X, Image, Search } from 'lucide-react';
+import { Plus, Trash2, Edit2, Search, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { serviceService } from '../services/serviceService';
 import { Service } from '../types';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
+import {
+  Monitor, Briefcase, Smartphone, CloudCog, Palette,
+  Shield, Code, TrendingUp, Globe, Layers, Zap, Settings,
+  Database, Lock, BarChart, Mail, Search as SearchIcon, Star, Cpu, Layout,
+  PenTool, Camera, Video, Music, ShoppingCart, Users, Heart,
+  MessageSquare, Map, Clock, Wifi, Terminal, Package,
+} from 'lucide-react';
 
 type FilterType = 'all' | 'draft' | 'published';
 
-// FIX: ekstrak generateSlug ke fungsi terpisah (konsisten dengan BlogFormModal & PortfolioFormPage)
-const generateSlug = (title: string) =>
-  title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const iconMap: Record<string, React.FC<any>> = {
+  monitor: Monitor,
+  briefcase: Briefcase,
+  smartphone: Smartphone,
+  mobile: Smartphone,
+  cloud: CloudCog,
+  palette: Palette,
+  shield: Shield,
+  code: Code,
+  'trending-up': TrendingUp,
+  globe: Globe,
+  layers: Layers,
+  zap: Zap,
+  settings: Settings,
+  database: Database,
+  lock: Lock,
+  'bar-chart': BarChart,
+  mail: Mail,
+  search: SearchIcon,
+  star: Star,
+  cpu: Cpu,
+  layout: Layout,
+  'pen-tool': PenTool,
+  camera: Camera,
+  video: Video,
+  music: Music,
+  'shopping-cart': ShoppingCart,
+  users: Users,
+  heart: Heart,
+  message: MessageSquare,
+  map: Map,
+  clock: Clock,
+  wifi: Wifi,
+  terminal: Terminal,
+  package: Package,
+};
 
 const ServicesPage: React.FC = () => {
+  const navigate = useNavigate();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterType>('all');
-  const [formOpen, setFormOpen] = useState(false);
-  const [editService, setEditService] = useState<Service | null>(null);
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null; loading: boolean }>({
     open: false, id: null, loading: false,
   });
-  const [form, setForm] = useState({
-    title: '', slug: '', description: '', icon: '', price: '', isActive: true,
-  });
-  const [saving, setSaving] = useState(false);
 
   const fetchServices = useCallback(async () => {
     setLoading(true);
@@ -39,48 +75,6 @@ const ServicesPage: React.FC = () => {
   }, []);
 
   useEffect(() => { fetchServices(); }, [fetchServices]);
-
-  const openForm = (service?: Service) => {
-    if (service) {
-      setEditService(service);
-      setForm({
-        title:       service.title,
-        slug:        service.slug,
-        description: service.description,
-        icon:        service.icon || '',
-        price:       service.price || '',
-        isActive:    service.isActive,
-      });
-    } else {
-      setEditService(null);
-      setForm({ title: '', slug: '', description: '', icon: '', price: '', isActive: true });
-    }
-    setFormOpen(true);
-  };
-
-  const handleSubmit = async (isActive: boolean) => {
-    if (!form.title || !form.slug || !form.description) {
-      toast.error('Title, slug and description required');
-      return;
-    }
-    setSaving(true);
-    try {
-      const payload = { ...form, isActive };
-      if (editService) {
-        await serviceService.update(editService._id, payload);
-        toast.success('Service updated!');
-      } else {
-        await serviceService.create(payload);
-        toast.success('Service created!');
-      }
-      setFormOpen(false);
-      fetchServices();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed');
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const handleDelete = async () => {
     if (!deleteModal.id) return;
@@ -115,7 +109,7 @@ const ServicesPage: React.FC = () => {
           <p className="text-gray-400 text-sm mt-1 italic">Manage Winosa services content</p>
         </div>
         <button
-          onClick={() => openForm()}
+          onClick={() => navigate('/services/add')}
           className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit"
         >
           <Plus size={16} />
@@ -128,7 +122,7 @@ const ServicesPage: React.FC = () => {
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
         <input
           type="text"
-          placeholder="Search"
+          placeholder="Search services"
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
@@ -136,12 +130,12 @@ const ServicesPage: React.FC = () => {
       </div>
 
       {/* Filter */}
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-2">
         {(['all', 'draft', 'published'] as FilterType[]).map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-8 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
+            className={`px-6 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
               filter === f
                 ? 'bg-dark border-dark text-white shadow-sm'
                 : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
@@ -161,164 +155,74 @@ const ServicesPage: React.FC = () => {
         <div className="text-center py-16 text-gray-400 text-sm">No services found</div>
       ) : (
         <div className="space-y-4">
-          {filtered.map(service => (
-            <div
-              key={service._id}
-              className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6 hover:shadow-md transition-all duration-200"
-            >
-              <div className="flex gap-6 items-start">
-                {/* Icon */}
-                <div className="w-28 h-28 flex-shrink-0 bg-gray-50 rounded-2xl border-2 border-gray-100 flex items-center justify-center">
-                  {service.icon ? (
-                    <span className="text-4xl">{service.icon}</span>
-                  ) : (
-                    <div className="text-center">
-                      <Image size={24} className="text-gray-200 mx-auto mb-1" />
-                      <span className="text-xs text-gray-300 italic">icon</span>
+          {filtered.map(service => {
+            const IconComponent = iconMap[service.icon?.toLowerCase() || ''] || null;
+
+            return (
+              <div
+                key={service._id}
+                className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200"
+              >
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-start">
+                  {/* Icon */}
+                  <div className="w-16 h-16 sm:w-16 sm:h-16 flex-shrink-0 rounded-full border border-black flex items-center justify-center bg-white">
+                    {IconComponent ? (
+                      <IconComponent size={24} strokeWidth={1.5} className="text-dark" />
+                    ) : service.icon ? (
+                      <span className="text-2xl">{service.icon}</span>
+                    ) : (
+                      <Sparkles size={20} className="text-gray-300" />
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="text-lg font-bold text-dark leading-tight">{service.title}</h3>
+                      <span
+                        className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium border ${
+                          service.isActive
+                            ? 'bg-green-50 text-green-600 border-green-200'
+                            : 'bg-gray-100 text-gray-500 border-gray-200'
+                        }`}
+                      >
+                        {service.isActive ? 'Published' : 'Draft'}
+                      </span>
                     </div>
-                  )}
-                </div>
+                    <p className="text-sm text-gray-500 mt-1.5 leading-relaxed line-clamp-2">
+                      {service.description}
+                    </p>
+                    <div className="flex items-center gap-3 mt-2 flex-wrap">
+                      {service.price && (
+                        <p className="text-sm font-semibold text-primary">{service.price}</p>
+                      )}
+                      {service.features && service.features.length > 0 && (
+                        <p className="text-xs text-gray-400">{service.features.length} features</p>
+                      )}
+                    </div>
+                  </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-xl font-bold text-dark">{service.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1 leading-relaxed line-clamp-2">
-                    {service.description}
-                  </p>
-                  {service.price && (
-                    <p className="text-sm font-semibold text-primary mt-2">{service.price}</p>
-                  )}
-                </div>
-
-                {/* Status + Actions */}
-                <div className="flex flex-col items-end gap-3 flex-shrink-0">
-                  <span
-                    className={`px-4 py-1.5 rounded-full text-xs font-medium border ${
-                      service.isActive
-                        ? 'bg-green-50 text-green-600 border-green-200'
-                        : 'bg-gray-100 text-gray-500 border-gray-200'
-                    }`}
-                  >
-                    {service.isActive ? 'Published' : 'Draft'}
-                  </span>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setDeleteModal({ open: true, id: service._id, loading: false })}
-                      className="w-10 h-10 border-2 border-gray-100 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                    <button
-                      onClick={() => openForm(service)}
-                      className="w-10 h-10 border-2 border-gray-100 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
-                    >
-                      <Edit2 size={15} />
-                    </button>
+                  {/* Actions */}
+                  <div className="flex items-center justify-end gap-2 sm:flex-shrink-0">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setDeleteModal({ open: true, id: service._id, loading: false })}
+                        className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                      <button
+                        onClick={() => navigate(`/services/edit/${service._id}`)}
+                        className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Form Slide Panel */}
-      {formOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-end">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setFormOpen(false)} />
-          <div className="relative bg-white h-full w-full max-w-xl overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
-              <div>
-                <h2 className="text-xl font-display font-bold text-dark">Services</h2>
-                <p className="text-xs text-gray-400 italic">Manage Winosa services content</p>
-              </div>
-              <button
-                onClick={() => setFormOpen(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-dark hover:bg-gray-100 transition-colors"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-dark mb-2">Service Title :</label>
-                <input
-                  type="text"
-                  placeholder="e.g. UI/UX Design"
-                  value={form.title}
-                  onChange={e => setForm(p => ({
-                    ...p,
-                    title: e.target.value,
-                    // FIX: pakai fungsi generateSlug yang sudah diekstrak
-                    slug: !editService ? generateSlug(e.target.value) : p.slug,
-                  }))}
-                  className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-dark mb-2">Slug :</label>
-                <input
-                  type="text"
-                  placeholder="service-slug"
-                  value={form.slug}
-                  onChange={e => setForm(p => ({ ...p, slug: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-dark mb-2">Service Description :</label>
-                <textarea
-                  placeholder="Brief description of the service"
-                  value={form.description}
-                  onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
-                  rows={5}
-                  className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 resize-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-dark mb-2">Icon (emoji or text) :</label>
-                <input
-                  type="text"
-                  placeholder="e.g. 💻 or code"
-                  value={form.icon}
-                  onChange={e => setForm(p => ({ ...p, icon: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-dark mb-2">Price :</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Starting from $999"
-                  value={form.price}
-                  onChange={e => setForm(p => ({ ...p, price: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={() => handleSubmit(false)}
-                  disabled={saving}
-                  className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-2xl text-sm font-semibold italic hover:bg-gray-200 transition-colors disabled:opacity-50"
-                >
-                  Draft
-                </button>
-                <button
-                  onClick={() => handleSubmit(true)}
-                  disabled={saving}
-                  className="flex-1 py-3 bg-green-500 text-white rounded-2xl text-sm font-semibold italic hover:bg-green-600 transition-colors disabled:opacity-50"
-                >
-                  {saving ? 'Saving...' : 'Published'}
-                </button>
-              </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       )}
 

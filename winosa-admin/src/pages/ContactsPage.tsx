@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Mail, User, Clock, Inbox, Search, CheckCheck, Circle, Download } from 'lucide-react';
+import { Mail, User, Clock, Inbox, Search, CheckCheck, Circle, Download, Send } from 'lucide-react';
 import { contactService } from '../services/analyticsService';
+import api from '../services/api';
 import { Contact } from '../types';
 import toast from 'react-hot-toast';
 
@@ -10,6 +11,8 @@ const ContactsPage: React.FC = () => {
   const [selected, setSelected] = useState<Contact | null>(null);
   const [search, setSearch] = useState('');
   const [filterRead, setFilterRead] = useState<'all' | 'read' | 'unread'>('all');
+  const [replyText, setReplyText] = useState('');
+  const [replying, setReplying] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -25,22 +28,65 @@ const ContactsPage: React.FC = () => {
     fetch();
   }, []);
 
-  const toggleRead = (contactId: string) => {
-    setContacts(prev =>
-      prev.map(c => c._id === contactId ? { ...c, isRead: !c.isRead } : c)
-    );
+  // Persist read/unread to backend — optimistic update
+  const toggleRead = async (contactId: string) => {
+    const contact = contacts.find(c => c._id === contactId);
+    if (!contact) return;
+
+    const newIsRead = !contact.isRead;
+
+    // Optimistic update
+    setContacts(prev => prev.map(c => c._id === contactId ? { ...c, isRead: newIsRead } : c));
     if (selected?._id === contactId) {
-      setSelected(prev => prev ? { ...prev, isRead: !prev.isRead } : null);
+      setSelected(prev => prev ? { ...prev, isRead: newIsRead } : null);
+    }
+
+    try {
+      await api.patch(`/contacts/${contactId}`, { isRead: newIsRead });
+    } catch {
+      // Revert on failure
+      setContacts(prev => prev.map(c => c._id === contactId ? { ...c, isRead: !newIsRead } : c));
+      if (selected?._id === contactId) {
+        setSelected(prev => prev ? { ...prev, isRead: !newIsRead } : null);
+      }
     }
   };
 
-  const handleSelect = (contact: Contact) => {
+  const handleSelect = async (contact: Contact) => {
     setSelected(contact);
+    setReplyText('');
+
     if (!contact.isRead) {
-      setContacts(prev =>
-        prev.map(c => c._id === contact._id ? { ...c, isRead: true } : c)
-      );
+      // Optimistic update
+      setContacts(prev => prev.map(c => c._id === contact._id ? { ...c, isRead: true } : c));
       setSelected({ ...contact, isRead: true });
+
+      // Persist
+      try {
+        await api.patch(`/contacts/${contact._id}`, { isRead: true });
+      } catch {
+        // silent — will show correct on next refresh
+      }
+    }
+  };
+
+  const handleReply = async () => {
+    if (!replyText.trim() || !selected) return;
+    setReplying(true);
+    try {
+      await api.post(`/contacts/${selected._id}/reply`, { message: replyText });
+      toast.success('Reply sent to ' + selected.email);
+      setReplyText('');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message;
+      if (err?.response?.status === 404) {
+        // Endpoint not set up yet — fallback to mailto
+        window.location.href = `mailto:${selected.email}?subject=Re: ${selected.subject || 'Your inquiry'}&body=${encodeURIComponent(replyText)}`;
+      } else {
+        toast.error(msg || 'Failed to send reply');
+      }
+    } finally {
+      setReplying(false);
     }
   };
 
@@ -101,7 +147,7 @@ const ContactsPage: React.FC = () => {
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(['all', 'unread', 'read'] as const).map(f => (
             <button
               key={f}
@@ -175,7 +221,8 @@ const ContactsPage: React.FC = () => {
           {/* Detail Panel */}
           <div className="lg:col-span-2">
             {selected ? (
-              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6 h-full">
+              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6 h-full flex flex-col">
+                {/* Top action */}
                 <div className="flex items-center justify-end mb-4">
                   <button
                     onClick={() => toggleRead(selected._id)}
@@ -190,9 +237,10 @@ const ContactsPage: React.FC = () => {
                   </button>
                 </div>
 
+                {/* Sender info */}
                 <div className="flex items-start gap-4 mb-6 pb-6 border-b border-gray-100">
-                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <User size={20} className="text-primary" />
+                  <div className="w-11 h-11 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <User size={18} className="text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-dark text-base">{selected.name}</h3>
@@ -217,21 +265,46 @@ const ContactsPage: React.FC = () => {
                   </div>
                 </div>
 
-                {selected.subject && (
-                  <h4 className="font-bold text-dark mb-3 text-lg">{selected.subject}</h4>
-                )}
-                <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
-                  {selected.message}
-                </p>
+                {/* Message */}
+                <div className="flex-1">
+                  {selected.subject && (
+                    <h4 className="font-bold text-dark mb-3 text-base">{selected.subject}</h4>
+                  )}
+                  <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+                    {selected.message}
+                  </p>
+                </div>
 
-                <div className="mt-8">
-                  <a
-                    href={`mailto:${selected.email}?subject=Re: ${selected.subject || 'Your inquiry'}`}
-                    className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark text-sm font-bold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-                  >
-                    <Mail size={15} />
-                    Reply via Email
-                  </a>
+                {/* Reply Form */}
+                <div className="mt-6 pt-5 border-t border-gray-100 space-y-3">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Reply to {selected.name}
+                  </p>
+                  <textarea
+                    placeholder={`Write your reply to ${selected.email}...`}
+                    value={replyText}
+                    onChange={e => setReplyText(e.target.value)}
+                    rows={4}
+                    className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 resize-none transition-colors"
+                  />
+                  <div className="flex items-center justify-between gap-3">
+                    <a
+                      href={`mailto:${selected.email}?subject=Re: ${selected.subject || 'Your inquiry'}`}
+                      className="text-xs text-gray-400 hover:text-primary transition-colors"
+                    >
+                      Or open in email client →
+                    </a>
+                    <button
+                      onClick={handleReply}
+                      disabled={!replyText.trim() || replying}
+                      className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark text-sm font-bold px-6 py-2.5 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    >
+                      {replying
+                        ? <><div className="w-3.5 h-3.5 border-2 border-dark border-t-transparent rounded-full animate-spin" />Sending...</>
+                        : <><Send size={14} />Send Reply</>
+                      }
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (

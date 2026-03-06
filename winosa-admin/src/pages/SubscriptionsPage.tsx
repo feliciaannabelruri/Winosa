@@ -53,7 +53,7 @@ const SubscriptionsPage: React.FC = () => {
   const filtered = subscriptions.filter(s => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase());
     const matchStatus =
-      filter === 'all' ? true :
+      filter === 'all'    ? true :
       filter === 'active' ? s.isActive :
       !s.isActive;
     return matchSearch && matchStatus;
@@ -67,9 +67,10 @@ const SubscriptionsPage: React.FC = () => {
           <h1 className="text-4xl font-display font-bold text-dark">Subscriptions</h1>
           <p className="text-gray-400 text-sm mt-1 italic">Manage subscription plans and pricing</p>
         </div>
+        {/* FIX: added w-fit so button doesn't stretch full-width on mobile */}
         <button
           onClick={() => navigate('/subscriptions/add')}
-          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm"
+          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit"
         >
           <Plus size={16} />
           Add Subscription
@@ -88,13 +89,13 @@ const SubscriptionsPage: React.FC = () => {
         />
       </div>
 
-      {/* Filter */}
-      <div className="flex gap-3">
+      {/* Filter — flex-wrap so it wraps on small screens */}
+      <div className="flex flex-wrap gap-2">
         {(['all', 'active', 'inactive'] as FilterType[]).map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-8 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
+            className={`px-6 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
               filter === f
                 ? 'bg-dark border-dark text-white shadow-sm'
                 : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
@@ -113,7 +114,7 @@ const SubscriptionsPage: React.FC = () => {
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-400 text-sm">No subscriptions found</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map(sub => (
             <div
               key={sub._id}
@@ -129,16 +130,16 @@ const SubscriptionsPage: React.FC = () => {
                 </div>
               )}
 
-              <div className="p-6 space-y-4 flex-1">
+              <div className="p-5 space-y-4 flex-1">
                 {/* Icon + Name */}
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                <div className="flex items-center gap-3 pr-16">
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
                     sub.isPopular ? 'bg-primary/10' : 'bg-gray-100'
                   }`}>
                     <Crown size={18} className={sub.isPopular ? 'text-primary' : 'text-gray-400'} />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-dark text-lg leading-tight">{sub.name}</h3>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-dark text-base leading-tight truncate">{sub.name}</h3>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       sub.isActive
                         ? 'bg-green-100 text-green-600'
@@ -174,7 +175,7 @@ const SubscriptionsPage: React.FC = () => {
               </div>
 
               {/* Actions */}
-              <div className="border-t-2 border-gray-50 px-6 py-4 flex items-center justify-between">
+              <div className="border-t-2 border-gray-50 px-5 py-4 flex items-center justify-between">
                 <p className="text-xs text-gray-400">
                   {new Date(sub.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </p>

@@ -7,6 +7,11 @@ export const serviceService = {
     return response.data;
   },
 
+  getById: async (id: string) => {
+    const response = await api.get<ApiResponse<Service>>(`/admin/services/${id}`);
+    return response.data;
+  },
+
   create: async (data: Partial<Service>) => {
     const response = await api.post<ApiResponse<Service>>('/admin/services', data);
     return response.data;

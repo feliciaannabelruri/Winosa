@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, Search, Trash2, Download, Mail } from 'lucide-react';
+import { Search, Trash2, Download, Mail } from 'lucide-react';
 import { subscriberService } from '../services/subscriberService';
 import { Subscriber } from '../types';
 import toast from 'react-hot-toast';
@@ -51,7 +51,7 @@ const NewsletterPage: React.FC = () => {
   const filtered = subscribers.filter(s => {
     const matchSearch = s.email.toLowerCase().includes(search.toLowerCase());
     const matchFilter =
-      filter === 'all' ? true :
+      filter === 'all'    ? true :
       filter === 'active' ? s.isActive :
       !s.isActive;
     return matchSearch && matchFilter;
@@ -77,19 +77,19 @@ const NewsletterPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-3xl border-2 border-gray-100 p-5 shadow-sm">
-          <p className="text-sm text-gray-400 mb-2">Total Subscribers</p>
-          <p className="text-3xl font-display font-bold text-dark">{subscribers.length}</p>
+      {/* Stats Cards — responsive: 3 cols always but with smaller text on mobile */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Total Subscribers</p>
+          <p className="text-2xl sm:text-3xl font-display font-bold text-dark">{subscribers.length}</p>
         </div>
-        <div className="bg-white rounded-3xl border-2 border-gray-100 p-5 shadow-sm">
-          <p className="text-sm text-gray-400 mb-2">Active</p>
-          <p className="text-3xl font-display font-bold text-green-500">{activeCount}</p>
+        <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Active</p>
+          <p className="text-2xl sm:text-3xl font-display font-bold text-green-500">{activeCount}</p>
         </div>
-        <div className="bg-white rounded-3xl border-2 border-gray-100 p-5 shadow-sm">
-          <p className="text-sm text-gray-400 mb-2">Inactive</p>
-          <p className="text-3xl font-display font-bold text-gray-400">{subscribers.length - activeCount}</p>
+        <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Inactive</p>
+          <p className="text-2xl sm:text-3xl font-display font-bold text-gray-400">{subscribers.length - activeCount}</p>
         </div>
       </div>
 
@@ -105,7 +105,7 @@ const NewsletterPage: React.FC = () => {
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(['all', 'active', 'inactive'] as const).map(f => (
             <button
               key={f}
@@ -122,76 +122,80 @@ const NewsletterPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table — scrollable on mobile */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              {['No.', 'Email', 'Status', 'Subscribed At', 'Action'].map(h => (
-                <th key={h} className="text-left text-sm font-semibold text-dark py-4 px-5 first:pl-6">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="text-center py-16">
-                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px]">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4 pl-6 w-12">No.</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Email</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Status</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Subscribed At</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Action</th>
               </tr>
-            ) : filtered.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-16 text-center">
-                  <Mail size={32} className="text-gray-200 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm">No subscribers found</p>
-                </td>
-              </tr>
-            ) : (
-              filtered.map((sub, idx) => (
-                <tr
-                  key={sub._id}
-                  className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
-                    idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
-                  }`}
-                >
-                  <td className="py-4 px-5 pl-6 text-sm text-gray-500">{idx + 1}.</td>
-                  <td className="py-4 px-5">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Mail size={13} className="text-primary" />
-                      </div>
-                      <span className="text-sm text-dark font-medium">{sub.email}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-5">
-                    <span className={`text-xs px-3 py-1 rounded-full font-medium ${
-                      sub.isActive
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-gray-100 text-gray-500'
-                    }`}>
-                      {sub.isActive ? 'Active' : 'Unsubscribed'}
-                    </span>
-                  </td>
-                  <td className="py-4 px-5 text-sm text-gray-500">
-                    {new Date(sub.createdAt).toLocaleDateString('id-ID', {
-                      day: '2-digit', month: 'short', year: 'numeric'
-                    })}
-                  </td>
-                  <td className="py-4 px-5">
-                    <button
-                      onClick={() => setDeleteModal({ open: true, id: sub._id, loading: false })}
-                      className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-16">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-16 text-center">
+                    <Mail size={32} className="text-gray-200 mx-auto mb-3" />
+                    <p className="text-gray-400 text-sm">No subscribers found</p>
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((sub, idx) => (
+                  <tr
+                    key={sub._id}
+                    className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
+                      idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                    }`}
+                  >
+                    <td className="py-4 px-4 pl-6 text-sm text-gray-500">{idx + 1}.</td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Mail size={13} className="text-primary" />
+                        </div>
+                        <span className="text-sm text-dark font-medium truncate max-w-[180px] sm:max-w-none">
+                          {sub.email}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <span className={`text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap ${
+                        sub.isActive
+                          ? 'bg-green-100 text-green-600'
+                          : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        {sub.isActive ? 'Active' : 'Unsubscribed'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 text-sm text-gray-500 whitespace-nowrap">
+                      {new Date(sub.createdAt).toLocaleDateString('id-ID', {
+                        day: '2-digit', month: 'short', year: 'numeric'
+                      })}
+                    </td>
+                    <td className="py-4 px-4">
+                      <button
+                        onClick={() => setDeleteModal({ open: true, id: sub._id, loading: false })}
+                        className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <ConfirmModal
