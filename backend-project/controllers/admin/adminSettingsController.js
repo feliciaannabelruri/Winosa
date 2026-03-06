@@ -10,7 +10,6 @@ exports.getSettings = asyncHandler(async (req, res, next) => {
   let settings = await Settings.findOne();
 
   if (!settings) {
-    // Return empty defaults if no settings saved yet
     settings = new Settings();
   }
 
@@ -39,17 +38,18 @@ exports.updateSettings = asyncHandler(async (req, res, next) => {
         siteName, siteTagline, siteEmail, sitePhone, siteAddress,
         socialInstagram, socialFacebook, socialTwitter, socialLinkedin,
         socialYoutube, socialWhatsapp,
-        metaTitle, metaDescription, metaKeywords,
+        metaTitle, metaDescription, metaKeywords, googleAnalyticsId,
         removeLogo
       } = req.body;
 
-      // Text fields
+      // General
       if (siteName      !== undefined) settings.siteName      = siteName;
       if (siteTagline   !== undefined) settings.siteTagline   = siteTagline;
       if (siteEmail     !== undefined) settings.siteEmail     = siteEmail;
       if (sitePhone     !== undefined) settings.sitePhone     = sitePhone;
       if (siteAddress   !== undefined) settings.siteAddress   = siteAddress;
 
+      // Social
       if (socialInstagram !== undefined) settings.socialInstagram = socialInstagram;
       if (socialFacebook  !== undefined) settings.socialFacebook  = socialFacebook;
       if (socialTwitter   !== undefined) settings.socialTwitter   = socialTwitter;
@@ -57,9 +57,11 @@ exports.updateSettings = asyncHandler(async (req, res, next) => {
       if (socialYoutube   !== undefined) settings.socialYoutube   = socialYoutube;
       if (socialWhatsapp  !== undefined) settings.socialWhatsapp  = socialWhatsapp;
 
-      if (metaTitle       !== undefined) settings.metaTitle       = metaTitle;
-      if (metaDescription !== undefined) settings.metaDescription = metaDescription;
-      if (metaKeywords    !== undefined) settings.metaKeywords    = metaKeywords;
+      // SEO
+      if (metaTitle         !== undefined) settings.metaTitle         = metaTitle;
+      if (metaDescription   !== undefined) settings.metaDescription   = metaDescription;
+      if (metaKeywords      !== undefined) settings.metaKeywords      = metaKeywords;
+      if (googleAnalyticsId !== undefined) settings.googleAnalyticsId = googleAnalyticsId;
 
       // Handle logo removal
       if (removeLogo === 'true' || removeLogo === true) {
