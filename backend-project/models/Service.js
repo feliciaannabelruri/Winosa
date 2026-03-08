@@ -1,48 +1,27 @@
 const mongoose = require('mongoose');
 
-const serviceSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true
+const serviceSchema = new mongoose.Schema(
+  {
+    title:       { type: String, required: true, trim: true },
+    slug:        { type: String, required: true, unique: true, index: true, trim: true, lowercase: true },
+    description: { type: String, required: true, trim: true },
+    icon:        { type: String },
+    features:    { type: [String], default: [] },
+    price:       { type: String },
+    isActive:    { type: Boolean, default: true, index: true },
+    order:       { type: Number, default: 0, index: true },
   },
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  icon: String,
-  features: [String],
-  price: String,
-  isActive: {
-    type: Boolean,
-    default: true,
-    index: true
-  },
-  order: {
-    type: Number,
-    default: 0
-  }
-}, {
-  timestamps: true
-});
+  { timestamps: true }
+);
 
-// Indexes
+// Compound indexes
 serviceSchema.index({ isActive: 1, order: 1 });
-serviceSchema.index({ createdAt: -1 });
+serviceSchema.index({ isActive: 1, createdAt: -1 });
 
-// Text search
-serviceSchema.index({ 
-  title: 'text', 
-  description: 'text' 
-});
+// Full-text search
+serviceSchema.index({ title: 'text', description: 'text' });
 
-// Virtual for feature count
-serviceSchema.virtual('featureCount').get(function() {
+serviceSchema.virtual('featureCount').get(function () {
   return this.features ? this.features.length : 0;
 });
 

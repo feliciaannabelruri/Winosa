@@ -5,120 +5,131 @@ const connectDB = require('./config/db');
 const { setLanguage } = require('./middleware/language');
 const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./middleware/logger');
-const searchRoutes = require('./routes/searchRoutes')
+const { globalLimiter } = require('./middleware/rateLimiter');
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app = express();
 
-// Middleware
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5173'] }));
-app.use(express.json());
-app.use(logger); // Add request logger
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+const devOrigins = ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'];
+const allowedOrigins = [...new Set([...ALLOWED_ORIGINS, ...devOrigins])];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS: Origin ${origin} not allowed`));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['X-Request-ID', 'X-Cache'],
+  })
+);
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+app.use(logger);
 app.use(setLanguage);
 
-// Connect Database
+app.use('/api/', globalLimiter);
+
 connectDB();
 
-// Import Routes
-const portfolioRoutes = require('./routes/portfolioRoutes');
-const blogRoutes = require('./routes/blogRoutes');
-const contactRoutes = require('./routes/contactRoutes');
-const newsletterRoutes = require('./routes/newsletterRoutes');
-const serviceRoutes = require('./routes/serviceRoutes');
-const subscriptionRoutes = require('./routes/subscriptionRoutes');
-const authRoutes = require('./routes/authRoutes');
-const uploadRoutes = require('./routes/uploadRoutes');
-const emailTestRoutes = require('./routes/emailTestRoutes');
+const { authLimiter } = require('./middleware/rateLimiter');
 
-// Admin Routes
-const adminServiceRoutes = require('./routes/admin/adminServiceRoutes');
-const adminPortfolioRoutes = require('./routes/admin/adminPortfolioRoutes');
-const adminBlogRoutes = require('./routes/admin/adminBlogRoutes');
-const adminAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
-const adminSubscriptionRoutes = require('./routes/admin/adminSubscriptionRoutes');
-const adminSettingsRoutes = require('./routes/admin/adminSettingsRoutes');
+app.use('/api/portfolio',     require('./routes/portfolioRoutes'));
+app.use('/api/blog',          require('./routes/blogRoutes'));
+app.use('/api/contact',       require('./routes/contactRoutes'));
+app.use('/api/newsletter',    require('./routes/newsletterRoutes'));
+app.use('/api/services',      require('./routes/serviceRoutes'));
+app.use('/api/subscriptions', require('./routes/subscriptionRoutes'));
+app.use('/api/auth',          authLimiter, require('./routes/authRoutes'));
+app.use('/api/search',        require('./routes/searchRoutes'));
 
-// Routes
+app.use('/api/upload', require('./routes/uploadRoutes'));
+app.use('/api/email',  require('./routes/emailTestRoutes'));
+
+app.use('/api/admin/services',      require('./routes/admin/adminServiceRoutes'));
+app.use('/api/admin/portfolio',     require('./routes/admin/adminPortfolioRoutes'));
+app.use('/api/admin/blog',          require('./routes/admin/adminBlogRoutes'));
+app.use('/api/admin/analytics',     require('./routes/admin/adminAnalyticsRoutes'));
+app.use('/api/admin/subscriptions', require('./routes/admin/adminSubscriptionRoutes'));
+app.use('/api/admin/settings',      require('./routes/admin/adminSettingsRoutes'));
+
 app.get('/', (req, res) => {
-  res.json({ message: 'Backend API is running!' });
-});
-
-// Public Routes
-app.use('/api/portfolio', portfolioRoutes);
-app.use('/api/blog', blogRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/newsletter', newsletterRoutes);
-app.use('/api/services', serviceRoutes);
-app.use('/api/subscriptions', subscriptionRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/search', searchRoutes);
-
-// Upload & Email Test Routes
-app.use('/api/upload', uploadRoutes);
-app.use('/api/email', emailTestRoutes);
-
-// Admin Routes
-app.use('/api/admin/services', adminServiceRoutes);
-app.use('/api/admin/portfolio', adminPortfolioRoutes);
-app.use('/api/admin/blog', adminBlogRoutes);
-app.use('/api/admin/analytics', adminAnalyticsRoutes);
-app.use('/api/admin/subscriptions', adminSubscriptionRoutes);
-app.use('/api/admin/settings', adminSettingsRoutes);
-
-// 404 Handler
-app.use((req, res, next) => {
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.originalUrl} not found`
-  });
-});
-// Routes
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Backend API is running!',
+  res.json({
+    message: 'Winosa Backend API is running! 🚀',
     version: '1.0.0',
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV || 'development',
+    docs: '/api/docs',
   });
 });
 
-// Health check endpoint
 app.get('/health', async (req, res) => {
-  const healthCheck = {
+  const health = {
     uptime: process.uptime(),
     status: 'OK',
-    timestamp: Date.now(),
-    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
     database: 'disconnected',
-    email: 'unknown'
+    email: 'unknown',
+    cache: 'ok',
   };
 
   try {
-    // Check database connection
     const mongoose = require('mongoose');
-    if (mongoose.connection.readyState === 1) {
-      healthCheck.database = 'connected';
+    if (mongoose.connection.readyState === 1) health.database = 'connected';
+
+    const { cache } = require('./utils/cache');
+    health.cacheSize = cache.size();
+
+    try {
+      const transporter = require('./config/email');
+      await transporter.verify();
+      health.email = 'ready';
+    } catch {
+      health.email = 'unavailable';
     }
 
-    // Check email service
-    const transporter = require('./config/email');
-    await transporter.verify();
-    healthCheck.email = 'ready';
+    res.json(health);
   } catch (error) {
-    healthCheck.status = 'ERROR';
-    healthCheck.error = error.message;
-    return res.status(503).json(healthCheck);
+    health.status = 'ERROR';
+    health.error = error.message;
+    res.status(503).json(health);
   }
-
-  res.json(healthCheck);
 });
 
-// Error Handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`,
+  });
+});
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`API available at http://localhost:${PORT}`);
+  console.log(`\n Server running on port ${PORT}`);
+  console.log(` API: http://localhost:${PORT}`);
+  console.log(`Health: http://localhost:${PORT}/health`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
+
+module.exports = app; 

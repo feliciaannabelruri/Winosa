@@ -1,70 +1,43 @@
 const mongoose = require('mongoose');
 
-const blogSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true
+const blogSchema = new mongoose.Schema(
+  {
+    title:   { type: String, required: true, trim: true },
+    slug:    { type: String, required: true, unique: true, index: true, trim: true, lowercase: true },
+    content: { type: String, required: true },
+    excerpt: { type: String, trim: true },
+    image:   { type: String },
+    imageId: { type: String },
+    author:  { type: String, index: true, trim: true },
+    tags:    { type: [String], default: [] },
+    isPublished: { type: Boolean, default: true, index: true },
+    views:    { type: Number, default: 0, index: true },
+    readTime: { type: Number, default: 0 }, // minutes
   },
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true
-  },
-  content: {
-    type: String,
-    required: true
-  },
-  excerpt: String,
-  image: String,
-  imageId: String,
-  author: {
-    type: String,
-    index: true
-  },
-  tags: [String],
-  isPublished: {
-    type: Boolean,
-    default: true,
-    index: true
-  },
-  views: {
-    type: Number,
-    default: 0
-  },
-  readTime: {
-    type: Number, // in minutes
-    default: 0
-  }
-}, {
-  timestamps: true
-});
+  { timestamps: true }
+);
 
-// Compound indexes
+// Compound indexes for common query patterns
 blogSchema.index({ isPublished: 1, createdAt: -1 });
+blogSchema.index({ isPublished: 1, views: -1 });   // popular blogs
 blogSchema.index({ author: 1, isPublished: 1 });
-blogSchema.index({ tags: 1 });
+blogSchema.index({ tags: 1, isPublished: 1 });
 
-// Text search index
-blogSchema.index({ 
-  title: 'text', 
-  content: 'text', 
-  excerpt: 'text',
-  author: 'text'
-});
+// Full-text search index
+blogSchema.index({ title: 'text', content: 'text', excerpt: 'text', author: 'text' });
 
-// Calculate read time before saving
-blogSchema.pre('save', function(next) {
-  if (this.content) {
+// Auto-calculate read time
+blogSchema.pre('save', function (next) {
+  if (this.isModified('content') && this.content) {
     const wordsPerMinute = 200;
-    const wordCount = this.content.split(/\s+/).length;
+    const wordCount = this.content.trim().split(/\s+/).length;
     this.readTime = Math.ceil(wordCount / wordsPerMinute);
   }
   next();
 });
 
-// Virtual for excerpt if not provided
-blogSchema.virtual('autoExcerpt').get(function() {
+// Virtual auto-excerpt
+blogSchema.virtual('autoExcerpt').get(function () {
   if (this.excerpt) return this.excerpt;
   return this.content.substring(0, 150) + '...';
 });
