@@ -1,32 +1,29 @@
 const Portfolio = require('../models/Portfolio');
 const asyncHandler = require('../middleware/asyncHandler');
 const { paginate } = require('../utils/pagination');
+const { cache } = require('../utils/cache');
 
 // @desc    Get all portfolios with optional category filter and pagination
 // @route   GET /api/portfolio?category=web&page=1&limit=10
 // @access  Public
 exports.getPortfolios = asyncHandler(async (req, res, next) => {
   const { category, page, limit } = req.query;
-  
-  // Build filter
-  let filter = { isActive: true };
-  if (category) {
-    filter.category = category;
-  }
 
-  // Use pagination helper
+  const filter = { isActive: true };
+  if (category) filter.category = category;
+
   const result = await paginate(Portfolio, filter, {
     page,
     limit,
     sort: { createdAt: -1 },
-    select: 'title slug description image category client projectUrl createdAt'
+    select: 'title slug description image category client projectUrl createdAt',
   });
 
   res.json({
     success: true,
     count: result.data.length,
     ...result.pagination,
-    data: result.data
+    data: result.data,
   });
 });
 
@@ -34,22 +31,24 @@ exports.getPortfolios = asyncHandler(async (req, res, next) => {
 // @route   GET /api/portfolio/:slug
 // @access  Public
 exports.getPortfolioBySlug = asyncHandler(async (req, res, next) => {
-  const portfolio = await Portfolio
-    .findOne({ 
-      slug: req.params.slug,
-      isActive: true 
-    })
-    .lean(); // Use lean for better performance
+  const cacheKey = `portfolio:slug:${req.params.slug}`;
+  const cached = cache.get(cacheKey);
 
-  if (!portfolio) {
-    return res.status(404).json({
-      success: false,
-      message: 'Portfolio not found'
-    });
+  if (cached) {
+    res.setHeader('X-Cache', 'HIT');
+    return res.json({ success: true, data: cached });
   }
 
-  res.json({
-    success: true,
-    data: portfolio
-  });
+  const portfolio = await Portfolio.findOne({
+    slug: req.params.slug,
+    isActive: true,
+  }).lean();
+
+  if (!portfolio) {
+    return res.status(404).json({ success: false, message: 'Portfolio not found' });
+  }
+
+  cache.set(cacheKey, portfolio, 300);
+  res.setHeader('X-Cache', 'MISS');
+  res.json({ success: true, data: portfolio });
 });

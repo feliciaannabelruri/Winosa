@@ -1,6 +1,7 @@
 const Blog = require('../models/Blog');
 const asyncHandler = require('../middleware/asyncHandler');
 const { paginate } = require('../utils/pagination');
+const { cache, cacheMiddleware } = require('../utils/cache');
 
 // @desc    Get all blogs with pagination
 // @route   GET /api/blog?page=1&limit=10
@@ -12,14 +13,14 @@ exports.getBlogs = asyncHandler(async (req, res, next) => {
     page,
     limit,
     sort: { createdAt: -1 },
-    select: 'title slug excerpt image author tags readTime createdAt'
+    select: 'title slug excerpt image author tags readTime createdAt views',
   });
 
   res.json({
     success: true,
     count: result.data.length,
     ...result.pagination,
-    data: result.data
+    data: result.data,
   });
 });
 
@@ -27,26 +28,31 @@ exports.getBlogs = asyncHandler(async (req, res, next) => {
 // @route   GET /api/blog/:slug
 // @access  Public
 exports.getBlogBySlug = asyncHandler(async (req, res, next) => {
-  const blog = await Blog
-    .findOneAndUpdate(
-      { 
-        slug: req.params.slug,
-        isPublished: true 
-      },
-      { $inc: { views: 1 } }, // Increment view count
-      { new: true }
-    )
-    .lean();
+  const cacheKey = `blog:slug:${req.params.slug}`;
 
-  if (!blog) {
-    return res.status(404).json({
-      success: false,
-      message: 'Blog not found'
-    });
+  // Try cache first (without incrementing view — we do that separately)
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    // Still increment view in background (fire and forget)
+    Blog.findOneAndUpdate(
+      { slug: req.params.slug, isPublished: true },
+      { $inc: { views: 1 } }
+    ).exec();
+    res.setHeader('X-Cache', 'HIT');
+    return res.json({ success: true, data: cached });
   }
 
-  res.json({
-    success: true,
-    data: blog
-  });
+  const blog = await Blog.findOneAndUpdate(
+    { slug: req.params.slug, isPublished: true },
+    { $inc: { views: 1 } },
+    { new: true }
+  ).lean();
+
+  if (!blog) {
+    return res.status(404).json({ success: false, message: 'Blog not found' });
+  }
+
+  cache.set(cacheKey, blog, 120); // 2 min cache for individual posts
+  res.setHeader('X-Cache', 'MISS');
+  res.json({ success: true, data: blog });
 });
