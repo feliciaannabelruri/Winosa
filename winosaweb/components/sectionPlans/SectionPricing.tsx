@@ -30,7 +30,7 @@ export default function SectionPricing() {
     const fetchPlans = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/subscriptions?isActive=true`
+          `${process.env.NEXT_PUBLIC_API_URL}/subscriptions?isActive=true`
         );
         const json = await res.json();
         if (json.success) setPlans(json.data);

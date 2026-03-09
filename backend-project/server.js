@@ -70,7 +70,7 @@ app.use('/api/admin/blog', adminBlogRoutes);
 app.use('/api/admin/analytics', adminAnalyticsRoutes);
 app.use('/api/admin/subscriptions', adminSubscriptionRoutes);
 app.use('/api/admin/settings', adminSettingsRoutes);
-app.use('/api/admin', adminUploadRoutes); // ← BARU → POST /api/admin/upload
+app.use('/api/admin', adminUploadRoutes); 
 
 // 404 Handler
 app.use((req, res, next) => {
