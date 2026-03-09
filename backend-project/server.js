@@ -71,6 +71,7 @@ app.use('/api/admin/blog',          require('./routes/admin/adminBlogRoutes'));
 app.use('/api/admin/analytics',     require('./routes/admin/adminAnalyticsRoutes'));
 app.use('/api/admin/subscriptions', require('./routes/admin/adminSubscriptionRoutes'));
 app.use('/api/admin/settings',      require('./routes/admin/adminSettingsRoutes'));
+app.use('/api/admin/upload',        require('./routes/uploadRoutes'));
 
 app.get('/', (req, res) => {
   res.json({
