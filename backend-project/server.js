@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 const { setLanguage } = require('./middleware/language');
 const { errorHandler } = require('./middleware/errorHandler');
@@ -14,8 +15,11 @@ const app = express();
 // Middleware
 app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5173'] }));
 app.use(express.json());
-app.use(logger); // Add request logger
+app.use(logger);
 app.use(setLanguage);
+
+// ── Static folder untuk gambar yang diupload ──────────────────────────────────
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Connect Database
 connectDB();
@@ -38,6 +42,7 @@ const adminBlogRoutes = require('./routes/admin/adminBlogRoutes');
 const adminAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
 const adminSubscriptionRoutes = require('./routes/admin/adminSubscriptionRoutes');
 const adminSettingsRoutes = require('./routes/admin/adminSettingsRoutes');
+const adminUploadRoutes = require('./routes/admin/adminUploadRoutes'); // ← BARU
 
 // Routes
 app.get('/', (req, res) => {
@@ -65,20 +70,13 @@ app.use('/api/admin/blog', adminBlogRoutes);
 app.use('/api/admin/analytics', adminAnalyticsRoutes);
 app.use('/api/admin/subscriptions', adminSubscriptionRoutes);
 app.use('/api/admin/settings', adminSettingsRoutes);
+app.use('/api/admin', adminUploadRoutes); // ← BARU → POST /api/admin/upload
 
 // 404 Handler
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
     message: `Route ${req.originalUrl} not found`
-  });
-});
-// Routes
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Backend API is running!',
-    version: '1.0.0',
-    environment: process.env.NODE_ENV
   });
 });
 
@@ -94,13 +92,11 @@ app.get('/health', async (req, res) => {
   };
 
   try {
-    // Check database connection
     const mongoose = require('mongoose');
     if (mongoose.connection.readyState === 1) {
       healthCheck.database = 'connected';
     }
 
-    // Check email service
     const transporter = require('./config/email');
     await transporter.verify();
     healthCheck.email = 'ready';
