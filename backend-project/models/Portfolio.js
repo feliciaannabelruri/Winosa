@@ -1,52 +1,46 @@
 const mongoose = require('mongoose');
 
+const metricSchema = new mongoose.Schema({
+  value: { type: String, default: '' },
+  label: { type: String, default: '' },
+}, { _id: false });
+
 const portfolioSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true
-  },
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true
-  },
-  description: String,
-  image: String,
-  imageId: String,
-  category: {
-    type: String,
-    index: true
-  },
-  client: String,
-  projectUrl: String,
-  isActive: {
-    type: Boolean,
-    default: true,
-    index: true
-  }
-}, {
-  timestamps: true
-});
+  title:      { type: String, required: true },
+  slug:       { type: String, required: true, unique: true },
 
-// Compound indexes
-portfolioSchema.index({ category: 1, isActive: 1 });
-portfolioSchema.index({ createdAt: -1 });
+  // Deskripsi
+  shortDesc:  { type: String, default: '' },  // tampil di card
+  longDesc:   { type: String, default: '' },  // tampil di detail page
 
-// Text search index (untuk search functionality)
-portfolioSchema.index({ 
-  title: 'text', 
-  description: 'text', 
-  client: 'text' 
-});
+  category:   { type: String, default: '' },
+  isActive:   { type: Boolean, default: true },
 
-// Virtual for image count (jika nanti ada multiple images)
-portfolioSchema.virtual('hasImage').get(function() {
-  return !!this.image;
-});
+  // Images — thumbnail (card) & heroImage (detail fullscreen)
+  thumbnail:  { type: String, default: '' },
+  heroImage:  { type: String, default: '' },
 
-// Ensure virtuals are included in JSON
-portfolioSchema.set('toJSON', { virtuals: true });
-portfolioSchema.set('toObject', { virtuals: true });
+  // Project Info section
+  client:     { type: String, default: '' },
+  year:       { type: String, default: '' },
+  duration:   { type: String, default: '' },
+  role:       { type: String, default: '' },
+  techStack:  [{ type: String }],
+
+  // Case Study section
+  challenge:  { type: String, default: '' },
+  solution:   { type: String, default: '' },
+  result:     { type: String, default: '' },
+
+  // Key Metrics
+  metrics:    [metricSchema],
+
+  // Gallery (optional)
+  gallery:    [{ type: String }],
+
+  // Project URL (optional)
+  projectUrl: { type: String, default: '' },
+
+}, { timestamps: true });
 
 module.exports = mongoose.model('Portfolio', portfolioSchema);
