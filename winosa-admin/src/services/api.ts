@@ -9,13 +9,20 @@ const api = axios.create({
   },
 });
 
-// Request interceptor - add auth token
+// Request interceptor - add auth token + handle FormData
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('winosa_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // If sending FormData, remove Content-Type so axios sets
+    // multipart/form-data with the correct boundary automatically
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
