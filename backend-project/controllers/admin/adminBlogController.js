@@ -5,51 +5,55 @@ const { ErrorResponse } = require('../../middleware/errorHandler');
 const { uploadSingle, uploadToImageKit, deleteFromImageKit } = require('../../config/imagekit');
 const { cache } = require('../../utils/cache');
 
+// Helper: bungkus callback multer jadi Promise (wajib untuk Express 5)
+const runUpload = (req, res) =>
+  new Promise((resolve, reject) => {
+    uploadSingle(req, res, (err) => {
+      if (err) return reject(new ErrorResponse(err.message, 400));
+      resolve();
+    });
+  });
+
 const CACHE_PREFIX = 'blog';
 
-// @desc    Create new blog with image
+// @desc    Create new blog
 // @route   POST /api/admin/blog
 // @access  Private/Admin
 exports.createBlog = asyncHandler(async (req, res, next) => {
-  uploadSingle(req, res, async (err) => {
-    if (err) return next(new ErrorResponse(err.message, 400));
+  await runUpload(req, res);
 
-    try {
-      const { title, slug, content, excerpt, author, tags, isPublished } = req.body;
+  const { title, slug, content, excerpt, author, tags, isPublished } = req.body;
 
-      const existingBlog = await Blog.findOne({ slug }).lean();
-      if (existingBlog) {
-        return next(new ErrorResponse('Blog with this slug already exists', 400));
-      }
+  const existingBlog = await Blog.findOne({ slug }).lean();
+  if (existingBlog) {
+    return next(new ErrorResponse('Blog with this slug already exists', 400));
+  }
 
-      let imageUrl = null;
-      let imageId = null;
+  let imageUrl = req.body.image || null; // URL dari ImageUpload component (sudah diupload terpisah)
+  let imageId  = null;
 
-      if (req.file) {
-        const uploadResult = await uploadToImageKit(req.file, 'blog');
-        imageUrl = uploadResult.url;
-        imageId = uploadResult.fileId;
-      }
+  // Kalau ada file langsung di request ini → upload ke ImageKit
+  if (req.file) {
+    const uploadResult = await uploadToImageKit(req.file, 'blog');
+    imageUrl = uploadResult.url;
+    imageId  = uploadResult.fileId;
+  }
 
-      const blog = await Blog.create({
-        title, slug, content, excerpt,
-        image: imageUrl,
-        imageId,
-        author,
-        tags: tags ? (Array.isArray(tags) ? tags : JSON.parse(tags)) : [],
-        isPublished: isPublished !== undefined ? isPublished : true,
-      });
+  const blog = await Blog.create({
+    title, slug, content, excerpt,
+    image: imageUrl,
+    imageId,
+    author,
+    tags: tags ? (Array.isArray(tags) ? tags : JSON.parse(tags)) : [],
+    isPublished: isPublished !== undefined ? (isPublished === 'true' || isPublished === true) : true,
+  });
 
-      cache.invalidatePrefix(CACHE_PREFIX);
+  cache.invalidatePrefix(CACHE_PREFIX);
 
-      res.status(201).json({
-        success: true,
-        message: 'Blog created successfully',
-        data: blog,
-      });
-    } catch (error) {
-      return next(new ErrorResponse(error.message, 500));
-    }
+  res.status(201).json({
+    success: true,
+    message: 'Blog created successfully',
+    data: blog,
   });
 });
 
@@ -57,54 +61,64 @@ exports.createBlog = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/admin/blog/:id
 // @access  Private/Admin
 exports.updateBlog = asyncHandler(async (req, res, next) => {
-  uploadSingle(req, res, async (err) => {
-    if (err) return next(new ErrorResponse(err.message, 400));
+  // Gunakan runUpload (Promise) — wajib untuk Express 5, callback style tidak kompatibel
+  await runUpload(req, res);
 
-    try {
-      const lang = req.language || 'en';
+  const lang = req.language || 'en';
 
-      let blog = await Blog.findById(req.params.id);
-      if (!blog) {
-        return next(new ErrorResponse(getTranslation(lang, 'blogNotFound'), 404));
-      }
+  let blog = await Blog.findById(req.params.id);
+  if (!blog) {
+    return next(new ErrorResponse(getTranslation(lang, 'blogNotFound'), 404));
+  }
 
-      if (req.body.slug && req.body.slug !== blog.slug) {
-        const existing = await Blog.findOne({ slug: req.body.slug }).lean();
-        if (existing) {
-          return next(new ErrorResponse('Blog with this slug already exists', 400));
-        }
-      }
-
-      if (req.file) {
-        if (blog.imageId) {
-          try { await deleteFromImageKit(blog.imageId); } catch (e) {
-            console.log('Error deleting old image:', e.message);
-          }
-        }
-        const uploadResult = await uploadToImageKit(req.file, 'blog');
-        req.body.image = uploadResult.url;
-        req.body.imageId = uploadResult.fileId;
-      }
-
-      if (req.body.tags && typeof req.body.tags === 'string') {
-        req.body.tags = JSON.parse(req.body.tags);
-      }
-
-      blog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-      });
-
-      cache.invalidatePrefix(CACHE_PREFIX);
-
-      res.json({
-        success: true,
-        message: 'Blog updated successfully',
-        data: blog,
-      });
-    } catch (error) {
-      return next(new ErrorResponse(error.message, 500));
+  // Cek slug duplicate kalau diubah
+  if (req.body.slug && req.body.slug !== blog.slug) {
+    const existing = await Blog.findOne({ slug: req.body.slug }).lean();
+    if (existing) {
+      return next(new ErrorResponse('Blog with this slug already exists', 400));
     }
+  }
+
+  // Parse tags kalau masih JSON string
+  if (req.body.tags && typeof req.body.tags === 'string') {
+    try { req.body.tags = JSON.parse(req.body.tags); } catch { /* biarkan as-is */ }
+  }
+
+  // Handle image:
+  // 1. File baru di request → upload ke ImageKit, hapus yang lama
+  // 2. req.body.image ada (URL string dari ImageUpload) → pakai itu
+  // 3. Tidak ada keduanya → jangan ubah image existing
+  if (req.file) {
+    if (blog.imageId) {
+      try { await deleteFromImageKit(blog.imageId); } catch (e) {
+        console.log('Error deleting old image:', e.message);
+      }
+    }
+    const uploadResult = await uploadToImageKit(req.file, 'blog');
+    req.body.image   = uploadResult.url;
+    req.body.imageId = uploadResult.fileId;
+  } else if (!req.body.image) {
+    // Tidak ada perubahan image → hapus dari body agar tidak overwrite dengan null/empty
+    delete req.body.image;
+    delete req.body.imageId;
+  }
+
+  // Normalize isPublished string → boolean
+  if (typeof req.body.isPublished === 'string') {
+    req.body.isPublished = req.body.isPublished === 'true';
+  }
+
+  blog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  cache.invalidatePrefix(CACHE_PREFIX);
+
+  res.json({
+    success: true,
+    message: 'Blog updated successfully',
+    data: blog,
   });
 });
 
@@ -126,7 +140,6 @@ exports.deleteBlog = asyncHandler(async (req, res, next) => {
   }
 
   await Blog.findByIdAndDelete(req.params.id);
-
   cache.invalidatePrefix(CACHE_PREFIX);
 
   res.json({ success: true, message: 'Blog deleted successfully' });
@@ -136,40 +149,30 @@ exports.deleteBlog = asyncHandler(async (req, res, next) => {
 // @route   GET /api/admin/blog
 // @access  Private/Admin
 exports.getAllBlogs = asyncHandler(async (req, res, next) => {
-  const page = parseInt(req.query.page) || 1;
+  const page  = parseInt(req.query.page)  || 1;
   const limit = Math.min(parseInt(req.query.limit) || 10, 100);
-  const skip = (page - 1) * limit;
+  const skip  = (page - 1) * limit;
 
   let filter = {};
-  if (req.query.isPublished !== undefined) {
-    filter.isPublished = req.query.isPublished === 'true';
-  }
-  if (req.query.author) {
-    filter.author = new RegExp(req.query.author, 'i');
-  }
-  if (req.query.tag) {
-    filter.tags = { $in: [req.query.tag] };
-  }
+  if (req.query.isPublished !== undefined) filter.isPublished = req.query.isPublished === 'true';
+  if (req.query.author) filter.author = new RegExp(req.query.author, 'i');
+  if (req.query.tag)    filter.tags   = { $in: [req.query.tag] };
 
   const sortField = req.query.sortBy || 'createdAt';
-  const sortOrder = req.query.order === 'asc' ? 1 : -1;
-  const sort = { [sortField]: sortOrder };
+  const sortOrder = req.query.order  === 'asc' ? 1 : -1;
 
   const [total, blogs] = await Promise.all([
     Blog.countDocuments(filter),
     Blog.find(filter)
-      .sort(sort)
-      .skip(skip)
-      .limit(limit)
-      .lean(),
+      .sort({ [sortField]: sortOrder })
+      .skip(skip).limit(limit).lean(),
   ]);
 
   res.json({
     success: true,
     count: blogs.length,
-    total,
-    page,
-    pages: Math.ceil(total / limit),
+    total, page,
+    pages:       Math.ceil(total / limit),
     hasNextPage: page < Math.ceil(total / limit),
     hasPrevPage: page > 1,
     data: blogs,

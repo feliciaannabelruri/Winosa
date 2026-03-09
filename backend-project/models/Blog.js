@@ -19,21 +19,20 @@ const blogSchema = new mongoose.Schema(
 
 // Compound indexes for common query patterns
 blogSchema.index({ isPublished: 1, createdAt: -1 });
-blogSchema.index({ isPublished: 1, views: -1 });   // popular blogs
+blogSchema.index({ isPublished: 1, views: -1 });
 blogSchema.index({ author: 1, isPublished: 1 });
 blogSchema.index({ tags: 1, isPublished: 1 });
 
 // Full-text search index
 blogSchema.index({ title: 'text', content: 'text', excerpt: 'text', author: 'text' });
 
-// Auto-calculate read time
-blogSchema.pre('save', function (next) {
+// Auto-calculate read time — pakai async, tanpa next (Mongoose v7+)
+blogSchema.pre('save', async function () {
   if (this.isModified('content') && this.content) {
     const wordsPerMinute = 200;
     const wordCount = this.content.trim().split(/\s+/).length;
     this.readTime = Math.ceil(wordCount / wordsPerMinute);
   }
-  next();
 });
 
 // Virtual auto-excerpt
