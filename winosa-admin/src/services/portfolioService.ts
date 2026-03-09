@@ -1,6 +1,8 @@
 import api from './api';
 import { Portfolio, PaginatedResponse, ApiResponse } from '../types';
 
+const formDataHeaders = { 'Content-Type': undefined as any };
+
 export const portfolioService = {
   getAll: async (params?: { page?: number; limit?: number; category?: string }) => {
     const response = await api.get<PaginatedResponse<Portfolio>>('/admin/portfolio', { params });
@@ -17,16 +19,16 @@ export const portfolioService = {
     return response.data;
   },
 
-  create: async (formData: FormData) => {
-    const response = await api.post<ApiResponse<Portfolio>>('/admin/portfolio', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+  create: async (data: FormData) => {
+    const response = await api.post<ApiResponse<Portfolio>>('/admin/portfolio', data, {
+      headers: formDataHeaders,
     });
     return response.data;
   },
 
-  update: async (id: string, formData: FormData) => {
-    const response = await api.put<ApiResponse<Portfolio>>(`/admin/portfolio/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+  update: async (id: string, data: FormData) => {
+    const response = await api.put<ApiResponse<Portfolio>>(`/admin/portfolio/${id}`, data, {
+      headers: formDataHeaders,
     });
     return response.data;
   },

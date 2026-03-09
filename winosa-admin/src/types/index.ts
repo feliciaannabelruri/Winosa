@@ -42,17 +42,30 @@ export interface BlogFormData {
   image?: File;
 }
 
-// Portfolio Types
+/// Portfolio Types
 export interface Portfolio {
   _id: string;
   title: string;
   slug: string;
   description?: string;
+  shortDesc?: string;
+  longDesc?: string;
   image?: string;
   imageId?: string;
+  thumbnail?: string;
+  heroImage?: string;
   category?: string;
   client?: string;
+  year?: string;
+  duration?: string;
+  role?: string;
   projectUrl?: string;
+  techStack?: string[];
+  challenge?: string;
+  solution?: string;
+  result?: string;
+  metrics?: { value: string; label: string }[];
+  gallery?: string[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -61,10 +74,22 @@ export interface Portfolio {
 export interface PortfolioFormData {
   title: string;
   slug: string;
-  description?: string;
+  shortDesc?: string;
+  longDesc?: string;
   category?: string;
   client?: string;
+  year?: string;
+  duration?: string;
+  role?: string;
   projectUrl?: string;
+  thumbnail?: string;
+  heroImage?: string;
+  techStack?: string[];
+  challenge?: string;
+  solution?: string;
+  result?: string;
+  metrics?: { value: string; label: string }[];
+  gallery?: string[];
   isActive: boolean;
   image?: File;
 }

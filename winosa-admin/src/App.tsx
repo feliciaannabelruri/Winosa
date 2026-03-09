@@ -7,12 +7,13 @@ import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import BlogsPage from './pages/BlogsPage';
+import BlogFormPage from './pages/BlogFormPage';
 import PortfolioPage from './pages/PortfolioPage';
+import PortfolioDetailPage from './pages/PortfolioDetailPage';
+import PortfolioFormPage from './pages/PortfolioFormPage';
 import ServicesPage from './pages/ServicesPage';
 import ServiceFormPage from './pages/ServiceFormPage';
 import ContactsPage from './pages/ContactsPage';
-import PortfolioDetailPage from './pages/PortfolioDetailPage';
-import PortfolioFormPage from './pages/PortfolioFormPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import SubscriptionFormPage from './pages/SubscriptionFormPage';
 import NewsletterPage from './pages/NewsletterPage';
@@ -51,6 +52,8 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="blogs" element={<BlogsPage />} />
+            <Route path="blogs/new" element={<BlogFormPage />} />
+            <Route path="blogs/edit/:id" element={<BlogFormPage />} />
 
             {/* Portfolio */}
             <Route path="portfolio" element={<PortfolioPage />} />

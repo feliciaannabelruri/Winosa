@@ -1,6 +1,8 @@
 import api from './api';
 import { Blog, PaginatedResponse, ApiResponse } from '../types';
 
+const formDataHeaders = { 'Content-Type': undefined as any };
+
 export const blogService = {
   getAll: async (params?: { page?: number; limit?: number; isPublished?: boolean; author?: string }) => {
     const response = await api.get<PaginatedResponse<Blog>>('/admin/blog', { params });
@@ -12,16 +14,16 @@ export const blogService = {
     return response.data;
   },
 
-  create: async (formData: FormData) => {
-    const response = await api.post<ApiResponse<Blog>>('/admin/blog', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+  create: async (data: FormData) => {
+    const response = await api.post<ApiResponse<Blog>>('/admin/blog', data, {
+      headers: formDataHeaders,
     });
     return response.data;
   },
 
-  update: async (id: string, formData: FormData) => {
-    const response = await api.put<ApiResponse<Blog>>(`/admin/blog/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+  update: async (id: string, data: FormData) => {
+    const response = await api.put<ApiResponse<Blog>>(`/admin/blog/${id}`, data, {
+      headers: formDataHeaders,
     });
     return response.data;
   },

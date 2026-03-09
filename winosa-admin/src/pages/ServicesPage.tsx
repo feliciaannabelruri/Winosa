@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Plus, Trash2, Edit2, Search, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Edit2, Search, Sparkles, Globe, Smartphone, Palette } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { serviceService } from '../services/serviceService';
 import { Service } from '../types';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
 import {
-  Monitor, Briefcase, Smartphone, CloudCog, Palette,
-  Shield, Code, TrendingUp, Globe, Layers, Zap, Settings,
+  Monitor, Briefcase, CloudCog,
+  Shield, Code, TrendingUp, Layers, Zap, Settings,
   Database, Lock, BarChart, Mail, Search as SearchIcon, Star, Cpu, Layout,
   PenTool, Camera, Video, Music, ShoppingCart, Users, Heart,
   MessageSquare, Map, Clock, Wifi, Terminal, Package,
@@ -16,51 +16,58 @@ import {
 type FilterType = 'all' | 'draft' | 'published';
 
 const iconMap: Record<string, React.FC<any>> = {
-  monitor: Monitor,
-  briefcase: Briefcase,
-  smartphone: Smartphone,
-  mobile: Smartphone,
-  cloud: CloudCog,
-  palette: Palette,
-  shield: Shield,
-  code: Code,
-  'trending-up': TrendingUp,
-  globe: Globe,
-  layers: Layers,
-  zap: Zap,
-  settings: Settings,
-  database: Database,
-  lock: Lock,
-  'bar-chart': BarChart,
-  mail: Mail,
-  search: SearchIcon,
-  star: Star,
-  cpu: Cpu,
-  layout: Layout,
-  'pen-tool': PenTool,
-  camera: Camera,
-  video: Video,
-  music: Music,
-  'shopping-cart': ShoppingCart,
-  users: Users,
-  heart: Heart,
-  message: MessageSquare,
-  map: Map,
-  clock: Clock,
-  wifi: Wifi,
-  terminal: Terminal,
-  package: Package,
+  monitor:        Monitor,
+  briefcase:      Briefcase,
+  smartphone:     Smartphone,
+  mobile:         Smartphone,
+  cloud:          CloudCog,
+  palette:        Palette,
+  shield:         Shield,
+  code:           Code,
+  'trending-up':  TrendingUp,
+  globe:          Globe,
+  layers:         Layers,
+  zap:            Zap,
+  settings:       Settings,
+  database:       Database,
+  lock:           Lock,
+  'bar-chart':    BarChart,
+  mail:           Mail,
+  search:         SearchIcon,
+  star:           Star,
+  cpu:            Cpu,
+  layout:         Layout,
+  'pen-tool':     PenTool,
+  camera:         Camera,
+  video:          Video,
+  music:          Music,
+  'shopping-cart':ShoppingCart,
+  users:          Users,
+  heart:          Heart,
+  message:        MessageSquare,
+  map:            Map,
+  clock:          Clock,
+  wifi:           Wifi,
+  terminal:       Terminal,
+  package:        Package,
+};
+
+// Slugs with full detail pages on the frontend
+const DETAIL_SLUG_META: Record<string, { label: string; color: string }> = {
+  'web-development':        { label: 'Web Dev',  color: 'bg-blue-100 text-blue-700 border-blue-200' },
+  'mobile-app-development': { label: 'Mobile',   color: 'bg-green-100 text-green-700 border-green-200' },
+  'ui-ux-design':           { label: 'UI/UX',    color: 'bg-purple-100 text-purple-700 border-purple-200' },
 };
 
 const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<FilterType>('all');
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null; loading: boolean }>({
-    open: false, id: null, loading: false,
-  });
+  const [services, setServices]   = useState<Service[]>([]);
+  const [loading,  setLoading]    = useState(true);
+  const [search,   setSearch]     = useState('');
+  const [filter,   setFilter]     = useState<FilterType>('all');
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean; id: string | null; loading: boolean;
+  }>({ open: false, id: null, loading: false });
 
   const fetchServices = useCallback(async () => {
     setLoading(true);
@@ -129,7 +136,7 @@ const ServicesPage: React.FC = () => {
         />
       </div>
 
-      {/* Filter */}
+      {/* Filter Tabs */}
       <div className="flex flex-wrap gap-2">
         {(['all', 'draft', 'published'] as FilterType[]).map(f => (
           <button
@@ -146,7 +153,21 @@ const ServicesPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Service Cards */}
+      {/* Legend */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <span className="text-xs text-gray-400">Detail page:</span>
+        {Object.entries(DETAIL_SLUG_META).map(([slug, meta]) => (
+          <span
+            key={slug}
+            className={`px-2.5 py-1 text-xs font-semibold rounded-full border ${meta.color}`}
+          >
+            {meta.label}
+          </span>
+        ))}
+        <span className="text-xs text-gray-400 ml-1">— slug ini punya halaman detail di website</span>
+      </div>
+
+      {/* Cards */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -157,6 +178,7 @@ const ServicesPage: React.FC = () => {
         <div className="space-y-4">
           {filtered.map(service => {
             const IconComponent = iconMap[service.icon?.toLowerCase() || ''] || null;
+            const detailMeta    = DETAIL_SLUG_META[service.slug];
 
             return (
               <div
@@ -164,8 +186,9 @@ const ServicesPage: React.FC = () => {
                 className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200"
               >
                 <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-start">
+
                   {/* Icon */}
-                  <div className="w-16 h-16 sm:w-16 sm:h-16 flex-shrink-0 rounded-full border border-black flex items-center justify-center bg-white">
+                  <div className="w-16 h-16 flex-shrink-0 rounded-full border border-black flex items-center justify-center bg-white">
                     {IconComponent ? (
                       <IconComponent size={24} strokeWidth={1.5} className="text-dark" />
                     ) : service.icon ? (
@@ -177,8 +200,15 @@ const ServicesPage: React.FC = () => {
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-lg font-bold text-dark leading-tight">{service.title}</h3>
+                    <div className="flex items-start justify-between gap-3 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-lg font-bold text-dark leading-tight">{service.title}</h3>
+                        {detailMeta && (
+                          <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full border ${detailMeta.color}`}>
+                            {detailMeta.label}
+                          </span>
+                        )}
+                      </div>
                       <span
                         className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium border ${
                           service.isActive
@@ -189,9 +219,11 @@ const ServicesPage: React.FC = () => {
                         {service.isActive ? 'Published' : 'Draft'}
                       </span>
                     </div>
+
                     <p className="text-sm text-gray-500 mt-1.5 leading-relaxed line-clamp-2">
                       {service.description}
                     </p>
+
                     <div className="flex items-center gap-3 mt-2 flex-wrap">
                       {service.price && (
                         <p className="text-sm font-semibold text-primary">{service.price}</p>
@@ -199,26 +231,27 @@ const ServicesPage: React.FC = () => {
                       {service.features && service.features.length > 0 && (
                         <p className="text-xs text-gray-400">{service.features.length} features</p>
                       )}
+                      {/* Show slug */}
+                      <p className="text-xs text-gray-300 font-mono">{service.slug}</p>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center justify-end gap-2 sm:flex-shrink-0">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setDeleteModal({ open: true, id: service._id, loading: false })}
-                        className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                      <button
-                        onClick={() => navigate(`/services/edit/${service._id}`)}
-                        className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
-                      >
-                        <Edit2 size={14} />
-                      </button>
-                    </div>
+                  <div className="flex items-center gap-2 sm:flex-shrink-0">
+                    <button
+                      onClick={() => setDeleteModal({ open: true, id: service._id, loading: false })}
+                      className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                    <button
+                      onClick={() => navigate(`/services/edit/${service._id}`)}
+                      className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
+                    >
+                      <Edit2 size={14} />
+                    </button>
                   </div>
+
                 </div>
               </div>
             );
