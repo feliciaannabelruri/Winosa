@@ -37,7 +37,6 @@ const iconMap: Record<string, any> = {
   "trending-up": TrendingUp,
 };
 
-/* SERVICE YANG BOLEH PUNYA BUTTON */
 const allowedButtons = [
   "ui-ux-design",
   "mobile-app-development",
@@ -112,7 +111,10 @@ export default function SectionServices() {
                 viewport={{ once: true }}
               >
 
-                <Link href={`/Services/${item.slug}`}>
+                <Link
+                  href={`/Services/${item.slug}`}
+                  aria-label={`View details for ${item.title}`}
+                >
 
                   <motion.div
                     whileHover={{ y: -8 }}
@@ -122,9 +124,10 @@ export default function SectionServices() {
 
                     <div className="absolute -inset-16 rounded-[60px] bg-[radial-gradient(circle,rgba(255,200,0,0.6)_0%,rgba(255,200,0,0.35)_40%,transparent_75%)] opacity-0 blur-[90px] transition-all duration-500 group-hover:opacity-100" />
 
-                    <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)] transition-all duration-500 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
+                    <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)] transition-all duration-500 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.25)] focus:outline-none">
 
                       <div className="flex items-start gap-6 mb-6">
+
                         <div className="w-16 h-16 flex items-center justify-center rounded-full border border-black">
                           <IconComponent size={28} strokeWidth={1.5} />
                         </div>
@@ -132,6 +135,7 @@ export default function SectionServices() {
                         <h3 className="text-xl font-semibold leading-tight">
                           {item.title}
                         </h3>
+
                       </div>
 
                       <p className="text-gray-600 leading-relaxed flex-1">

@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 type PlanType = "normal" | "custom";
 
@@ -13,10 +15,6 @@ type Plan = {
   desc: string;
   features: string[];
   type: PlanType;
-};
-
-type Props = {
-  data?: any;
 };
 
 const whatsappNumber = "6281234567890";
@@ -60,8 +58,7 @@ const defaultPlans: Plan[] = [
   },
 ];
 
-export default function SectionPricingWeb({ data }: Props) {
-
+export default function SectionPricingWeb() {
   const { t } = useTranslate();
   const [active, setActive] = useState<number>(0);
 
@@ -70,19 +67,15 @@ export default function SectionPricingWeb({ data }: Props) {
 
       <FadeUp>
         <div className="max-w-7xl mx-auto px-6 text-center mb-16">
-
           <h2 className="text-3xl font-bold text-black mb-3">
             {t("pricing", "title")}
           </h2>
-
           <p className="text-black text-base">
             {t("pricing", "subtitle")}
           </p>
-
         </div>
       </FadeUp>
 
-      {/* GRID FIXED */}
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 xl:grid-cols-3 gap-10">
 
         {defaultPlans.map((plan, i) => {
@@ -122,20 +115,19 @@ export default function SectionPricingWeb({ data }: Props) {
                 </div>
 
                 <ul className="space-y-3 text-sm text-black mb-10 flex-1">
-
                   {plan.features.map((item, idx) => (
                     <li key={idx} className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-yellow-400" />
                       {item}
                     </li>
                   ))}
-
                 </ul>
 
                 {plan.type === "custom" ? (
 
                   <Link
                     href="/Services/customWeb"
+                    aria-label="Custom web service details"
                     className="block text-center w-full py-3 rounded-full border border-black font-semibold text-black hover:bg-black/10 transition"
                   >
                     {t("pricing", "custom")}
@@ -146,6 +138,7 @@ export default function SectionPricingWeb({ data }: Props) {
                   <a
                     href={whatsappLink}
                     target="_blank"
+                    aria-label={`Contact via WhatsApp about ${plan.name}`}
                     className="block text-center w-full py-3 rounded-full border border-black font-semibold text-black hover:bg-black/10 transition"
                   >
                     {t("pricing", "getStarted")}

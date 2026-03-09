@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 type Step = {
   title: string;

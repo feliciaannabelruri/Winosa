@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
 
@@ -8,7 +9,6 @@ export default function SectionFrame() {
 
   return (
     <section className="w-full bg-white py-20 md:py-32">
-
       <motion.h2
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -27,14 +27,14 @@ export default function SectionFrame() {
         href="https://www.google.com/maps/place/Bandar+Lampung,+Indonesia"
         target="_blank"
         rel="noopener noreferrer"
+        aria-label="Open location in Google Maps"
         className="relative block w-full max-w-[1600px] mx-auto px-4"
       >
-
         <div className="relative w-full pt-[60%] md:pt-[50%]">
-
-          <img
+          <Image
             src="/map.jpg"
-            alt="Indonesia Map"
+            alt="Map showing company location in Bandar Lampung Indonesia"
+            fill
             className="absolute inset-0 w-full h-full object-contain"
           />
 
@@ -46,20 +46,15 @@ export default function SectionFrame() {
               transform: "translate(-50%, -100%)",
             }}
           >
-
             <div className="map-pin"></div>
             <div className="map-stick"></div>
 
             <span className="absolute left-full ml-2 sm:ml-3 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs text-black bg-white px-2 sm:px-3 py-1 rounded shadow whitespace-nowrap">
               {t("frame", "location")}
             </span>
-
           </div>
-
         </div>
-
       </motion.a>
-
     </section>
   );
 }

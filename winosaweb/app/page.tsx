@@ -1,12 +1,25 @@
-import SectionHero from "@/components/sectionsHomepage/SectionHero";
-import SectionMap from "@/components/sectionsHomepage/SectionMap";
-import SectionGlass from "@/components/sectionsHomepage/SectionGlass";
-import SectionPreview from "@/components/sectionsHomepage/SectionPreview";
-import SectionCTA from "@/components/layout/SectionCTA";
-import Footer from "@/components/layout/Footer";
+import dynamic from "next/dynamic";
 import api from "@/lib/axios";
 
+const SectionHero = dynamic(() => import("@/components/sectionsHomepage/SectionHero"));
+const SectionMap = dynamic(() => import("@/components/sectionsHomepage/SectionMap"));
+const SectionGlass = dynamic(() => import("@/components/sectionsHomepage/SectionGlass"));
+const SectionPreview = dynamic(() => import("@/components/sectionsHomepage/SectionPreview"));
+const SectionCTA = dynamic(() => import("@/components/layout/SectionCTA"));
+const Footer = dynamic(() => import("@/components/layout/Footer"));
+
+export const metadata = {
+  title: "Winosa Digital Agency",
+  description: "Web development, UI UX design, branding, and digital solutions",
+  openGraph: {
+    title: "Winosa Digital Agency",
+    description: "Web development, UI UX design, branding, and digital solutions",
+    images: ["/og-image.jpg"],
+  },
+};
+
 export default async function HomePage() {
+
   const [servicesRes, portfolioRes, blogRes] = await Promise.all([
     api.get("/services"),
     api.get("/portfolio"),
@@ -37,7 +50,6 @@ export default async function HomePage() {
     slug: `/blog/${item.slug}`,
   }));
 
-  // 🔥 Glass
   let glassData = null;
 
   try {

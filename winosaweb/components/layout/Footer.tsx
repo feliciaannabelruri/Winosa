@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslate } from "@/lib/useTranslate";
 
 export default function Footer() {
@@ -16,10 +17,11 @@ export default function Footer() {
           </h4>
 
           <div className="space-y-3 text-gray-700 text-sm">
-            <Link href="/" className="block hover:text-black transition">
+            <Link href="/" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "company")}
             </Link>
-            <Link href="/About" className="block hover:text-black transition">
+
+            <Link href="/About" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "aboutUs")}
             </Link>
           </div>
@@ -31,13 +33,15 @@ export default function Footer() {
           </h4>
 
           <div className="space-y-3 text-gray-700 text-sm">
-            <Link href="/Services" className="block hover:text-black transition">
+            <Link href="/Services" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "services")}
             </Link>
-            <Link href="/Plans" className="block hover:text-black transition">
+
+            <Link href="/Plans" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "plans")}
             </Link>
-            <Link href="/Contact" className="block hover:text-black transition">
+
+            <Link href="/Contact" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "contact")}
             </Link>
           </div>
@@ -49,24 +53,29 @@ export default function Footer() {
           </h4>
 
           <div className="space-y-3 text-gray-700 text-sm">
-            <Link href="/portofolio" className="block hover:text-black transition">
+            <Link href="/portofolio" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "portfolio")}
             </Link>
-            <Link href="/Blog" className="block hover:text-black transition">
+
+            <Link href="/Blog" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "blog")}
             </Link>
           </div>
         </div>
 
         <div className="space-y-6">
+
           <div className="flex items-center gap-3">
-            <Link href="/">
-              <img
+            <Link href="/" aria-label="Go to homepage">
+              <Image
                 src="/logo.png"
-                alt="Winosa"
-                className="h-14 cursor-pointer"
+                alt="Winosa company logo"
+                width={56}
+                height={56}
+                className="cursor-pointer"
               />
             </Link>
+
             <span className="text-2xl font-bold">
               <span className="text-3xl">W</span>inosa.
             </span>
@@ -82,6 +91,7 @@ export default function Footer() {
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Visit Winosa Facebook"
               className="w-14 h-14 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition"
             >
               <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white">
@@ -93,6 +103,7 @@ export default function Footer() {
               href="https://linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Visit Winosa LinkedIn"
               className="w-14 h-14 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition"
             >
               <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white">
@@ -104,6 +115,7 @@ export default function Footer() {
               href="https://wa.me/628000000000"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Contact Winosa via WhatsApp"
               className="w-14 h-14 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition"
             >
               <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white">
@@ -113,15 +125,18 @@ export default function Footer() {
 
           </div>
         </div>
+
       </div>
 
       <div className="max-w-7xl mx-auto mt-16">
         <div className="h-px bg-black/20 mb-6" />
+
         <div className="flex flex-col md:flex-row justify-between text-sm text-gray-700">
           <span>{t("footer", "location")}</span>
           <span>{t("footer", "copyright")}</span>
         </div>
       </div>
+
     </footer>
   );
 }

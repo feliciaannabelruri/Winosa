@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Button from "@/components/UI/Button";
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionHero() {
   const { t } = useTranslate();
@@ -51,7 +53,7 @@ export default function SectionHero() {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <Link href="/Contact">
+            <Link href="/Contact" aria-label="Go to contact page">
               <Button
                 text={t("servicesHero", "button")}
                 className="border-white text-white hover:bg-white/20"

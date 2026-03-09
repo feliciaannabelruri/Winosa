@@ -2,9 +2,11 @@
 
 import Button from "@/components/UI/Button";
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 type HeroData = {
   title?: string;
@@ -58,7 +60,7 @@ export default function Hero({ data }: { data?: HeroData }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <Link href={link}>
+            <Link href={link} aria-label="Go to contact page">
               <Button
                 text={ctaText}
                 className="border-white text-white hover:bg-white/20"

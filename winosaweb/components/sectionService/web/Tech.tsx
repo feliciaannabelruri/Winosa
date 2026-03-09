@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 type TechGroup = {
   category: string;
@@ -19,45 +21,24 @@ type TechData = {
 };
 
 const defaultTechStack: TechGroup[] = [
-  {
-    category: "Frontend",
-    tech: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
-  },
-  {
-    category: "Backend",
-    tech: ["Node.js", "Express", "REST API"],
-  },
-  {
-    category: "Database",
-    tech: ["MongoDB", "PostgreSQL"],
-  },
+  { category: "Frontend", tech: ["Next.js", "React", "TypeScript", "Tailwind CSS"] },
+  { category: "Backend", tech: ["Node.js", "Express", "REST API"] },
+  { category: "Database", tech: ["MongoDB", "PostgreSQL"] },
 ];
 
 export default function SectionTechWeb({ data }: { data?: TechData }) {
   const { t } = useTranslate();
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState<number | null>(null);
 
   let techStack: TechGroup[] = [];
 
-  if (data?.techStack?.length) {
-    techStack = data.techStack;
-  } else if (data?.features?.length) {
-    techStack = [
-      {
-        category:
-          data.title || t("techSection", "fallbackCategory"),
-        tech: data.features,
-      },
-    ];
-  } else {
-    techStack = defaultTechStack;
-  }
+  if (data?.techStack?.length) techStack = data.techStack;
+  else if (data?.features?.length)
+    techStack = [{ category: data.title || t("techSection", "fallbackCategory"), tech: data.features }];
+  else techStack = defaultTechStack;
 
-  const title =
-    data?.techTitle || t("techSection", "title");
-
-  const subtitle =
-    data?.techSubtitle || t("techSection", "subtitle");
+  const title = data?.techTitle || t("techSection", "title");
+  const subtitle = data?.techSubtitle || t("techSection", "subtitle");
 
   return (
     <section className="w-full bg-white py-32">
@@ -82,6 +63,7 @@ export default function SectionTechWeb({ data }: { data?: TechData }) {
               <motion.div
                 key={i}
                 onMouseEnter={() => setActive(i)}
+                onMouseLeave={() => setActive(null)}
                 animate={{ flex: active === i ? 3 : 1 }}
                 transition={{ duration: 0.5 }}
                 className="relative cursor-pointer flex items-center justify-center bg-white border-r border-black last:border-r-0"
@@ -89,7 +71,7 @@ export default function SectionTechWeb({ data }: { data?: TechData }) {
 
                 {active === i && (
                   <motion.div
-                    layoutId="glow"
+                    layoutId="techGlow"
                     transition={{ duration: 0.4 }}
                     className="absolute inset-0 flex items-center justify-center pointer-events-none"
                   >

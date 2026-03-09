@@ -25,6 +25,7 @@ export default function SectionCTA() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       setError(t("newsletter", "errorInvalid"));
       return;
@@ -33,14 +34,11 @@ export default function SectionCTA() {
     try {
       setLoading(true);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/newsletter`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/newsletter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
       if (res.status === 400) {
         setError(t("newsletter", "errorDuplicate"));
@@ -52,9 +50,7 @@ export default function SectionCTA() {
         return;
       }
 
-      if (!res.ok) {
-        throw new Error();
-      }
+      if (!res.ok) throw new Error();
 
       setSuccess(t("newsletter", "success"));
       setEmail("");
@@ -76,39 +72,45 @@ export default function SectionCTA() {
           viewport={{ once: true }}
           className="mb-20"
         >
+
           <p className="text-sm text-gray-600 mb-6">
             {t("newsletter", "title")}
           </p>
 
           <form
             onSubmit={handleSubscribe}
+            aria-label="Newsletter subscription form"
             className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-lg mx-auto"
           >
+
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("newsletter", "placeholder")}
+              aria-label="Email address"
               className="flex-1 border-b border-black/30 focus:border-black outline-none py-2 bg-transparent text-black text-sm"
             />
 
             <Button
-              text={
-                loading
-                  ? t("newsletter", "subscribing")
-                  : t("newsletter", "subscribe")
-              }
+              text={loading ? t("newsletter", "subscribing") : t("newsletter", "subscribe")}
               className="text-sm px-6 py-2"
             />
+
           </form>
 
           {success && (
-            <p className="text-green-600 text-xs mt-4">{success}</p>
+            <p className="text-green-600 text-xs mt-4" role="status">
+              {success}
+            </p>
           )}
 
           {error && (
-            <p className="text-red-600 text-xs mt-4">{error}</p>
+            <p className="text-red-600 text-xs mt-4" role="alert">
+              {error}
+            </p>
           )}
+
         </motion.div>
 
         <div className="w-24 h-px bg-black/20 mx-auto mb-20" />
@@ -119,6 +121,7 @@ export default function SectionCTA() {
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
+
           <h2 className="text-4xl font-bold mb-6">
             {t("cta", "title")}
           </h2>
@@ -128,10 +131,11 @@ export default function SectionCTA() {
           </p>
 
           <div className="flex justify-center">
-            <Link href="/Contact">
+            <Link href="/Contact" aria-label="Go to contact page">
               <Button text={t("cta", "button")} />
             </Link>
           </div>
+
         </motion.div>
 
       </div>

@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import api from "@/lib/axios";
 import { useTranslate } from "@/lib/useTranslate";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 const whatsappNumber = "6281234567890";
 
@@ -25,6 +27,7 @@ export default function SectionPricingService() {
   useEffect(() => {
 
     const fetchPricing = async () => {
+
       try {
 
         setLoading(true);
@@ -33,12 +36,16 @@ export default function SectionPricingService() {
 
         setServices(res.data?.data || []);
 
-      } catch (err) {
-        console.error(err);
+      } catch {
+
         setServices([]);
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
     fetchPricing();
@@ -49,6 +56,7 @@ export default function SectionPricingService() {
     price?.replace(/starting\s*from\s*/i, "").trim() || "";
 
   return (
+
     <section className="w-full bg-white py-32">
 
       <div className="max-w-7xl mx-auto px-6">
@@ -123,6 +131,7 @@ export default function SectionPricingService() {
                     <Link
                       href={`https://wa.me/${whatsappNumber}?text=Hello%20I%20am%20interested%20in%20${encodeURIComponent(service.title)}`}
                       target="_blank"
+                      aria-label={`Contact via WhatsApp about ${service.title}`}
                       className="block text-center w-full py-3 rounded-full border border-black font-semibold text-black hover:bg-black/10 transition"
                     >
                       {t("pricing", "choose")}

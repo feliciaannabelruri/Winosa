@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { useTranslate } from "@/lib/useTranslate";
 
@@ -41,19 +42,19 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`
-        fixed top-0 left-0 w-full z-50
-        transition-all duration-300
-        ${scrolled ? "bg-white shadow-md" : "bg-transparent"}
-      `}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        scrolled ? "bg-white shadow-md" : "bg-transparent"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
 
-        <Link href="/">
-          <img
+        <Link href="/" aria-label="Go to homepage">
+          <Image
             src="/logo.png"
-            alt="Logo"
-            className="h-11 cursor-pointer"
+            alt="Winosa company logo"
+            width={44}
+            height={44}
+            className="cursor-pointer"
           />
         </Link>
 
@@ -62,13 +63,7 @@ export default function Navbar() {
             <li key={m.name}>
               <Link
                 href={m.href}
-                className="
-                  px-4 py-1.5 rounded-full
-                  border border-transparent
-                  transition
-                  hover:bg-black/20
-                  hover:border-black
-                "
+                className="px-4 py-1.5 rounded-full border border-transparent transition hover:bg-black/20 hover:border-black focus:outline-none focus:underline"
               >
                 {m.name}
               </Link>
@@ -80,44 +75,49 @@ export default function Navbar() {
 
           <button
             onClick={cycleLanguage}
-            className="
-              hidden lg:flex
-              px-5 py-2 rounded-full
-              border-2 border-black text-black
-              text-sm font-medium
-              hover:bg-black/20
-              transition
-            "
+            aria-label="Change language"
+            className="hidden lg:flex px-5 py-2 rounded-full border-2 border-black text-black text-sm font-medium hover:bg-black/20 transition focus:outline-none focus:underline"
           >
             {displayLang}
           </button>
 
           <button
             onClick={() => setOpen(true)}
-            className="lg:hidden text-black text-2xl"
+            aria-label="Open menu"
+            className="lg:hidden text-black text-2xl focus:outline-none"
           >
             ☰
           </button>
+
         </div>
       </div>
 
       {open && (
         <div className="fixed inset-0 z-50 bg-white/90 backdrop-blur-xl px-6 py-8 overflow-y-auto">
           <div className="flex items-center justify-between">
-            <Link href="/" onClick={() => setOpen(false)}>
-              <img
+
+            <Link
+              href="/"
+              onClick={() => setOpen(false)}
+              aria-label="Go to homepage"
+            >
+              <Image
                 src="/logo.png"
-                alt="Logo"
-                className="h-11 cursor-pointer"
+                alt="Winosa company logo"
+                width={44}
+                height={44}
+                className="cursor-pointer"
               />
             </Link>
 
             <button
               onClick={() => setOpen(false)}
-              className="text-black text-2xl"
+              aria-label="Close menu"
+              className="text-black text-2xl focus:outline-none"
             >
               ✕
             </button>
+
           </div>
 
           <div className="w-full h-px bg-black/20 my-6" />
@@ -128,14 +128,7 @@ export default function Navbar() {
                 key={m.name}
                 href={m.href}
                 onClick={() => setOpen(false)}
-                className="
-                  px-5 py-3 rounded-full
-                  border border-transparent
-                  text-black
-                  transition
-                  hover:bg-black/20
-                  hover:border-black
-                "
+                className="px-5 py-3 rounded-full border border-transparent text-black transition hover:bg-black/20 hover:border-black focus:outline-none focus:underline"
               >
                 {m.name}
               </Link>
@@ -143,14 +136,8 @@ export default function Navbar() {
 
             <button
               onClick={cycleLanguage}
-              className="
-                mt-6
-                w-full px-6 py-4 rounded-full
-                border-2 border-black text-black
-                text-sm font-medium
-                hover:bg-black/20
-                transition
-              "
+              aria-label="Change language"
+              className="mt-6 w-full px-6 py-4 rounded-full border-2 border-black text-black text-sm font-medium hover:bg-black/20 transition focus:outline-none focus:underline"
             >
               {displayLang}
             </button>
