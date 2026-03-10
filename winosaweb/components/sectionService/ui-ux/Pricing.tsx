@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 type PlanType = "normal" | "custom";
 
@@ -63,7 +65,7 @@ const defaultPlans: Plan[] = [
   },
 ];
 
-export default function SectionPricingUIUX({ data }: Props) {
+export default function SectionPricingUIUX({}: Props) {
 
   const { t } = useTranslate();
   const [active, setActive] = useState<number>(1);
@@ -85,7 +87,6 @@ export default function SectionPricingUIUX({ data }: Props) {
         </div>
       </FadeUp>
 
-      {/* GRID FIX */}
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 xl:grid-cols-3 gap-10">
 
         {defaultPlans.map((plan, i) => {
@@ -97,6 +98,7 @@ export default function SectionPricingUIUX({ data }: Props) {
             <FadeUp key={i} delay={i * 0.2}>
 
               <div
+                tabIndex={0}
                 onMouseEnter={() => setActive(i)}
                 onMouseLeave={() => setActive(1)}
                 className={`relative rounded-[28px] p-10 bg-white transition-all duration-300 flex flex-col h-full ${
@@ -136,6 +138,7 @@ export default function SectionPricingUIUX({ data }: Props) {
                 {plan.type === "custom" ? (
                   <Link
                     href="/Services/customUi"
+                    aria-label="Custom UI UX service"
                     className="block text-center w-full py-3 rounded-full border border-black font-semibold text-black hover:bg-black/10 transition"
                   >
                     {t("pricing", "custom")}
@@ -144,6 +147,8 @@ export default function SectionPricingUIUX({ data }: Props) {
                   <a
                     href={whatsappLink}
                     target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Contact via WhatsApp about ${plan.name}`}
                     className="block text-center w-full py-3 rounded-full border border-black font-semibold text-black hover:bg-black/10 transition"
                   >
                     {t("pricing", "getStarted")}

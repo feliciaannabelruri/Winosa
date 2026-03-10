@@ -7,8 +7,10 @@ import {
   Smartphone,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionFeaturesUIUX({ data }: { data?: any }) {
   const { t } = useTranslate();
@@ -47,42 +49,41 @@ export default function SectionFeaturesUIUX({ data }: { data?: any }) {
           </div>
 
           <div className="relative flex flex-col gap-10">
-            {features.length > 0 ? (
-              features.map((feature: string, i: number) => {
-                const Icon = iconPool[i % iconPool.length];
+            {features.map((feature: string, i: number) => {
 
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: i * 0.1 }}
-                    viewport={{ once: true }}
-                    className="group relative pl-12"
-                  >
-                    <div className="absolute left-5 top-0 bottom-0 w-px bg-black/10" />
+              const Icon = iconPool[i % iconPool.length];
 
-                    <div className="absolute left-0 top-1 w-10 h-10 rounded-full border border-black flex items-center justify-center bg-white group-hover:bg-yellow-50 transition">
-                      <Icon className="w-5 h-5 text-black" />
-                    </div>
+              return (
+                <motion.div
+                  key={i}
+                  tabIndex={0}
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="group relative pl-12"
+                >
 
-                    <div className="pb-8 border-b border-black/10">
-                      <h3 className="text-lg font-semibold text-black mb-2 transition">
-                        {feature}
-                      </h3>
+                  <div className="absolute left-5 top-0 bottom-0 w-px bg-black/10" />
 
-                      <p className="text-sm text-black/60 leading-relaxed max-w-md">
-                        {t("uiuxFeatures", "fallbackDesc")}
-                      </p>
-                    </div>
-                  </motion.div>
-                );
-              })
-            ) : (
-              <div className="text-black/40 text-sm">
-                {t("uiuxFeatures", "empty")}
-              </div>
-            )}
+                  <div className="absolute left-0 top-1 w-10 h-10 rounded-full border border-black flex items-center justify-center bg-white group-hover:bg-yellow-50 transition">
+                    <Icon className="w-5 h-5 text-black" />
+                  </div>
+
+                  <div className="pb-8 border-b border-black/10">
+                    <h3 className="text-lg font-semibold text-black mb-2">
+                      {feature}
+                    </h3>
+
+                    <p className="text-sm text-black/60 leading-relaxed max-w-md">
+                      {t("uiuxFeatures", "fallbackDesc")}
+                    </p>
+                  </div>
+
+                </motion.div>
+              );
+
+            })}
           </div>
         </div>
       </section>

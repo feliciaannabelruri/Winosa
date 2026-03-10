@@ -1,10 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import Button from "@/components/UI/Button";
 import { useTranslate } from "@/lib/useTranslate";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionHeroUIUX({ data }: { data?: any }) {
   const { t } = useTranslate();
@@ -27,8 +29,9 @@ export default function SectionHeroUIUX({ data }: { data?: any }) {
             {data?.heroLeftImage ? (
               <img
                 src={data.heroLeftImage}
+                alt="UI UX design preview"
+                loading="lazy"
                 className="w-full h-full object-cover"
-                alt="UIUX Left"
               />
             ) : (
               <span className="text-black/40 text-sm">UIUX Preview</span>
@@ -46,8 +49,9 @@ export default function SectionHeroUIUX({ data }: { data?: any }) {
             {data?.heroRightImage ? (
               <img
                 src={data.heroRightImage}
+                alt="UI UX interface example"
+                loading="lazy"
                 className="w-full h-full object-cover"
-                alt="UIUX Right"
               />
             ) : (
               <span className="text-black/40 text-sm">UIUX Preview</span>
@@ -69,12 +73,13 @@ export default function SectionHeroUIUX({ data }: { data?: any }) {
             {description}
           </p>
 
-          <Link href="/Contact">
+          <Link href="/Contact" aria-label="Contact our UI UX design team">
             <Button text={ctaText} />
           </Link>
         </motion.div>
 
         <div className="absolute bottom-0 left-0 w-full h-[200px] bg-gradient-to-t from-white to-transparent" />
+
       </section>
     </FadeUp>
   );

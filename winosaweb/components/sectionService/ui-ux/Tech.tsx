@@ -1,10 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
 
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
+
 export default function SectionTechUIUX({ data }: { data?: any }) {
+
   const { t } = useTranslate();
 
   const defaultTools = [
@@ -17,7 +20,7 @@ export default function SectionTechUIUX({ data }: { data?: any }) {
   ];
 
   const tools =
-    data?.tools && Array.isArray(data.tools) && data.tools.length > 0
+    Array.isArray(data?.tools) && data.tools.length > 0
       ? data.tools
       : defaultTools;
 
@@ -53,6 +56,7 @@ export default function SectionTechUIUX({ data }: { data?: any }) {
             }}
             className="flex whitespace-nowrap"
           >
+
             {[...tools, ...tools].map((tool, i) => (
               <div
                 key={i}
@@ -61,6 +65,7 @@ export default function SectionTechUIUX({ data }: { data?: any }) {
                 {tool}
               </div>
             ))}
+
           </motion.div>
         </div>
       </FadeUp>
@@ -77,6 +82,7 @@ export default function SectionTechUIUX({ data }: { data?: any }) {
 
       <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-white to-transparent pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+
     </section>
   );
 }

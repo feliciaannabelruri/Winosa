@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
 import Button from "@/components/UI/Button";
+import Image from "next/image";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionHeroMobileApp({ data }: { data?: any }) {
   const { t } = useTranslate();
@@ -22,7 +25,12 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
 
             <div className="w-64 h-[500px] bg-white rounded-[40px] shadow-[0_25px_60px_rgba(0,0,0,0.15)] border border-black/10 rotate-[-12deg] absolute overflow-hidden">
               {data?.heroImageSecondary ? (
-                <img src={data.heroImageSecondary} className="w-full h-full object-cover rounded-[40px]" alt="" />
+                <Image
+                  src={data.heroImageSecondary}
+                  alt="Mobile app screen preview"
+                  fill
+                  className="object-cover rounded-[40px]"
+                />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-yellow-50 to-white flex items-center justify-center text-black/40 text-sm">
                   App Screen
@@ -32,7 +40,12 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
 
             <div className="w-64 h-[500px] bg-white rounded-[40px] shadow-[0_25px_60px_rgba(0,0,0,0.15)] border border-black/10 rotate-[8deg] relative overflow-hidden">
               {data?.heroImagePrimary ? (
-                <img src={data.heroImagePrimary} className="w-full h-full object-cover rounded-[40px]" alt="" />
+                <Image
+                  src={data.heroImagePrimary}
+                  alt="Mobile application interface"
+                  fill
+                  className="object-cover rounded-[40px]"
+                />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-yellow-50 to-white flex items-center justify-center text-black/40 text-sm">
                   App Screen
@@ -84,7 +97,7 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.8 }}
             >
-              <Link href="/Contact">
+              <Link href="/Contact" aria-label="Contact our team">
                 <Button
                   text={data?.ctaText || t("mobileHero", "cta")}
                   className="border-black text-black hover:bg-black/10"

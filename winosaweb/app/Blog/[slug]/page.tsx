@@ -97,7 +97,10 @@ export default function BlogDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
+      <main
+        aria-label="Loading blog article"
+        className="min-h-screen flex items-center justify-center"
+      >
         {t("global", "loading")}
       </main>
     );
@@ -105,20 +108,26 @@ export default function BlogDetailPage() {
 
   if (!blog) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
+      <main
+        aria-label="Blog article not found"
+        className="min-h-screen flex items-center justify-center"
+      >
         {t("blogDetail", "notFound")}
       </main>
     );
   }
 
-  // Ambil category dari tags[0] (sesuai struktur backend)
   const category = blog.tags?.[0] || t("blogDetail", "article");
 
   return (
-    <main className="w-full bg-white overflow-x-hidden">
+    <main
+      aria-label="Blog article page"
+      className="w-full bg-white overflow-x-hidden"
+    >
 
       {/* HERO */}
       <section
+        aria-label="Blog article hero"
         className="relative w-full h-[75vh] flex items-end"
         style={{
           backgroundImage: `url(${blog.image || "/bg/bg1.jpg"})`,
@@ -130,6 +139,7 @@ export default function BlogDetailPage() {
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pb-16 text-white">
           <FadeUp>
+
             <span className="inline-block px-4 py-1 rounded-full border border-white text-xs mb-4">
               {category}
             </span>
@@ -143,11 +153,14 @@ export default function BlogDetailPage() {
                 {t("blogDetail", "by")}{" "}
                 {blog.author || t("blogDetail", "defaultAuthor")}
               </span>
+
               <span>•</span>
+
               <span>
                 {new Date(blog.createdAt).toLocaleDateString()}
               </span>
             </div>
+
           </FadeUp>
         </div>
 
@@ -156,9 +169,12 @@ export default function BlogDetailPage() {
 
 
       {/* ARTICLE */}
-      <section className="max-w-5xl mx-auto px-6 py-32 text-black">
+      <section
+        aria-label="Blog article content"
+        className="max-w-5xl mx-auto px-6 py-32 text-black"
+      >
         <FadeUp>
-          {/* ✅ FIX: content adalah HTML dari rich text editor, harus pakai dangerouslySetInnerHTML */}
+
           <motion.article
             className="prose prose-lg max-w-none
               prose-headings:font-bold prose-headings:text-black
@@ -170,12 +186,16 @@ export default function BlogDetailPage() {
             "
             dangerouslySetInnerHTML={{ __html: blog.content }}
           />
+
         </FadeUp>
       </section>
 
 
       {/* RELATED */}
-      <section className="w-full py-32 bg-white">
+      <section
+        aria-label="Related blog articles"
+        className="w-full py-32 bg-white"
+      >
         <div className="max-w-7xl mx-auto px-6 text-black">
 
           <FadeUp>
@@ -185,7 +205,9 @@ export default function BlogDetailPage() {
           </FadeUp>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+
             {related.map((post) => (
+
               <div key={post._id} className="group relative">
 
                 <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-[radial-gradient(circle,rgba(255,200,0,0.65)_0%,rgba(255,200,0,0.45)_35%,transparent_75%)] opacity-0 blur-[80px] transition-all duration-500 group-hover:opacity-100" />
@@ -193,16 +215,19 @@ export default function BlogDetailPage() {
                 <div className="relative h-[420px] flex flex-col bg-white rounded-[28px] border border-black p-6 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
 
                   <div className="h-48 w-full rounded-[20px] overflow-hidden bg-gray-200 mb-5">
+
                     {post.image && (
                       <img
                         src={post.image}
+                        alt={post.title || "Related blog article"}
                         className="w-full h-full object-cover"
-                        alt={post.title}
                       />
                     )}
+
                   </div>
 
                   <div className="flex flex-col flex-grow">
+
                     <h3 className="font-semibold text-lg mb-3 line-clamp-2">
                       {post.title}
                     </h3>
@@ -212,18 +237,25 @@ export default function BlogDetailPage() {
                     </p>
 
                     <div className="mt-auto pt-6">
+
                       <Link
+                        aria-label={`Read article ${post.title}`}
                         href={`/Blog/${post.slug}`}
                         className="inline-block px-6 py-2 rounded-full border border-black text-sm text-black hover:bg-black/10 transition"
                       >
                         {t("blogDetail", "readMore")}
                       </Link>
+
                     </div>
+
                   </div>
 
                 </div>
+
               </div>
+
             ))}
+
           </div>
 
         </div>
@@ -231,7 +263,10 @@ export default function BlogDetailPage() {
 
 
       {/* COMMENTS */}
-      <section className="w-full py-32 bg-white">
+      <section
+        aria-label="Blog comments section"
+        className="w-full py-32 bg-white"
+      >
         <div className="max-w-7xl mx-auto px-6 text-black">
 
           <FadeUp>
@@ -251,7 +286,9 @@ export default function BlogDetailPage() {
 
           <FadeUp>
             <div className="border border-black rounded-[28px] p-8">
+
               <input
+                aria-label="Your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t("blogDetail", "yourName")}
@@ -259,6 +296,7 @@ export default function BlogDetailPage() {
               />
 
               <textarea
+                aria-label="Write your comment"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={t("blogDetail", "writeComment")}
@@ -266,11 +304,13 @@ export default function BlogDetailPage() {
               />
 
               <button
+                aria-label="Post comment"
                 onClick={handlePost}
                 className="mt-6 px-8 py-3 rounded-full border border-black hover:bg-black/10"
               >
                 {t("blogDetail", "post")}
               </button>
+
             </div>
           </FadeUp>
 

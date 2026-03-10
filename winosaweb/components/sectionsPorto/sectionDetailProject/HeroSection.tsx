@@ -17,22 +17,24 @@ interface HeroSectionProps {
 export default function HeroSection({ project }: HeroSectionProps) {
   return (
     <FadeUp>
-      <section className={styles.heroSection}>
+      <section
+        className={styles.heroSection}
+        aria-label="Portfolio project hero"
+      >
 
-        {/* IMAGE */}
         <div className={styles.heroImageWrapper}>
           <Image
             src={project.heroImage}
             alt={project.title}
             fill
             priority
+            sizes="100vw"
             style={{ objectFit: "cover" }}
             className={styles.heroImage}
           />
           <div className={styles.heroOverlay} />
         </div>
 
-        {/* CONTENT */}
         <motion.div
           className={styles.heroContent}
           initial="hidden"

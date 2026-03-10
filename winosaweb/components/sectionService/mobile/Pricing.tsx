@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
 import Button from "@/components/UI/Button";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 type PlanType = "normal" | "custom";
 
@@ -124,6 +126,7 @@ export default function SectionPricingMobile({ data }: { data?: any }) {
         {plans.map((plan, i) => (
           <FadeUp key={i} delay={i * 0.2}>
             <div
+              tabIndex={0}
               onMouseEnter={() => setActive(i)}
               onMouseLeave={() => setActive(1)}
               className={`relative cursor-pointer rounded-[28px] p-10 bg-white transition-all duration-300 flex flex-col h-full ${
@@ -163,7 +166,11 @@ export default function SectionPricingMobile({ data }: { data?: any }) {
 
               <div className="w-full">
                 {plan.type === "custom" ? (
-                  <Link href="/Services/customMobile" className="block w-full">
+                  <Link
+                    href="/Services/customMobile"
+                    aria-label="View custom mobile app development service"
+                    className="block w-full"
+                  >
                     <Button
                       text={t("pricing", "custom")}
                       className="w-full border-black text-black hover:bg-black/10"
@@ -171,8 +178,12 @@ export default function SectionPricingMobile({ data }: { data?: any }) {
                   </Link>
                 ) : (
                   <a
-                    href={`https://wa.me/6281234567890?text=Hello%20I%20am%20interested%20in%20${encodeURIComponent(plan.name)}`}
+                    href={`https://wa.me/6281234567890?text=Hello%20I%20am%20interested%20in%20${encodeURIComponent(
+                      plan.name
+                    )}`}
                     target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Contact via WhatsApp about ${plan.name}`}
                     className="block w-full"
                   >
                     <Button

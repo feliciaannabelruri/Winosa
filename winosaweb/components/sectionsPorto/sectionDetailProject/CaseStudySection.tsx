@@ -22,10 +22,12 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
 
   return (
     <FadeUp>
-      <section className={styles.caseStudySection}>
+      <section
+        className={styles.caseStudySection}
+        aria-label="Project case study"
+      >
         <div className={styles.caseStudyContainer}>
 
-          {/* TITLE */}
           <motion.h2
             className={styles.sectionTitle}
             initial={{ opacity: 0, y: 60 }}
@@ -36,8 +38,6 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
             {t("portfolioCaseStudy", "title")}
           </motion.h2>
 
-
-          {/* FLOW */}
           <motion.div
             className={styles.caseStudyFlow}
             initial="hidden"
@@ -53,14 +53,12 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
             }}
           >
 
-            {/* STEP 1 */}
             <motion.div
               className={styles.caseStudyBlock}
               variants={{
                 hidden: { opacity: 0, y: 60 },
                 visible: { opacity: 1, y: 0 },
               }}
-              transition={{ duration: 0.8 }}
             >
               <span className={styles.caseStudyStep}>
                 {t("portfolioCaseStudy", "step01")}
@@ -75,15 +73,12 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
               </p>
             </motion.div>
 
-
-            {/* STEP 2 */}
             <motion.div
               className={styles.caseStudyBlock}
               variants={{
                 hidden: { opacity: 0, y: 60 },
                 visible: { opacity: 1, y: 0 },
               }}
-              transition={{ duration: 0.8 }}
             >
               <span className={styles.caseStudyStep}>
                 {t("portfolioCaseStudy", "step02")}
@@ -98,15 +93,12 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
               </p>
             </motion.div>
 
-
-            {/* STEP 3 */}
             <motion.div
               className={styles.caseStudyBlock}
               variants={{
                 hidden: { opacity: 0, y: 60 },
                 visible: { opacity: 1, y: 0 },
               }}
-              transition={{ duration: 0.8 }}
             >
               <span className={styles.caseStudyStep}>
                 {t("portfolioCaseStudy", "step03")}
@@ -122,59 +114,6 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
             </motion.div>
 
           </motion.div>
-
-
-          {/* METRICS */}
-          {project.metrics && project.metrics.length > 0 && (
-            <motion.div
-              className={styles.metricsWrapper}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={{
-                hidden: {},
-                visible: {
-                  transition: {
-                    staggerChildren: 0.15,
-                  },
-                },
-              }}
-            >
-              <motion.h3
-                className={styles.metricsTitle}
-                variants={{
-                  hidden: { opacity: 0, y: 60 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                transition={{ duration: 0.8 }}
-              >
-                {t("portfolioCaseStudy", "impact")}
-              </motion.h3>
-
-              <div className={styles.metricsGrid}>
-                {project.metrics.map((metric, index) => (
-                  <motion.div
-                    key={index}
-                    className={styles.metricCard}
-                    variants={{
-                      hidden: { opacity: 0, y: 60 },
-                      visible: { opacity: 1, y: 0 },
-                    }}
-                    transition={{ duration: 0.7 }}
-                  >
-                    <span className={styles.metricValue}>
-                      {metric.value}
-                    </span>
-
-                    <span className={styles.metricLabel}>
-                      {metric.label}
-                    </span>
-
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
 
         </div>
       </section>

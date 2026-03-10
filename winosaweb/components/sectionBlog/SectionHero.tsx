@@ -12,6 +12,7 @@ export default function SectionBlogHero() {
   return (
     <FadeUp>
       <section
+        aria-label="Blog hero section"
         className="relative w-full min-h-screen flex items-center justify-center overflow-hidden"
         style={{
           backgroundImage: "url('/bg/bg9.jpg')",
@@ -32,14 +33,12 @@ export default function SectionBlogHero() {
           }}
         >
 
-          {/* BADGE */}
           <motion.div
             className="flex items-center justify-center gap-4 mb-8"
             variants={{
               hidden: { opacity: 0, y: 60 },
               visible: { opacity: 1, y: 0 },
             }}
-            transition={{ duration: 0.8 }}
           >
             <span className="w-10 h-px bg-white/60" />
 
@@ -50,40 +49,30 @@ export default function SectionBlogHero() {
             <span className="w-10 h-px bg-white/60" />
           </motion.div>
 
-          {/* TITLE */}
           <motion.h1
             className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight"
             variants={{
               hidden: { opacity: 0, y: 60 },
               visible: { opacity: 1, y: 0 },
             }}
-            transition={{ duration: 0.8 }}
           >
             {t("blogHero", "title")}
           </motion.h1>
 
-          {/* DESCRIPTION */}
           <motion.p
             className="text-white/90 text-lg max-w-2xl mx-auto mb-12 leading-relaxed"
             variants={{
               hidden: { opacity: 0, y: 60 },
               visible: { opacity: 1, y: 0 },
             }}
-            transition={{ duration: 0.8 }}
           >
             {t("blogHero", "description")}
           </motion.p>
 
-          {/* BUTTON */}
-          <motion.div
-            variants={{
-              hidden: { opacity: 0, y: 60 },
-              visible: { opacity: 1, y: 0 },
-            }}
-            transition={{ duration: 0.8 }}
-          >
+          <motion.div>
             <Link
               href="/Contact"
+              aria-label="Contact us"
               className="inline-block px-8 py-3 rounded-full border border-white text-white font-semibold transition hover:bg-white/20"
             >
               {t("blogHero", "cta")}

@@ -10,7 +10,10 @@ export default function SectionBridge() {
 
   return (
     <FadeUp>
-      <section className={styles.bridgeSection}>
+      <section
+        className={styles.bridgeSection}
+        aria-label="Portfolio bridge section"
+      >
         <motion.div
           className={styles.bigTitle}
           initial={{ opacity: 0, y: 80 }}

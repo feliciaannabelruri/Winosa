@@ -17,6 +17,10 @@ type Plan = {
   type: PlanType;
 };
 
+type Props = {
+  data?: any;
+};
+
 const whatsappNumber = "6281234567890";
 
 const defaultPlans: Plan[] = [
@@ -58,7 +62,8 @@ const defaultPlans: Plan[] = [
   },
 ];
 
-export default function SectionPricingWeb() {
+export default function SectionPricingWeb({}: Props) {
+
   const { t } = useTranslate();
   const [active, setActive] = useState<number>(0);
 
@@ -138,6 +143,7 @@ export default function SectionPricingWeb() {
                   <a
                     href={whatsappLink}
                     target="_blank"
+                    rel="noopener noreferrer"
                     aria-label={`Contact via WhatsApp about ${plan.name}`}
                     className="block text-center w-full py-3 rounded-full border border-black font-semibold text-black hover:bg-black/10 transition"
                   >

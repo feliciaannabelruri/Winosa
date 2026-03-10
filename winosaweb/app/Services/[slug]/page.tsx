@@ -25,10 +25,12 @@ import WebTech from "@/components/sectionService/web/Tech";
 import WebPricing from "@/components/sectionService/web/Pricing";
 
 export default function ServiceDetailPage() {
+
   const params = useParams();
+
   const slug = Array.isArray(params.slug)
     ? params.slug[0]
-    : params.slug;
+    : params.slug as string;
 
   const [service, setService] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +40,7 @@ export default function ServiceDetailPage() {
 
     const fetchService = async () => {
       try {
+
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/services/${slug}`
         );
@@ -49,6 +52,7 @@ export default function ServiceDetailPage() {
 
         const data = await res.json();
         setService(data.data);
+
       } catch (error) {
         console.error("Error fetching service:", error);
         setService(null);
@@ -58,6 +62,7 @@ export default function ServiceDetailPage() {
     };
 
     fetchService();
+
   }, [slug]);
 
   if (loading) {
@@ -77,6 +82,7 @@ export default function ServiceDetailPage() {
   }
 
   switch (slug) {
+
     case "ui-ux-design":
       return (
         <main className="bg-white">
@@ -120,4 +126,5 @@ export default function ServiceDetailPage() {
         </main>
       );
   }
+
 }

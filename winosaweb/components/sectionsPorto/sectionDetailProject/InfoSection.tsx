@@ -20,43 +20,21 @@ export default function InfoSection({ project }: InfoSectionProps) {
 
   return (
     <FadeUp>
-      <section className={styles.infoSection}>
+      <section
+        className={styles.infoSection}
+        aria-label="Project overview"
+      >
         <div className={styles.infoContainer}>
 
-          {/* TITLE */}
           <motion.h2
             className={styles.sectionTitle}
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
           >
             {t("portfolioDetail", "overview")}
           </motion.h2>
 
-          {/* INFO GRID */}
-          <motion.div
-            className={styles.infoGrid}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              hidden: {},
-              visible: {
-                transition: { staggerChildren: 0.2 },
-              },
-            }}
-          >
+          <div className={styles.infoGrid}>
 
-            {/* CLIENT */}
-            <motion.div
-              className={styles.infoCard}
-              variants={{
-                hidden: { opacity: 0, y: 60 },
-                visible: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: 0.8 }}
-            >
+            <div className={styles.infoCard}>
               <span className={styles.infoLabel}>
                 {t("portfolioDetail", "client")}
               </span>
@@ -64,17 +42,9 @@ export default function InfoSection({ project }: InfoSectionProps) {
               <span className={styles.infoValue}>
                 {project.client}
               </span>
-            </motion.div>
+            </div>
 
-            {/* YEAR */}
-            <motion.div
-              className={styles.infoCard}
-              variants={{
-                hidden: { opacity: 0, y: 60 },
-                visible: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: 0.8 }}
-            >
+            <div className={styles.infoCard}>
               <span className={styles.infoLabel}>
                 {t("portfolioDetail", "year")}
               </span>
@@ -82,92 +52,29 @@ export default function InfoSection({ project }: InfoSectionProps) {
               <span className={styles.infoValue}>
                 {project.year}
               </span>
-            </motion.div>
+            </div>
 
-            {/* DURATION */}
-            {project.duration && (
-              <motion.div
-                className={styles.infoCard}
-                variants={{
-                  hidden: { opacity: 0, y: 60 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                transition={{ duration: 0.8 }}
-              >
-                <span className={styles.infoLabel}>
-                  {t("portfolioDetail", "duration")}
-                </span>
+          </div>
 
-                <span className={styles.infoValue}>
-                  {project.duration}
-                </span>
-              </motion.div>
-            )}
-
-            {/* ROLE */}
-            {project.role && (
-              <motion.div
-                className={styles.infoCard}
-                variants={{
-                  hidden: { opacity: 0, y: 60 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                transition={{ duration: 0.8 }}
-              >
-                <span className={styles.infoLabel}>
-                  {t("portfolioDetail", "role")}
-                </span>
-
-                <span className={styles.infoValue}>
-                  {project.role}
-                </span>
-              </motion.div>
-            )}
-
-          </motion.div>
-
-          {/* TECH STACK */}
-          <motion.div
-            className={styles.techStack}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              hidden: {},
-              visible: {
-                transition: { staggerChildren: 0.15 },
-              },
-            }}
-          >
-
-            <motion.h3
-              className={styles.techStackTitle}
-              variants={{
-                hidden: { opacity: 0, y: 60 },
-                visible: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: 0.8 }}
-            >
+          <div className={styles.techStack}>
+            <h3 className={styles.techStackTitle}>
               {t("portfolioDetail", "technologies")}
-            </motion.h3>
+            </h3>
 
             <div className={styles.techTags}>
               {project.technologies.map((tech, index) => (
-                <motion.span
+
+                <span
                   key={index}
                   className={styles.techTag}
-                  variants={{
-                    hidden: { opacity: 0, y: 40 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.6 }}
                 >
                   {tech}
-                </motion.span>
+                </span>
+
               ))}
             </div>
 
-          </motion.div>
+          </div>
 
         </div>
       </section>

@@ -13,7 +13,7 @@ type Blog = {
   content: string;
   excerpt?: string;
   image?: string;
-  tags?: string[];   // ✅ category tersimpan di tags[0]
+  tags?: string[];
   slug: string;
   createdAt: string;
 };
@@ -51,10 +51,8 @@ export default function SectionBlog() {
     const active = activeCategory.toLowerCase();
 
     return blogs.filter((blog) => {
-      const title   = blog.title?.toLowerCase() || "";
+      const title = blog.title?.toLowerCase() || "";
       const content = blog.content?.toLowerCase() || "";
-
-      // ✅ FIX: category tersimpan di tags[0], bukan field category
       const blogCategory = (blog.tags?.[0] || "").toLowerCase();
 
       const matchSearch =
@@ -72,7 +70,10 @@ export default function SectionBlog() {
   const categories = ["All", "Insight", "Design", "Tech", "Tutorial", "News", "Case Study"];
 
   return (
-    <section className="w-full bg-white py-32 overflow-hidden">
+    <section
+      aria-label="Blog articles"
+      className="w-full bg-white py-32 overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto px-6 text-black">
 
         <FadeUp>
@@ -84,6 +85,7 @@ export default function SectionBlog() {
         <FadeUp>
           <div className="flex gap-4 mb-6">
             <input
+              aria-label="Search blog articles"
               type="text"
               placeholder={t("blogSection", "search")}
               value={search}
@@ -98,6 +100,7 @@ export default function SectionBlog() {
             {categories.map((cat) => (
               <button
                 key={cat}
+                aria-label={`Filter blog by ${cat}`}
                 onClick={() => setActiveCategory(cat)}
                 className={`px-5 py-2 rounded-full border text-sm transition ${
                   activeCategory === cat
@@ -143,7 +146,6 @@ function BlogCard({ blog }: { blog: Blog }) {
 
   const { t } = useTranslate();
 
-  // ✅ category dari tags[0]
   const category = blog.tags?.[0] || "";
 
   return (
@@ -158,7 +160,7 @@ function BlogCard({ blog }: { blog: Blog }) {
             <img
               src={blog.image}
               className="w-full h-full object-cover"
-              alt={blog.title}
+              alt={blog.title || "Blog article image"}
             />
           ) : (
             <div className="w-full h-full bg-gray-200" />
@@ -179,6 +181,7 @@ function BlogCard({ blog }: { blog: Blog }) {
           </p>
 
           <Link
+            aria-label={`Read article ${blog.title}`}
             href={`/Blog/${blog.slug}`}
             className="inline-block px-6 py-2 rounded-full border border-black text-sm text-black transition hover:bg-black/10"
           >

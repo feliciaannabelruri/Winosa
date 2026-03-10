@@ -16,49 +16,44 @@ interface NextProjectSectionProps {
   };
 }
 
-export default function NextProjectSection({
-  nextProject,
-}: NextProjectSectionProps) {
+export default function NextProjectSection({ nextProject }: NextProjectSectionProps) {
+
   const { t } = useTranslate();
 
   return (
     <FadeUp>
-      <section className={styles.nextProjectSection}>
+      <section
+        className={styles.nextProjectSection}
+        aria-label="Next project"
+      >
+
         <div className={styles.nextProjectContainer}>
 
-          {/* LABEL */}
-          <motion.h2
-            className={styles.nextProjectLabel}
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
+          <motion.h2 className={styles.nextProjectLabel}>
             {t("portfolioDetail", "nextProject")}
           </motion.h2>
 
-          {/* CARD */}
-          <motion.div
-            initial={{ opacity: 0, y: 80 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9 }}
-            viewport={{ once: true }}
-          >
+          <motion.div>
+
             <Link
               href={`/portofolio/${nextProject.slug}`}
+              aria-label={`Open next project ${nextProject.title}`}
               className={styles.nextProjectCard}
             >
+
               <div className={styles.nextProjectImageWrapper}>
                 <Image
                   src={nextProject.image}
                   alt={nextProject.title}
                   fill
+                  sizes="(max-width:768px) 100vw, 50vw"
                   style={{ objectFit: "cover" }}
                   className={styles.nextProjectImage}
                 />
               </div>
 
               <div className={styles.nextProjectContent}>
+
                 <h3 className={styles.nextProjectTitle}>
                   {nextProject.title}
                 </h3>
@@ -67,21 +62,23 @@ export default function NextProjectSection({
                   {nextProject.description}
                 </p>
 
-                <span className={styles.nextProjectArrow}>→</span>
+                <span
+                  className={styles.nextProjectArrow}
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+
               </div>
+
             </Link>
+
           </motion.div>
 
-          {/* BACK BUTTON */}
-          <motion.div
-            className={styles.backToPortfolioWrapper}
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
+          <motion.div className={styles.backToPortfolioWrapper}>
             <Link
               href="/portofolio"
+              aria-label="Back to portfolio"
               className={styles.backToPortfolioButton}
             >
               ← {t("portfolioDetail", "backToPortfolio")}
@@ -89,6 +86,7 @@ export default function NextProjectSection({
           </motion.div>
 
         </div>
+
       </section>
     </FadeUp>
   );

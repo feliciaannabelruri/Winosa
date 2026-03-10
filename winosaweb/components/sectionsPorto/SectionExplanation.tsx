@@ -10,8 +10,12 @@ export default function SectionExplanation() {
 
   return (
     <FadeUp>
-      <section className={styles.explanationSection}>
+      <section
+        className={styles.explanationSection}
+        aria-label="Portfolio explanation"
+      >
         <div className={styles.explanationContainer}>
+
           <motion.div
             className={styles.explanationContent}
             initial="hidden"
@@ -27,7 +31,6 @@ export default function SectionExplanation() {
             }}
           >
 
-            {/* BADGE */}
             <motion.span
               className={styles.explanationBadge}
               variants={{
@@ -39,8 +42,6 @@ export default function SectionExplanation() {
               {t("portfolioExplanation", "badge")}
             </motion.span>
 
-
-            {/* TITLE */}
             <motion.h2
               className={styles.explanationTitle}
               variants={{
@@ -55,8 +56,6 @@ export default function SectionExplanation() {
               </span>
             </motion.h2>
 
-
-            {/* DESCRIPTION */}
             <motion.p
               className={styles.explanationText}
               variants={{
@@ -68,8 +67,6 @@ export default function SectionExplanation() {
               {t("portfolioExplanation", "description")}
             </motion.p>
 
-
-            {/* STATS */}
             <motion.div
               className={styles.highlightStats}
               variants={{
@@ -82,7 +79,6 @@ export default function SectionExplanation() {
               }}
             >
 
-              {/* TEAM */}
               <motion.div
                 className={styles.highlightItem}
                 variants={{
@@ -91,16 +87,12 @@ export default function SectionExplanation() {
                 }}
                 transition={{ duration: 0.8 }}
               >
-                <h3 className={styles.highlightNumber}>
-                  24+
-                </h3>
+                <h3 className={styles.highlightNumber}>24+</h3>
                 <p className={styles.highlightLabel}>
                   {t("portfolioExplanation.stats", "team")}
                 </p>
               </motion.div>
 
-
-              {/* PROJECTS */}
               <motion.div
                 className={styles.highlightItem}
                 variants={{
@@ -109,16 +101,12 @@ export default function SectionExplanation() {
                 }}
                 transition={{ duration: 0.8 }}
               >
-                <h3 className={styles.highlightNumber}>
-                  15+
-                </h3>
+                <h3 className={styles.highlightNumber}>15+</h3>
                 <p className={styles.highlightLabel}>
                   {t("portfolioExplanation.stats", "projects")}
                 </p>
               </motion.div>
 
-
-              {/* QUALITY */}
               <motion.div
                 className={styles.highlightItem}
                 variants={{
@@ -127,9 +115,7 @@ export default function SectionExplanation() {
                 }}
                 transition={{ duration: 0.8 }}
               >
-                <h3 className={styles.highlightNumber}>
-                  100%
-                </h3>
+                <h3 className={styles.highlightNumber}>100%</h3>
                 <p className={styles.highlightLabel}>
                   {t("portfolioExplanation.stats", "quality")}
                 </p>
@@ -138,6 +124,7 @@ export default function SectionExplanation() {
             </motion.div>
 
           </motion.div>
+
         </div>
       </section>
     </FadeUp>

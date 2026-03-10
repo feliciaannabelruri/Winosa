@@ -20,7 +20,10 @@ export default function SectionPortoHero() {
 
   return (
     <FadeUp>
-      <section className={styles.hero}>
+      <section
+        className={styles.hero}
+        aria-label="Portfolio hero section"
+      >
         <div className={styles.overlay} />
 
         <motion.div
@@ -73,6 +76,7 @@ export default function SectionPortoHero() {
           </motion.p>
 
           <motion.button
+            aria-label="Scroll to portfolio projects"
             className={styles.heroButton}
             onClick={scrollToCards}
             variants={{
@@ -82,7 +86,12 @@ export default function SectionPortoHero() {
             transition={{ duration: 0.8 }}
           >
             {t("portfolioHero", "button")}
-            <span className={styles.arrow}>→</span>
+            <span
+              className={styles.arrow}
+              aria-hidden="true"
+            >
+              →
+            </span>
           </motion.button>
         </motion.div>
       </section>
