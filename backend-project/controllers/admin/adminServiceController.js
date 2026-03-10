@@ -10,14 +10,16 @@ const CACHE_PREFIX = 'service';
 // @route   POST /api/admin/services
 // @access  Private/Admin
 exports.createService = asyncHandler(async (req, res, next) => {
-  const { title, slug, description, icon, features, price, isActive } = req.body;
+  const { slug } = req.body;
 
   const existingService = await Service.findOne({ slug }).lean();
   if (existingService) {
     return next(new ErrorResponse('Service with this slug already exists', 400));
   }
 
-  const service = await Service.create({ title, slug, description, icon, features, price, isActive });
+  // Langsung pakai req.body — semua field dari form diteruskan ke model
+  // Model yang handle field apa saja yang valid
+  const service = await Service.create(req.body);
 
   cache.invalidatePrefix(CACHE_PREFIX);
 
@@ -52,6 +54,7 @@ exports.updateService = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(getTranslation(lang, 'serviceNotFound'), 404));
   }
 
+  // Cek slug duplicate kalau diubah
   if (req.body.slug && req.body.slug !== service.slug) {
     const existing = await Service.findOne({ slug: req.body.slug }).lean();
     if (existing) {
@@ -59,6 +62,7 @@ exports.updateService = asyncHandler(async (req, res, next) => {
     }
   }
 
+  // Langsung update dengan semua field dari req.body
   service = await Service.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,

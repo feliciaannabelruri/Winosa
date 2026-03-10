@@ -1,10 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const { createContact, getContacts } = require('../controllers/contactController');
+const {
+  createContact,
+  getContacts,
+  updateContact,
+  replyContact,
+} = require('../controllers/contactController');
 const { protect, admin } = require('../middleware/auth');
 const { contactLimiter } = require('../middleware/rateLimiter');
 
-router.post('/', contactLimiter, createContact); // Apply rate limit
+// Public
+router.post('/', contactLimiter, createContact);
+
+// Admin only
 router.get('/', protect, admin, getContacts);
+router.patch('/:id', protect, admin, updateContact);
+router.post('/:id/reply', protect, admin, replyContact);
 
 module.exports = router;
