@@ -30,7 +30,6 @@ export default function BlogDetailPage() {
   const [related, setRelated] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ COMMENT STATE TIDAK AKAN HILANG
   const [comments, setComments] = useState<
     { name: string; message: string }[]
   >(() => {
@@ -46,13 +45,10 @@ export default function BlogDetailPage() {
   // ================= FETCH =================
 
   useEffect(() => {
-
     if (!slug) return;
 
     const fetchData = async () => {
-
       try {
-
         const detailRes = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/blog/${slug}`
         );
@@ -68,14 +64,10 @@ export default function BlogDetailPage() {
         const listRes = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/blog`
         );
-
         const listData = await listRes.json();
-
-        const filtered =
-          (listData.data || [])
-            .filter((item: Blog) => item.slug !== slug)
-            .slice(0, 3);
-
+        const filtered = (listData.data || [])
+          .filter((item: Blog) => item.slug !== slug)
+          .slice(0, 3);
         setRelated(filtered);
 
       } catch (err) {
@@ -84,34 +76,21 @@ export default function BlogDetailPage() {
       } finally {
         setLoading(false);
       }
-
     };
 
     fetchData();
-
   }, [slug]);
 
-  // ✅ SAVE COMMENTS
   useEffect(() => {
     if (!slug) return;
-    localStorage.setItem(
-      `comments-${slug}`,
-      JSON.stringify(comments)
-    );
+    localStorage.setItem(`comments-${slug}`, JSON.stringify(comments));
   }, [comments, slug]);
 
   const handlePost = () => {
-
     if (!name.trim() || !message.trim()) return;
-
-    setComments([
-      ...comments,
-      { name, message }
-    ]);
-
+    setComments([...comments, { name, message }]);
     setName("");
     setMessage("");
-
   };
 
   // ================= LOADING =================
@@ -132,8 +111,10 @@ export default function BlogDetailPage() {
     );
   }
 
-  return (
+  // Ambil category dari tags[0] (sesuai struktur backend)
+  const category = blog.tags?.[0] || t("blogDetail", "article");
 
+  return (
     <main className="w-full bg-white overflow-x-hidden">
 
       {/* HERO */}
@@ -148,11 +129,9 @@ export default function BlogDetailPage() {
         <div className="absolute inset-0 bg-black/40" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pb-16 text-white">
-
           <FadeUp>
-
             <span className="inline-block px-4 py-1 rounded-full border border-white text-xs mb-4">
-              {blog.tags?.[0] || t("blogDetail", "article")}
+              {category}
             </span>
 
             <h1 className="text-3xl md:text-5xl font-bold mb-4">
@@ -169,22 +148,28 @@ export default function BlogDetailPage() {
                 {new Date(blog.createdAt).toLocaleDateString()}
               </span>
             </div>
-
           </FadeUp>
-
         </div>
 
         <div className="absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-white to-transparent" />
-
       </section>
 
 
       {/* ARTICLE */}
       <section className="max-w-5xl mx-auto px-6 py-32 text-black">
         <FadeUp>
-          <motion.article className="prose prose-lg max-w-none">
-            {blog.content}
-          </motion.article>
+          {/* ✅ FIX: content adalah HTML dari rich text editor, harus pakai dangerouslySetInnerHTML */}
+          <motion.article
+            className="prose prose-lg max-w-none
+              prose-headings:font-bold prose-headings:text-black
+              prose-p:text-black/80 prose-p:leading-relaxed
+              prose-a:text-blue-600 prose-a:underline
+              prose-img:rounded-2xl prose-img:w-full
+              prose-ul:list-disc prose-ol:list-decimal
+              prose-blockquote:border-l-4 prose-blockquote:border-black/20 prose-blockquote:pl-4 prose-blockquote:italic
+            "
+            dangerouslySetInnerHTML={{ __html: blog.content }}
+          />
         </FadeUp>
       </section>
 
@@ -200,37 +185,12 @@ export default function BlogDetailPage() {
           </FadeUp>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-
             {related.map((post) => (
-
               <div key={post._id} className="group relative">
 
-                {/* 🔥 GLOW CONSISTENT */}
-                <div
-                  className="
-                    pointer-events-none
-                    absolute -inset-6
-                    rounded-[40px]
-                    bg-[radial-gradient(circle,rgba(255,200,0,0.65)_0%,rgba(255,200,0,0.45)_35%,transparent_75%)]
-                    opacity-0
-                    blur-[80px]
-                    transition-all duration-500
-                    group-hover:opacity-100
-                  "
-                />
+                <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-[radial-gradient(circle,rgba(255,200,0,0.65)_0%,rgba(255,200,0,0.45)_35%,transparent_75%)] opacity-0 blur-[80px] transition-all duration-500 group-hover:opacity-100" />
 
-                <div
-                  className="
-                    relative
-                    h-[420px] flex flex-col bg-white
-                    rounded-[28px]
-                    border border-black
-                    p-6
-                    transition-all duration-500
-                    group-hover:-translate-y-1
-                    group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]
-                  "
-                >
+                <div className="relative h-[420px] flex flex-col bg-white rounded-[28px] border border-black p-6 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
 
                   <div className="h-48 w-full rounded-[20px] overflow-hidden bg-gray-200 mb-5">
                     {post.image && (
@@ -262,11 +222,8 @@ export default function BlogDetailPage() {
                   </div>
 
                 </div>
-
               </div>
-
             ))}
-
           </div>
 
         </div>
@@ -285,10 +242,7 @@ export default function BlogDetailPage() {
 
           <div className="grid md:grid-cols-2 gap-10 mb-16">
             {comments.map((c, i) => (
-              <div
-                key={i}
-                className="border border-black rounded-[28px] p-6"
-              >
+              <div key={i} className="border border-black rounded-[28px] p-6">
                 <p className="font-semibold mb-2">{c.name}</p>
                 <p className="text-sm text-black/70">{c.message}</p>
               </div>
@@ -327,5 +281,4 @@ export default function BlogDetailPage() {
 
     </main>
   );
-
 }

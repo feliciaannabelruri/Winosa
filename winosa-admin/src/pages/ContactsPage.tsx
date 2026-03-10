@@ -29,6 +29,7 @@ const ContactsPage: React.FC = () => {
   }, []);
 
   // Persist read/unread to backend — optimistic update
+  // FIX: path changed from /contacts/ to /contact/
   const toggleRead = async (contactId: string) => {
     const contact = contacts.find(c => c._id === contactId);
     if (!contact) return;
@@ -42,13 +43,14 @@ const ContactsPage: React.FC = () => {
     }
 
     try {
-      await api.patch(`/contacts/${contactId}`, { isRead: newIsRead });
+      await api.patch(`/contact/${contactId}`, { isRead: newIsRead });
     } catch {
       // Revert on failure
       setContacts(prev => prev.map(c => c._id === contactId ? { ...c, isRead: !newIsRead } : c));
       if (selected?._id === contactId) {
         setSelected(prev => prev ? { ...prev, isRead: !newIsRead } : null);
       }
+      toast.error('Failed to update status');
     }
   };
 
@@ -61,30 +63,29 @@ const ContactsPage: React.FC = () => {
       setContacts(prev => prev.map(c => c._id === contact._id ? { ...c, isRead: true } : c));
       setSelected({ ...contact, isRead: true });
 
-      // Persist
+      // FIX: path changed from /contacts/ to /contact/
       try {
-        await api.patch(`/contacts/${contact._id}`, { isRead: true });
+        await api.patch(`/contact/${contact._id}`, { isRead: true });
       } catch {
         // silent — will show correct on next refresh
       }
     }
   };
 
+  // FIX: path changed from /contacts/ to /contact/, no more 404 fallback to mailto
   const handleReply = async () => {
     if (!replyText.trim() || !selected) return;
     setReplying(true);
     try {
-      await api.post(`/contacts/${selected._id}/reply`, { message: replyText });
+      await api.post(`/contact/${selected._id}/reply`, { message: replyText });
       toast.success('Reply sent to ' + selected.email);
       setReplyText('');
+      // Mark as read in local state after reply
+      setContacts(prev => prev.map(c => c._id === selected._id ? { ...c, isRead: true } : c));
+      setSelected(prev => prev ? { ...prev, isRead: true } : null);
     } catch (err: any) {
       const msg = err?.response?.data?.message;
-      if (err?.response?.status === 404) {
-        // Endpoint not set up yet — fallback to mailto
-        window.location.href = `mailto:${selected.email}?subject=Re: ${selected.subject || 'Your inquiry'}&body=${encodeURIComponent(replyText)}`;
-      } else {
-        toast.error(msg || 'Failed to send reply');
-      }
+      toast.error(msg || 'Failed to send reply');
     } finally {
       setReplying(false);
     }

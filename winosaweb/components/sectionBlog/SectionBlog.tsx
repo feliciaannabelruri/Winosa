@@ -13,7 +13,7 @@ type Blog = {
   content: string;
   excerpt?: string;
   image?: string;
-  category?: string;
+  tags?: string[];   // ✅ category tersimpan di tags[0]
   slug: string;
   createdAt: string;
 };
@@ -27,7 +27,6 @@ export default function SectionBlog() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
 
-  // 🔥 FETCH CUMA SEKALI
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -35,7 +34,6 @@ export default function SectionBlog() {
           `${process.env.NEXT_PUBLIC_API_URL}/blog`,
           { cache: "no-store" }
         );
-
         const data = await res.json();
         setBlogs(data.data || []);
       } catch (err) {
@@ -48,36 +46,30 @@ export default function SectionBlog() {
     fetchBlogs();
   }, []);
 
-  // 🔥 FILTER PAKAI useMemo BIAR TIDAK MUTASI DATA
   const filteredBlogs = useMemo(() => {
-
     const searchTerm = search.trim().toLowerCase();
     const active = activeCategory.toLowerCase();
 
     return blogs.filter((blog) => {
-
-      const title = blog.title?.toLowerCase() || "";
+      const title   = blog.title?.toLowerCase() || "";
       const content = blog.content?.toLowerCase() || "";
-      const blogCategory = blog.category?.toLowerCase() || "";
+
+      // ✅ FIX: category tersimpan di tags[0], bukan field category
+      const blogCategory = (blog.tags?.[0] || "").toLowerCase();
 
       const matchSearch =
         searchTerm === ""
           ? true
-          : title.includes(searchTerm) ||
-            content.includes(searchTerm);
+          : title.includes(searchTerm) || content.includes(searchTerm);
 
       const matchCategory =
-        active === "all"
-          ? true
-          : blogCategory.includes(active);
+        active === "all" ? true : blogCategory === active;
 
       return matchSearch && matchCategory;
-
     });
-
   }, [blogs, search, activeCategory]);
 
-  const categories = ["All", "Insight", "Design", "Tech"];
+  const categories = ["All", "Insight", "Design", "Tech", "Tutorial", "News", "Case Study"];
 
   return (
     <section className="w-full bg-white py-32 overflow-hidden">
@@ -129,9 +121,7 @@ export default function SectionBlog() {
             description={t("blogSection", "emptyDesc")}
           />
         ) : (
-          <motion.div
-            className="flex flex-col gap-8"
-          >
+          <motion.div className="flex flex-col gap-8">
             {filteredBlogs.map((blog) => (
               <motion.div
                 key={blog._id}
@@ -153,35 +143,15 @@ function BlogCard({ blog }: { blog: Blog }) {
 
   const { t } = useTranslate();
 
+  // ✅ category dari tags[0]
+  const category = blog.tags?.[0] || "";
+
   return (
     <div className="group relative">
 
-      {/* GLOW BACKGROUND — TIDAK MENGUBAH CARD */}
-      <div
-        className="
-          pointer-events-none
-          absolute -inset-5
-          rounded-[32px]
-          bg-[radial-gradient(circle,rgba(255,200,0,0.45)_0%,rgba(255,200,0,0.25)_35%,transparent_70%)]
-          opacity-0
-          blur-[60px]
-          transition-all duration-500
-          group-hover:opacity-100
-        "
-      />
+      <div className="pointer-events-none absolute -inset-5 rounded-[32px] bg-[radial-gradient(circle,rgba(255,200,0,0.45)_0%,rgba(255,200,0,0.25)_35%,transparent_70%)] opacity-0 blur-[60px] transition-all duration-500 group-hover:opacity-100" />
 
-      {/* CARD ASLI — TIDAK DIUBAH SAMA SEKALI */}
-      <div className="
-        relative
-        flex gap-6
-        bg-white
-        border border-black
-        rounded-[28px]
-        px-8 py-8
-        transition-all duration-500
-        group-hover:-translate-y-1
-        group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]
-      ">
+      <div className="relative flex gap-6 bg-white border border-black rounded-[28px] px-8 py-8 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
 
         <div className="w-28 h-28 rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0">
           {blog.image ? (
@@ -197,7 +167,7 @@ function BlogCard({ blog }: { blog: Blog }) {
 
         <div className="flex-1">
           <span className="text-xs font-semibold text-black/60">
-            {blog.category}
+            {category}
           </span>
 
           <h3 className="font-bold text-lg mt-1 mb-2">
@@ -205,9 +175,7 @@ function BlogCard({ blog }: { blog: Blog }) {
           </h3>
 
           <p className="text-sm text-black/70 mb-4">
-            {blog.excerpt ||
-              blog.content?.slice(0, 120) ||
-              ""}
+            {blog.excerpt || blog.content?.slice(0, 120) || ""}
           </p>
 
           <Link
