@@ -1,8 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
+import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionMap() {
 
@@ -10,7 +12,10 @@ export default function SectionMap() {
 
   return (
     <FadeUp>
-      <section className="w-full bg-white py-32">
+      <section
+        className="w-full bg-white py-32"
+        aria-labelledby="map-title"
+      >
 
         <div className="max-w-7xl mx-auto px-6 text-black">
 
@@ -22,7 +27,10 @@ export default function SectionMap() {
             className="mb-12 text-center"
           >
 
-            <h2 className="text-4xl font-bold mb-4">
+            <h2
+              id="map-title"
+              className="text-4xl font-bold mb-4"
+            >
               {t("map", "title")}
             </h2>
 
@@ -39,7 +47,9 @@ export default function SectionMap() {
             viewport={{ once: true }}
             className="rounded-[28px] overflow-hidden border border-black shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
           >
+
             <iframe
+              title="Company location on Google Maps"
               src="https://maps.google.com/maps?q=Bandar%20Lampung&t=&z=13&ie=UTF8&iwloc=&output=embed"
               width="100%"
               height="450"
@@ -48,6 +58,7 @@ export default function SectionMap() {
               referrerPolicy="no-referrer-when-downgrade"
               className="w-full"
             />
+
           </motion.div>
 
         </div>

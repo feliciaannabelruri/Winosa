@@ -1,5 +1,9 @@
 import dynamic from "next/dynamic";
 
+/* ===============================
+   Code Splitting (Dynamic Import)
+================================ */
+
 const SectionHero = dynamic(() =>
   import("@/components/sectionService/SectionHero")
 );
@@ -16,6 +20,16 @@ const SectionPricing = dynamic(() =>
   import("@/components/sectionService/SectionPricing")
 );
 
+/* SECTION BARU */
+
+const SectionPlan = dynamic(() =>
+  import("@/components/sectionService/SectionPlan")
+);
+
+const SectionFeature = dynamic(() =>
+  import("@/components/sectionService/SectionFeature")
+);
+
 const SectionCTA = dynamic(() =>
   import("@/components/layout/SectionCTA")
 );
@@ -25,8 +39,13 @@ const Footer = dynamic(() =>
 );
 
 
+/* ===============================
+   SEO META TAGS
+================================ */
+
 export const metadata = {
   title: "Services | Winosa Digital Agency",
+
   description:
     "Explore Winosa services including web development, mobile app development, UI UX design, and digital solutions for modern businesses.",
 
@@ -56,15 +75,35 @@ export const metadata = {
 };
 
 
+/* ===============================
+   PAGE
+================================ */
+
 export default function ServicesPage() {
   return (
-    <main>
+
+    <main aria-label="Winosa services page">
+
       <SectionHero />
+
       <SectionServices />
+
       <SectionInfo />
+
+      {/* PRICING PACKAGES */}
       <SectionPricing />
+
+      {/* PLAN PACKAGES */}
+      <SectionPlan />
+
+      {/* FEATURE COMPARISON */}
+      <SectionFeature />
+
       <SectionCTA />
+
       <Footer />
+
     </main>
+
   );
 }

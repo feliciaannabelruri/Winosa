@@ -16,7 +16,7 @@ interface Subscription {
   isActive: boolean;
 }
 
-export default function SectionPricing() {
+export default function SectionPlan() {
   const { t } = useTranslate();
   const [plans, setPlans] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);

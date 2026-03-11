@@ -9,7 +9,7 @@ import { SiteSettings } from "@/types/settings";
 async function fetchSettings(): Promise<SiteSettings | null> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
-      next: { revalidate: 3600 }, // cache 1 hour
+      next: { revalidate: 3600 },
     });
     const json = await res.json();
     return json?.data ?? null;
@@ -45,9 +45,6 @@ export default function Footer() {
             <Link href="/" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "company")}
             </Link>
-            <Link href="/About" className="block hover:text-black transition focus:outline-none focus:underline">
-              {t("footer", "aboutUs")}
-            </Link>
           </div>
         </div>
 
@@ -58,9 +55,6 @@ export default function Footer() {
           <div className="space-y-3 text-gray-700 text-sm">
             <Link href="/Services" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "services")}
-            </Link>
-            <Link href="/Plans" className="block hover:text-black transition focus:outline-none focus:underline">
-              {t("footer", "plans")}
             </Link>
             <Link href="/Contact" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "contact")}
@@ -83,7 +77,6 @@ export default function Footer() {
         </div>
 
         <div className="space-y-6">
-          {/* Logo + brand */}
           <div className="flex items-center gap-3">
             <Link href="/" aria-label="Go to homepage">
               <Image
@@ -99,12 +92,10 @@ export default function Footer() {
             </span>
           </div>
 
-          {/* Tagline from settings */}
           <p className="text-sm text-gray-700">{tagline}</p>
 
-          {/* Social icons */}
           <div className="flex gap-6 mt-4 items-center">
-            {/* Facebook */}
+
             <a
               href={fbUrl}
               target="_blank"
@@ -117,7 +108,6 @@ export default function Footer() {
               </svg>
             </a>
 
-            {/* LinkedIn */}
             <a
               href={liUrl}
               target="_blank"
@@ -130,7 +120,6 @@ export default function Footer() {
               </svg>
             </a>
 
-            {/* WhatsApp */}
             <a
               href={waUrl}
               target="_blank"
@@ -142,6 +131,7 @@ export default function Footer() {
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1v3.49a1 1 0 01-1 1C10.07 21 3 13.93 3 5.5a1 1 0 011-1H7.5a1 1 0 011 1c0 1.25.2 2.47.57 3.56a1 1 0 01-.24 1.01l-2.21 2.22z"/>
               </svg>
             </a>
+
           </div>
         </div>
 

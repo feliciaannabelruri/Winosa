@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import FadeUp from "@/components/animation/FadeUp";
 import { Phone, MapPin, MessageCircle } from "lucide-react";
 import { useTranslate } from "@/lib/useTranslate";
 import { SiteSettings } from "@/types/settings";
+
+const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 async function fetchSettings(): Promise<SiteSettings | null> {
   try {
@@ -23,45 +25,69 @@ export default function SectionContactForm() {
   const { t } = useTranslate();
 
   const [settings, setSettings] = useState<SiteSettings | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", interest: "", phone: "", message: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    interest: "",
+    phone: "",
+    message: "",
+  });
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
-  const [error, setError]     = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchSettings().then(setSettings);
   }, []);
 
-  // Fallbacks keep the page readable even if settings haven't loaded yet
-  const phone   = settings?.sitePhone      || "(235) 325-1351";
-  const address = settings?.siteAddress    || "Bandar Lampung, Indonesia";
-  const waNum   = settings?.socialWhatsapp || "";
-  const waUrl   = waNum ? `https://wa.me/${waNum}` : "#";
+  const phone = settings?.sitePhone || "(235) 325-1351";
+  const address = settings?.siteAddress || "Bandar Lampung, Indonesia";
+  const waNum = settings?.socialWhatsapp || "";
+  const waUrl = waNum ? `https://wa.me/${waNum}` : "#";
 
-  const handleChange = (e: any) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm({ ...form, [e.target.name]: e.target.value });
+    },
+    [form]
+  );
 
   const validate = () => {
-    if (!form.name.trim())    return t("contact", "errorName");
-    if (!form.email.trim())   return t("contact", "errorEmail");
+    if (!form.name.trim()) return t("contact", "errorName");
+    if (!form.email.trim()) return t("contact", "errorEmail");
     if (!form.message.trim()) return t("contact", "errorMessage");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return t("contact", "errorEmailInvalid");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      return t("contact", "errorEmailInvalid");
     return "";
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSuccess(""); setError("");
+
+    setSuccess("");
+    setError("");
+
     const err = validate();
-    if (err) { setError(err); return; }
+
+    if (err) {
+      setError(err);
+      return;
+    }
+
     try {
       setLoading(true);
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+
       const data = await res.json();
+
       if (!res.ok) throw new Error(data.message || "Error");
+
       setSuccess(t("contact", "success"));
       setForm({ name: "", email: "", interest: "", phone: "", message: "" });
     } catch (err: any) {
@@ -73,10 +99,14 @@ export default function SectionContactForm() {
 
   return (
     <FadeUp>
-      <section className="w-full py-24 bg-white">
+      <section
+        className="w-full py-24 bg-white"
+        aria-labelledby="contact-title"
+      >
         <div className="max-w-7xl mx-auto px-6 lg:px-16">
 
           <motion.h2
+            id="contact-title"
             initial={{ opacity: 0, y: 80 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -88,88 +118,175 @@ export default function SectionContactForm() {
 
           <div className="grid lg:grid-cols-2 gap-16">
 
-            {/* LEFT — Form */}
             <motion.div
               initial={{ opacity: 0, y: 80 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h3 className="text-xl font-semibold text-black mb-4">{t("contact", "sendMessage")}</h3>
-              <p className="text-black/70 mb-10">{t("contact", "subtitle")}</p>
+              <h3 className="text-xl font-semibold text-black mb-4">
+                {t("contact", "sendMessage")}
+              </h3>
 
-              <form onSubmit={handleSubmit} className="space-y-8">
+              <p className="text-black/70 mb-10">
+                {t("contact", "subtitle")}
+              </p>
+
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-8"
+                aria-label="Contact form"
+              >
                 <div className="grid sm:grid-cols-2 gap-8">
+
                   <div>
-                    <label className="text-sm text-black/60">{t("contact", "name")}</label>
-                    <input name="name" value={form.name} onChange={handleChange}
-                      className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black" />
+                    <label
+                      htmlFor="name"
+                      className="text-sm text-black/60"
+                    >
+                      {t("contact", "name")}
+                    </label>
+
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      aria-required="true"
+                      value={form.name}
+                      onChange={handleChange}
+                      className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black"
+                    />
                   </div>
+
                   <div>
-                    <label className="text-sm text-black/60">{t("contact", "email")}</label>
-                    <input name="email" value={form.email} onChange={handleChange}
-                      className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black" />
+                    <label
+                      htmlFor="email"
+                      className="text-sm text-black/60"
+                    >
+                      {t("contact", "email")}
+                    </label>
+
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      aria-required="true"
+                      value={form.email}
+                      onChange={handleChange}
+                      className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black"
+                    />
                   </div>
-                </div>
-                <div>
-                  <label className="text-sm text-black/60">{t("contact", "message")}</label>
-                  <textarea name="message" value={form.message} onChange={handleChange} rows={4}
-                    className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black" />
+
                 </div>
 
-                {success && <p className="text-green-600 text-sm">{success}</p>}
-                {error   && <p className="text-red-600 text-sm">{error}</p>}
+                <div>
+                  <label
+                    htmlFor="message"
+                    className="text-sm text-black/60"
+                  >
+                    {t("contact", "message")}
+                  </label>
+
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={4}
+                    required
+                    aria-required="true"
+                    value={form.message}
+                    onChange={handleChange}
+                    className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black"
+                  />
+                </div>
+
+                {success && (
+                  <p
+                    role="status"
+                    aria-live="polite"
+                    className="text-green-600 text-sm"
+                  >
+                    {success}
+                  </p>
+                )}
+
+                {error && (
+                  <p
+                    role="alert"
+                    className="text-red-600 text-sm"
+                  >
+                    {error}
+                  </p>
+                )}
 
                 <div className="flex justify-end">
                   <button
                     type="submit"
                     disabled={loading}
+                    aria-busy={loading}
                     className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-black text-black font-medium transition hover:bg-black/10 disabled:opacity-50"
                   >
-                    {loading ? t("contact", "sending") : t("contact", "submit")}
+                    {loading
+                      ? t("contact", "sending")
+                      : t("contact", "submit")}
                   </button>
                 </div>
+
               </form>
             </motion.div>
 
-            {/* RIGHT — Contact info from settings */}
-            <motion.div className="lg:border-l lg:border-black/20 lg:pl-16 space-y-12 text-black">
+            {/* RIGHT */}
 
-              {/* Call us */}
+            <motion.div
+              className="lg:border-l lg:border-black/20 lg:pl-16 space-y-12 text-black"
+              aria-label="Contact information"
+            >
+
               <div>
-                <h4 className="font-semibold mb-3">{t("contact", "call")}</h4>
+                <h4 className="font-semibold mb-3">
+                  {t("contact", "call")}
+                </h4>
+
                 <div className="flex gap-3 text-black/70">
-                  <Phone size={18} />
+                  <Phone size={18} aria-hidden="true" />
                   <span>{phone}</span>
                 </div>
               </div>
 
-              {/* Visit us */}
               <div>
-                <h4 className="font-semibold mb-3">{t("contact", "visit")}</h4>
+                <h4 className="font-semibold mb-3">
+                  {t("contact", "visit")}
+                </h4>
+
                 <div className="flex gap-3 text-black/70">
-                  <MapPin size={18} />
+                  <MapPin size={18} aria-hidden="true" />
                   <span>{address}</span>
                 </div>
               </div>
 
-              {/* Live Chat via WhatsApp */}
               <div>
-                <h4 className="font-semibold mb-3">{t("contact", "liveChat")}</h4>
+                <h4 className="font-semibold mb-3">
+                  {t("contact", "liveChat")}
+                </h4>
+
                 <a
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Open WhatsApp chat"
                   className="flex gap-3 text-black/70 hover:text-black transition"
                 >
-                  <MessageCircle size={18} />
-                  <span>WhatsApp{waNum ? ` +${waNum}` : ""}</span>
+                  <MessageCircle size={18} aria-hidden="true" />
+                  <span>
+                    WhatsApp{waNum ? ` +${waNum}` : ""}
+                  </span>
                 </a>
               </div>
 
             </motion.div>
-          </div>
 
+          </div>
         </div>
       </section>
     </FadeUp>

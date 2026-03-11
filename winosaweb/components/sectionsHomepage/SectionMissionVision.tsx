@@ -11,7 +11,11 @@ export default function SectionMissionVision() {
 
   return (
     <FadeUp>
-      <section className="w-full py-24 bg-white">
+      <section
+        aria-label="Company mission and vision"
+        role="region"
+        className="w-full py-24 bg-white"
+      >
 
         <div className="max-w-7xl mx-auto px-6 lg:px-16 flex flex-col lg:flex-row items-center gap-16">
 
@@ -22,7 +26,10 @@ export default function SectionMissionVision() {
             viewport={{ once: true }}
             className="flex-1 flex justify-center"
           >
-            <div className="relative w-64 h-64 flex items-center justify-center">
+            <div
+              className="relative w-64 h-64 flex items-center justify-center"
+              aria-hidden="true"
+            >
               <div className="absolute w-64 h-64 rounded-full bg-yellow-400/20"></div>
               <div className="absolute w-48 h-48 rounded-full bg-yellow-500/30"></div>
               <div className="absolute w-32 h-32 rounded-full bg-yellow-600/40"></div>
@@ -35,17 +42,27 @@ export default function SectionMissionVision() {
 
           <motion.div className="flex-1">
 
-            <h2 className="text-4xl font-bold text-black mb-6">
+            <h2
+              className="text-4xl font-bold text-black mb-6"
+              tabIndex={0}
+            >
               {t("missionVision", "title")}
             </h2>
 
-            <p className="text-black/70 mb-10 leading-relaxed max-w-xl">
+            <p
+              className="text-black/70 mb-10 leading-relaxed max-w-xl"
+              tabIndex={0}
+            >
               {t("missionVision", "description")}
             </p>
 
             <div className="grid sm:grid-cols-2 gap-10">
 
-              <div className="flex gap-4">
+              <div
+                className="flex gap-4"
+                tabIndex={0}
+                aria-label="Innovation value"
+              >
                 <Rocket className="text-yellow-500 w-6 h-6 mt-1" />
                 <div>
                   <h4 className="font-semibold text-black">
@@ -57,7 +74,11 @@ export default function SectionMissionVision() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div
+                className="flex gap-4"
+                tabIndex={0}
+                aria-label="Integrity value"
+              >
                 <ShieldCheck className="text-yellow-500 w-6 h-6 mt-1" />
                 <div>
                   <h4 className="font-semibold text-black">
@@ -69,7 +90,11 @@ export default function SectionMissionVision() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div
+                className="flex gap-4"
+                tabIndex={0}
+                aria-label="Partnership value"
+              >
                 <Users className="text-yellow-500 w-6 h-6 mt-1" />
                 <div>
                   <h4 className="font-semibold text-black">
@@ -81,7 +106,11 @@ export default function SectionMissionVision() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div
+                className="flex gap-4"
+                tabIndex={0}
+                aria-label="Impact value"
+              >
                 <Target className="text-yellow-500 w-6 h-6 mt-1" />
                 <div>
                   <h4 className="font-semibold text-black">

@@ -1,22 +1,41 @@
 import dynamic from "next/dynamic";
 import api from "@/lib/axios";
 
+/* ===============================
+   Dynamic Imports (Code Splitting)
+================================ */
+
 const SectionHero = dynamic(() => import("@/components/sectionsHomepage/SectionHero"));
 const SectionMap = dynamic(() => import("@/components/sectionsHomepage/SectionMap"));
 const SectionGlass = dynamic(() => import("@/components/sectionsHomepage/SectionGlass"));
 const SectionPreview = dynamic(() => import("@/components/sectionsHomepage/SectionPreview"));
+const SectionMissionVision = dynamic(() => import("@/components/sectionsHomepage/SectionMissionVision"));
+const SectionTeam = dynamic(() => import("@/components/sectionsHomepage/SectionTeam"));
+
 const SectionCTA = dynamic(() => import("@/components/layout/SectionCTA"));
 const Footer = dynamic(() => import("@/components/layout/Footer"));
 
+
+/* ===============================
+   SEO META TAGS
+================================ */
+
 export const metadata = {
   title: "Winosa Digital Agency",
-  description: "Web development, UI UX design, branding, and digital solutions",
+  description:
+    "Winosa Digital Agency provides web development, UI UX design, branding, and digital solutions for modern businesses.",
   openGraph: {
     title: "Winosa Digital Agency",
-    description: "Web development, UI UX design, branding, and digital solutions",
+    description:
+      "Web development, UI UX design, branding, and digital solutions",
     images: ["/og-image.jpg"],
   },
 };
+
+
+/* ===============================
+   HOMEPAGE
+================================ */
 
 export default async function HomePage() {
 
@@ -50,6 +69,11 @@ export default async function HomePage() {
     slug: `/blog/${item.slug}`,
   }));
 
+
+  /* ===============================
+     Glass Content
+  ================================ */
+
   let glassData = null;
 
   try {
@@ -59,18 +83,45 @@ export default async function HomePage() {
     console.log("Glass endpoint tidak ditemukan");
   }
 
+
+  /* ===============================
+     PAGE
+  ================================ */
+
   return (
-    <main>
+    <main aria-label="Winosa Digital Agency homepage">
+
       <SectionHero />
+
       <SectionMap />
+
       <SectionGlass data={glassData} />
 
-      <SectionPreview title="Our Services" items={services} />
-      <SectionPreview title="Our Portfolio" items={portfolios} />
-      <SectionPreview title="Latest Blog" items={blogs} />
+      <SectionPreview
+        title="Our Services"
+        items={services}
+      />
+
+      <SectionPreview
+        title="Our Portfolio"
+        items={portfolios}
+      />
+
+      <SectionPreview
+        title="Latest Blog"
+        items={blogs}
+      />
+
+      {/* Mission Vision */}
+      <SectionMissionVision />
+
+      {/* Team */}
+      <SectionTeam />
 
       <SectionCTA />
+
       <Footer />
+
     </main>
   );
 }
