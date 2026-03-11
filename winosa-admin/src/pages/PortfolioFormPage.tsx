@@ -6,7 +6,6 @@ import toast from 'react-hot-toast';
 import { PORTFOLIO_CATEGORIES } from '../constants';
 import ImageUpload from './service-form/shared/ImageUpload';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 const generateSlug = (t: string) =>
   t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
@@ -32,7 +31,6 @@ const SectionCard: React.FC<{ title: string; subtitle?: string; children: React.
   </div>
 );
 
-// ── Types ─────────────────────────────────────────────────────────────────────
 interface Metric { value: string; label: string; }
 
 interface PortfolioForm {
@@ -69,7 +67,7 @@ const DEFAULT_FORM: PortfolioForm = {
   isActive: true,
 };
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// Main Component
 const PortfolioFormPage: React.FC = () => {
   const navigate  = useNavigate();
   const { id }    = useParams<{ id: string }>();
@@ -85,7 +83,7 @@ const PortfolioFormPage: React.FC = () => {
   const set = <K extends keyof PortfolioForm>(key: K, val: PortfolioForm[K]) =>
     setForm(p => ({ ...p, [key]: val }));
 
-  // ── Load ───────────────────────────────────────────────────────────────────
+  // Load 
   useEffect(() => {
     if (!isEdit) return;
     setFetching(true);
@@ -118,7 +116,7 @@ const PortfolioFormPage: React.FC = () => {
       .finally(() => setFetching(false));
   }, [id, isEdit, navigate]);
 
-  // ── Submit — kirim FormData ────────────────────────────────────────────────
+  // Submit — kirim FormData 
   const handleSubmit = async (isActive: boolean) => {
     if (!form.title.trim() || !form.slug.trim()) {
       toast.error('Title and slug are required');
@@ -131,7 +129,7 @@ const PortfolioFormPage: React.FC = () => {
       fd.append('title',       form.title.trim());
       fd.append('slug',        form.slug.trim());
       fd.append('shortDesc',   form.shortDesc);
-      fd.append('description', form.shortDesc);        // backward compat dengan model lama
+      fd.append('description', form.shortDesc);        
       fd.append('longDesc',    form.longDesc);
       fd.append('category',    form.category);
       fd.append('client',      form.client);
@@ -140,7 +138,7 @@ const PortfolioFormPage: React.FC = () => {
       fd.append('role',        form.role);
       fd.append('projectUrl',  form.projectUrl);
       fd.append('thumbnail',   form.thumbnail);
-      fd.append('image',       form.thumbnail);        // backward compat dengan model lama
+      fd.append('image',       form.thumbnail);        
       fd.append('heroImage',   form.heroImage);
       fd.append('challenge',   form.challenge);
       fd.append('solution',    form.solution);
@@ -167,7 +165,7 @@ const PortfolioFormPage: React.FC = () => {
     }
   };
 
-  // ── Tech Stack handlers ────────────────────────────────────────────────────
+  // Tech Stack handlers
   const addTech = () => {
     const v = techInput.trim();
     if (!v) return;
@@ -177,7 +175,7 @@ const PortfolioFormPage: React.FC = () => {
   const removeTech = (idx: number) =>
     set('techStack', form.techStack.filter((_, i) => i !== idx));
 
-  // ── Metrics handlers ───────────────────────────────────────────────────────
+  // Metrics handlers 
   const addMetric = () => {
     if (!metricInput.value || !metricInput.label) return;
     set('metrics', [...form.metrics, { ...metricInput }]);
@@ -186,13 +184,13 @@ const PortfolioFormPage: React.FC = () => {
   const removeMetric = (idx: number) =>
     set('metrics', form.metrics.filter((_, i) => i !== idx));
 
-  // ── Gallery handlers ───────────────────────────────────────────────────────
+  // Gallery handlers 
   const addGalleryImage = (url: string) =>
     set('gallery', [...form.gallery, url]);
   const removeGalleryImage = (idx: number) =>
     set('gallery', form.gallery.filter((_, i) => i !== idx));
 
-  // ── Loading skeleton ───────────────────────────────────────────────────────
+  // Loading skeleton 
   if (fetching) {
     return (
       <div className="space-y-5 animate-pulse">
@@ -221,7 +219,7 @@ const PortfolioFormPage: React.FC = () => {
         <p className="text-gray-400 text-sm mt-1 italic">Manage study case and project</p>
       </div>
 
-      {/* ── 1. Basic Info ─────────────────────────────────────────────────── */}
+      {/* 1. Basic Info */}
       <SectionCard title="Basic Info">
         <div>
           <Label>Project Title</Label>
@@ -275,7 +273,7 @@ const PortfolioFormPage: React.FC = () => {
         />
       </SectionCard>
 
-      {/* ── 2. Hero ───────────────────────────────────────────────────────── */}
+      {/* 2. Hero */}
       <SectionCard title="Hero Section" subtitle="Gambar full-screen di bagian atas halaman detail">
         <ImageUpload
           label="Hero Image"
@@ -295,7 +293,7 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* ── 3. Project Info ───────────────────────────────────────────────── */}
+      {/* 3. Project Info */}
       <SectionCard title="Project Information" subtitle="Tampil di section info bawah hero">
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -363,7 +361,7 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* ── 4. Case Study ─────────────────────────────────────────────────── */}
+      {/* 4. Case Study */}
       <SectionCard title="Case Study" subtitle="The Challenge, Solution & Result — wajib diisi">
         <div>
           <Label>The Challenge</Label>
@@ -391,7 +389,7 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* ── 5. Key Metrics ────────────────────────────────────────────────── */}
+      {/* 5. Key Metrics */}
       <SectionCard title="Key Metrics" subtitle="Angka-angka highlight hasil project (opsional)">
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -436,7 +434,7 @@ const PortfolioFormPage: React.FC = () => {
         )}
       </SectionCard>
 
-      {/* ── 6. Gallery (optional) ─────────────────────────────────────────── */}
+      {/* 6. Gallery (optional) */}
       <SectionCard title="Project Gallery"
         subtitle="Opsional — section ini otomatis hilang di website jika tidak diisi">
         <div className="grid grid-cols-2 gap-4">
@@ -460,7 +458,7 @@ const PortfolioFormPage: React.FC = () => {
         />
       </SectionCard>
 
-      {/* ── 7. Project URL (optional) ─────────────────────────────────────── */}
+      {/* 7. Project URL (optional) */}
       <SectionCard title="Project URL"
         subtitle="Opsional — jika diisi, tombol 'Visit Web' muncul di halaman detail">
         <div>
@@ -482,7 +480,7 @@ const PortfolioFormPage: React.FC = () => {
         )}
       </SectionCard>
 
-      {/* ── Actions ───────────────────────────────────────────────────────── */}
+      {/* Actions */}
       <div className="flex gap-3 pt-2 pb-10">
         <button onClick={() => handleSubmit(false)} disabled={loading}
           className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-2xl text-sm font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50">

@@ -2,42 +2,45 @@ import api from './api';
 import { ApiResponse } from '../types';
 
 export interface SiteSettings {
-  _id?: string;
-  siteTitle: string;
-  siteDescription: string;
-  logo?: string;
-  logoId?: string;
-  favicon?: string;
-  // SEO
-  metaTitle: string;
-  metaDescription: string;
-  metaKeywords: string;
-  // Social Media
-  instagram: string;
-  linkedin: string;
-  facebook: string;
-  twitter: string;
-  youtube: string;
-  // Contact Info
-  email: string;
-  phone: string;
-  whatsapp: string;
-  address: string;
-  // Extra
-  googleAnalyticsId: string;
+  _id?:       string;
   updatedAt?: string;
+
+  // General 
+  siteName:    string;
+  siteTagline: string;
+  logo?:       string;   // URL after upload
+  favicon?:    string;   // URL after upload
+
+  // SEO 
+  metaTitle:         string;
+  metaDescription:   string;
+  metaKeywords:      string;
+  googleAnalyticsId: string;
+
+  // Social
+  socialInstagram: string; 
+  socialFacebook:  string;  
+  socialLinkedin:  string;  
+  socialYoutube:   string;  
+  socialWhatsapp:  string;  // digits only → wa.me/{number}
+
+  // Contact 
+  siteEmail:   string;
+  sitePhone:   string;  // → SectionContactForm "Call us"
+  siteAddress: string;  // → SectionContactForm "Visit us"
 }
 
 export const settingsService = {
   get: async () => {
-    const response = await api.get<ApiResponse<SiteSettings>>('/admin/settings');
-    return response.data;
+    const res = await api.get<ApiResponse<SiteSettings>>('/admin/settings');
+    return res.data;
   },
 
+  /** Sends FormData to support logo */
   update: async (formData: FormData) => {
-    const response = await api.put<ApiResponse<SiteSettings>>('/admin/settings', formData, {
+    const res = await api.put<ApiResponse<SiteSettings>>('/admin/settings', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response.data;
+    return res.data;
   },
 };

@@ -1,21 +1,130 @@
 import React, { useEffect, useState } from 'react';
-import { Mail, User, Clock, Inbox, Search, CheckCheck, Circle, Download, Send } from 'lucide-react';
+import {
+  Mail, User, Clock, Inbox, Search,
+  CheckCheck, Circle, Download, Send, ChevronLeft,
+  Trash2, ChevronDown, ChevronUp,
+} from 'lucide-react';
 import { contactService } from '../services/analyticsService';
 import api from '../services/api';
 import { Contact } from '../types';
 import toast from 'react-hot-toast';
 
-const ContactsPage: React.FC = () => {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<Contact | null>(null);
-  const [search, setSearch] = useState('');
-  const [filterRead, setFilterRead] = useState<'all' | 'read' | 'unread'>('all');
-  const [replyText, setReplyText] = useState('');
-  const [replying, setReplying] = useState(false);
+/* ─── Types ─── */
+interface Reply {
+  _id:     string;
+  message: string;
+  sentAt:  string;
+  sentBy?: string;
+}
 
+interface ContactWithReplies extends Contact {
+  replies?: Reply[];
+}
+
+/* ─── Helpers ─── */
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleString('id-ID', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+
+const fmtDateShort = (iso: string) =>
+  new Date(iso).toLocaleDateString('id-ID', {
+    day: '2-digit', month: 'short', year: 'numeric',
+  });
+
+const snippet = (text: string, len = 80) =>
+  text.length > len ? text.slice(0, len) + '…' : text;
+
+/* ─── Thread Item Component ─── */
+interface ThreadItemProps {
+  avatarLabel: string;
+  avatarBg:    string;
+  senderName:  string;
+  date:        string;
+  body:        string;
+  isAdmin?:    boolean;
+  defaultOpen?: boolean;
+  sentTo?:     string;
+}
+
+const ThreadItem: React.FC<ThreadItemProps> = ({
+  avatarLabel, avatarBg, senderName, date, body,
+  isAdmin = false, defaultOpen = false, sentTo,
+}) => {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white">
+      {/* Header row — always visible, click to toggle */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 transition-colors text-left"
+      >
+        {/* Avatar */}
+        <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-bold ${avatarBg}`}>
+          {avatarLabel}
+        </div>
+
+        {/* Name + snippet when collapsed */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-dark">{senderName}</span>
+            {isAdmin && (
+              <span className="text-[10px] bg-dark text-white px-1.5 py-0.5 rounded-full font-medium leading-none">
+                Admin
+              </span>
+            )}
+          </div>
+          {!open && (
+            <p className="text-xs text-gray-400 truncate mt-0.5">{snippet(body)}</p>
+          )}
+        </div>
+
+        {/* Date + chevron */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-xs text-gray-400 hidden sm:block">{date}</span>
+          {open
+            ? <ChevronUp size={14} className="text-gray-400" />
+            : <ChevronDown size={14} className="text-gray-400" />
+          }
+        </div>
+      </button>
+
+      {/* Body — shown when expanded */}
+      {open && (
+        <div className="px-5 pb-5 pt-0">
+          <p className="text-xs text-gray-400 mb-3 sm:hidden">{date}</p>
+          <div className="border-t border-gray-100 pt-4">
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{body}</p>
+            {isAdmin && sentTo && (
+              <p className="text-[10px] text-gray-400 mt-4 flex items-center gap-1">
+                <CheckCheck size={11} className="text-green-400" />
+                Sent to {sentTo}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════════════════ */
+const ContactsPage: React.FC = () => {
+  const [contacts, setContacts]         = useState<ContactWithReplies[]>([]);
+  const [loading, setLoading]           = useState(true);
+  const [selected, setSelected]         = useState<ContactWithReplies | null>(null);
+  const [search, setSearch]             = useState('');
+  const [filterRead, setFilterRead]     = useState<'all' | 'read' | 'unread'>('all');
+  const [replyText, setReplyText]       = useState('');
+  const [replying, setReplying]         = useState(false);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [deleting, setDeleting]         = useState(false);
+
+  /* ── Fetch all contacts ── */
   useEffect(() => {
-    const fetch = async () => {
+    const load = async () => {
       try {
         const data = await contactService.getAll();
         setContacts(data.data);
@@ -25,94 +134,123 @@ const ContactsPage: React.FC = () => {
         setLoading(false);
       }
     };
-    fetch();
+    load();
   }, []);
 
-  // Persist read/unread to backend — optimistic update
-  // FIX: path changed from /contacts/ to /contact/
+  /* ── Toggle read/unread ── */
   const toggleRead = async (contactId: string) => {
     const contact = contacts.find(c => c._id === contactId);
     if (!contact) return;
-
     const newIsRead = !contact.isRead;
-
-    // Optimistic update
     setContacts(prev => prev.map(c => c._id === contactId ? { ...c, isRead: newIsRead } : c));
-    if (selected?._id === contactId) {
-      setSelected(prev => prev ? { ...prev, isRead: newIsRead } : null);
-    }
-
+    if (selected?._id === contactId) setSelected(prev => prev ? { ...prev, isRead: newIsRead } : null);
     try {
       await api.patch(`/contact/${contactId}`, { isRead: newIsRead });
     } catch {
-      // Revert on failure
       setContacts(prev => prev.map(c => c._id === contactId ? { ...c, isRead: !newIsRead } : c));
-      if (selected?._id === contactId) {
-        setSelected(prev => prev ? { ...prev, isRead: !newIsRead } : null);
-      }
+      if (selected?._id === contactId) setSelected(prev => prev ? { ...prev, isRead: !newIsRead } : null);
       toast.error('Failed to update status');
     }
   };
 
-  const handleSelect = async (contact: Contact) => {
+  /* ── Select contact — fetch full detail with replies ── */
+  const handleSelect = async (contact: ContactWithReplies) => {
     setSelected(contact);
     setReplyText('');
 
     if (!contact.isRead) {
-      // Optimistic update
       setContacts(prev => prev.map(c => c._id === contact._id ? { ...c, isRead: true } : c));
       setSelected({ ...contact, isRead: true });
+      api.patch(`/contact/${contact._id}`, { isRead: true }).catch(() => {});
+    }
 
-      // FIX: path changed from /contacts/ to /contact/
-      try {
-        await api.patch(`/contact/${contact._id}`, { isRead: true });
-      } catch {
-        // silent — will show correct on next refresh
+    setLoadingDetail(true);
+    try {
+      const res = await api.get(`/contact/${contact._id}`);
+      if (res.data?.success && res.data?.data) {
+        const full: ContactWithReplies = res.data.data;
+        setSelected({ ...full, isRead: true });
+        setContacts(prev => prev.map(c => c._id === full._id ? { ...c, replies: full.replies } : c));
       }
+    } catch {
+      // silent — show contact without replies
+    } finally {
+      setLoadingDetail(false);
     }
   };
 
-  // FIX: path changed from /contacts/ to /contact/, no more 404 fallback to mailto
+  /* ── Delete contact ── */
+  const handleDelete = async () => {
+    if (!selected) return;
+    if (!window.confirm(`Delete message from ${selected.name}? This cannot be undone.`)) return;
+    setDeleting(true);
+    try {
+      await api.delete(`/contact/${selected._id}`);
+      setContacts(prev => prev.filter(c => c._id !== selected._id));
+      setSelected(null);
+      toast.success('Message deleted');
+    } catch {
+      toast.error('Failed to delete message');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  /* ── Send reply ── */
   const handleReply = async () => {
     if (!replyText.trim() || !selected) return;
     setReplying(true);
     try {
-      await api.post(`/contact/${selected._id}/reply`, { message: replyText });
-      toast.success('Reply sent to ' + selected.email);
+      const res = await api.post(`/contact/${selected._id}/reply`, { message: replyText });
+
+      const newReply: Reply = res.data?.data?.reply ?? {
+        _id:     Date.now().toString(),
+        message: replyText,
+        sentAt:  new Date().toISOString(),
+      };
+
+      const updatedReplies = [...(selected.replies ?? []), newReply];
+      setSelected(prev => prev ? { ...prev, isRead: true, replies: updatedReplies } : null);
+      setContacts(prev => prev.map(c =>
+        c._id === selected._id ? { ...c, isRead: true, replies: updatedReplies } : c
+      ));
+
       setReplyText('');
-      // Mark as read in local state after reply
-      setContacts(prev => prev.map(c => c._id === selected._id ? { ...c, isRead: true } : c));
-      setSelected(prev => prev ? { ...prev, isRead: true } : null);
+      toast.success(`Reply sent to ${selected.email}`);
     } catch (err: any) {
-      const msg = err?.response?.data?.message;
-      toast.error(msg || 'Failed to send reply');
+      toast.error(err?.response?.data?.message || 'Failed to send reply');
     } finally {
       setReplying(false);
     }
   };
 
+  /* ── Export ── */
   const handleExport = () => {
     if (!contacts.length) return;
     contactService.exportFromData(contacts);
     toast.success(`Exported ${contacts.length} contacts to CSV`);
   };
 
+  /* ── Filter ── */
   const filtered = contacts.filter(c => {
+    const q = search.toLowerCase();
     const matchSearch =
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.email.toLowerCase().includes(search.toLowerCase()) ||
-      (c.subject || '').toLowerCase().includes(search.toLowerCase());
+      c.name.toLowerCase().includes(q) ||
+      c.email.toLowerCase().includes(q) ||
+      (c.subject || '').toLowerCase().includes(q);
     const matchRead =
-      filterRead === 'all' ? true :
-      filterRead === 'read' ? c.isRead :
-      !c.isRead;
+      filterRead === 'all'  ? true :
+      filterRead === 'read' ? c.isRead : !c.isRead;
     return matchSearch && matchRead;
   });
 
-  const unreadCount = contacts.filter(c => !c.isRead).length;
+  const unreadCount  = contacts.filter(c => !c.isRead).length;
+  const totalReplies = selected?.replies?.length ?? 0;
 
+  /* ════════════════════════════════ RENDER ════════════════════════════════ */
   return (
     <div className="space-y-6">
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -124,15 +262,14 @@ const ContactsPage: React.FC = () => {
               </span>
             )}
           </h1>
-          <p className="text-gray-400 text-sm mt-1 italic">View messages from website visitors</p>
+          <p className="text-gray-400 text-sm mt-1 italic">View and reply to messages from website visitors</p>
         </div>
         <button
           onClick={handleExport}
           disabled={contacts.length === 0}
           className="flex items-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Download size={16} />
-          Export CSV
+          <Download size={16} /> Export CSV
         </button>
       </div>
 
@@ -165,6 +302,7 @@ const ContactsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Body */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -176,11 +314,13 @@ const ContactsPage: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {/* List Panel */}
-          <div className="lg:col-span-1 space-y-3">
+
+          {/* ── List Panel ── */}
+          <div className={`lg:col-span-1 space-y-3 ${selected ? 'hidden lg:block' : ''}`}>
             {filtered.map(contact => (
               <div
                 key={contact._id}
+                onClick={() => handleSelect(contact)}
                 className={`relative w-full text-left p-4 rounded-3xl border-2 transition-all duration-200 cursor-pointer hover:-translate-y-0.5 ${
                   selected?._id === contact._id
                     ? 'border-primary bg-primary/5 shadow-sm'
@@ -188,13 +328,17 @@ const ContactsPage: React.FC = () => {
                     ? 'border-gray-200 bg-white hover:border-primary/40 hover:shadow-sm'
                     : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
                 }`}
-                onClick={() => handleSelect(contact)}
               >
-                <div className="flex items-start justify-between mb-1.5">
+                <div className="flex items-start justify-between mb-1">
                   <p className={`text-sm truncate flex-1 mr-2 ${!contact.isRead ? 'font-bold text-dark' : 'font-semibold text-dark'}`}>
                     {contact.name}
                   </p>
                   <div className="flex items-center gap-2 flex-shrink-0">
+                    {contact.replies && contact.replies.length > 0 && (
+                      <span className="text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                        {contact.replies.length}↩
+                      </span>
+                    )}
                     <button
                       onClick={e => { e.stopPropagation(); toggleRead(contact._id); }}
                       className="text-gray-300 hover:text-primary transition-colors"
@@ -207,85 +351,135 @@ const ContactsPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs text-gray-400 truncate leading-relaxed">
-                  {contact.subject || contact.message}
-                </p>
-                <p className="text-xs text-gray-300 mt-2">
-                  {new Date(contact.createdAt).toLocaleDateString('id-ID', {
-                    day: '2-digit', month: 'short', year: 'numeric'
-                  })}
-                </p>
+                {/* Subject as subtitle */}
+                {contact.subject && (
+                  <p className="text-xs font-medium text-gray-600 truncate mb-0.5">{contact.subject}</p>
+                )}
+                <p className="text-xs text-gray-400 truncate leading-relaxed">{contact.message}</p>
+                <p className="text-xs text-gray-300 mt-2">{fmtDateShort(contact.createdAt)}</p>
               </div>
             ))}
           </div>
 
-          {/* Detail Panel */}
-          <div className="lg:col-span-2">
+          {/* ── Detail Panel ── */}
+          <div className={`lg:col-span-2 ${selected ? '' : 'hidden lg:block'}`}>
             {selected ? (
-              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6 h-full flex flex-col">
-                {/* Top action */}
-                <div className="flex items-center justify-end mb-4">
-                  <button
-                    onClick={() => toggleRead(selected._id)}
-                    className={`flex items-center gap-2 text-xs px-4 py-2 rounded-full border transition-colors ${
-                      selected.isRead
-                        ? 'border-gray-200 text-gray-500 hover:border-gray-300'
-                        : 'border-green-200 bg-green-50 text-green-600 hover:bg-green-100'
-                    }`}
-                  >
-                    <CheckCheck size={13} />
-                    {selected.isRead ? 'Mark as Unread' : 'Mark as Read'}
-                  </button>
-                </div>
+              <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col overflow-hidden">
 
-                {/* Sender info */}
-                <div className="flex items-start gap-4 mb-6 pb-6 border-b border-gray-100">
-                  <div className="w-11 h-11 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <User size={18} className="text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-dark text-base">{selected.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Mail size={12} className="text-gray-400 flex-shrink-0" />
-                      <a
-                        href={`mailto:${selected.email}`}
-                        className="text-xs text-gray-400 hover:text-primary transition-colors truncate"
+                {/* ── Thread header ── */}
+                <div className="px-6 pt-6 pb-5 border-b border-gray-100 flex-shrink-0">
+                  <button
+                    onClick={() => setSelected(null)}
+                    className="lg:hidden flex items-center gap-1.5 text-sm text-gray-500 hover:text-dark transition-colors w-fit mb-4"
+                  >
+                    <ChevronLeft size={16} /> Back
+                  </button>
+
+                  {/* Subject as email title */}
+                  <h2 className="text-lg font-bold text-dark mb-3">
+                    {selected.subject || '(No subject)'}
+                  </h2>
+
+                  {/* Sender + actions */}
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold text-primary">
+                        {selected.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-dark">{selected.name}</p>
+                        <a
+                          href={`mailto:${selected.email}`}
+                          className="text-xs text-gray-400 hover:text-primary transition-colors"
+                        >
+                          {selected.email}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs text-gray-400 flex items-center gap-1">
+                        <Clock size={11} /> {fmtDate(selected.createdAt)}
+                      </span>
+                      <button
+                        onClick={() => toggleRead(selected._id)}
+                        className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                          selected.isRead
+                            ? 'border-gray-200 text-gray-500 hover:border-gray-300'
+                            : 'border-green-200 bg-green-50 text-green-600 hover:bg-green-100'
+                        }`}
                       >
-                        {selected.email}
-                      </a>
+                        <CheckCheck size={11} />
+                        {selected.isRead ? 'Mark Unread' : 'Mark Read'}
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        disabled={deleting}
+                        className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
+                      >
+                        {deleting
+                          ? <div className="w-3 h-3 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                          : <Trash2 size={11} />
+                        }
+                        Delete
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-400 flex-shrink-0">
-                    <Clock size={12} />
-                    <span>
-                      {new Date(selected.createdAt).toLocaleString('id-ID', {
-                        day: '2-digit', month: 'short', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit'
-                      })}
-                    </span>
-                  </div>
-                </div>
 
-                {/* Message */}
-                <div className="flex-1">
-                  {selected.subject && (
-                    <h4 className="font-bold text-dark mb-3 text-base">{selected.subject}</h4>
+                  {/* Thread count pill */}
+                  {totalReplies > 0 && (
+                    <p className="text-xs text-gray-400 mt-3">
+                      {totalReplies + 1} message{totalReplies + 1 !== 1 ? 's' : ''} in this thread
+                    </p>
                   )}
-                  <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
-                    {selected.message}
-                  </p>
                 </div>
 
-                {/* Reply Form */}
-                <div className="mt-6 pt-5 border-t border-gray-100 space-y-3">
+                {/* ── Email thread ── */}
+                <div className="px-6 py-5 space-y-2.5 overflow-y-auto max-h-[420px]">
+
+                  {/* Original message — always open */}
+                  <ThreadItem
+                    avatarLabel={selected.name.charAt(0).toUpperCase()}
+                    avatarBg="bg-primary/15 text-primary"
+                    senderName={selected.name}
+                    date={fmtDate(selected.createdAt)}
+                    body={selected.message}
+                    defaultOpen={true}
+                  />
+
+                  {/* Loading replies spinner */}
+                  {loadingDetail && (
+                    <div className="flex justify-center py-4">
+                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+
+                  {/* Admin replies — last one open, rest collapsed */}
+                  {!loadingDetail && selected.replies?.map((reply, idx) => (
+                    <ThreadItem
+                      key={reply._id}
+                      avatarLabel="A"
+                      avatarBg="bg-dark text-white"
+                      senderName={reply.sentBy || 'Admin'}
+                      date={fmtDate(reply.sentAt)}
+                      body={reply.message}
+                      isAdmin={true}
+                      sentTo={selected.email}
+                      defaultOpen={idx === (selected.replies!.length - 1)}
+                    />
+                  ))}
+                </div>
+
+                {/* ── Reply composer ── */}
+                <div className="px-6 pb-6 pt-4 border-t border-gray-100 space-y-3 flex-shrink-0">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Reply to {selected.name}
                   </p>
                   <textarea
-                    placeholder={`Write your reply to ${selected.email}...`}
+                    placeholder={`Write your reply to ${selected.email}…`}
                     value={replyText}
                     onChange={e => setReplyText(e.target.value)}
-                    rows={4}
+                    rows={3}
                     className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary bg-gray-50 resize-none transition-colors"
                   />
                   <div className="flex items-center justify-between gap-3">
@@ -307,6 +501,7 @@ const ContactsPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
+
               </div>
             ) : (
               <div className="h-64 lg:h-full bg-white rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center">
@@ -317,6 +512,7 @@ const ContactsPage: React.FC = () => {
               </div>
             )}
           </div>
+
         </div>
       )}
     </div>

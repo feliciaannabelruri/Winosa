@@ -2,10 +2,36 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { useTranslate } from "@/lib/useTranslate";
+import { SiteSettings } from "@/types/settings";
+
+async function fetchSettings(): Promise<SiteSettings | null> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
+      next: { revalidate: 3600 }, // cache 1 hour
+    });
+    const json = await res.json();
+    return json?.data ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export default function Footer() {
   const { t } = useTranslate();
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
+
+  useEffect(() => {
+    fetchSettings().then(setSettings);
+  }, []);
+
+  const fbUrl  = settings?.socialFacebook  || "https://facebook.com";
+  const liUrl  = settings?.socialLinkedin  || "https://linkedin.com";
+  const waNum  = settings?.socialWhatsapp  || "628000000000";
+  const waUrl  = `https://wa.me/${waNum}`;
+  const logo   = settings?.logo            || "/logo.png";
+  const tagline = settings?.siteTagline    || t("footer", "tagline");
 
   return (
     <footer className="bg-[#efede9] text-black px-12 py-20">
@@ -15,12 +41,10 @@ export default function Footer() {
           <h4 className="text-sm font-semibold tracking-wide">
             {t("footer", "aboutTitle")}
           </h4>
-
           <div className="space-y-3 text-gray-700 text-sm">
             <Link href="/" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "company")}
             </Link>
-
             <Link href="/About" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "aboutUs")}
             </Link>
@@ -31,16 +55,13 @@ export default function Footer() {
           <h4 className="text-sm font-semibold tracking-wide">
             {t("footer", "servicesTitle")}
           </h4>
-
           <div className="space-y-3 text-gray-700 text-sm">
             <Link href="/Services" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "services")}
             </Link>
-
             <Link href="/Plans" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "plans")}
             </Link>
-
             <Link href="/Contact" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "contact")}
             </Link>
@@ -51,12 +72,10 @@ export default function Footer() {
           <h4 className="text-sm font-semibold tracking-wide">
             {t("footer", "insightTitle")}
           </h4>
-
           <div className="space-y-3 text-gray-700 text-sm">
             <Link href="/portofolio" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "portfolio")}
             </Link>
-
             <Link href="/Blog" className="block hover:text-black transition focus:outline-none focus:underline">
               {t("footer", "blog")}
             </Link>
@@ -64,31 +83,30 @@ export default function Footer() {
         </div>
 
         <div className="space-y-6">
-
+          {/* Logo + brand */}
           <div className="flex items-center gap-3">
             <Link href="/" aria-label="Go to homepage">
               <Image
-                src="/logo.png"
+                src={logo}
                 alt="Winosa company logo"
                 width={56}
                 height={56}
                 className="cursor-pointer"
               />
             </Link>
-
             <span className="text-2xl font-bold">
               <span className="text-3xl">W</span>inosa.
             </span>
           </div>
 
-          <p className="text-sm text-gray-700">
-            {t("footer", "tagline")}
-          </p>
+          {/* Tagline from settings */}
+          <p className="text-sm text-gray-700">{tagline}</p>
 
+          {/* Social icons */}
           <div className="flex gap-6 mt-4 items-center">
-
+            {/* Facebook */}
             <a
-              href="https://facebook.com"
+              href={fbUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Visit Winosa Facebook"
@@ -99,8 +117,9 @@ export default function Footer() {
               </svg>
             </a>
 
+            {/* LinkedIn */}
             <a
-              href="https://linkedin.com"
+              href={liUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Visit Winosa LinkedIn"
@@ -111,8 +130,9 @@ export default function Footer() {
               </svg>
             </a>
 
+            {/* WhatsApp */}
             <a
-              href="https://wa.me/628000000000"
+              href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Contact Winosa via WhatsApp"
@@ -122,7 +142,6 @@ export default function Footer() {
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1v3.49a1 1 0 01-1 1C10.07 21 3 13.93 3 5.5a1 1 0 011-1H7.5a1 1 0 011 1c0 1.25.2 2.47.57 3.56a1 1 0 01-.24 1.01l-2.21 2.22z"/>
               </svg>
             </a>
-
           </div>
         </div>
 
@@ -130,13 +149,11 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto mt-16">
         <div className="h-px bg-black/20 mb-6" />
-
         <div className="flex flex-col md:flex-row justify-between text-sm text-gray-700">
           <span>{t("footer", "location")}</span>
           <span>{t("footer", "copyright")}</span>
         </div>
       </div>
-
     </footer>
   );
 }

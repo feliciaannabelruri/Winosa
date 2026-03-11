@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Briefcase, FolderOpen, FileText,
   Mail, Menu, Crown, Users, Settings,
+  Grid,
 } from 'lucide-react';
 
 const navItems = [
@@ -10,7 +11,8 @@ const navItems = [
   { to: '/services',      icon: Briefcase,       label: 'Services' },
   { to: '/portfolio',     icon: FolderOpen,      label: 'Portfolio' },
   { to: '/blogs',         icon: FileText,        label: 'Blogs' },
-  { to: '/subscriptions', icon: Crown,           label: 'Subs' },
+  { to: '/subscriptions', icon: Crown,           label: 'Subscriptions' },
+  { to: '/content',       icon: Grid,            label: 'Content' },
   { to: '/contacts',      icon: Mail,            label: 'Contacts' },
   { to: '/newsletter',    icon: Users,           label: 'Newsletter' },
   { to: '/settings',      icon: Settings,        label: 'Settings' },

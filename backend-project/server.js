@@ -59,6 +59,7 @@ app.use('/api/contact',       require('./routes/contactRoutes'));
 app.use('/api/newsletter',    require('./routes/newsletterRoutes'));
 app.use('/api/services',      require('./routes/serviceRoutes'));
 app.use('/api/subscriptions', require('./routes/subscriptionRoutes'));
+app.use('/api/content',       require('./routes/contentRoutes'));
 app.use('/api/auth',          authLimiter, require('./routes/authRoutes'));
 app.use('/api/search',        require('./routes/searchRoutes'));
 
@@ -71,6 +72,7 @@ app.use('/api/admin/blog',          require('./routes/admin/adminBlogRoutes'));
 app.use('/api/admin/analytics',     require('./routes/admin/adminAnalyticsRoutes'));
 app.use('/api/admin/subscriptions', require('./routes/admin/adminSubscriptionRoutes'));
 app.use('/api/admin/settings',      require('./routes/admin/adminSettingsRoutes'));
+app.use('/api/admin/content',       require('./routes/admin/adminContentRoutes'));
 app.use('/api/admin/upload',        require('./routes/uploadRoutes'));
 
 app.get('/', (req, res) => {

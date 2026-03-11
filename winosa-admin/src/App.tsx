@@ -19,6 +19,7 @@ import SubscriptionFormPage from './pages/SubscriptionFormPage';
 import NewsletterPage from './pages/NewsletterPage';
 import SettingsPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
+import ContentPage from './pages/ContentPage';
 
 function App() {
   return (
@@ -72,6 +73,8 @@ function App() {
             <Route path="subscriptions" element={<SubscriptionsPage />} />
             <Route path="subscriptions/add" element={<SubscriptionFormPage />} />
             <Route path="subscriptions/edit/:id" element={<SubscriptionFormPage />} />
+
+            <Route path="content" element={<ContentPage />} />
 
             {/* Newsletter */}
             <Route path="newsletter" element={<NewsletterPage />} />

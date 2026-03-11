@@ -53,7 +53,7 @@ export default async function HomePage() {
   let glassData = null;
 
   try {
-    const glassRes = await api.get("/glass");
+    const glassRes = await api.get("/content/glass");
     glassData = glassRes.data.data;
   } catch (error) {
     console.log("Glass endpoint tidak ditemukan");
