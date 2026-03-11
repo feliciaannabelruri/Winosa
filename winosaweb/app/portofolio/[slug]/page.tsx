@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import styles from "./detail.module.css";
+import Footer from "@/components/layout/Footer";
 
 import HeroSection from "@/components/sectionsPorto/sectionDetailProject/HeroSection";
 import InfoSection from "@/components/sectionsPorto/sectionDetailProject/InfoSection";
@@ -89,6 +90,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       <CaseStudySection project={project} />
       <GallerySection project={project} />
       <NextProjectSection nextProject={nextProject} />
+      <Footer />
     </main>
   );
 }

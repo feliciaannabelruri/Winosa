@@ -1,10 +1,10 @@
-/* ========== DETAIL PAGE ========== */
+/* DETAIL PAGE  */
 .detailPage {
   min-height: 100vh;
   background: #ffffff;
 }
 
-/* ========== HERO SECTION ========== */
+/* HERO SECTION */
 .heroSection {
   position: relative;
   height: 75vh;
@@ -26,17 +26,18 @@
   object-fit: cover;
 }
 
+/* seamless fade ke putih di bawah */
 .heroOverlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.1) 0%,
-    rgba(0, 0, 0, 0.3) 40%,
-    rgba(0, 0, 0, 0.5) 70%,
-    rgba(249, 249, 249, 0.6) 88%,
-    rgba(249, 249, 249, 0.95) 96%,
-    #f9f9f9 100%
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.35) 40%,
+    rgba(0, 0, 0, 0.38) 60%,
+    rgba(255, 255, 255, 0.2) 80%,
+    rgba(255, 255, 255, 0.85) 92%,
+    #ffffff 100%
   );
 }
 
@@ -81,16 +82,28 @@
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* ========== INFO SECTION ========== */
+/*  INFO SECTION  */
 .infoSection {
-  padding: 100px 24px;
-  background: linear-gradient(135deg, #fafafa 0%, #ffffff 50%, #fafafa 100%);
+  padding: 80px 24px 100px;
+  background: #ffffff;
   position: relative;
+}
+
+/* seamless dari hero */
+.infoSection::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, #ffffff, transparent);
+  pointer-events: none;
 }
 
 .infoContainer {
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .sectionTitle {
@@ -110,7 +123,7 @@
 }
 
 .infoCard {
-  background: #ffffff;
+  background: #fafafa;
   padding: 44px 28px;
   border-radius: 16px;
   display: flex;
@@ -144,10 +157,10 @@
 
 /* Tech Stack */
 .techStack {
-  background: #ffffff;
+  background: #fafafa;
   padding: 48px 40px;
   border-radius: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   border: 2px solid rgba(244, 196, 48, 0.15);
   transition: all 0.3s ease;
 }
@@ -173,7 +186,7 @@
 
 .techTag {
   padding: 12px 24px;
-  background: #fafafa;
+  background: #ffffff;
   border: 2px solid #e8e8e8;
   border-radius: 999px;
   font-size: 0.9rem;
@@ -190,7 +203,7 @@
   box-shadow: 0 4px 12px rgba(244, 196, 48, 0.25);
 }
 
-/* ========== CASE STUDY SECTION ========== */
+/* CASE STUDY SECTION  */
 .caseStudySection {
   padding: 100px 24px;
   background: #ffffff;
@@ -269,7 +282,7 @@
 }
 
 .metricCard {
-  background: #ffffff;
+  background: #fafafa;
   padding: 40px 28px;
   border-radius: 16px;
   border-top: 3px solid transparent;
@@ -305,12 +318,24 @@
 /* ========== GALLERY SECTION ========== */
 .gallerySection {
   padding: 100px 24px;
-  background: linear-gradient(135deg, #fafafa 0%, #ffffff 50%, #fafafa 100%);
+  background: #ffffff;
+  position: relative;
+}
+
+.gallerySection::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, #fafafa, #ffffff);
+  pointer-events: none;
 }
 
 .galleryContainer {
   max-width: 1440px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .galleryGrid {
@@ -476,7 +501,6 @@
     gap: 32px;
     padding: 36px;
   }
-
   .metricsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -487,67 +511,23 @@
     height: 65vh;
     min-height: 450px;
   }
-
-  .heroContent {
-    padding: 50px 20px;
-  }
-
+  .heroContent { padding: 50px 20px; }
   .infoSection,
   .caseStudySection,
   .gallerySection,
-  .nextProjectSection {
-    padding: 70px 20px;
-  }
-
-  .infoGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .sectionTitle {
-    font-size: 2rem;
-  }
-
-  .caseStudyTitle {
-    font-size: 1.5rem;
-  }
-
-  .galleryGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .lightboxNav,
-  .lightboxClose {
-    display: none;
-  }
+  .nextProjectSection { padding: 70px 20px; }
+  .infoGrid { grid-template-columns: 1fr; }
+  .sectionTitle { font-size: 2rem; }
+  .caseStudyTitle { font-size: 1.5rem; }
+  .galleryGrid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
-  .heroTitle {
-    font-size: 2.2rem;
-  }
-
-  .infoCard,
-  .metricCard {
-    padding: 32px 20px;
-  }
-
-  .techStack {
-    padding: 36px 28px;
-  }
-
-  .caseStudyBlock {
-    padding: 32px 24px;
-  }
-
-  .nextProjectCard {
-    padding: 28px 20px;
-  }
-
-  .nextProjectTitle {
-    font-size: 1.7rem;
-  }
-
-  .metricsGrid {
-    grid-template-columns: 1fr;
-  }
+  .heroTitle { font-size: 2.2rem; }
+  .infoCard, .metricCard { padding: 32px 20px; }
+  .techStack { padding: 36px 28px; }
+  .caseStudyBlock { padding: 32px 24px; }
+  .nextProjectCard { padding: 28px 20px; }
+  .nextProjectTitle { font-size: 1.7rem; }
+  .metricsGrid { grid-template-columns: 1fr; }
 }
