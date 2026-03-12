@@ -12,7 +12,7 @@ const contactSchema = new mongoose.Schema({
   subject: String,
   message: { type: String, required: true },
   isRead:  { type: Boolean, default: false },
-  replies: { type: [replySchema], default: [] },   // ← tambahan
+  replies: { type: [replySchema], default: [] },   
 }, {
   timestamps: true
 });
