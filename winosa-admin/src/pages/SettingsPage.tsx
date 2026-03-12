@@ -278,7 +278,7 @@ const SettingsPage: React.FC = () => {
 
       <div>
         <h1 className="text-4xl font-display font-bold text-dark">Settings</h1>
-        <p className="text-gray-400 text-sm mt-1 italic">Configure your Winosa website</p>
+        <p className="text-gray-400 text-sm mt-1 italic">Konfigurasikan situs web Winosa Anda</p>
       </div>
 
       {apiError && <ApiBanner onRetry={fetchSettings} />}

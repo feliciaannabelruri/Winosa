@@ -49,9 +49,9 @@ function ImageUploadBox({
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       onChange(res.data.data.url);
-      toast.success('Image uploaded');
+      toast.success('Gambar berhasil diunggah');
     } catch {
-      toast.error('Upload failed');
+      toast.error('Gagal mengunggah gambar');
     } finally {
       setLoading(false);
     }
@@ -60,45 +60,65 @@ function ImageUploadBox({
   return (
     <div className="flex flex-col gap-1.5">
       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{label}</p>
-      <div
-        className={`relative ${heightClass} rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden bg-gray-50 group transition-colors ${!value ? 'cursor-pointer hover:border-primary' : ''}`}
-        onClick={() => { if (!value) inputRef.current?.click(); }}
-      >
+      <div className={`relative ${heightClass} rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden bg-gray-50 group transition-colors`}>
         {value ? (
           <>
             <img src={value} alt={label} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-              <button type="button" onClick={e => { e.stopPropagation(); inputRef.current?.click(); }}
-                className="flex items-center gap-1.5 bg-white text-dark text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-gray-100 transition-colors">
-                <Upload size={12} /> Ganti
-              </button>
-              <button type="button" onClick={e => { e.stopPropagation(); onChange(''); }}
-                className="flex items-center gap-1.5 bg-red-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-red-600 transition-colors">
-                <X size={12} /> Hapus
-              </button>
+            {/* Hover overlay dengan ikon saja */}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3">
+              {loading ? (
+                <Loader2 size={24} className="animate-spin text-white" />
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={e => { e.stopPropagation(); inputRef.current?.click(); }}
+                    className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
+                    title="Ganti gambar"
+                  >
+                    <Upload size={16} className="text-dark" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={e => { e.stopPropagation(); onChange(''); }}
+                    className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-red-50 transition-colors"
+                    title="Delete gambar"
+                  >
+                    <Trash2 size={16} className="text-red-500" />
+                  </button>
+                </>
+              )}
             </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full gap-2 text-gray-400">
+          <div
+            className="flex flex-col items-center justify-center h-full gap-2 text-gray-400 cursor-pointer hover:text-dark transition-colors"
+            onClick={() => inputRef.current?.click()}
+          >
             {loading
               ? <Loader2 size={24} className="animate-spin text-primary" />
-              : <><Upload size={20} /><span className="text-xs">Upload image</span></>
+              : (
+                <>
+                  <Upload size={20} />
+                  <span className="text-xs">Klik untuk mengunggah</span>
+                </>
+              )
             }
           </div>
         )}
-        {loading && (
-          <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-            <Loader2 size={24} className="animate-spin text-primary" />
-          </div>
-        )}
       </div>
-      <input ref={inputRef} type="file" accept="image/*" className="hidden"
-        onChange={e => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }} />
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={e => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }}
+      />
     </div>
   );
 }
 
-/* ─────────────────── MemberModal ─────────────────── */
+/* MemberModal */
 
 function MemberModal({ initial, onSave, onClose }: {
   initial?: TeamMember | null;
@@ -110,7 +130,7 @@ function MemberModal({ initial, onSave, onClose }: {
   const set = (k: keyof typeof form) => (v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSubmit = async () => {
-    if (!form.name.trim() || !form.role.trim()) { toast.error('Name and role are required'); return; }
+    if (!form.name.trim() || !form.role.trim()) { toast.error('Nama dan jabatan wajib diisi'); return; }
     setSaving(true);
     try { await onSave(form); onClose(); } finally { setSaving(false); }
   };
@@ -119,37 +139,48 @@ function MemberModal({ initial, onSave, onClose }: {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 flex flex-col gap-5">
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-dark text-lg">{initial ? 'Edit Member' : 'Add Member'}</h3>
+          <h3 className="font-bold text-dark text-lg">{initial ? 'Edit Anggota' : 'Add Anggota'}</h3>
           <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-gray-100 transition-colors">
             <X size={18} className="text-gray-500" />
           </button>
         </div>
 
-        <ImageUploadBox label="Photo" value={form.image} onChange={set('image')} aspect="portrait" />
+        <ImageUploadBox label="Foto" value={form.image} onChange={set('image')} aspect="portrait" />
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</label>
-          <input value={form.name} onChange={e => set('name')(e.target.value)}
-            placeholder="e.g. Michael Anderson"
-            className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary transition-colors" />
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama</label>
+          <input
+            value={form.name}
+            onChange={e => set('name')(e.target.value)}
+            placeholder="cth. Michael Anderson"
+            className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+          />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Role / Title</label>
-          <input value={form.role} onChange={e => set('role')(e.target.value)}
-            placeholder="e.g. CEO & Founder"
-            className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary transition-colors" />
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Jabatan</label>
+          <input
+            value={form.role}
+            onChange={e => set('role')(e.target.value)}
+            placeholder="cth. CEO & Pendiri"
+            className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+          />
         </div>
 
         <div className="flex gap-3 pt-1">
-          <button onClick={onClose}
-            className="flex-1 py-2.5 rounded-full border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
-            Cancel
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-full border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            Batal
           </button>
-          <button onClick={handleSubmit} disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full bg-primary text-dark text-sm font-bold hover:bg-yellow-400 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+          <button
+            onClick={handleSubmit}
+            disabled={saving}
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full bg-dark text-white hover:bg-gray-800 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            {saving ? 'Saving…' : 'Save'}
+            {saving ? 'Saving...' : 'Save'}
           </button>
         </div>
       </div>
@@ -157,7 +188,7 @@ function MemberModal({ initial, onSave, onClose }: {
   );
 }
 
-/* ─────────────────── Main Page ─────────────────── */
+/* Main Page */
 
 const ContentPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>('team');
@@ -174,19 +205,18 @@ const ContentPage: React.FC = () => {
   });
   const [loadingGlass, setLoadingGlass] = useState(true);
   const [savingGlass,  setSavingGlass]  = useState(false);
-  const [glassChanged, setGlassChanged] = useState(false);
 
   useEffect(() => {
     api.get('/admin/content/team')
       .then(r => setMembers(r.data.data ?? []))
-      .catch(() => toast.error('Failed to load team'))
+      .catch(() => toast.error('Gagal memuat data tim'))
       .finally(() => setLoadingTeam(false));
   }, []);
 
   useEffect(() => {
     api.get('/admin/content/glass')
       .then(r => setGlass(r.data.data ?? glass))
-      .catch(() => toast.error('Failed to load glass images'))
+      .catch(() => toast.error('Gagal memuat gambar glass'))
       .finally(() => setLoadingGlass(false));
   }, []);
 
@@ -197,21 +227,21 @@ const ContentPage: React.FC = () => {
     if (editing) {
       const res = await api.put(`/admin/content/team/${editing._id}`, form);
       setMembers(prev => prev.map(m => m._id === editing._id ? res.data.data : m));
-      toast.success('Member updated');
+      toast.success('Anggota tim berhasil diperbarui');
     } else {
       const res = await api.post('/admin/content/team', { ...form, order: members.length });
       setMembers(prev => [...prev, res.data.data]);
-      toast.success('Member added');
+      toast.success('Anggota tim berhasil ditambahkan');
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Remove ${name} from the team?`)) return;
+    if (!window.confirm(`Delete ${name} dari tim?`)) return;
     try {
       await api.delete(`/admin/content/team/${id}`);
       setMembers(prev => prev.filter(m => m._id !== id));
-      toast.success('Member removed');
-    } catch { toast.error('Failed to delete member'); }
+      toast.success('Anggota tim berhasil dihapus');
+    } catch { toast.error('Gagal menghapus anggota tim'); }
   };
 
   const moveOrder = async (index: number, dir: -1 | 1) => {
@@ -225,7 +255,7 @@ const ContentPage: React.FC = () => {
       await api.patch('/admin/content/team/reorder', {
         orders: reordered.map(m => ({ _id: m._id, order: m.order })),
       });
-    } catch { toast.error('Failed to save order'); }
+    } catch { toast.error('Gagal menyimpan urutan'); }
   };
 
   const updateGlass = (path: string[], value: string) => {
@@ -236,16 +266,14 @@ const ContentPage: React.FC = () => {
       obj[path[path.length - 1]] = value;
       return next;
     });
-    setGlassChanged(true);
   };
 
   const saveGlass = async () => {
     setSavingGlass(true);
     try {
       await api.put('/admin/content/glass', glass);
-      toast.success('Glass images saved');
-      setGlassChanged(false);
-    } catch { toast.error('Failed to save glass images'); }
+      toast.success('Gambar glass berhasil disimpan');
+    } catch { toast.error('Gagal menyimpan gambar glass'); }
     finally { setSavingGlass(false); }
   };
 
@@ -255,14 +283,14 @@ const ContentPage: React.FC = () => {
       {/* Header */}
       <div>
         <h1 className="text-4xl font-display font-bold text-dark">Content</h1>
-        <p className="text-gray-400 text-sm mt-1 italic">Manage team members and homepage visuals</p>
+        <p className="text-gray-400 text-sm mt-1 italic">Kelola anggota tim dan visual halaman utama</p>
       </div>
 
-      {/* Tabs — same style as Settings page */}
+      {/* Tabs */}
       <div className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-full px-2 py-1.5 shadow-sm">
         {([
-          { id: 'team',  label: 'Team Members', icon: Users },
-          { id: 'glass', label: 'Glass Section', icon: ImageIcon },
+          { id: 'team',  label: 'Anggota Tim', icon: Users },
+          { id: 'glass', label: 'Bagian Glass',  icon: ImageIcon },
         ] as const).map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -279,7 +307,7 @@ const ContentPage: React.FC = () => {
         ))}
       </div>
 
-      {/* ══ TEAM ══ */}
+      {/* ══ TIM ══ */}
       {tab === 'team' && (
         <div className="space-y-5">
           <div className="flex justify-end">
@@ -287,7 +315,7 @@ const ContentPage: React.FC = () => {
               onClick={openAdd}
               className="flex items-center gap-2 bg-primary text-dark font-bold px-6 py-3 rounded-full text-sm hover:bg-yellow-400 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
             >
-              <Plus size={16} /> Add Member
+              <Plus size={16} /> Add Anggota
             </button>
           </div>
 
@@ -298,25 +326,33 @@ const ContentPage: React.FC = () => {
           ) : members.length === 0 ? (
             <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center">
               <Users size={40} className="text-gray-200 mx-auto mb-3" />
-              <p className="text-gray-400 text-sm">No team members yet</p>
+              <p className="text-gray-400 text-sm">Belum ada anggota tim</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {members.map((m, i) => (
-                <div key={m._id}
-                  className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm overflow-hidden group hover:border-primary/30 hover:shadow-md transition-all duration-200">
+                <div
+                  key={m._id}
+                  className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm overflow-hidden group hover:border-primary/30 hover:shadow-md transition-all duration-200"
+                >
                   <div className="relative h-52 bg-gray-50 overflow-hidden">
                     {m.image
                       ? <img src={m.image} alt={m.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       : <div className="flex items-center justify-center h-full"><Users size={40} className="text-gray-200" /></div>
                     }
                     <div className="absolute top-2 left-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => moveOrder(i, -1)} disabled={i === 0}
-                        className="w-7 h-7 bg-white/90 rounded-xl flex items-center justify-center shadow disabled:opacity-30 hover:bg-white transition-colors">
+                      <button
+                        onClick={() => moveOrder(i, -1)}
+                        disabled={i === 0}
+                        className="w-7 h-7 bg-white/90 rounded-xl flex items-center justify-center shadow disabled:opacity-30 hover:bg-white transition-colors"
+                      >
                         <ChevronUp size={13} />
                       </button>
-                      <button onClick={() => moveOrder(i, 1)} disabled={i === members.length - 1}
-                        className="w-7 h-7 bg-white/90 rounded-xl flex items-center justify-center shadow disabled:opacity-30 hover:bg-white transition-colors">
+                      <button
+                        onClick={() => moveOrder(i, 1)}
+                        disabled={i === members.length - 1}
+                        className="w-7 h-7 bg-white/90 rounded-xl flex items-center justify-center shadow disabled:opacity-30 hover:bg-white transition-colors"
+                      >
                         <ChevronDown size={13} />
                       </button>
                     </div>
@@ -328,13 +364,17 @@ const ContentPage: React.FC = () => {
                     <p className="font-bold text-dark text-sm">{m.name}</p>
                     <p className="text-gray-400 text-xs mt-0.5">{m.role}</p>
                     <div className="flex gap-2 mt-4">
-                      <button onClick={() => openEdit(m)}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full border border-gray-200 text-xs font-semibold text-gray-600 hover:border-gray-400 transition-colors">
+                      <button
+                        onClick={() => openEdit(m)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full border border-gray-200 text-xs font-semibold text-gray-600 hover:border-gray-400 transition-colors"
+                      >
                         <Pencil size={12} /> Edit
                       </button>
-                      <button onClick={() => handleDelete(m._id, m.name)}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full border border-red-100 text-xs font-semibold text-red-400 hover:bg-red-50 transition-colors">
-                        <Trash2 size={12} /> Remove
+                      <button
+                        onClick={() => handleDelete(m._id, m.name)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full border border-red-100 text-xs font-semibold text-red-400 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 size={12} /> Delete
                       </button>
                     </div>
                   </div>
@@ -345,7 +385,7 @@ const ContentPage: React.FC = () => {
         </div>
       )}
 
-      {/* ══ GLASS ══ */}
+      {/* GLASS */}
       {tab === 'glass' && (
         <div className="space-y-5">
           {loadingGlass ? (
@@ -354,50 +394,50 @@ const ContentPage: React.FC = () => {
             </div>
           ) : (
             <>
-              {/* Who We Are */}
+              {/* Siapa Kami */}
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-2 h-2 rounded-full bg-primary" />
-                  <h3 className="font-bold text-dark">Who We Are</h3>
-                  <span className="text-xs text-gray-400 ml-auto">2 images · oval pair</span>
+                  <h3 className="font-bold text-dark">Siapa Kami</h3>
+                  <span className="text-xs text-gray-400 ml-auto">2 gambar · pasangan oval</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <ImageUploadBox label="Image 1 (large oval)" value={glass.whoWeAre.image1}
+                  <ImageUploadBox label="Gambar 1 (oval besar)" value={glass.whoWeAre.image1}
                     onChange={v => updateGlass(['whoWeAre', 'image1'], v)} aspect="landscape" />
-                  <ImageUploadBox label="Image 2 (small oval)" value={glass.whoWeAre.image2}
+                  <ImageUploadBox label="Gambar 2 (oval kecil)" value={glass.whoWeAre.image2}
                     onChange={v => updateGlass(['whoWeAre', 'image2'], v)} aspect="landscape" />
                 </div>
               </div>
 
-              {/* What We Do */}
+              {/* Apa yang Kami Lakukan */}
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-2 h-2 rounded-full bg-primary" />
-                  <h3 className="font-bold text-dark">What We Do</h3>
-                  <span className="text-xs text-gray-400 ml-auto">2 images · oval pair</span>
+                  <h3 className="font-bold text-dark">Apa yang Kami Lakukan</h3>
+                  <span className="text-xs text-gray-400 ml-auto">2 gambar · pasangan oval</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <ImageUploadBox label="Image 1 (large oval)" value={glass.whatWeDo.image1}
+                  <ImageUploadBox label="Gambar 1 (oval besar)" value={glass.whatWeDo.image1}
                     onChange={v => updateGlass(['whatWeDo', 'image1'], v)} aspect="landscape" />
-                  <ImageUploadBox label="Image 2 (small oval)" value={glass.whatWeDo.image2}
+                  <ImageUploadBox label="Gambar 2 (oval kecil)" value={glass.whatWeDo.image2}
                     onChange={v => updateGlass(['whatWeDo', 'image2'], v)} aspect="landscape" />
                 </div>
               </div>
 
-              {/* Vision */}
+              {/* Visi */}
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-2 h-2 rounded-full bg-primary" />
-                  <h3 className="font-bold text-dark">Our Vision</h3>
-                  <span className="text-xs text-gray-400 ml-auto">1 image · single oval</span>
+                  <h3 className="font-bold text-dark">Visi Kami</h3>
+                  <span className="text-xs text-gray-400 ml-auto">1 gambar · oval tunggal</span>
                 </div>
                 <div className="max-w-xs">
-                  <ImageUploadBox label="Vision image" value={glass.vision.image}
+                  <ImageUploadBox label="Gambar visi" value={glass.vision.image}
                     onChange={v => updateGlass(['vision', 'image'], v)} aspect="landscape" />
                 </div>
               </div>
 
-              {/* Save button */}
+              {/* Tombol Simpan */}
               <div className="flex justify-end pt-2">
                 <button
                   onClick={saveGlass}
@@ -405,7 +445,7 @@ const ContentPage: React.FC = () => {
                   className="flex items-center gap-2 bg-dark text-white text-sm font-bold px-6 py-3 rounded-full hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                 >
                   {savingGlass
-                    ? <><Loader2 size={14} className="animate-spin" /> Saving…</>
+                    ? <><Loader2 size={14} className="animate-spin" /> Saving...</>
                     : <><Save size={14} /> Save Changes</>
                   }
                 </button>

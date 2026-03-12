@@ -56,17 +56,14 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
 
   return (
     <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white">
-      {/* Header row — always visible, click to toggle */}
       <button
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 transition-colors text-left"
       >
-        {/* Avatar */}
         <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-bold ${avatarBg}`}>
           {avatarLabel}
         </div>
 
-        {/* Name + snippet when collapsed */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-dark">{senderName}</span>
@@ -81,7 +78,6 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
           )}
         </div>
 
-        {/* Date + chevron */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className="text-xs text-gray-400 hidden sm:block">{date}</span>
           {open
@@ -91,7 +87,6 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
         </div>
       </button>
 
-      {/* Body — shown when expanded */}
       {open && (
         <div className="px-5 pb-5 pt-0">
           <p className="text-xs text-gray-400 mb-3 sm:hidden">{date}</p>
@@ -100,7 +95,7 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
             {isAdmin && sentTo && (
               <p className="text-[10px] text-gray-400 mt-4 flex items-center gap-1">
                 <CheckCheck size={11} className="text-green-400" />
-                Sent to {sentTo}
+                Terkirim ke {sentTo}
               </p>
             )}
           </div>
@@ -122,14 +117,13 @@ const ContactsPage: React.FC = () => {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [deleting, setDeleting]         = useState(false);
 
-  /* ── Fetch all contacts ── */
   useEffect(() => {
     const load = async () => {
       try {
         const data = await contactService.getAll();
         setContacts(data.data);
       } catch {
-        toast.error('Failed to fetch contacts');
+        toast.error('Gagal memuat pesan masuk');
       } finally {
         setLoading(false);
       }
@@ -137,7 +131,6 @@ const ContactsPage: React.FC = () => {
     load();
   }, []);
 
-  /* ── Toggle read/unread ── */
   const toggleRead = async (contactId: string) => {
     const contact = contacts.find(c => c._id === contactId);
     if (!contact) return;
@@ -149,11 +142,10 @@ const ContactsPage: React.FC = () => {
     } catch {
       setContacts(prev => prev.map(c => c._id === contactId ? { ...c, isRead: !newIsRead } : c));
       if (selected?._id === contactId) setSelected(prev => prev ? { ...prev, isRead: !newIsRead } : null);
-      toast.error('Failed to update status');
+      toast.error('Gagal memperbarui status');
     }
   };
 
-  /* ── Select contact — fetch full detail with replies ── */
   const handleSelect = async (contact: ContactWithReplies) => {
     setSelected(contact);
     setReplyText('');
@@ -173,30 +165,28 @@ const ContactsPage: React.FC = () => {
         setContacts(prev => prev.map(c => c._id === full._id ? { ...c, replies: full.replies } : c));
       }
     } catch {
-      // silent — show contact without replies
+      // silent — tampilkan kontak tanpa balasan
     } finally {
       setLoadingDetail(false);
     }
   };
 
-  /* ── Delete contact ── */
   const handleDelete = async () => {
     if (!selected) return;
-    if (!window.confirm(`Delete message from ${selected.name}? This cannot be undone.`)) return;
+    if (!window.confirm(`Hapus pesan dari ${selected.name}? Tindakan ini tidak dapat dibatalkan.`)) return;
     setDeleting(true);
     try {
       await api.delete(`/contact/${selected._id}`);
       setContacts(prev => prev.filter(c => c._id !== selected._id));
       setSelected(null);
-      toast.success('Message deleted');
+      toast.success('Pesan berhasil dihapus');
     } catch {
-      toast.error('Failed to delete message');
+      toast.error('Gagal menghapus pesan');
     } finally {
       setDeleting(false);
     }
   };
 
-  /* ── Send reply ── */
   const handleReply = async () => {
     if (!replyText.trim() || !selected) return;
     setReplying(true);
@@ -216,22 +206,20 @@ const ContactsPage: React.FC = () => {
       ));
 
       setReplyText('');
-      toast.success(`Reply sent to ${selected.email}`);
+      toast.success(`Balasan terkirim ke ${selected.email}`);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to send reply');
+      toast.error(err?.response?.data?.message || 'Gagal mengirim balasan');
     } finally {
       setReplying(false);
     }
   };
 
-  /* ── Export ── */
   const handleExport = () => {
     if (!contacts.length) return;
     contactService.exportFromData(contacts);
-    toast.success(`Exported ${contacts.length} contacts to CSV`);
+    toast.success(`${contacts.length} kontak berhasil diekspor ke CSV`);
   };
 
-  /* ── Filter ── */
   const filtered = contacts.filter(c => {
     const q = search.toLowerCase();
     const matchSearch =
@@ -239,15 +227,20 @@ const ContactsPage: React.FC = () => {
       c.email.toLowerCase().includes(q) ||
       (c.subject || '').toLowerCase().includes(q);
     const matchRead =
-      filterRead === 'all'  ? true :
-      filterRead === 'read' ? c.isRead : !c.isRead;
+      filterRead === 'all'    ? true :
+      filterRead === 'read'   ? c.isRead : !c.isRead;
     return matchSearch && matchRead;
   });
 
   const unreadCount  = contacts.filter(c => !c.isRead).length;
   const totalReplies = selected?.replies?.length ?? 0;
 
-  /* ════════════════════════════════ RENDER ════════════════════════════════ */
+  const filterLabels: Record<'all' | 'read' | 'unread', string> = {
+    all: 'All',
+    unread: 'Unread',
+    read: 'Read',
+  };
+
   return (
     <div className="space-y-6">
 
@@ -255,14 +248,14 @@ const ContactsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-4xl font-display font-bold text-dark">
-            Contacts
+            Contact
             {unreadCount > 0 && (
               <span className="ml-3 text-base font-semibold bg-primary text-dark px-3 py-1 rounded-full align-middle">
-                {unreadCount} unread
+                {unreadCount} Unread
               </span>
             )}
           </h1>
-          <p className="text-gray-400 text-sm mt-1 italic">View and reply to messages from website visitors</p>
+          <p className="text-gray-400 text-sm mt-1 italic">Lihat dan balas pesan dari pengunjung website</p>
         </div>
         <button
           onClick={handleExport}
@@ -279,7 +272,7 @@ const ContactsPage: React.FC = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
-            placeholder="Search by name, email, or subject"
+            placeholder="Cari nama, email, atau subjek..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
@@ -290,19 +283,19 @@ const ContactsPage: React.FC = () => {
             <button
               key={f}
               onClick={() => setFilterRead(f)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
+              className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 ${
                 filterRead === f
                   ? 'bg-dark border-dark text-white'
                   : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
               }`}
             >
-              {f}
+              {filterLabels[f]}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Body */}
+      {/* Konten */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -310,12 +303,12 @@ const ContactsPage: React.FC = () => {
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center">
           <Inbox size={40} className="text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-400 text-sm">No contacts found</p>
+          <p className="text-gray-400 text-sm">Tidak ada pesan yang ditemukan</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-          {/* ── List Panel ── */}
+          {/* ── Panel Daftar ── */}
           <div className={`lg:col-span-1 space-y-3 ${selected ? 'hidden lg:block' : ''}`}>
             {filtered.map(contact => (
               <div
@@ -351,22 +344,18 @@ const ContactsPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                {/* Subject as subtitle */}
-                {contact.subject && (
-                  <p className="text-xs font-medium text-gray-600 truncate mb-0.5">{contact.subject}</p>
-                )}
                 <p className="text-xs text-gray-400 truncate leading-relaxed">{contact.message}</p>
                 <p className="text-xs text-gray-300 mt-2">{fmtDateShort(contact.createdAt)}</p>
               </div>
             ))}
           </div>
 
-          {/* ── Detail Panel ── */}
+          {/* ── Panel Detail ── */}
           <div className={`lg:col-span-2 ${selected ? '' : 'hidden lg:block'}`}>
             {selected ? (
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col overflow-hidden">
 
-                {/* ── Thread header ── */}
+                {/* Header thread */}
                 <div className="px-6 pt-6 pb-5 border-b border-gray-100 flex-shrink-0">
                   <button
                     onClick={() => setSelected(null)}
@@ -375,12 +364,6 @@ const ContactsPage: React.FC = () => {
                     <ChevronLeft size={16} /> Back
                   </button>
 
-                  {/* Subject as email title */}
-                  <h2 className="text-lg font-bold text-dark mb-3">
-                    {selected.subject || '(No subject)'}
-                  </h2>
-
-                  {/* Sender + actions */}
                   <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold text-primary">
@@ -410,7 +393,7 @@ const ContactsPage: React.FC = () => {
                         }`}
                       >
                         <CheckCheck size={11} />
-                        {selected.isRead ? 'Mark Unread' : 'Mark Read'}
+                        {selected.isRead ? 'Mark Unread' : 'Mark as Read'}
                       </button>
                       <button
                         onClick={handleDelete}
@@ -426,18 +409,16 @@ const ContactsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Thread count pill */}
                   {totalReplies > 0 && (
                     <p className="text-xs text-gray-400 mt-3">
-                      {totalReplies + 1} message{totalReplies + 1 !== 1 ? 's' : ''} in this thread
+                      {totalReplies + 1} pesan dalam percakapan ini
                     </p>
                   )}
                 </div>
 
-                {/* ── Email thread ── */}
+                {/* Thread pesan */}
                 <div className="px-6 py-5 space-y-2.5 overflow-y-auto max-h-[420px]">
 
-                  {/* Original message — always open */}
                   <ThreadItem
                     avatarLabel={selected.name.charAt(0).toUpperCase()}
                     avatarBg="bg-primary/15 text-primary"
@@ -447,14 +428,12 @@ const ContactsPage: React.FC = () => {
                     defaultOpen={true}
                   />
 
-                  {/* Loading replies spinner */}
                   {loadingDetail && (
                     <div className="flex justify-center py-4">
                       <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     </div>
                   )}
 
-                  {/* Admin replies — last one open, rest collapsed */}
                   {!loadingDetail && selected.replies?.map((reply, idx) => (
                     <ThreadItem
                       key={reply._id}
@@ -470,13 +449,13 @@ const ContactsPage: React.FC = () => {
                   ))}
                 </div>
 
-                {/* ── Reply composer ── */}
+                {/* Formulir balasan */}
                 <div className="px-6 pb-6 pt-4 border-t border-gray-100 space-y-3 flex-shrink-0">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Reply to {selected.name}
+                    Balas ke {selected.name}
                   </p>
                   <textarea
-                    placeholder={`Write your reply to ${selected.email}…`}
+                    placeholder={`Tulis balasan untuk ${selected.email}…`}
                     value={replyText}
                     onChange={e => setReplyText(e.target.value)}
                     rows={3}
@@ -484,10 +463,10 @@ const ContactsPage: React.FC = () => {
                   />
                   <div className="flex items-center justify-between gap-3">
                     <a
-                      href={`mailto:${selected.email}?subject=Re: ${selected.subject || 'Your inquiry'}`}
+                      href={`mailto:${selected.email}`}
                       className="text-xs text-gray-400 hover:text-primary transition-colors"
                     >
-                      Or open in email client →
+                      Atau buka di aplikasi email →
                     </a>
                     <button
                       onClick={handleReply}
@@ -495,8 +474,8 @@ const ContactsPage: React.FC = () => {
                       className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark text-sm font-bold px-6 py-2.5 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                     >
                       {replying
-                        ? <><div className="w-3.5 h-3.5 border-2 border-dark border-t-transparent rounded-full animate-spin" />Sending...</>
-                        : <><Send size={14} />Send Reply</>
+                        ? <><div className="w-3.5 h-3.5 border-2 border-dark border-t-transparent rounded-full animate-spin" />Mengirim...</>
+                        : <><Send size={14} />Reply</>
                       }
                     </button>
                   </div>
@@ -507,7 +486,7 @@ const ContactsPage: React.FC = () => {
               <div className="h-64 lg:h-full bg-white rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center">
                 <div className="text-center">
                   <Mail size={32} className="text-gray-200 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm">Select a message to view details</p>
+                  <p className="text-gray-400 text-sm">Pilih pesan untuk melihat detailnya</p>
                 </div>
               </div>
             )}

@@ -9,6 +9,22 @@ import WebDevSection    from './service-form/WebDevSection';
 import MobileSection    from './service-form/MobileSection';
 import UiUxSection      from './service-form/UiUxSection';
 
+/* ─── Shared UI primitives (mirroring PortfolioFormPage) ─── */
+
+const SectionCard: React.FC<{ title: string; subtitle?: string; children: React.ReactNode }> = ({
+  title, subtitle, children,
+}) => (
+  <div className="bg-white border border-gray-100 rounded-3xl p-6 space-y-4 shadow-sm">
+    <div>
+      <h2 className="text-base font-bold text-dark">{title}</h2>
+      {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
+    </div>
+    {children}
+  </div>
+);
+
+/* ─── Page ─── */
+
 const ServiceFormPage: React.FC = () => {
   const navigate = useNavigate();
   const { id }   = useParams<{ id: string }>();
@@ -30,6 +46,7 @@ const ServiceFormPage: React.FC = () => {
   const slugType: DetailSlug | null =
     DETAIL_SLUGS.includes(form.slug as DetailSlug) ? (form.slug as DetailSlug) : null;
 
+  /* ── Skeleton (matches PortfolioFormPage skeleton) ── */
   if (fetching) {
     return (
       <div className="space-y-5 animate-pulse">
@@ -45,7 +62,7 @@ const ServiceFormPage: React.FC = () => {
   return (
     <div className="space-y-6">
 
-      {/* Header */}
+      {/* ── Header ── */}
       <div>
         <button
           onClick={() => navigate('/services')}
@@ -60,66 +77,74 @@ const ServiceFormPage: React.FC = () => {
         <p className="text-gray-400 text-sm mt-1 italic">Manage Winosa services content</p>
       </div>
 
-      {/* Basic Info */}
-      <BasicInfoSection
-        form={form}
-        isEdit={isEdit}
-        onTitleChange={setTitle}
-        onSlugChange={val => set('slug', val)}
-        onDescChange={val => set('description', val)}
-        onIconChange={val => set('icon', val)}
-        onPriceChange={val => set('price', val)}
-        onAddFeature={addFeature}
-        onRemoveFeature={removeFeature}
-        onWhatsappChange={val => set('whatsappNumber', val)}
-      />
+      {/* ── 1. Basic Info ── */}
+      <SectionCard title="Basic Info" subtitle="Title, slug, description, icon, price, and features">
+        <BasicInfoSection
+          form={form}
+          isEdit={isEdit}
+          onTitleChange={setTitle}
+          onSlugChange={val => set('slug', val)}
+          onDescChange={val => set('description', val)}
+          onIconChange={val => set('icon', val)}
+          onPriceChange={val => set('price', val)}
+          onAddFeature={addFeature}
+          onRemoveFeature={removeFeature}
+          onWhatsappChange={val => set('whatsappNumber', val)}
+        />
+      </SectionCard>
 
-      {/* Web Development extras */}
+      {/* ── 2. Web Development extras ── */}
       {slugType === 'web-development' && (
-        <WebDevSection
-          form={form}
-          set={set}
-          onAddProcessStep={addProcessStep}
-          onUpdateProcessStep={updateProcessStep}
-          onRemoveProcessStep={removeProcessStep}
-          onAddTechGroup={addTechGroup}
-          onUpdateTechGroupCategory={updateTechGroupCategory}
-          onAddTechToGroup={addTechToGroup}
-          onRemoveTechFromGroup={removeTechFromGroup}
-          onRemoveTechGroup={removeTechGroup}
-          pricing={webPricing}
-        />
+        <SectionCard title="Web Development Details" subtitle="Process steps, tech stack groups, and pricing">
+          <WebDevSection
+            form={form}
+            set={set}
+            onAddProcessStep={addProcessStep}
+            onUpdateProcessStep={updateProcessStep}
+            onRemoveProcessStep={removeProcessStep}
+            onAddTechGroup={addTechGroup}
+            onUpdateTechGroupCategory={updateTechGroupCategory}
+            onAddTechToGroup={addTechToGroup}
+            onRemoveTechFromGroup={removeTechFromGroup}
+            onRemoveTechGroup={removeTechGroup}
+            pricing={webPricing}
+          />
+        </SectionCard>
       )}
 
-      {/* Mobile App extras */}
+      {/* ── 3. Mobile App extras ── */}
       {slugType === 'mobile-app-development' && (
-        <MobileSection
-          form={form}
-          set={set}
-          onAddMobileFeature={addMobileFeature}
-          onUpdateMobileFeature={updateMobileFeature}
-          onRemoveMobileFeature={removeMobileFeature}
-          onAddMobileTech={addMobileTech}
-          onUpdateMobileTech={updateMobileTech}
-          onAddMobileTechItem={addMobileTechItem}
-          onRemoveMobileTechItem={removeMobileTechItem}
-          onRemoveMobileTech={removeMobileTech}
-          pricing={mobilePricing}
-        />
+        <SectionCard title="Mobile App Details" subtitle="Features, tech stack, and pricing">
+          <MobileSection
+            form={form}
+            set={set}
+            onAddMobileFeature={addMobileFeature}
+            onUpdateMobileFeature={updateMobileFeature}
+            onRemoveMobileFeature={removeMobileFeature}
+            onAddMobileTech={addMobileTech}
+            onUpdateMobileTech={updateMobileTech}
+            onAddMobileTechItem={addMobileTechItem}
+            onRemoveMobileTechItem={removeMobileTechItem}
+            onRemoveMobileTech={removeMobileTech}
+            pricing={mobilePricing}
+          />
+        </SectionCard>
       )}
 
-      {/* UI/UX extras */}
+      {/* ── 4. UI/UX extras ── */}
       {slugType === 'ui-ux-design' && (
-        <UiUxSection
-          form={form}
-          set={set}
-          onAddTool={addTool}
-          onRemoveTool={removeTool}
-          pricing={uiuxPricing}
-        />
+        <SectionCard title="UI/UX Design Details" subtitle="Tools and pricing">
+          <UiUxSection
+            form={form}
+            set={set}
+            onAddTool={addTool}
+            onRemoveTool={removeTool}
+            pricing={uiuxPricing}
+          />
+        </SectionCard>
       )}
 
-      {/* Actions */}
+      {/* ── Actions ── */}
       <div className="flex gap-3 pt-2 pb-10">
         <button
           onClick={() => handleSubmit(false)}

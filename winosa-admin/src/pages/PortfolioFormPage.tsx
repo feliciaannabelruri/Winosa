@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, X, Plus } from 'lucide-react';
+import { ArrowLeft, X, Plus, Trash2 } from 'lucide-react';
 import { portfolioService } from '../services/portfolioService';
 import toast from 'react-hot-toast';
 import { PORTFOLIO_CATEGORIES } from '../constants';
@@ -67,7 +67,6 @@ const DEFAULT_FORM: PortfolioForm = {
   isActive: true,
 };
 
-// Main Component
 const PortfolioFormPage: React.FC = () => {
   const navigate  = useNavigate();
   const { id }    = useParams<{ id: string }>();
@@ -83,7 +82,7 @@ const PortfolioFormPage: React.FC = () => {
   const set = <K extends keyof PortfolioForm>(key: K, val: PortfolioForm[K]) =>
     setForm(p => ({ ...p, [key]: val }));
 
-  // Load 
+  // Load
   useEffect(() => {
     if (!isEdit) return;
     setFetching(true);
@@ -112,24 +111,23 @@ const PortfolioFormPage: React.FC = () => {
           isActive:   p.isActive    ?? true,
         });
       })
-      .catch(() => { toast.error('Failed to load portfolio'); navigate('/portfolio'); })
+      .catch(() => { toast.error('Gagal memuat data portfolio'); navigate('/portfolio'); })
       .finally(() => setFetching(false));
   }, [id, isEdit, navigate]);
 
-  // Submit — kirim FormData 
+  // Submit
   const handleSubmit = async (isActive: boolean) => {
     if (!form.title.trim() || !form.slug.trim()) {
-      toast.error('Title and slug are required');
+      toast.error('Judul dan slug wajib diisi');
       return;
     }
     setLoading(true);
     try {
-      // Build FormData — backend expect multipart/form-data
       const fd = new FormData();
       fd.append('title',       form.title.trim());
       fd.append('slug',        form.slug.trim());
       fd.append('shortDesc',   form.shortDesc);
-      fd.append('description', form.shortDesc);        
+      fd.append('description', form.shortDesc);
       fd.append('longDesc',    form.longDesc);
       fd.append('category',    form.category);
       fd.append('client',      form.client);
@@ -138,34 +136,32 @@ const PortfolioFormPage: React.FC = () => {
       fd.append('role',        form.role);
       fd.append('projectUrl',  form.projectUrl);
       fd.append('thumbnail',   form.thumbnail);
-      fd.append('image',       form.thumbnail);        
+      fd.append('image',       form.thumbnail);
       fd.append('heroImage',   form.heroImage);
       fd.append('challenge',   form.challenge);
       fd.append('solution',    form.solution);
       fd.append('result',      form.result);
       fd.append('isActive',    String(isActive));
-
-      // Array fields → JSON string
       fd.append('techStack', JSON.stringify(form.techStack));
       fd.append('metrics',   JSON.stringify(form.metrics));
       fd.append('gallery',   JSON.stringify(form.gallery));
 
       if (isEdit) {
         await portfolioService.update(id!, fd);
-        toast.success('Portfolio updated!');
+        toast.success('Portfolio berhasil diperbarui!');
       } else {
         await portfolioService.create(fd);
-        toast.success('Portfolio created!');
+        toast.success('Portfolio berhasil dibuat!');
       }
       navigate('/portfolio');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Operation failed');
+      toast.error(err.response?.data?.message || 'Operasi gagal');
     } finally {
       setLoading(false);
     }
   };
 
-  // Tech Stack handlers
+  // Tech Stack
   const addTech = () => {
     const v = techInput.trim();
     if (!v) return;
@@ -175,7 +171,7 @@ const PortfolioFormPage: React.FC = () => {
   const removeTech = (idx: number) =>
     set('techStack', form.techStack.filter((_, i) => i !== idx));
 
-  // Metrics handlers 
+  // Metrik
   const addMetric = () => {
     if (!metricInput.value || !metricInput.label) return;
     set('metrics', [...form.metrics, { ...metricInput }]);
@@ -184,13 +180,13 @@ const PortfolioFormPage: React.FC = () => {
   const removeMetric = (idx: number) =>
     set('metrics', form.metrics.filter((_, i) => i !== idx));
 
-  // Gallery handlers 
+  // Galeri
   const addGalleryImage = (url: string) =>
     set('gallery', [...form.gallery, url]);
   const removeGalleryImage = (idx: number) =>
     set('gallery', form.gallery.filter((_, i) => i !== idx));
 
-  // Loading skeleton 
+  // Skeleton
   if (fetching) {
     return (
       <div className="space-y-5 animate-pulse">
@@ -216,14 +212,14 @@ const PortfolioFormPage: React.FC = () => {
         <h1 className="text-4xl font-display font-bold text-dark">
           {isEdit ? 'Edit Portfolio' : 'Add Portfolio'}
         </h1>
-        <p className="text-gray-400 text-sm mt-1 italic">Manage study case and project</p>
+        <p className="text-gray-400 text-sm mt-1 italic">Kelola studi kasus dan proyek</p>
       </div>
 
-      {/* 1. Basic Info */}
+      {/* 1. Info Dasar */}
       <SectionCard title="Basic Info">
         <div>
           <Label>Project Title</Label>
-          <input type="text" placeholder="e.g. Prowerty"
+          <input type="text" placeholder="cth. Prowerty"
             value={form.title}
             onChange={e => setForm(p => ({
               ...p, title: e.target.value,
@@ -234,8 +230,8 @@ const PortfolioFormPage: React.FC = () => {
         </div>
 
         <div>
-          <Label hint="Dipakai sebagai URL: /portofolio/[slug]">Slug</Label>
-          <input type="text" placeholder="project-slug"
+          <Label hint="Digunakan sebagai URL: /portofolio/[slug]">Slug</Label>
+          <input type="text" placeholder="slug-proyek"
             value={form.slug}
             onChange={e => set('slug', e.target.value)}
             className={inputCls}
@@ -255,8 +251,8 @@ const PortfolioFormPage: React.FC = () => {
         </div>
 
         <div>
-          <Label hint="Tampil di card carousel halaman /portofolio">Short Description</Label>
-          <textarea rows={2} placeholder="Ringkasan singkat project..."
+          <Label hint="Tampil di kartu carousel halaman /portofolio">Deskripsi Singkat</Label>
+          <textarea rows={2} placeholder="Ringkasan singkat proyek..."
             value={form.shortDesc}
             onChange={e => set('shortDesc', e.target.value)}
             className={textareaCls}
@@ -265,7 +261,7 @@ const PortfolioFormPage: React.FC = () => {
 
         <ImageUpload
           label="Thumbnail"
-          hint="Gambar yang tampil di card carousel halaman /portofolio"
+          hint="Gambar yang tampil di kartu carousel halaman /portofolio"
           value={form.thumbnail}
           onChange={val => set('thumbnail', val)}
           aspectRatio="4/3"
@@ -274,7 +270,7 @@ const PortfolioFormPage: React.FC = () => {
       </SectionCard>
 
       {/* 2. Hero */}
-      <SectionCard title="Hero Section" subtitle="Gambar full-screen di bagian atas halaman detail">
+      <SectionCard title="Hero Section" subtitle="Full-screen image at the top of the detail page">
         <ImageUpload
           label="Hero Image"
           hint="Berbeda dari thumbnail — biasanya landscape/wide shot"
@@ -284,8 +280,8 @@ const PortfolioFormPage: React.FC = () => {
           folder="portfolio"
         />
         <div>
-          <Label hint="Tampil di halaman detail bawah hero sebagai long description">Long Description</Label>
-          <textarea rows={4} placeholder="Deskripsi lengkap project..."
+          <Label hint="Tampil di halaman detail sebagai deskripsi panjang">Deskripsi Lengkap</Label>
+          <textarea rows={4} placeholder="Deskripsi lengkap proyek..."
             value={form.longDesc}
             onChange={e => set('longDesc', e.target.value)}
             className={textareaCls}
@@ -293,19 +289,19 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* 3. Project Info */}
-      <SectionCard title="Project Information" subtitle="Tampil di section info bawah hero">
+      {/* 3. Info Proyek */}
+      <SectionCard title="Project Info" subtitle="Shown in the info section below hero">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>Client</Label>
-            <input type="text" placeholder="Client name"
+            <Label>Klien</Label>
+            <input type="text" placeholder="Nama klien"
               value={form.client}
               onChange={e => set('client', e.target.value)}
               className={inputCls}
             />
           </div>
           <div>
-            <Label>Year</Label>
+            <Label>Tahun</Label>
             <input type="text" placeholder="2024"
               value={form.year}
               onChange={e => set('year', e.target.value)}
@@ -313,16 +309,16 @@ const PortfolioFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <Label>Duration</Label>
-            <input type="text" placeholder="e.g. 3 months"
+            <Label>Durasi</Label>
+            <input type="text" placeholder="cth. 3 bulan"
               value={form.duration}
               onChange={e => set('duration', e.target.value)}
               className={inputCls}
             />
           </div>
           <div>
-            <Label>Role</Label>
-            <input type="text" placeholder="e.g. Full-stack Developer"
+            <Label>Peran</Label>
+            <input type="text" placeholder="cth. Full-stack Developer"
               value={form.role}
               onChange={e => set('role', e.target.value)}
               className={inputCls}
@@ -333,7 +329,7 @@ const PortfolioFormPage: React.FC = () => {
         <div>
           <Label>Tech Stack</Label>
           <div className="flex gap-2">
-            <input type="text" placeholder="e.g. React"
+            <input type="text" placeholder="cth. React"
               value={techInput}
               onChange={e => setTechInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTech(); } }}
@@ -341,7 +337,7 @@ const PortfolioFormPage: React.FC = () => {
             />
             <button type="button" onClick={addTech}
               className="px-4 py-2 bg-dark text-white text-sm font-semibold rounded-2xl hover:bg-gray-800 transition-colors whitespace-nowrap">
-              Add
+              Tambah
             </button>
           </div>
           {form.techStack.length > 0 && (
@@ -361,18 +357,18 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* 4. Case Study */}
-      <SectionCard title="Case Study" subtitle="The Challenge, Solution & Result — wajib diisi">
+      {/* 4. Studi Kasus */}
+      <SectionCard title="Case Study" subtitle="Challenge, Solution & Results">
         <div>
-          <Label>The Challenge</Label>
-          <textarea rows={4} placeholder="Apa masalah/tantangan yang dihadapi client?"
+          <Label>Tantangan</Label>
+          <textarea rows={4} placeholder="Apa masalah/tantangan yang dihadapi klien?"
             value={form.challenge}
             onChange={e => set('challenge', e.target.value)}
             className={textareaCls}
           />
         </div>
         <div>
-          <Label>The Solution</Label>
+          <Label>Solusi</Label>
           <textarea rows={4} placeholder="Solusi apa yang Winosa berikan?"
             value={form.solution}
             onChange={e => set('solution', e.target.value)}
@@ -380,8 +376,8 @@ const PortfolioFormPage: React.FC = () => {
           />
         </div>
         <div>
-          <Label>The Result</Label>
-          <textarea rows={4} placeholder="Apa hasil yang dicapai setelah project selesai?"
+          <Label>Hasil</Label>
+          <textarea rows={4} placeholder="Apa hasil yang dicapai setelah proyek selesai?"
             value={form.result}
             onChange={e => set('result', e.target.value)}
             className={textareaCls}
@@ -389,20 +385,20 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* 5. Key Metrics */}
-      <SectionCard title="Key Metrics" subtitle="Angka-angka highlight hasil project (opsional)">
+      {/* 5. Metrik Utama */}
+      <SectionCard title="Key Metrics" subtitle="Highlight numbers from project results (optional)">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label>Value</Label>
-            <input type="text" placeholder="e.g. +120%"
+            <Label>Nilai</Label>
+            <input type="text" placeholder="cth. +120%"
               value={metricInput.value}
               onChange={e => setMetricInput(p => ({ ...p, value: e.target.value }))}
               className={inputCls}
             />
           </div>
           <div>
-            <Label>Label</Label>
-            <input type="text" placeholder="e.g. Conversion Rate"
+            <Label>Keterangan</Label>
+            <input type="text" placeholder="cth. Tingkat Konversi"
               value={metricInput.label}
               onChange={e => setMetricInput(p => ({ ...p, label: e.target.value }))}
               className={inputCls}
@@ -434,35 +430,37 @@ const PortfolioFormPage: React.FC = () => {
         )}
       </SectionCard>
 
-      {/* 6. Gallery (optional) */}
+      {/* 6. Galeri */}
       <SectionCard title="Project Gallery"
-        subtitle="Opsional — section ini otomatis hilang di website jika tidak diisi">
+        subtitle="Opsional — seksi ini otomatis tersembunyi di website jika tidak diisi">
         <div className="grid grid-cols-2 gap-4">
           {form.gallery.map((url, idx) => (
-            <div key={idx} className="relative rounded-2xl overflow-hidden border border-gray-200">
-              <img src={url} alt={`gallery-${idx}`}
+            <div key={idx} className="relative rounded-2xl overflow-hidden border border-gray-200 group">
+              <img src={url} alt={`galeri-${idx}`}
                 className="w-full h-40 object-cover" />
-              <button type="button" onClick={() => removeGalleryImage(idx)}
-                className="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-400 hover:bg-red-50 transition-colors shadow-sm">
-                <X size={13} />
-              </button>
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <button type="button" onClick={() => removeGalleryImage(idx)}
+                  className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-red-50 transition-colors">
+                  <Trash2 size={16} className="text-red-500" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
         <ImageUpload
-          label="Tambah Foto Gallery"
-          hint="Klik untuk upload, otomatis ditambahkan ke gallery"
+          label="Add Gallery Photo"
+          hint="Klik untuk mengunggah, otomatis ditambahkan ke galeri"
           value=""
           onChange={url => { if (url) addGalleryImage(url); }}
           folder="portfolio"
         />
       </SectionCard>
 
-      {/* 7. Project URL (optional) */}
+      {/* 7. URL Proyek */}
       <SectionCard title="Project URL"
-        subtitle="Opsional — jika diisi, tombol 'Visit Web' muncul di halaman detail">
+        subtitle="Opsional — jika diisi, tombol 'Kunjungi Website' muncul di halaman detail">
         <div>
-          <Label hint="Kosongkan jika project bersifat private">URL Website Project</Label>
+          <Label hint="Kosongkan jika proyek bersifat privat">URL Website Proyek</Label>
           <input type="text" placeholder="https://..."
             value={form.projectUrl}
             onChange={e => set('projectUrl', e.target.value)}
@@ -471,16 +469,16 @@ const PortfolioFormPage: React.FC = () => {
         </div>
         {form.projectUrl ? (
           <p className="text-xs text-green-600 font-medium">
-            ✓ Tombol "Visit Web" akan muncul di halaman detail
+            ✓ Tombol "Kunjungi Website" akan tampil di halaman detail
           </p>
         ) : (
           <p className="text-xs text-gray-400">
-            Tombol "Visit Web" tidak akan ditampilkan
+            Tombol "Kunjungi Website" tidak akan ditampilkan
           </p>
         )}
       </SectionCard>
 
-      {/* Actions */}
+      {/* Aksi */}
       <div className="flex gap-3 pt-2 pb-10">
         <button onClick={() => handleSubmit(false)} disabled={loading}
           className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-2xl text-sm font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50">

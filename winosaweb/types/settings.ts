@@ -22,7 +22,7 @@ export interface SiteSettings {
   socialFacebook:  string;
   socialLinkedin:  string;
   socialYoutube:   string;
-  socialWhatsapp:  string;   // digits only, e.g. "6281234567890"
+  socialWhatsapp:  string;   
   // Contact
   siteEmail:   string;
   sitePhone:   string;

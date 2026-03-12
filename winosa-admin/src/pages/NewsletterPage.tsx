@@ -20,7 +20,7 @@ const NewsletterPage: React.FC = () => {
       const data = await subscriberService.getAll();
       setSubscribers(data.data);
     } catch {
-      toast.error('Failed to fetch subscribers');
+      toast.error('Gagal memuat data subscriber');
     } finally {
       setLoading(false);
     }
@@ -33,11 +33,11 @@ const NewsletterPage: React.FC = () => {
     setDeleteModal(prev => ({ ...prev, loading: true }));
     try {
       await subscriberService.delete(deleteModal.id);
-      toast.success('Subscriber removed');
+      toast.success('Subscriber berhasil dihapus');
       setDeleteModal({ open: false, id: null, loading: false });
       fetchSubscribers();
     } catch {
-      toast.error('Delete failed');
+      toast.error('Gagal menghapus subscriber');
       setDeleteModal(prev => ({ ...prev, loading: false }));
     }
   };
@@ -45,7 +45,7 @@ const NewsletterPage: React.FC = () => {
   const handleExport = () => {
     if (!subscribers.length) return;
     subscriberService.exportFromData(subscribers);
-    toast.success(`Exported ${subscribers.length} subscribers to CSV`);
+    toast.success(`${subscribers.length} subscriber berhasil diekspor ke CSV`);
   };
 
   const filtered = subscribers.filter(s => {
@@ -59,13 +59,19 @@ const NewsletterPage: React.FC = () => {
 
   const activeCount = subscribers.filter(s => s.isActive).length;
 
+  const filterLabels: Record<'all' | 'active' | 'inactive', string> = {
+    all: 'All',
+    active: 'Active',
+    inactive: 'Inactive',
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-4xl font-display font-bold text-dark">Newsletter</h1>
-          <p className="text-gray-400 text-sm mt-1 italic">Manage email subscribers</p>
+          <p className="text-gray-400 text-sm mt-1 italic">Kelola daftar subscriber email</p>
         </div>
         <button
           onClick={handleExport}
@@ -77,10 +83,10 @@ const NewsletterPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Stats Cards — responsive: 3 cols always but with smaller text on mobile */}
+      {/* Statistik */}
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
-          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Total Subscribers</p>
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Total Subscriber</p>
           <p className="text-2xl sm:text-3xl font-display font-bold text-dark">{subscribers.length}</p>
         </div>
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
@@ -93,13 +99,13 @@ const NewsletterPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Search + Filter */}
+      {/* Pencarian + Filter */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
-            placeholder="Search by email"
+            placeholder="Cari berdasarkan email..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
@@ -110,19 +116,19 @@ const NewsletterPage: React.FC = () => {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
+              className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 ${
                 filter === f
                   ? 'bg-dark border-dark text-white'
                   : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
               }`}
             >
-              {f}
+              {filterLabels[f]}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Table — scrollable on mobile */}
+      {/* Tabel */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[480px]">
@@ -131,8 +137,8 @@ const NewsletterPage: React.FC = () => {
                 <th className="text-left text-sm font-semibold text-dark py-4 px-4 pl-6 w-12">No.</th>
                 <th className="text-left text-sm font-semibold text-dark py-4 px-4">Email</th>
                 <th className="text-left text-sm font-semibold text-dark py-4 px-4">Status</th>
-                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Subscribed At</th>
-                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Action</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Date Joined</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -146,7 +152,7 @@ const NewsletterPage: React.FC = () => {
                 <tr>
                   <td colSpan={5} className="py-16 text-center">
                     <Mail size={32} className="text-gray-200 mx-auto mb-3" />
-                    <p className="text-gray-400 text-sm">No subscribers found</p>
+                    <p className="text-gray-400 text-sm">Tidak ada subscriber yang ditemukan</p>
                   </td>
                 </tr>
               ) : (
@@ -179,13 +185,14 @@ const NewsletterPage: React.FC = () => {
                     </td>
                     <td className="py-4 px-4 text-sm text-gray-500 whitespace-nowrap">
                       {new Date(sub.createdAt).toLocaleDateString('id-ID', {
-                        day: '2-digit', month: 'short', year: 'numeric'
+                        day: '2-digit', month: 'short', year: 'numeric',
                       })}
                     </td>
                     <td className="py-4 px-4">
                       <button
                         onClick={() => setDeleteModal({ open: true, id: sub._id, loading: false })}
                         className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
+                        title="Delete"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -200,8 +207,8 @@ const NewsletterPage: React.FC = () => {
 
       <ConfirmModal
         isOpen={deleteModal.open}
-        title="Remove Subscriber"
-        message="Are you sure you want to remove this subscriber? They will no longer receive newsletters."
+        title="Delete Subscriber"
+        message="Apakah Anda yakin ingin menghapus subscriber ini? Mereka tidak akan menerima newsletter lagi."
         onConfirm={handleDelete}
         onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
         loading={deleteModal.loading}

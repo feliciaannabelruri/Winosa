@@ -52,7 +52,6 @@ const iconMap: Record<string, React.FC<any>> = {
   package:        Package,
 };
 
-// Slugs with full detail pages on the frontend
 const DETAIL_SLUG_META: Record<string, { label: string; color: string }> = {
   'web-development':        { label: 'Web Dev',  color: 'bg-blue-100 text-blue-700 border-blue-200' },
   'mobile-app-development': { label: 'Mobile',   color: 'bg-green-100 text-green-700 border-green-200' },
@@ -75,7 +74,7 @@ const ServicesPage: React.FC = () => {
       const data = await serviceService.getAll();
       setServices(data.data);
     } catch {
-      toast.error('Failed to fetch services');
+      toast.error('Gagal memuat data layanan');
     } finally {
       setLoading(false);
     }
@@ -88,11 +87,11 @@ const ServicesPage: React.FC = () => {
     setDeleteModal(prev => ({ ...prev, loading: true }));
     try {
       await serviceService.delete(deleteModal.id);
-      toast.success('Service deleted');
+      toast.success('Layanan berhasil dihapus');
       setDeleteModal({ open: false, id: null, loading: false });
       fetchServices();
     } catch {
-      toast.error('Delete failed');
+      toast.error('Gagal menghapus layanan');
       setDeleteModal(prev => ({ ...prev, loading: false }));
     }
   };
@@ -106,14 +105,20 @@ const ServicesPage: React.FC = () => {
     return matchSearch && matchStatus;
   });
 
+  const filterLabels: Record<FilterType, string> = {
+    all: 'All',
+    published: 'Published',
+    draft: 'Draft',
+  };
+
   return (
     <div className="space-y-6">
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-display font-bold text-dark">Services</h1>
-          <p className="text-gray-400 text-sm mt-1 italic">Manage Winosa services content</p>
+          <h1 className="text-4xl font-display font-bold text-dark">Layanan</h1>
+          <p className="text-gray-400 text-sm mt-1 italic">Kelola konten layanan Winosa</p>
         </div>
         <button
           onClick={() => navigate('/services/add')}
@@ -124,38 +129,38 @@ const ServicesPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-        <input
-          type="text"
-          placeholder="Search services"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
-        />
+      {/* Search + Filter */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+          <input
+            type="text"
+            placeholder="Cari layanan..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(['all', 'published', 'draft'] as FilterType[]).map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 ${
+                filter === f
+                  ? 'bg-dark border-dark text-white shadow-sm'
+                  : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
+              }`}
+            >
+              {filterLabels[f]}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2">
-        {(['all', 'draft', 'published'] as FilterType[]).map(f => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-6 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
-              filter === f
-                ? 'bg-dark border-dark text-white shadow-sm'
-                : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
-            }`}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-
-      {/* Legend */}
+      {/* Keterangan Slug Detail */}
       <div className="flex flex-wrap gap-2 items-center">
-        <span className="text-xs text-gray-400">Detail page:</span>
+        <span className="text-xs text-gray-400">Halaman detail:</span>
         {Object.entries(DETAIL_SLUG_META).map(([slug, meta]) => (
           <span
             key={slug}
@@ -164,16 +169,16 @@ const ServicesPage: React.FC = () => {
             {meta.label}
           </span>
         ))}
-        <span className="text-xs text-gray-400 ml-1">— slug ini punya halaman detail di website</span>
+        <span className="text-xs text-gray-400 ml-1">— slug ini memiliki halaman detail di website</span>
       </div>
 
-      {/* Cards */}
+      {/* Daftar Layanan */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400 text-sm">No services found</div>
+        <div className="text-center py-16 text-gray-400 text-sm">Tidak ada layanan yang ditemukan</div>
       ) : (
         <div className="space-y-4">
           {filtered.map(service => {
@@ -187,7 +192,7 @@ const ServicesPage: React.FC = () => {
               >
                 <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-start">
 
-                  {/* Icon */}
+                  {/* Ikon */}
                   <div className="w-16 h-16 flex-shrink-0 rounded-full border border-black flex items-center justify-center bg-white">
                     {IconComponent ? (
                       <IconComponent size={24} strokeWidth={1.5} className="text-dark" />
@@ -198,7 +203,7 @@ const ServicesPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Content */}
+                  {/* Konten */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3 flex-wrap">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -229,9 +234,8 @@ const ServicesPage: React.FC = () => {
                         <p className="text-sm font-semibold text-primary">{service.price}</p>
                       )}
                       {service.features && service.features.length > 0 && (
-                        <p className="text-xs text-gray-400">{service.features.length} features</p>
+                        <p className="text-xs text-gray-400">{service.features.length} fitur</p>
                       )}
-                      {/* Show slug */}
                       <p className="text-xs text-gray-300 font-mono">{service.slug}</p>
                     </div>
                   </div>
@@ -241,12 +245,14 @@ const ServicesPage: React.FC = () => {
                     <button
                       onClick={() => setDeleteModal({ open: true, id: service._id, loading: false })}
                       className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
+                      title="Delete"
                     >
                       <Trash2 size={14} />
                     </button>
                     <button
                       onClick={() => navigate(`/services/edit/${service._id}`)}
                       className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
+                      title="Edit"
                     >
                       <Edit2 size={14} />
                     </button>
@@ -262,7 +268,7 @@ const ServicesPage: React.FC = () => {
       <ConfirmModal
         isOpen={deleteModal.open}
         title="Delete Service"
-        message="Are you sure you want to delete this service?"
+        message="Apakah Anda yakin ingin menghapus layanan ini? Tindakan ini tidak dapat dibatalkan."
         onConfirm={handleDelete}
         onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
         loading={deleteModal.loading}

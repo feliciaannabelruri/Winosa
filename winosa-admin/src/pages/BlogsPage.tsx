@@ -21,8 +21,7 @@ const BlogsPage: React.FC = () => {
     loading: boolean;
   }>({ open: false, id: null, loading: false });
 
-  // ── Fetch ────────────────────────────────────────────────────────────────
-
+  // Fetch
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
@@ -32,7 +31,7 @@ const BlogsPage: React.FC = () => {
       const data = await blogService.getAll(params);
       setBlogs(data.data);
     } catch {
-      toast.error('Failed to fetch blogs');
+      toast.error('Gagal memuat data blog');
     } finally {
       setLoading(false);
     }
@@ -42,24 +41,22 @@ const BlogsPage: React.FC = () => {
     fetchBlogs();
   }, [fetchBlogs]);
 
-  // ── Delete ───────────────────────────────────────────────────────────────
-
+  // Hapus
   const handleDelete = async () => {
     if (!deleteModal.id) return;
     setDeleteModal(prev => ({ ...prev, loading: true }));
     try {
       await blogService.delete(deleteModal.id);
-      toast.success('Blog deleted');
+      toast.success('Blog berhasil dihapus');
       setDeleteModal({ open: false, id: null, loading: false });
       fetchBlogs();
     } catch {
-      toast.error('Delete failed');
+      toast.error('Gagal menghapus blog');
       setDeleteModal(prev => ({ ...prev, loading: false }));
     }
   };
 
-  // ── Filtered ─────────────────────────────────────────────────────────────
-
+  // Filter
   const filteredBlogs = blogs.filter(b =>
     b.title.toLowerCase().includes(search.toLowerCase()) ||
     (b.author || '').toLowerCase().includes(search.toLowerCase())
@@ -72,13 +69,17 @@ const BlogsPage: React.FC = () => {
       year: 'numeric',
     });
 
-  // Category = tags[0]
   const getCategory = (blog: Blog) => blog.tags?.[0] || '—';
 
-  // ── Stats ─────────────────────────────────────────────────────────────────
-
+  // Statistik
   const totalPublished = blogs.filter(b => b.isPublished).length;
   const totalDraft = blogs.filter(b => !b.isPublished).length;
+
+  const filterLabels: Record<FilterType, string> = {
+    all: 'All',
+    published: 'Published',
+    draft: 'Draft',
+  };
 
   return (
     <div className="space-y-6">
@@ -87,7 +88,7 @@ const BlogsPage: React.FC = () => {
         <div>
           <h1 className="text-4xl font-display font-bold text-dark">Blog</h1>
           <p className="text-gray-400 text-sm mt-1 italic">
-            Manage Winosa blog content
+            Kelola konten blog Winosa
           </p>
         </div>
         <button
@@ -122,7 +123,7 @@ const BlogsPage: React.FC = () => {
           />
           <input
             type="text"
-            placeholder="Search by title or author..."
+            placeholder="Cari berdasarkan judul atau penulis..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
@@ -134,19 +135,19 @@ const BlogsPage: React.FC = () => {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 capitalize ${
+              className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 ${
                 filter === f
                   ? 'bg-dark border-dark text-white shadow-sm'
                   : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
               }`}
             >
-              {f}
+              {filterLabels[f]}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Table */}
+      {/* Tabel */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[750px]">
@@ -174,7 +175,7 @@ const BlogsPage: React.FC = () => {
                   Date
                 </th>
                 <th className="text-left text-xs font-semibold text-gray-500 py-3.5 px-4 uppercase tracking-wide">
-                  Action
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -191,7 +192,7 @@ const BlogsPage: React.FC = () => {
                     colSpan={8}
                     className="text-center py-16 text-gray-400 text-sm"
                   >
-                    {search ? `No blogs matching "${search}"` : 'No blogs found'}
+                    {search ? `Tidak ada blog yang cocok dengan "${search}"` : 'Belum ada blog'}
                   </td>
                 </tr>
               ) : (
@@ -202,12 +203,10 @@ const BlogsPage: React.FC = () => {
                       idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'
                     }`}
                   >
-                    {/* # */}
                     <td className="py-4 px-4 pl-6 text-sm text-gray-400">
                       {idx + 1}.
                     </td>
 
-                    {/* Image */}
                     <td className="py-4 px-4">
                       {blog.image ? (
                         <img
@@ -222,7 +221,6 @@ const BlogsPage: React.FC = () => {
                       )}
                     </td>
 
-                    {/* Title + excerpt */}
                     <td className="py-4 px-4 max-w-[220px]">
                       <p className="text-sm font-semibold text-dark truncate">
                         {blog.title}
@@ -234,19 +232,16 @@ const BlogsPage: React.FC = () => {
                       )}
                     </td>
 
-                    {/* Author */}
                     <td className="py-4 px-4 text-sm text-gray-500 whitespace-nowrap">
                       {blog.author || '—'}
                     </td>
 
-                    {/* Category */}
                     <td className="py-4 px-4">
                       <span className="px-2.5 py-1 bg-gray-100 rounded-full text-xs font-medium text-gray-600">
                         {getCategory(blog)}
                       </span>
                     </td>
 
-                    {/* Status */}
                     <td className="py-4 px-4">
                       <span
                         className={`flex items-center gap-1 w-fit px-2.5 py-1 rounded-full text-xs font-semibold ${
@@ -264,12 +259,10 @@ const BlogsPage: React.FC = () => {
                       </span>
                     </td>
 
-                    {/* Date */}
                     <td className="py-4 px-4 text-xs text-gray-500 whitespace-nowrap">
                       {formatDate(blog.createdAt)}
                     </td>
 
-                    {/* Actions */}
                     <td className="py-4 px-4">
                       <div className="flex gap-2">
                         <button
@@ -305,7 +298,7 @@ const BlogsPage: React.FC = () => {
       <ConfirmModal
         isOpen={deleteModal.open}
         title="Delete Blog"
-        message="Are you sure you want to delete this blog post? This action cannot be undone."
+        message="Apakah Anda yakin ingin menghapus postingan blog ini? Tindakan ini tidak dapat dibatalkan."
         onConfirm={handleDelete}
         onCancel={() =>
           setDeleteModal({ open: false, id: null, loading: false })
