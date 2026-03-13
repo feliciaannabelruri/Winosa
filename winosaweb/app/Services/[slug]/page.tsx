@@ -25,22 +25,68 @@ import WebTech from "@/components/sectionService/web/Tech";
 import WebPricing from "@/components/sectionService/web/Pricing";
 
 export default function ServiceDetailPage() {
-
   const params = useParams();
-
   const slug = Array.isArray(params.slug)
     ? params.slug[0]
-    : params.slug as string;
+    : params.slug;
 
   const [service, setService] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // ================= SEO =================
+
+useEffect(() => {
+  if (!service) return;
+
+  document.title = service.title || service.name || "Service";
+
+  const description =
+    service.description ||
+    service.shortDescription ||
+    service.title ||
+    "Professional digital services";
+
+  const image =
+    service.image || "/bg/bg1.jpg";
+
+  const url =
+    `${window.location.origin}/services/${slug}`;
+
+  const setMeta = (property: string, content: string, isName = false) => {
+    let element = document.querySelector(
+      `meta[${isName ? "name" : "property"}="${property}"]`
+    ) as HTMLMetaElement;
+
+    if (!element) {
+      element = document.createElement("meta");
+      if (isName) element.setAttribute("name", property);
+      else element.setAttribute("property", property);
+      document.head.appendChild(element);
+    }
+
+    element.setAttribute("content", content);
+  };
+
+  setMeta("description", description, true);
+
+  setMeta("og:title", service.title || service.name);
+  setMeta("og:description", description);
+  setMeta("og:image", image);
+  setMeta("og:url", url);
+  setMeta("og:type", "website");
+
+  setMeta("twitter:card", "summary_large_image", true);
+  setMeta("twitter:title", service.title || service.name, true);
+  setMeta("twitter:description", description, true);
+  setMeta("twitter:image", image, true);
+
+}, [service, slug]);
 
   useEffect(() => {
     if (!slug) return;
 
     const fetchService = async () => {
       try {
-
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/services/${slug}`
         );
@@ -52,7 +98,6 @@ export default function ServiceDetailPage() {
 
         const data = await res.json();
         setService(data.data);
-
       } catch (error) {
         console.error("Error fetching service:", error);
         setService(null);
@@ -62,7 +107,6 @@ export default function ServiceDetailPage() {
     };
 
     fetchService();
-
   }, [slug]);
 
   if (loading) {
@@ -82,7 +126,6 @@ export default function ServiceDetailPage() {
   }
 
   switch (slug) {
-
     case "ui-ux-design":
       return (
         <main className="bg-white">
@@ -126,5 +169,4 @@ export default function ServiceDetailPage() {
         </main>
       );
   }
-
 }

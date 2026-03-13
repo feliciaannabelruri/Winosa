@@ -30,13 +30,54 @@ export default function SectionMissionVision() {
               className="relative w-64 h-64 flex items-center justify-center"
               aria-hidden="true"
             >
+
+              {/* target rings */}
               <div className="absolute w-64 h-64 rounded-full bg-yellow-400/20"></div>
               <div className="absolute w-48 h-48 rounded-full bg-yellow-500/30"></div>
               <div className="absolute w-32 h-32 rounded-full bg-yellow-600/40"></div>
 
-              <div className="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center shadow-xl">
+              {/* center */}
+              <div className="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center shadow-xl relative z-10">
                 <Target className="text-white w-8 h-8" />
               </div>
+
+              {/* ARROW */}
+              <svg
+                className="absolute w-64 h-64 z-20"
+                viewBox="0 0 256 256"
+              >
+                <g transform="rotate(45 128 128) translate(0 70)">
+
+                  {/* shaft */}
+                  <rect
+                    x="124"
+                    y="90"
+                    width="8"
+                    height="110"
+                    fill="#eab308"
+                    rx="3"
+                  />
+
+                  {/* arrow head (DIMUNDURKAN) */}
+                  <polygon
+                    points="128,55 145,80 111,80"
+                    fill="#eab308"
+                  />
+
+                  {/* feather */}
+                  <polygon
+                    points="124,180 105,200 124,192"
+                    fill="#eab308"
+                  />
+
+                  <polygon
+                    points="132,180 151,200 132,192"
+                    fill="#eab308"
+                  />
+
+                </g>
+              </svg>
+
             </div>
           </motion.div>
 
@@ -58,11 +99,7 @@ export default function SectionMissionVision() {
 
             <div className="grid sm:grid-cols-2 gap-10">
 
-              <div
-                className="flex gap-4"
-                tabIndex={0}
-                aria-label="Innovation value"
-              >
+              <div className="flex gap-4" tabIndex={0}>
                 <Rocket className="text-yellow-500 w-6 h-6 mt-1" />
                 <div>
                   <h4 className="font-semibold text-black">
@@ -74,11 +111,7 @@ export default function SectionMissionVision() {
                 </div>
               </div>
 
-              <div
-                className="flex gap-4"
-                tabIndex={0}
-                aria-label="Integrity value"
-              >
+              <div className="flex gap-4" tabIndex={0}>
                 <ShieldCheck className="text-yellow-500 w-6 h-6 mt-1" />
                 <div>
                   <h4 className="font-semibold text-black">
@@ -90,11 +123,7 @@ export default function SectionMissionVision() {
                 </div>
               </div>
 
-              <div
-                className="flex gap-4"
-                tabIndex={0}
-                aria-label="Partnership value"
-              >
+              <div className="flex gap-4" tabIndex={0}>
                 <Users className="text-yellow-500 w-6 h-6 mt-1" />
                 <div>
                   <h4 className="font-semibold text-black">
@@ -106,11 +135,7 @@ export default function SectionMissionVision() {
                 </div>
               </div>
 
-              <div
-                className="flex gap-4"
-                tabIndex={0}
-                aria-label="Impact value"
-              >
+              <div className="flex gap-4" tabIndex={0}>
                 <Target className="text-yellow-500 w-6 h-6 mt-1" />
                 <div>
                   <h4 className="font-semibold text-black">

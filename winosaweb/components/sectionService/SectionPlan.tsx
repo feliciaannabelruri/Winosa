@@ -42,7 +42,9 @@ export default function SectionPlan() {
   }, []);
 
   const formatPrice = (price: number, duration: string) => {
-    return `$${price.toLocaleString("en-US")} USD / ${duration === "monthly" ? "mo" : "yr"}`;
+    return `$${price.toLocaleString("en-US")} USD / ${
+      duration === "monthly" ? "mo" : "yr"
+    }`;
   };
 
   if (loading) {
@@ -69,6 +71,7 @@ export default function SectionPlan() {
   return (
     <section id="pricing" className="relative w-full bg-white py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-6 md:px-8">
+
         <FadeUp>
           <div className="text-center mb-16 md:mb-24">
             <h2 className="text-3xl md:text-5xl font-bold text-black mb-4 md:mb-6">
@@ -82,8 +85,25 @@ export default function SectionPlan() {
 
         {/* GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {plans.map((plan, index) => (
+
+          {plans.map((plan) => (
             <div key={plan._id} className="group relative">
+
+              {/* YELLOW GLOW */}
+              <div
+                className="
+                  pointer-events-none
+                  absolute -inset-6
+                  rounded-[40px]
+                  bg-[radial-gradient(circle,rgba(255,215,0,0.65)_0%,rgba(255,215,0,0.35)_40%,transparent_75%)]
+                  opacity-0
+                  blur-[80px]
+                  transition-all
+                  duration-500
+                  group-hover:opacity-100
+                "
+              />
+
               {plan.isPopular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 bg-yellow-400 text-black text-xs font-bold px-4 py-1 rounded-full">
                   Popular
@@ -91,10 +111,11 @@ export default function SectionPlan() {
               )}
 
               <div
-                className={`bg-white rounded-[28px] p-8 md:p-10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full border-2 ${
+                className={`relative bg-white rounded-[28px] p-8 md:p-10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full border-2 ${
                   plan.isPopular ? "border-yellow-400" : "border-transparent"
                 }`}
               >
+
                 <h3 className="text-xl md:text-2xl font-semibold text-black mb-2">
                   {plan.name}
                 </h3>
@@ -122,9 +143,11 @@ export default function SectionPlan() {
                 >
                   {t("plansPricing", "chooseButton")}
                 </Link>
+
               </div>
             </div>
           ))}
+
         </div>
       </div>
     </section>
