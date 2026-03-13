@@ -2060,4 +2060,111 @@ plansFAQ: {
 
 },
 
+apiDictionary: {
+
+
+  mobileAppDevelopment: {
+    en: "Mobile App Development",
+    id: "Pengembangan Aplikasi Mobile",
+    nl: "Mobiele App Ontwikkeling"
+  },
+
+  uiuxDesign: {
+    en: "UI/UX Design",
+    id: "Desain UI/UX",
+    nl: "UI/UX Ontwerp"
+  },
+
+  digitalMarketing: {
+    en: "Digital Marketing",
+    id: "Digital Marketing",
+    nl: "Digitale Marketing"
+  },
+
+  "Enterprise System": {
+    en: "Enterprise System",
+    id: "Sistem Enterprise",
+    nl: "Enterprise Systeem"
+  },
+
+  "Web Application": {
+    en: "Web Application",
+    id: "Aplikasi Web",
+    nl: "Webapplicatie"
+  },
+
+  "Product Platform": {
+    en: "Product Platform",
+    id: "Platform Produk",
+    nl: "Product Platform"
+  },
+
+  "Branding": {
+    en: "Branding",
+    id: "Branding",
+    nl: "Branding"
+  },
+
+  "Dashboard": {
+    en: "Dashboard",
+    id: "Dashboard",
+    nl: "Dashboard"
+  },
+
+  "Analytics": {
+    en: "Analytics",
+    id: "Analitik",
+    nl: "Analytics"
+  },
+
+  "Security": {
+    en: "Security",
+    id: "Keamanan",
+    nl: "Beveiliging"
+  },
+
+  "Authentication": {
+    en: "Authentication",
+    id: "Autentikasi",
+    nl: "Authenticatie"
+  },
+
+  "Integration": {
+    en: "Integration",
+    id: "Integrasi",
+    nl: "Integratie"
+  },
+
+  "API Integration": {
+    en: "API Integration",
+    id: "Integrasi API",
+    nl: "API Integratie"
+  },
+
+  "Cloud System": {
+    en: "Cloud System",
+    id: "Sistem Cloud",
+    nl: "Cloud Systeem"
+  },
+
+  "Scalable System": {
+    en: "Scalable System",
+    id: "Sistem Skalabel",
+    nl: "Schaalbaar Systeem"
+  },
+
+  "Beautiful and intuitive user interface design": {
+    en: "Beautiful and intuitive user interface design",
+    id: "Desain antarmuka pengguna yang indah dan intuitif",
+    nl: "Mooi en intuïtief gebruikersinterface ontwerp"
+  },
+
+  "Grow your business with effective digital strategies": {
+    en: "Grow your business with effective digital strategies",
+    id: "Kembangkan bisnis Anda dengan strategi digital yang efektif",
+    nl: "Laat uw bedrijf groeien met effectieve digitale strategieën"
+  }
+
+}
+
 } as const;

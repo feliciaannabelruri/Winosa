@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -37,6 +37,49 @@ export default function CustomQuotePage() {
   const [selected,setSelected] = useState<string[]>([]);
   const [result,setResult] = useState<any>(null);
   const [error,setError] = useState("");
+
+  // ================= SEO =================
+
+  useEffect(() => {
+
+    document.title = "Custom Website Quote Generator";
+
+    const descriptionMeta =
+      "Estimate the cost of your custom website project by selecting features and describing your requirements.";
+
+    const image = "/bg/bg1.jpg";
+
+    const url = `${window.location.origin}/custom-website`;
+
+    const setMeta = (property:string,content:string,isName=false)=>{
+      let element = document.querySelector(
+        `meta[${isName ? "name" : "property"}="${property}"]`
+      ) as HTMLMetaElement;
+
+      if(!element){
+        element = document.createElement("meta");
+        if(isName) element.setAttribute("name",property);
+        else element.setAttribute("property",property);
+        document.head.appendChild(element);
+      }
+
+      element.setAttribute("content",content);
+    };
+
+    setMeta("description",descriptionMeta,true);
+
+    setMeta("og:title","Custom Website Quote Generator");
+    setMeta("og:description",descriptionMeta);
+    setMeta("og:image",image);
+    setMeta("og:url",url);
+    setMeta("og:type","website");
+
+    setMeta("twitter:card","summary_large_image",true);
+    setMeta("twitter:title","Custom Website Quote Generator",true);
+    setMeta("twitter:description",descriptionMeta,true);
+    setMeta("twitter:image",image,true);
+
+  },[]);
 
   const toggle = (key:string)=>{
     setSelected(prev =>
@@ -105,6 +148,7 @@ export default function CustomQuotePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-14">
 
             {FEATURES.map(f=>(
+
               <button
                 key={f.key}
                 type="button"
@@ -118,6 +162,7 @@ export default function CustomQuotePage() {
               >
                 {f.label}
               </button>
+
             ))}
 
           </div>
@@ -158,6 +203,7 @@ export default function CustomQuotePage() {
               <div className="grid md:grid-cols-3 gap-8 mb-12">
 
                 {result.estimates.map((p:any)=>(
+
                   <div key={p.name} className="border border-black rounded-[28px] p-8">
 
                     <h3 className="font-bold text-lg mb-3">
@@ -169,11 +215,12 @@ export default function CustomQuotePage() {
                     </div>
 
                   </div>
+
                 ))}
 
               </div>
 
-               <Link
+              <Link
               href="https://wa.me/6281234567890"
               target="_blank"
               rel="noopener noreferrer"

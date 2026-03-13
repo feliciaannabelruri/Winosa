@@ -16,7 +16,7 @@ type Item = {
 };
 
 export default function SectionPreview({ title, items = [] }: any) {
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
 
   const previewItems = items.slice(0, 3);
 
@@ -45,6 +45,10 @@ export default function SectionPreview({ title, items = [] }: any) {
             const uniqueKey =
               item._id ?? item.slug ?? `${item.title}-${index}`;
 
+            // 🔹 translate API text
+            const translatedTitle = tApi(item.title);
+            const translatedDesc = tApi(item.desc || item.description || "");
+
             return (
               <motion.div
                 key={uniqueKey}
@@ -62,33 +66,37 @@ export default function SectionPreview({ title, items = [] }: any) {
                     <div className="relative h-full overflow-hidden">
                       <Image
                         src={item.image}
-                        alt={item.title}
+                        alt={translatedTitle}
                         fill
                         className="object-cover transition duration-700 group-hover:scale-110"
                       />
 
                       <div className="absolute bottom-0 p-8 text-black">
                         <h3 className="text-xl font-semibold mb-2">
-                          {item.title}
+                          {translatedTitle}
                         </h3>
 
                         <p className="text-gray-600 text-sm line-clamp-2">
-                          {item.desc || item.description}
+                          {translatedDesc}
                         </p>
                       </div>
                     </div>
                   ) : (
                     <div className="flex flex-col justify-center items-center h-full p-10 text-center">
                       <div className="mb-6 flex justify-center">
-                        <Monitor size={48} strokeWidth={1.5} className="text-black" />
+                        <Monitor
+                          size={48}
+                          strokeWidth={1.5}
+                          className="text-black"
+                        />
                       </div>
 
                       <h3 className="text-xl font-semibold text-black mb-4">
-                        {item.title}
+                        {translatedTitle}
                       </h3>
 
                       <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
-                        {item.desc}
+                        {translatedDesc}
                       </p>
                     </div>
                   )}

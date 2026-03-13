@@ -42,6 +42,52 @@ export default function BlogDetailPage() {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
 
+  // ================= SEO =================
+
+useEffect(() => {
+  if (!blog) return;
+
+  document.title = blog.title;
+
+  const description =
+    blog.excerpt || blog.title;
+
+  const image =
+    blog.image || "/bg/bg1.jpg";
+
+  const url =
+    `${window.location.origin}/blog/${slug}`;
+
+  const setMeta = (property: string, content: string, isName = false) => {
+    let element = document.querySelector(
+      `meta[${isName ? "name" : "property"}="${property}"]`
+    ) as HTMLMetaElement;
+
+    if (!element) {
+      element = document.createElement("meta");
+      if (isName) element.setAttribute("name", property);
+      else element.setAttribute("property", property);
+      document.head.appendChild(element);
+    }
+
+    element.setAttribute("content", content);
+  };
+
+  setMeta("description", description, true);
+
+  setMeta("og:title", blog.title);
+  setMeta("og:description", description);
+  setMeta("og:image", image);
+  setMeta("og:url", url);
+  setMeta("og:type", "article");
+
+  setMeta("twitter:card", "summary_large_image", true);
+  setMeta("twitter:title", blog.title, true);
+  setMeta("twitter:description", description, true);
+  setMeta("twitter:image", image, true);
+
+}, [blog, slug]);
+
   // ================= FETCH =================
 
   useEffect(() => {
@@ -321,4 +367,4 @@ export default function BlogDetailPage() {
 
     </main>
   );
-}
+} 
