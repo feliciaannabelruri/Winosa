@@ -117,7 +117,7 @@ const ServicesPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-display font-bold text-dark">Layanan</h1>
+          <h1 className="text-4xl font-display font-bold text-dark">Services</h1>
           <p className="text-gray-400 text-sm mt-1 italic">Kelola konten layanan Winosa</p>
         </div>
         <button

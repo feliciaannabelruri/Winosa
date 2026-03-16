@@ -110,8 +110,9 @@ const BlogFormPage: React.FC = () => {
     try {
       const fd = new FormData();
       fd.append('image', file);
-      // Let axios auto-set Content-Type with correct multipart boundary
-      const res = await api.post('admin/upload?folder=blog', fd);
+      const res = await api.post('/admin/upload?folder=blog', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       const url = res.data.data?.url;
       setImageUrl(url);
       toast.success('Gambar berhasil diunggah');
@@ -161,24 +162,23 @@ const BlogFormPage: React.FC = () => {
 
     const allTags = [form.category, ...form.tags].filter(Boolean);
 
-    const payload = {
-      title:       form.title.trim(),
-      slug:        form.slug.trim(),
-      content:     form.content,
-      excerpt:     form.excerpt.trim(),
-      author:      form.author.trim(),
-      tags:        allTags,
-      isPublished,
-      ...(imageUrl && { image: imageUrl }),
-    };
+    const fd = new FormData();
+    fd.append('title',       form.title.trim());
+    fd.append('slug',        form.slug.trim());
+    fd.append('content',     form.content);
+    fd.append('excerpt',     form.excerpt.trim());
+    fd.append('author',      form.author.trim());
+    fd.append('tags',        JSON.stringify(allTags));
+    fd.append('isPublished', String(isPublished));
+    if (imageUrl) fd.append('image', imageUrl);
 
     setLoading(true);
     try {
       if (isEdit && id) {
-        await blogService.update(id, payload);
+        await blogService.update(id, fd);
         toast.success(isPublished ? 'Blog berhasil diperbarui & dipublikasi!' : 'Draf berhasil diperbarui!');
       } else {
-        await blogService.create(payload);
+        await blogService.create(fd);
         toast.success(isPublished ? 'Blog berhasil dipublikasi!' : 'Tersimpan sebagai draf!');
       }
       navigate('/blogs');

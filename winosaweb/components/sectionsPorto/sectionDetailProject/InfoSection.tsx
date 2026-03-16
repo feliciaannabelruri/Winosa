@@ -28,6 +28,10 @@ export default function InfoSection({ project }: InfoSectionProps) {
 
           <motion.h2
             className={styles.sectionTitle}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            viewport={{ once: true }}
           >
             {t("portfolioDetail", "overview")}
           </motion.h2>
@@ -38,7 +42,6 @@ export default function InfoSection({ project }: InfoSectionProps) {
               <span className={styles.infoLabel}>
                 {t("portfolioDetail", "client")}
               </span>
-
               <span className={styles.infoValue}>
                 {project.client}
               </span>
@@ -48,7 +51,6 @@ export default function InfoSection({ project }: InfoSectionProps) {
               <span className={styles.infoLabel}>
                 {t("portfolioDetail", "year")}
               </span>
-
               <span className={styles.infoValue}>
                 {project.year}
               </span>
@@ -56,25 +58,20 @@ export default function InfoSection({ project }: InfoSectionProps) {
 
           </div>
 
-          <div className={styles.techStack}>
-            <h3 className={styles.techStackTitle}>
-              {t("portfolioDetail", "technologies")}
-            </h3>
-
-            <div className={styles.techTags}>
-              {project.technologies.map((tech, index) => (
-
-                <span
-                  key={index}
-                  className={styles.techTag}
-                >
-                  {tech}
-                </span>
-
-              ))}
+          {project.technologies?.length > 0 && (
+            <div className={styles.techStack}>
+              <h3 className={styles.techStackTitle}>
+                {t("portfolioDetail", "technologies")}
+              </h3>
+              <div className={styles.techTags}>
+                {project.technologies.map((tech, index) => (
+                  <span key={index} className={styles.techTag}>
+                    {tech}
+                  </span>
+                ))}
+              </div>
             </div>
-
-          </div>
+          )}
 
         </div>
       </section>

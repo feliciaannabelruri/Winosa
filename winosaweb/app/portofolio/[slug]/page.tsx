@@ -17,7 +17,6 @@ interface PageProps {
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-
   // ambil project detail
   const detailRes = await fetch(
     `http://localhost:5000/api/portfolio/${slug}`,
@@ -31,7 +30,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   if (!data) notFound();
 
-  //  ambil semua project untuk next project
+  // ambil semua project untuk next project
   const listRes = await fetch(
     `http://localhost:5000/api/portfolio`,
     { cache: "no-store" }
@@ -44,42 +43,32 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     (p: any) => p.slug === slug
   );
 
-  const nextRaw =
-    projects[(currentIndex + 1) % projects.length];
+  const nextRaw = projects[(currentIndex + 1) % projects.length];
 
-  // MAPPING DATA (ANTI KOSONG)
+  // MAPPING DATA
   const project = {
-    heroImage: data.image,
+    heroImage: data.heroImage || data.image,
     title: data.title,
-    description:
-      data.description || "Project description coming soon.",
+    description: data.shortDesc || data.description || "Project description coming soon.",
+    longDescription: data.longDesc || "",
     category: data.category || "Portfolio",
     client: data.client || "-",
-    year: new Date(data.createdAt)
-      .getFullYear()
-      .toString(),
-    duration: "",
-    role: "",
-    technologies: [],
-    challenge:
-      data.description ||
-      "Challenge details will be updated soon.",
-    solution:
-      data.description ||
-      "Solution details will be updated soon.",
-    result:
-      "Project results will be available soon.",
-    metrics: [],
-    gallery: [data.image],
+    year: data.year || new Date(data.createdAt).getFullYear().toString(),
+    duration: data.duration || "",
+    role: data.role || "",
+    technologies: data.techStack || [],
+    challenge: data.challenge || "",
+    solution: data.solution || "",
+    result: data.result || "",
+    metrics: data.metrics || [],
+    gallery: data.gallery?.length ? data.gallery : [data.image],
     slug: data.slug,
   };
 
   const nextProject = {
     slug: nextRaw.slug,
     title: nextRaw.title,
-    description:
-      nextRaw.description ||
-      "Explore this project.",
+    description: nextRaw.description || "Explore this project.",
     image: nextRaw.image,
   };
 

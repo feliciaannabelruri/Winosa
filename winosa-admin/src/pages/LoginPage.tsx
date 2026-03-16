@@ -4,15 +4,20 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
+// Key yang dipakai AuthContext untuk baca preferensi storage
+// AuthContext cukup cek: localStorage.getItem('winosa_remember') === 'true'
+// lalu simpan token ke localStorage (remember) atau sessionStorage (no remember)
+export const REMEMBER_ME_KEY = 'winosa_remember';
+
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail]               = useState('');
+  const [password, setPassword]         = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [rememberMe, setRememberMe]     = useState(false);
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState('');
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,12 +28,22 @@ const LoginPage: React.FC = () => {
       return;
     }
 
+    // Simpan preferensi SEBELUM login dipanggil,
+    // sehingga AuthContext bisa baca ini saat menyimpan token.
+    if (rememberMe) {
+      localStorage.setItem(REMEMBER_ME_KEY, 'true');
+    } else {
+      localStorage.removeItem(REMEMBER_ME_KEY);
+    }
+
     setLoading(true);
     try {
       await login(email, password);
       toast.success('Login successful!');
       navigate('/dashboard');
     } catch (err: any) {
+      // Kalau login gagal, bersihkan flag
+      localStorage.removeItem(REMEMBER_ME_KEY);
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {
       setLoading(false);
@@ -82,12 +97,10 @@ const LoginPage: React.FC = () => {
             onError={(e) => {
               const t = e.target as HTMLImageElement;
               t.style.display = 'none';
-              // tampilkan fallback
               const fallback = t.nextElementSibling as HTMLElement;
               if (fallback) fallback.style.display = 'flex';
             }}
           />
-          {/* Fallback placeholder */}
           <div
             style={{
               display: 'none',
@@ -300,7 +313,8 @@ const LoginPage: React.FC = () => {
                 marginTop: '1.5vh',
               }}
             >
-              <label
+              <div
+                onClick={() => setRememberMe(prev => !prev)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -309,15 +323,7 @@ const LoginPage: React.FC = () => {
                   gap: '10px',
                 }}
               >
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  style={{ display: 'none' }}
-                  id="remember-checkbox"
-                />
                 <div
-                  onClick={() => setRememberMe(!rememberMe)}
                   style={{
                     width: '20px',
                     height: '20px',
@@ -328,7 +334,6 @@ const LoginPage: React.FC = () => {
                     justifyContent: 'center',
                     background: rememberMe ? '#1a1a1a' : '#ffffff',
                     transition: 'all 0.2s ease',
-                    cursor: 'pointer',
                     flexShrink: 0,
                   }}
                 >
@@ -353,7 +358,7 @@ const LoginPage: React.FC = () => {
                 >
                   Remember me
                 </span>
-              </label>
+              </div>
             </div>
 
             {/* Submit Button */}
