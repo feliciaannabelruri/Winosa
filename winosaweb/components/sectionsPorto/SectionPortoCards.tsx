@@ -149,18 +149,18 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
                   >
 
                     {/* IMAGE */}
-                    <div className={styles.cardImage}>
+<div className={styles.cardImage}>
 
-                      <Image
-                        src={project.image}
-                        alt={project.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        style={{ objectFit: "cover" }}
-                        priority={index === currentIndex}
-                      />
+  <Image
+    src={project.image || "/no-image.jpg"}
+    alt={project.title || "portfolio image"}
+    fill
+    sizes="(max-width: 768px) 100vw, 33vw"
+    style={{ objectFit: "cover" }}
+    priority={index === currentIndex}
+  />
 
-                    </div>
+</div>
 
                     {/* CONTENT */}
                     <div className={styles.cardContent}>
