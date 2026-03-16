@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import dynamic from "next/dynamic";
+import { useState, useEffect } from "react";import dynamic from "next/dynamic";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
@@ -36,6 +35,49 @@ export default function CustomQuoteUIUXPage() {
   const [selected,setSelected] = useState<string[]>([]);
   const [result,setResult] = useState<any>(null);
   const [error,setError] = useState("");
+
+  // ================= SEO =================
+
+useEffect(() => {
+
+  document.title = "UI/UX Design Cost Estimator";
+
+  const descriptionMeta =
+    "Estimate the cost of your UI/UX design project including research, wireframes, prototypes, and full interface design.";
+
+  const image = "/bg/bg1.jpg";
+
+  const url = `${window.location.origin}/custom-uiux`;
+
+  const setMeta = (property:string,content:string,isName=false)=>{
+    let element = document.querySelector(
+      `meta[${isName ? "name" : "property"}="${property}"]`
+    ) as HTMLMetaElement;
+
+    if(!element){
+      element = document.createElement("meta");
+      if(isName) element.setAttribute("name",property);
+      else element.setAttribute("property",property);
+      document.head.appendChild(element);
+    }
+
+    element.setAttribute("content",content);
+  };
+
+  setMeta("description",descriptionMeta,true);
+
+  setMeta("og:title","UI/UX Design Cost Estimator");
+  setMeta("og:description",descriptionMeta);
+  setMeta("og:image",image);
+  setMeta("og:url",url);
+  setMeta("og:type","website");
+
+  setMeta("twitter:card","summary_large_image",true);
+  setMeta("twitter:title","UI/UX Design Cost Estimator",true);
+  setMeta("twitter:description",descriptionMeta,true);
+  setMeta("twitter:image",image,true);
+
+},[]);
 
   const toggle = (key:string) => {
     setSelected(prev =>
