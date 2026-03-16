@@ -2,7 +2,7 @@
 .hero {
   position: relative;
   min-height: 100vh;
-  background-image: url("/images/bgportohero.png");
+  background-image: url("/bg/heroPort.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center right;

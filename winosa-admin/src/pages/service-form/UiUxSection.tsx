@@ -7,8 +7,8 @@ import { ServiceFormState, PricingPlan } from './types';
 interface Props {
   form: Pick<
     ServiceFormState,
-    | 'ctaText' | 'heroLeftImage' | 'heroRightImage'
-    | 'techTitle' | 'techDescription' | 'tools'
+    | 'heroLeftImage' | 'heroRightImage'
+    | 'tools'
     | 'uiuxPricingPlans' | 'whatsappNumber'
   >;
   set: (key: any, val: any) => void;
@@ -28,22 +28,16 @@ const UiUxSection: React.FC<Props> = ({
   form, set, onAddTool, onRemoveTool, pricing,
 }) => (
   <>
-    {/* Hero */}
+    {/* ── Hero ── */}
     <SectionCard
       title="Hero Section"
       subtitle="fullscreen dengan 2 panel gambar"
       badge="UI/UX"
       badgeColor="bg-purple-100 text-purple-700"
     >
-      <p className="text-xs text-gray-400">Title dan Description diambil dari Basic Info.</p>
-      <div>
-        <Label>CTA Text</Label>
-        <input type="text" placeholder="Let's Design Together"
-          value={form.ctaText}
-          onChange={e => set('ctaText', e.target.value)}
-          className={inputCls}
-        />
-      </div>
+      <p className="text-xs text-gray-400">
+        Title, Description, dan tombol CTA sudah diatur dari sisi user — tidak perlu diubah di sini.
+      </p>
       <div className="grid grid-cols-2 gap-4">
         <ImageUpload
           label="Panel Kiri"
@@ -64,44 +58,27 @@ const UiUxSection: React.FC<Props> = ({
 
     {/* Features note */}
     <div className="px-5 py-4 bg-gray-50 rounded-2xl border border-gray-200 text-sm text-gray-500">
-      <span className="font-semibold text-dark">Features Section</span> — Diambil dari daftar Features di Basic Info. Setiap item tampil sebagai baris timeline dengan icon.
+      <span className="font-semibold text-dark">Features Section</span> — Diambil dari daftar
+      Features di Basic Info. Setiap item tampil sebagai baris timeline dengan icon.
     </div>
 
-    {/* Tools / Tech (marquee) */}
+    {/* ── Tools & Technology ── */}
     <SectionCard
       title="Tools & Technology"
       subtitle="marquee animasi bergerak horizontal"
       badge="UI/UX"
       badgeColor="bg-purple-100 text-purple-700"
     >
-      <div>
-        <Label>Section Title</Label>
-        <input type="text" placeholder="Tools & Technology"
-          value={form.techTitle}
-          onChange={e => set('techTitle', e.target.value)}
-          className={inputCls}
-        />
-      </div>
-      <div>
-        <Label>Section Description</Label>
-        <textarea rows={2} placeholder="Modern design ecosystem that empowers structured, scalable, and collaborative workflows"
-          value={form.techDescription}
-          onChange={e => set('techDescription', e.target.value)}
-          className={`${inputCls} resize-none`}
-        />
-      </div>
-      <div>
-        <Label>Tools</Label>
-        <TagListEditor
-          items={form.tools ?? []}
-          placeholder="e.g. Figma"
-          onAdd={onAddTool}
-          onRemove={onRemoveTool}
-        />
-      </div>
+      <Label>Tools</Label>
+      <TagListEditor
+        items={form.tools ?? []}
+        placeholder="e.g. Figma"
+        onAdd={onAddTool}
+        onRemove={onRemoveTool}
+      />
     </SectionCard>
 
-    {/* Pricing */}
+    {/* ── Pricing ── */}
     <PricingSection
       plans={form.uiuxPricingPlans ?? []}
       badge="UI/UX"

@@ -8,9 +8,9 @@ import { ServiceFormState, MobileFeature, MobileTechItem, PricingPlan } from './
 interface Props {
   form: Pick<
     ServiceFormState,
-    | 'heroLabel' | 'heroImagePrimary' | 'heroImageSecondary' | 'ctaText'
-    | 'mobileFeatureTitle' | 'mobileFeatureSubtitle' | 'mobileFeatures'
-    | 'mobileTechTitle' | 'mobileTechSubtitle' | 'mobileTech'
+    | 'heroLabel' | 'heroImagePrimary' | 'heroImageSecondary'
+    | 'mobileFeatures'
+    | 'mobileTech'
     | 'mobilePricingPlans' | 'whatsappNumber'
   >;
   set: (key: any, val: any) => void;
@@ -40,27 +40,23 @@ const MobileSection: React.FC<Props> = ({
   pricing,
 }) => (
   <>
-    {/* Hero */}
+    {/* ── Hero ── */}
     <SectionCard
       title="Hero Section"
       subtitle="split layout dengan 2 mockup smartphone"
       badge="Mobile"
       badgeColor="bg-green-100 text-green-700"
     >
-      <p className="text-xs text-gray-400">Title dan Description diambil dari Basic Info.</p>
+      <p className="text-xs text-gray-400">
+        Title, Description, dan tombol CTA sudah diatur dari sisi user — tidak perlu diubah di sini.
+      </p>
       <div>
         <Label>Hero Label</Label>
-        <input type="text" placeholder="MODERN EXPERIENCE"
+        <input
+          type="text"
+          placeholder="MODERN EXPERIENCE"
           value={form.heroLabel}
           onChange={e => set('heroLabel', e.target.value)}
-          className={inputCls}
-        />
-      </div>
-      <div>
-        <Label>CTA Text</Label>
-        <input type="text" placeholder="Get in Touch"
-          value={form.ctaText}
-          onChange={e => set('ctaText', e.target.value)}
           className={inputCls}
         />
       </div>
@@ -80,48 +76,36 @@ const MobileSection: React.FC<Props> = ({
       />
     </SectionCard>
 
-    {/* App Features */}
+    {/* ── App Features ── */}
     <SectionCard
       title="App Features"
       subtitle="grid 3 kolom dengan hover glow"
       badge="Mobile"
       badgeColor="bg-green-100 text-green-700"
     >
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label>Section Title</Label>
-          <input type="text" placeholder="What You'll Get"
-            value={form.mobileFeatureTitle}
-            onChange={e => set('mobileFeatureTitle', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-        <div>
-          <Label>Section Subtitle</Label>
-          <input type="text" placeholder="Everything you need to build a professional mobile application"
-            value={form.mobileFeatureSubtitle}
-            onChange={e => set('mobileFeatureSubtitle', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-      </div>
-
       <div className="space-y-3">
         {(form.mobileFeatures ?? []).map((feat, idx) => (
           <div key={idx} className="border border-gray-200 rounded-2xl p-4 space-y-3 bg-white">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-400">Feature {idx + 1}</span>
-              <button type="button" onClick={() => onRemoveMobileFeature(idx)}
-                className="text-gray-300 hover:text-red-400 transition-colors">
+              <button
+                type="button"
+                onClick={() => onRemoveMobileFeature(idx)}
+                className="text-gray-300 hover:text-red-400 transition-colors"
+              >
                 <X size={14} />
               </button>
             </div>
-            <input type="text" placeholder="Feature title"
+            <input
+              type="text"
+              placeholder="Feature title"
               value={feat.title}
               onChange={e => onUpdateMobileFeature(idx, 'title', e.target.value)}
               className={inputCls}
             />
-            <textarea rows={2} placeholder="Feature description"
+            <textarea
+              rows={2}
+              placeholder="Feature description"
               value={feat.desc}
               onChange={e => onUpdateMobileFeature(idx, 'desc', e.target.value)}
               className={`${inputCls} resize-none`}
@@ -132,48 +116,36 @@ const MobileSection: React.FC<Props> = ({
       </div>
     </SectionCard>
 
-    {/* Tech Stack */}
+    {/* ── Tech Stack ── */}
     <SectionCard
       title="Tech Stack"
       subtitle="list baris dengan badge teknologi"
       badge="Mobile"
       badgeColor="bg-green-100 text-green-700"
     >
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label>Section Title</Label>
-          <input type="text" placeholder="Technology Stack"
-            value={form.mobileTechTitle}
-            onChange={e => set('mobileTechTitle', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-        <div>
-          <Label>Section Subtitle</Label>
-          <input type="text" placeholder="We use reliable and scalable technologies..."
-            value={form.mobileTechSubtitle}
-            onChange={e => set('mobileTechSubtitle', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-      </div>
-
       <div className="space-y-3">
         {(form.mobileTech ?? []).map((tech, tIdx) => (
           <div key={tIdx} className="border border-gray-200 rounded-2xl p-4 space-y-3 bg-white">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-400">Tech {tIdx + 1}</span>
-              <button type="button" onClick={() => onRemoveMobileTech(tIdx)}
-                className="text-gray-300 hover:text-red-400 transition-colors">
+              <button
+                type="button"
+                onClick={() => onRemoveMobileTech(tIdx)}
+                className="text-gray-300 hover:text-red-400 transition-colors"
+              >
                 <X size={14} />
               </button>
             </div>
-            <input type="text" placeholder="Title (e.g. Mobile Framework)"
+            <input
+              type="text"
+              placeholder="Category title (e.g. Mobile Framework)"
               value={tech.title}
               onChange={e => onUpdateMobileTech(tIdx, 'title', e.target.value)}
               className={inputCls}
             />
-            <textarea rows={2} placeholder="Short description"
+            <textarea
+              rows={2}
+              placeholder="Short description"
               value={tech.desc}
               onChange={e => onUpdateMobileTech(tIdx, 'desc', e.target.value)}
               className={`${inputCls} resize-none`}
@@ -190,7 +162,7 @@ const MobileSection: React.FC<Props> = ({
       </div>
     </SectionCard>
 
-    {/* Pricing */}
+    {/* ── Pricing ── */}
     <PricingSection
       plans={form.mobilePricingPlans ?? []}
       badge="Mobile"

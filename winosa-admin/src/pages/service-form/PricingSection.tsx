@@ -102,6 +102,11 @@ const PlanCard: React.FC<{
                 </button>
               ))}
             </div>
+            {plan.type === 'custom' && (
+              <p className="text-xs text-gray-400 mt-2">
+                Tombol plan ini sudah mengarah ke halaman Contact dari sisi user — tidak perlu diatur di sini.
+              </p>
+            )}
           </div>
 
           {/* Name */}
@@ -142,22 +147,6 @@ const PlanCard: React.FC<{
             </div>
           )}
 
-          {/* CTA Link — for custom type */}
-          {plan.type === 'custom' && (
-            <div>
-              <Label hint="Halaman yang dituju tombol Custom (e.g. /Services/customWeb)">
-                CTA Link
-              </Label>
-              <input
-                type="text"
-                placeholder="/Services/customWeb"
-                value={plan.ctaLink || ''}
-                onChange={e => onUpdate('ctaLink', e.target.value)}
-                className={inputCls}
-              />
-            </div>
-          )}
-
           {/* Features */}
           <div>
             <Label>Features</Label>
@@ -185,9 +174,9 @@ const PricingSection: React.FC<Props> = ({
     badge={badge}
     badgeColor={badgeColor}
   >
-    {/* WhatsApp number — shared for all normal plan buttons */}
+    {/* WhatsApp number — untuk tombol Get Started di plan normal */}
     <div>
-      <Label hint='Nomor WA untuk tombol "Get Started" (tanpa +, contoh: 6281234567890)'>
+      <Label hint='Nomor WA untuk tombol "Get Started" di plan normal (tanpa +, contoh: 6281234567890)'>
         WhatsApp Number
       </Label>
       <div className="relative">
@@ -203,7 +192,8 @@ const PricingSection: React.FC<Props> = ({
         />
       </div>
       <p className="text-xs text-gray-400 mt-1">
-        Preview: <span className="font-mono text-dark">https://wa.me/{whatsappNumber || '...'}</span>
+        Preview:{' '}
+        <span className="font-mono text-dark">https://wa.me/{whatsappNumber || '...'}</span>
       </p>
     </div>
 

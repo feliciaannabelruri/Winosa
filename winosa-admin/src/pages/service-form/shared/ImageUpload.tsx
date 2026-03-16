@@ -64,34 +64,36 @@ const ImageUpload: React.FC<Props> = ({
       )}
 
       {value ? (
-        <div className="relative rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 group">
+        <div className="relative rounded-2xl overflow-hidden border border-gray-200 bg-gray-50">
           <img
             src={value}
             alt="preview"
             className="w-full object-cover"
             style={{ aspectRatio: aspectRatio || 'auto', maxHeight: 240 }}
           />
-          {/* Hover overlay */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+          {/* Action buttons — pojok kanan atas, selalu terlihat */}
+          <div className="absolute top-2 right-2 flex gap-1.5">
             {uploading ? (
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <div className="w-4 h-4 border-2 border-dark border-t-transparent rounded-full animate-spin" />
+              </div>
             ) : (
               <>
                 <button
                   type="button"
                   onClick={() => inputRef.current?.click()}
-                  className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
+                  className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
                   title="Ganti gambar"
                 >
-                  <Upload size={16} className="text-dark" />
+                  <Upload size={14} className="text-dark" />
                 </button>
                 <button
                   type="button"
                   onClick={() => onChange('')}
-                  className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-red-50 transition-colors"
-                  title="Remove image"
+                  className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-red-50 transition-colors"
+                  title="Hapus gambar"
                 >
-                  <Trash2 size={16} className="text-red-500" />
+                  <Trash2 size={14} className="text-red-500" />
                 </button>
               </>
             )}

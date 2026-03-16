@@ -8,9 +8,9 @@ import { ServiceFormState, ProcessStep, PricingPlan } from './types';
 interface Props {
   form: Pick<
     ServiceFormState,
-    | 'heroImage' | 'subtitle' | 'ctaText' | 'ctaLink'
-    | 'processTitle' | 'processSubtitle' | 'process'
-    | 'techTitle' | 'techSubtitle' | 'techStack'
+    | 'heroImage' | 'subtitle'
+    | 'process'
+    | 'techStack'
     | 'webPricingPlans' | 'whatsappNumber'
   >;
   set: (key: any, val: any) => void;
@@ -40,8 +40,11 @@ const WebDevSection: React.FC<Props> = ({
   pricing,
 }) => (
   <>
-    {/* Hero */}
+    {/* ── Hero ── */}
     <SectionCard title="Hero Section" badge="Web Dev" badgeColor="bg-blue-100 text-blue-700">
+      <p className="text-xs text-gray-400">
+        Title, Description, dan tombol CTA sudah diatur dari sisi user — tidak perlu diubah di sini.
+      </p>
       <ImageUpload
         label="Background Image"
         hint="Gambar full-screen di bagian atas halaman Web Dev"
@@ -59,75 +62,45 @@ const WebDevSection: React.FC<Props> = ({
           className={`${inputCls} resize-none`}
         />
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label>CTA Text</Label>
-          <input
-            type="text" placeholder="Start Your Project"
-            value={form.ctaText}
-            onChange={e => set('ctaText', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-        <div>
-          <Label>CTA Link</Label>
-          <input
-            type="text" placeholder="/Contact"
-            value={form.ctaLink}
-            onChange={e => set('ctaLink', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-      </div>
     </SectionCard>
 
-    {/* Process Steps */}
+    {/* ── Process Steps ── */}
     <SectionCard
       title="Process Steps"
       subtitle="scroll-animated numbered steps"
       badge="Web Dev"
       badgeColor="bg-blue-100 text-blue-700"
     >
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label>Section Title</Label>
-          <input type="text" placeholder="How We Work"
-            value={form.processTitle}
-            onChange={e => set('processTitle', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-        <div>
-          <Label>Section Subtitle</Label>
-          <input type="text" placeholder="A structured process designed for real business impact"
-            value={form.processSubtitle}
-            onChange={e => set('processSubtitle', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-      </div>
-
       <div className="space-y-3">
         {(form.process ?? []).map((step, idx) => (
           <div key={idx} className="border border-gray-200 rounded-2xl p-4 space-y-3 bg-white">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-400">Step {idx + 1}</span>
-              <button type="button" onClick={() => onRemoveProcessStep(idx)}
-                className="text-gray-300 hover:text-red-400 transition-colors">
+              <button
+                type="button"
+                onClick={() => onRemoveProcessStep(idx)}
+                className="text-gray-300 hover:text-red-400 transition-colors"
+              >
                 <X size={14} />
               </button>
             </div>
-            <input type="text" placeholder="Highlight label (e.g. We start with strategy)"
+            <input
+              type="text"
+              placeholder="Highlight label (e.g. We start with strategy)"
               value={step.highlight}
               onChange={e => onUpdateProcessStep(idx, 'highlight', e.target.value)}
               className={inputCls}
             />
-            <input type="text" placeholder="Step title"
+            <input
+              type="text"
+              placeholder="Step title"
               value={step.title}
               onChange={e => onUpdateProcessStep(idx, 'title', e.target.value)}
               className={inputCls}
             />
-            <textarea rows={2} placeholder="Step description"
+            <textarea
+              rows={2}
+              placeholder="Step description"
               value={step.desc}
               onChange={e => onUpdateProcessStep(idx, 'desc', e.target.value)}
               className={`${inputCls} resize-none`}
@@ -138,43 +111,29 @@ const WebDevSection: React.FC<Props> = ({
       </div>
     </SectionCard>
 
-    {/* Tech Stack */}
+    {/* ── Tech Stack ── */}
     <SectionCard
       title="Tech Stack"
       subtitle="expand-on-hover panels"
       badge="Web Dev"
       badgeColor="bg-blue-100 text-blue-700"
     >
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label>Section Title</Label>
-          <input type="text" placeholder="Technology Stack"
-            value={form.techTitle}
-            onChange={e => set('techTitle', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-        <div>
-          <Label>Section Subtitle</Label>
-          <input type="text" placeholder="Structured layers powering scalable digital systems"
-            value={form.techSubtitle}
-            onChange={e => set('techSubtitle', e.target.value)}
-            className={inputCls}
-          />
-        </div>
-      </div>
-
       <div className="space-y-3">
         {(form.techStack ?? []).map((group, gIdx) => (
           <div key={gIdx} className="border border-gray-200 rounded-2xl p-4 space-y-3 bg-white">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-400">Group {gIdx + 1}</span>
-              <button type="button" onClick={() => onRemoveTechGroup(gIdx)}
-                className="text-gray-300 hover:text-red-400 transition-colors">
+              <button
+                type="button"
+                onClick={() => onRemoveTechGroup(gIdx)}
+                className="text-gray-300 hover:text-red-400 transition-colors"
+              >
                 <X size={14} />
               </button>
             </div>
-            <input type="text" placeholder="Category (e.g. Frontend)"
+            <input
+              type="text"
+              placeholder="Category (e.g. Frontend)"
               value={group.category}
               onChange={e => onUpdateTechGroupCategory(gIdx, e.target.value)}
               className={inputCls}
@@ -191,7 +150,7 @@ const WebDevSection: React.FC<Props> = ({
       </div>
     </SectionCard>
 
-    {/* Pricing */}
+    {/* ── Pricing ── */}
     <PricingSection
       plans={form.webPricingPlans ?? []}
       badge="Web Dev"
