@@ -17,7 +17,9 @@ interface PageProps {
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  // ambil project detail
+  /* ===============================
+     FETCH DETAIL
+  =============================== */
   const detailRes = await fetch(
     `http://localhost:5000/api/portfolio/${slug}`,
     { cache: "no-store" }
@@ -26,34 +28,53 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   if (!detailRes.ok) notFound();
 
   const detailJson = await detailRes.json();
-  const data = detailJson.data;
+  const data = detailJson?.data;
 
   if (!data) notFound();
 
-  // ambil semua project untuk next project
+  /* ===============================
+     FETCH LIST
+  =============================== */
   const listRes = await fetch(
     `http://localhost:5000/api/portfolio`,
     { cache: "no-store" }
   );
 
   const listJson = await listRes.json();
-  const projects = listJson.data;
+  const projects = listJson?.data || [];
 
+  if (!projects.length) notFound();
+
+  /* ===============================
+     NEXT PROJECT SAFE
+  =============================== */
   const currentIndex = projects.findIndex(
     (p: any) => p.slug === slug
   );
 
-  const nextRaw = projects[(currentIndex + 1) % projects.length];
+  const nextRaw =
+    currentIndex !== -1
+      ? projects[(currentIndex + 1) % projects.length]
+      : projects[0];
 
-  // MAPPING DATA
+  /* ===============================
+     MAPPING DATA
+  =============================== */
   const project = {
-    heroImage: data.heroImage || data.image,
-    title: data.title,
-    description: data.shortDesc || data.description || "Project description coming soon.",
+    heroImage: data.heroImage || data.image || "/no-image.jpg",
+    title: data.title || "Untitled Project",
+    description:
+      data.shortDesc ||
+      data.description ||
+      "Project description coming soon.",
     longDescription: data.longDesc || "",
     category: data.category || "Portfolio",
     client: data.client || "-",
-    year: data.year || new Date(data.createdAt).getFullYear().toString(),
+    year:
+      data.year ||
+      (data.createdAt
+        ? new Date(data.createdAt).getFullYear().toString()
+        : "-"),
     duration: data.duration || "",
     role: data.role || "",
     technologies: data.techStack || [],
@@ -61,17 +82,25 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     solution: data.solution || "",
     result: data.result || "",
     metrics: data.metrics || [],
-    gallery: data.gallery?.length ? data.gallery : [data.image],
+    gallery:
+      data.gallery?.length
+        ? data.gallery
+        : data.image
+        ? [data.image]
+        : ["/no-image.jpg"],
     slug: data.slug,
   };
 
   const nextProject = {
-    slug: nextRaw.slug,
-    title: nextRaw.title,
-    description: nextRaw.description || "Explore this project.",
-    image: nextRaw.image,
+    slug: nextRaw?.slug || "",
+    title: nextRaw?.title || "Next Project",
+    description: nextRaw?.description || "Explore this project.",
+    image: nextRaw?.thumbnail || nextRaw?.image || "/no-image.jpg",
   };
 
+  /* ===============================
+     RENDER
+  =============================== */
   return (
     <main className={styles.detailPage}>
       <HeroSection project={project} />
