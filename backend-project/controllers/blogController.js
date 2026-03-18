@@ -56,3 +56,54 @@ exports.getBlogBySlug = asyncHandler(async (req, res, next) => {
   res.setHeader('X-Cache', 'MISS');
   res.json({ success: true, data: blog });
 });
+
+// @desc    Get blog recommendations from ML service
+// @route   GET /api/blog/:slug/recommendations
+// @access  Public
+exports.getBlogRecommendations = asyncHandler(async (req, res, next) => {
+  const { slug } = req.params;
+  const limit = parseInt(req.query.limit) || 3;
+  const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
+
+  try {
+    // Panggil Python ML service
+    const response = await fetch(
+      `${ML_SERVICE_URL}/recommendations/${slug}?limit=${limit}`
+    );
+    const data = await response.json();
+    return res.json(data);
+
+  } catch (error) {
+    // Fallback jika ML service mati → tampilkan most viewed
+    console.warn('ML service unavailable, using fallback:', error.message);
+
+    const currentBlog = await Blog.findOne({ 
+      slug, 
+      isPublished: true 
+    }).lean();
+    
+    if (!currentBlog) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Blog not found' 
+      });
+    }
+
+    const fallback = await Blog.find({
+      _id: { $ne: currentBlog._id },
+      isPublished: true,
+    })
+      .sort({ views: -1 })
+      .limit(limit)
+      .select('title slug excerpt image author tags views readTime createdAt')
+      .lean();
+
+    return res.json({
+      success: true,
+      algorithm: 'fallback_most_viewed',
+      mae: null,
+      count: fallback.length,
+      data: fallback,
+    });
+  }
+});

@@ -107,14 +107,11 @@ useEffect(() => {
         const detailData = await detailRes.json();
         setBlog(detailData.data);
 
-        const listRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/blog`
+        const recRes = await fetch(
+  `     ${process.env.NEXT_PUBLIC_API_URL}/blog/${slug}/recommendations?limit=3`
         );
-        const listData = await listRes.json();
-        const filtered = (listData.data || [])
-          .filter((item: Blog) => item.slug !== slug)
-          .slice(0, 3);
-        setRelated(filtered);
+        const recData = await recRes.json();
+        setRelated(recData.data || []);
 
       } catch (err) {
         console.error(err);
@@ -254,7 +251,7 @@ useEffect(() => {
 
             {related.map((post) => (
 
-              <div key={post._id} className="group relative">
+              <div key={post.slug} className="group relative">
 
                 <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-[radial-gradient(circle,rgba(255,200,0,0.65)_0%,rgba(255,200,0,0.45)_35%,transparent_75%)] opacity-0 blur-[80px] transition-all duration-500 group-hover:opacity-100" />
 
