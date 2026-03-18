@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 interface Subscription {
   _id: string;
@@ -17,7 +19,9 @@ interface Subscription {
 }
 
 export default function SectionPlan() {
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
+
   const [plans, setPlans] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,8 +32,21 @@ export default function SectionPlan() {
           `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/subscriptions`
         );
         const data = await res.json();
+
         if (data.success) {
-          setPlans(data.data);
+          const mapped = await Promise.all(
+            data.data.map(async (plan: Subscription) => ({
+              ...plan,
+              name: await translateHybrid(plan.name, language, tApi),
+              features: await Promise.all(
+                plan.features.map((f) =>
+                  translateHybrid(f, language, tApi)
+                )
+              ),
+            }))
+          );
+
+          setPlans(mapped);
         }
       } catch (err) {
         console.error("Failed to fetch subscriptions:", err);
@@ -39,7 +56,7 @@ export default function SectionPlan() {
     };
 
     fetchPlans();
-  }, []);
+  }, [language]);
 
   const formatPrice = (price: number, duration: string) => {
     return `$${price.toLocaleString("en-US")} USD / ${
@@ -83,26 +100,12 @@ export default function SectionPlan() {
           </div>
         </FadeUp>
 
-        {/* GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
           {plans.map((plan) => (
             <div key={plan._id} className="group relative">
 
-              {/* YELLOW GLOW */}
-              <div
-                className="
-                  pointer-events-none
-                  absolute -inset-6
-                  rounded-[40px]
-                  bg-[radial-gradient(circle,rgba(255,215,0,0.65)_0%,rgba(255,215,0,0.35)_40%,transparent_75%)]
-                  opacity-0
-                  blur-[80px]
-                  transition-all
-                  duration-500
-                  group-hover:opacity-100
-                "
-              />
+              <div className="absolute -inset-6 rounded-[40px] bg-[radial-gradient(circle,rgba(255,215,0,0.65)_0%,rgba(255,215,0,0.35)_40%,transparent_75%)] opacity-0 blur-[80px] transition-all duration-500 group-hover:opacity-100" />
 
               {plan.isPopular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 bg-yellow-400 text-black text-xs font-bold px-4 py-1 rounded-full">

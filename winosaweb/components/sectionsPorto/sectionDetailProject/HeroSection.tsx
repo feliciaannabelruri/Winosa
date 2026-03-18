@@ -4,6 +4,10 @@ import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
 import Image from "next/image";
 import styles from "@/app/portofolio/[slug]/detail.module.css";
+import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useEffect, useState } from "react";
 
 interface HeroSectionProps {
   project: {
@@ -16,8 +20,36 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ project }: HeroSectionProps) {
-  const firstParagraph = project.longDescription
-    ? project.longDescription.split(/\n\n|\r\n\r\n/)[0].trim()
+
+  const { tApi } = useTranslate();
+  const { language } = useLanguageStore();
+
+  // ✅ state hasil translate
+  const [translated, setTranslated] = useState(project);
+
+  useEffect(() => {
+
+    const run = async () => {
+
+      const mapped = {
+        ...project,
+        title: await translateHybrid(project.title, language, tApi),
+        category: await translateHybrid(project.category, language, tApi),
+        longDescription: project.longDescription
+          ? await translateHybrid(project.longDescription, language, tApi)
+          : "",
+      };
+
+      setTranslated(mapped);
+
+    };
+
+    run();
+
+  }, [project, language]);
+
+  const firstParagraph = translated.longDescription
+    ? translated.longDescription.split(/\n\n|\r\n\r\n/)[0].trim()
     : "";
 
   return (
@@ -27,13 +59,12 @@ export default function HeroSection({ project }: HeroSectionProps) {
         {/* HERO IMAGE + OVERLAY */}
         <section
           className={styles.heroSection}
-          aria-label="Portfolio project hero"
           style={{ marginBottom: firstParagraph ? "0" : undefined }}
         >
           <div className={styles.heroImageWrapper}>
             <Image
               src={project.heroImage}
-              alt={project.title}
+              alt={translated.title}
               fill
               priority
               sizes="100vw"
@@ -43,7 +74,7 @@ export default function HeroSection({ project }: HeroSectionProps) {
             <div className={styles.heroOverlay} />
           </div>
 
-          {/* TITLE + CATEGORY saja di dalam hero */}
+          {/* TITLE + CATEGORY */}
           <motion.div
             className={styles.heroContent}
             initial="hidden"
@@ -59,7 +90,7 @@ export default function HeroSection({ project }: HeroSectionProps) {
               variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.8 }}
             >
-              {project.category}
+              {translated.category}
             </motion.span>
 
             <motion.h1
@@ -67,12 +98,12 @@ export default function HeroSection({ project }: HeroSectionProps) {
               variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.8 }}
             >
-              {project.title}
+              {translated.title}
             </motion.h1>
           </motion.div>
         </section>
 
-        {/* LONG DESC — mulai dari dalam gradasi, mengalir ke bawah */}
+        {/* LONG DESC */}
         {firstParagraph && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}

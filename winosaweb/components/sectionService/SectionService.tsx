@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { useTranslate } from "@/lib/useTranslate";
 import { getAllServices } from "@/services/service.service";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 type Service = {
   _id: string;
@@ -23,6 +24,7 @@ type Service = {
   description: string;
   icon?: string;
   slug: string;
+  isTranslating?: boolean;
 };
 
 const iconMap: Record<string, any> = {
@@ -45,25 +47,44 @@ const allowedButtons = [
 
 export default function SectionServices() {
   const { language } = useLanguageStore();
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
 
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(false);
-        const data = await getAllServices(language);
-        setServices(data || []);
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
+      setLoading(true);
+
+      const data = await getAllServices(language);
+
+      const initial = (data || []).map((item: Service) => ({
+        ...item,
+        isTranslating: true,
+      }));
+
+      setServices(initial);
+      setLoading(false);
+
+      initial.forEach(async (item: Service) => {
+      const translatedTitle = await translateHybrid(item.title, language, tApi);
+      const translatedDesc = await translateHybrid(item.description, language, tApi);
+
+      setServices((prev) =>
+        prev.map((s: Service) =>
+          s._id === item._id
+            ? {
+                ...s,
+                title: translatedTitle,
+                description: translatedDesc,
+                isTranslating: false,
+              }
+            : s
+        )
+      );
+    });
     };
+
     fetchData();
   }, [language]);
 
@@ -72,16 +93,6 @@ export default function SectionServices() {
       <section className="w-full bg-white py-32 text-center">
         <p className="animate-pulse text-gray-600">
           {t("global", "loading")}
-        </p>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="w-full bg-white py-32 text-center">
-        <p className="text-red-500">
-          {t("global", "error")}
         </p>
       </section>
     );
@@ -111,20 +122,18 @@ export default function SectionServices() {
                 viewport={{ once: true }}
               >
 
-                <Link
-                  href={`/Services/${item.slug}`}
-                  aria-label={`View details for ${item.title}`}
-                >
+                <Link href={`/Services/${item.slug}`}>
 
                   <motion.div
                     whileHover={{ y: -8 }}
-                    transition={{ duration: 0.3 }}
                     className="group relative h-full"
                   >
 
-                    <div className="absolute -inset-16 rounded-[60px] bg-[radial-gradient(circle,rgba(255,200,0,0.6)_0%,rgba(255,200,0,0.35)_40%,transparent_75%)] opacity-0 blur-[90px] transition-all duration-500 group-hover:opacity-100" />
+                    {item.isTranslating && (
+                      <div className="absolute inset-0 rounded-[28px] border-2 border-yellow-400 animate-pulse pointer-events-none" />
+                    )}
 
-                    <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)] transition-all duration-500 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.25)] focus:outline-none">
+                    <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)]">
 
                       <div className="flex items-start gap-6 mb-6">
 

@@ -3,6 +3,9 @@
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useEffect, useState } from "react";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -13,7 +16,8 @@ type TechItem = {
 };
 
 export default function SectionMobileTech({ data }: { data?: any }) {
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
   const defaultTechStack: TechItem[] = [
     {
@@ -48,8 +52,43 @@ export default function SectionMobileTech({ data }: { data?: any }) {
     },
   ];
 
-  const techStack: TechItem[] =
-    Array.isArray(data?.mobileTech) ? data.mobileTech : defaultTechStack;
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [techStack, setTechStack] = useState<TechItem[]>([]);
+
+  useEffect(() => {
+    const run = async () => {
+
+      const rawTitle =
+        data?.mobileTechTitle || t("mobileTechSection", "title");
+
+      const rawSubtitle =
+        data?.mobileTechSubtitle || t("mobileTechSection", "subtitle");
+
+      const rawTech: TechItem[] =
+        Array.isArray(data?.mobileTech)
+          ? data.mobileTech
+          : defaultTechStack;
+
+      const translatedTech = await Promise.all(
+        rawTech.map(async (tech) => ({
+          title: await translateHybrid(tech.title, language, tApi),
+          desc: await translateHybrid(tech.desc, language, tApi),
+          items: await Promise.all(
+            tech.items.map((item: string) =>
+              translateHybrid(item, language, tApi)
+            )
+          ),
+        }))
+      );
+
+      setTitle(await translateHybrid(rawTitle, language, tApi));
+      setSubtitle(await translateHybrid(rawSubtitle, language, tApi));
+      setTechStack(translatedTech);
+    };
+
+    run();
+  }, [data, language]);
 
   return (
     <section className="w-full bg-white py-32">
@@ -58,11 +97,11 @@ export default function SectionMobileTech({ data }: { data?: any }) {
         <FadeUp>
           <div className="max-w-2xl mb-24">
             <h2 className="text-3xl font-bold mb-4">
-              {data?.mobileTechTitle || t("mobileTechSection", "title")}
+              {title}
             </h2>
 
             <p className="text-black/70 text-base leading-relaxed">
-              {data?.mobileTechSubtitle || t("mobileTechSection", "subtitle")}
+              {subtitle}
             </p>
           </div>
         </FadeUp>

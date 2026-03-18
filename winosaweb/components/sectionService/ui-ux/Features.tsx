@@ -9,11 +9,15 @@ import {
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useEffect, useState } from "react";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionFeaturesUIUX({ data }: { data?: any }) {
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
   const iconPool = [Layout, Layers, MousePointerClick, Smartphone];
 
@@ -24,10 +28,33 @@ export default function SectionFeaturesUIUX({ data }: { data?: any }) {
     t("uiuxFeatures", "fallbackFeature4"),
   ];
 
-  const features =
-    data?.features && data.features.length > 0
-      ? data.features
-      : fallbackFeatures;
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [features, setFeatures] = useState<string[]>([]);
+
+  useEffect(() => {
+    const run = async () => {
+      const rawTitle = data?.title || t("uiuxFeatures", "defaultTitle");
+      const rawDesc = data?.description || t("uiuxFeatures", "defaultDesc");
+
+      const rawFeatures =
+        data?.features && data.features.length > 0
+          ? data.features
+          : fallbackFeatures;
+
+      const translatedFeatures = await Promise.all(
+        rawFeatures.map((f: string) =>
+          translateHybrid(f, language, tApi)
+        )
+      );
+
+      setTitle(await translateHybrid(rawTitle, language, tApi));
+      setDescription(await translateHybrid(rawDesc, language, tApi));
+      setFeatures(translatedFeatures);
+    };
+
+    run();
+  }, [data, language]);
 
   return (
     <FadeUp>
@@ -40,11 +67,11 @@ export default function SectionFeaturesUIUX({ data }: { data?: any }) {
             </p>
 
             <h2 className="text-4xl md:text-5xl font-bold text-black leading-tight mb-6">
-              {data?.title || t("uiuxFeatures", "defaultTitle")}
+              {title}
             </h2>
 
             <p className="text-black/60 text-lg leading-relaxed max-w-md">
-              {data?.description || t("uiuxFeatures", "defaultDesc")}
+              {description}
             </p>
           </div>
 

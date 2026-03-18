@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -64,8 +66,32 @@ const defaultPlans: Plan[] = [
 
 export default function SectionPricingWeb({}: Props) {
 
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
+
   const [active, setActive] = useState<number>(0);
+  const [plans, setPlans] = useState<Plan[]>(defaultPlans);
+
+  useEffect(() => {
+    const run = async () => {
+      const mapped = await Promise.all(
+        defaultPlans.map(async (plan) => ({
+          ...plan,
+          name: await translateHybrid(plan.name, language, tApi),
+          desc: await translateHybrid(plan.desc, language, tApi),
+          features: await Promise.all(
+            plan.features.map((f) =>
+              translateHybrid(f, language, tApi)
+            )
+          ),
+        }))
+      );
+
+      setPlans(mapped);
+    };
+
+    run();
+  }, [language]);
 
   return (
     <section className="w-full bg-white py-32">
@@ -83,7 +109,7 @@ export default function SectionPricingWeb({}: Props) {
 
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 xl:grid-cols-3 gap-10">
 
-        {defaultPlans.map((plan, i) => {
+        {plans.map((plan, i) => {
 
           const whatsappLink =
             `https://wa.me/${whatsappNumber}?text=Hello%20I%20am%20interested%20in%20${encodeURIComponent(plan.name)}`;

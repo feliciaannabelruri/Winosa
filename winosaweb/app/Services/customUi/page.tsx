@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";import dynamic from "next/dynamic";
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -29,55 +32,32 @@ const UIUX_FEATURES = [
 ];
 
 export default function CustomQuoteUIUXPage() {
-  const { t } = useTranslate();
+
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
   const [description,setDescription] = useState("");
   const [selected,setSelected] = useState<string[]>([]);
   const [result,setResult] = useState<any>(null);
   const [error,setError] = useState("");
+  const [features,setFeatures] = useState(UIUX_FEATURES);
 
-  // ================= SEO =================
+  useEffect(() => {
+    const run = async () => {
+      const mapped = await Promise.all(
+        UIUX_FEATURES.map(async (f) => ({
+          ...f,
+          label: await translateHybrid(f.label, language, tApi),
+        }))
+      );
+      setFeatures(mapped);
+    };
+    run();
+  }, [language]);
 
-useEffect(() => {
-
-  document.title = "UI/UX Design Cost Estimator";
-
-  const descriptionMeta =
-    "Estimate the cost of your UI/UX design project including research, wireframes, prototypes, and full interface design.";
-
-  const image = "/bg/bg1.jpg";
-
-  const url = `${window.location.origin}/custom-uiux`;
-
-  const setMeta = (property:string,content:string,isName=false)=>{
-    let element = document.querySelector(
-      `meta[${isName ? "name" : "property"}="${property}"]`
-    ) as HTMLMetaElement;
-
-    if(!element){
-      element = document.createElement("meta");
-      if(isName) element.setAttribute("name",property);
-      else element.setAttribute("property",property);
-      document.head.appendChild(element);
-    }
-
-    element.setAttribute("content",content);
-  };
-
-  setMeta("description",descriptionMeta,true);
-
-  setMeta("og:title","UI/UX Design Cost Estimator");
-  setMeta("og:description",descriptionMeta);
-  setMeta("og:image",image);
-  setMeta("og:url",url);
-  setMeta("og:type","website");
-
-  setMeta("twitter:card","summary_large_image",true);
-  setMeta("twitter:title","UI/UX Design Cost Estimator",true);
-  setMeta("twitter:description",descriptionMeta,true);
-  setMeta("twitter:image",image,true);
-
-},[]);
+  useEffect(() => {
+    document.title = "UI/UX Design Cost Estimator";
+  },[]);
 
   const toggle = (key:string) => {
     setSelected(prev =>
@@ -89,7 +69,7 @@ useEffect(() => {
 
   const isValid = description.trim().length > 0 || selected.length > 0;
 
-  const generate = () => {
+  const generate = async () => {
 
     if(!isValid){
       setError(t("uiuxEstimator","error"));
@@ -113,12 +93,16 @@ useEffect(() => {
 
     const featureCost = activeFeatures.reduce((s,f)=>s+f.price,0);
 
-    const estimates = Object.entries(UIUX_PACKAGES).map(([name,base])=>({
-      name,
-      price: base + featureCost
-    }));
+    const estimates = await Promise.all(
+      Object.entries(UIUX_PACKAGES).map(async ([name,base])=>({
+        name: await translateHybrid(name, language, tApi),
+        price: base + featureCost
+      }))
+    );
 
-    setResult({projectType,estimates});
+    const translatedType = await translateHybrid(projectType, language, tApi);
+
+    setResult({projectType: translatedType, estimates});
   };
 
   return (
@@ -133,31 +117,27 @@ useEffect(() => {
             <h1 className="text-3xl font-bold mb-4">
               {t("uiuxEstimator","title")}
             </h1>
-
             <p>{t("uiuxEstimator","subtitle")}</p>
           </div>
 
           <textarea
-            aria-label="Project description"
             value={description}
             onChange={(e)=>setDescription(e.target.value)}
             placeholder={t("uiuxEstimator","placeholder")}
-            className="w-full h-40 p-6 border border-black rounded-2xl mb-12 focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full h-40 p-6 border border-black rounded-2xl mb-12"
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-14">
 
-            {UIUX_FEATURES.map(f=>(
+            {features.map(f=>(
               <button
                 key={f.key}
-                type="button"
-                aria-pressed={selected.includes(f.key)}
                 onClick={()=>toggle(f.key)}
-                className={`px-5 py-3 rounded-full border text-sm focus:outline-none focus:ring-2 focus:ring-black ${
+                className={`px-5 py-3 rounded-full border text-sm ${
                   selected.includes(f.key)
                   ? "bg-black text-white"
                   : "border-black text-black hover:bg-black/10"
-                } transition`}
+                }`}
               >
                 {f.label}
               </button>
@@ -166,13 +146,12 @@ useEffect(() => {
           </div>
 
           <button
-            type="button"
             onClick={generate}
             disabled={!isValid}
-            className={`w-full py-4 rounded-full font-semibold transition focus:outline-none focus:ring-2 focus:ring-black ${
+            className={`w-full py-4 rounded-full font-semibold ${
               isValid
-              ? "bg-yellow-400 text-black hover:bg-yellow-300"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              ? "bg-yellow-400 text-black"
+              : "bg-gray-300 text-gray-500"
             }`}
           >
             {t("uiuxEstimator","generate")}
@@ -200,6 +179,7 @@ useEffect(() => {
               <div className="grid md:grid-cols-3 gap-8 mb-12">
 
                 {result.estimates.map((p:any)=>(
+
                   <div key={p.name} className="border border-black rounded-[28px] p-8">
 
                     <h3 className="font-bold text-lg mb-3">
@@ -211,6 +191,7 @@ useEffect(() => {
                     </div>
 
                   </div>
+
                 ))}
 
               </div>

@@ -3,7 +3,10 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Monitor } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 type Item = {
   _id?: string;
@@ -13,12 +16,48 @@ type Item = {
   image?: string;
   icon?: string;
   slug?: string;
+  isTranslating?: boolean;
 };
 
 export default function SectionPreview({ title, items = [] }: any) {
   const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
-  const previewItems = items.slice(0, 3);
+  const [data, setData] = useState<Item[]>([]);
+
+  const previewItems = data.slice(0, 3);
+
+  useEffect(() => {
+    const initial = (items || []).map((item: Item) => ({
+      ...item,
+      isTranslating: true,
+    }));
+
+    setData(initial);
+
+    initial.forEach(async (item: Item) => {
+      const translatedTitle = await translateHybrid(item.title, language, tApi);
+      const translatedDesc = await translateHybrid(
+        item.desc || item.description || "",
+        language,
+        tApi
+      );
+
+      setData((prev) =>
+        prev.map((s: Item) =>
+          s._id === item._id
+            ? {
+                ...s,
+                title: translatedTitle,
+                desc: translatedDesc,
+                description: translatedDesc,
+                isTranslating: false,
+              }
+            : s
+        )
+      );
+    });
+  }, [items, language]);
 
   function getTranslatedTitle() {
     if (title === "Our Services") return t("preview", "services");
@@ -45,10 +84,6 @@ export default function SectionPreview({ title, items = [] }: any) {
             const uniqueKey =
               item._id ?? item.slug ?? `${item.title}-${index}`;
 
-            // 🔹 translate API text
-            const translatedTitle = tApi(item.title);
-            const translatedDesc = tApi(item.desc || item.description || "");
-
             return (
               <motion.div
                 key={uniqueKey}
@@ -62,22 +97,27 @@ export default function SectionPreview({ title, items = [] }: any) {
                 <div className="absolute -inset-12 opacity-0 blur-[100px] transition duration-500 group-hover:opacity-100 bg-[radial-gradient(circle,rgba(255,185,0,0.8)_0%,rgba(255,185,0,0.4)_40%,transparent_75%)]" />
 
                 <div className="relative h-full rounded-[32px] overflow-hidden bg-white shadow-[0_25px_60px_rgba(0,0,0,0.08)] transition duration-500 group-hover:shadow-[0_40px_90px_rgba(0,0,0,0.15)]">
+
+                  {item.isTranslating && (
+                    <div className="absolute inset-0 border-2 border-yellow-400 rounded-[32px] animate-pulse pointer-events-none" />
+                  )}
+
                   {item.image ? (
                     <div className="relative h-full overflow-hidden">
                       <Image
                         src={item.image}
-                        alt={translatedTitle}
+                        alt={item.title}
                         fill
                         className="object-cover transition duration-700 group-hover:scale-110"
                       />
 
                       <div className="absolute bottom-0 p-8 text-black">
                         <h3 className="text-xl font-semibold mb-2">
-                          {translatedTitle}
+                          {item.title}
                         </h3>
 
                         <p className="text-gray-600 text-sm line-clamp-2">
-                          {translatedDesc}
+                          {item.desc || item.description}
                         </p>
                       </div>
                     </div>
@@ -92,14 +132,15 @@ export default function SectionPreview({ title, items = [] }: any) {
                       </div>
 
                       <h3 className="text-xl font-semibold text-black mb-4">
-                        {translatedTitle}
+                        {item.title}
                       </h3>
 
                       <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
-                        {translatedDesc}
+                        {item.desc || item.description}
                       </p>
                     </div>
                   )}
+
                 </div>
               </motion.div>
             );
