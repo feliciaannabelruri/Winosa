@@ -6,10 +6,8 @@ const Service = require('../models/Service');
 const Subscription = require('../models/Subscription');
 const connectDB = require('../config/db');
 
-// Connect DB
 connectDB();
 
-// Dummy Portfolios (sama seperti sebelumnya)
 const portfolios = [
   {
     title: 'E-Commerce Website',
@@ -63,7 +61,6 @@ const portfolios = [
   }
 ];
 
-// Dummy Blogs (sama seperti sebelumnya)
 const blogs = [
   {
     title: 'Getting Started with React',
@@ -117,7 +114,6 @@ const blogs = [
   }
 ];
 
-// Dummy Services
 const services = [
   {
     title: 'Web Development',
@@ -166,7 +162,6 @@ const services = [
   }
 ];
 
-// Dummy Subscriptions
 const subscriptions = [
   {
     name: 'Basic Plan',
@@ -214,16 +209,13 @@ const subscriptions = [
   }
 ];
 
-// Import Data
 const importData = async () => {
   try {
-    // Clear existing data
     await Portfolio.deleteMany();
     await Blog.deleteMany();
     await Service.deleteMany();
     await Subscription.deleteMany();
 
-    // Insert new data
     await Portfolio.insertMany(portfolios);
     await Blog.insertMany(blogs);
     await Service.insertMany(services);
@@ -241,7 +233,6 @@ const importData = async () => {
   }
 };
 
-// Delete Data
 const deleteData = async () => {
   try {
     await Portfolio.deleteMany();
@@ -257,7 +248,6 @@ const deleteData = async () => {
   }
 };
 
-// Run script
 if (process.argv[2] === '-i') {
   importData();
 } else if (process.argv[2] === '-d') {

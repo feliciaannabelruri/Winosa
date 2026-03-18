@@ -4,7 +4,6 @@ const { uploadSingle, uploadMultiple, uploadToImageKit } = require('../config/im
 const { protect, admin } = require('../middleware/auth');
 const asyncHandler = require('../middleware/asyncHandler');
 
-// POST /api/admin/upload  ← route utama yang dipanggil frontend
 router.post('/', protect, admin, (req, res) => {
   uploadSingle(req, res, async (err) => {
     if (err) {
@@ -30,7 +29,6 @@ router.post('/', protect, admin, (req, res) => {
   });
 });
 
-// Test upload single image
 router.post('/test-single', protect, admin, (req, res, next) => {
   uploadSingle(req, res, async (err) => {
     if (err) {
@@ -48,7 +46,6 @@ router.post('/test-single', protect, admin, (req, res, next) => {
     }
 
     try {
-      // Upload to ImageKit
       const result = await uploadToImageKit(req.file, 'test');
 
       res.json({
@@ -65,7 +62,6 @@ router.post('/test-single', protect, admin, (req, res, next) => {
   });
 });
 
-// Test upload multiple images
 router.post('/test-multiple', protect, admin, (req, res, next) => {
   const upload = uploadMultiple(5);
   
@@ -85,7 +81,6 @@ router.post('/test-multiple', protect, admin, (req, res, next) => {
     }
 
     try {
-      // Upload all files to ImageKit
       const uploadPromises = req.files.map(file => 
         uploadToImageKit(file, 'test')
       );

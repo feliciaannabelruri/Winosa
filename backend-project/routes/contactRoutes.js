@@ -10,15 +10,14 @@ const {
 } = require('../controllers/contactController');
 const { protect, admin } = require('../middleware/auth');
 const { contactLimiter } = require('../middleware/rateLimiter');
+const { mediumLimit, mediumUrlEncoded } = require('../middleware/requestLimit');
 
-// Public
-router.post('/', contactLimiter, createContact);
+router.post('/', mediumLimit, mediumUrlEncoded, contactLimiter, createContact);
 
-// Admin only
-router.get('/',    protect, admin, getContacts);
-router.get('/:id', protect, admin, getContactById);      // ← baru
-router.patch('/:id', protect, admin, updateContact);
+router.get('/',           protect, admin, getContacts);
+router.get('/:id',        protect, admin, getContactById);
+router.patch('/:id',      protect, admin, updateContact);
 router.post('/:id/reply', protect, admin, replyContact);
-router.delete('/:id', protect, admin, deleteContact);    // ← baru
+router.delete('/:id',     protect, admin, deleteContact);
 
 module.exports = router;

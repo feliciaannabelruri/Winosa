@@ -1,11 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const sanitizeHtml = require('sanitize-html');
 const connectDB = require('./config/db');
 const { setLanguage } = require('./middleware/language');
 const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./middleware/logger');
-const { globalLimiter } = require('./middleware/rateLimiter');
+const { globalLimiter, authLimiter } = require('./middleware/rateLimiter');
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
@@ -16,7 +17,13 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
   .map((o) => o.trim())
   .filter(Boolean);
 
-const devOrigins = ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'];
+const devOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://192.168.124.1:3001',
+];
 const allowedOrigins = [...new Set([...ALLOWED_ORIGINS, ...devOrigins])];
 
 app.use(
@@ -44,14 +51,41 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+const sanitizeValue = (val) => {
+  if (typeof val === 'string') {
+    val = sanitizeHtml(val, { allowedTags: [], allowedAttributes: {} });
+    val = val.replace(/\$|\./g, '');
+    return val;
+  }
+  if (typeof val === 'object' && val !== null) {
+    return sanitizeObject(val);
+  }
+  return val;
+};
+
+const sanitizeObject = (obj) => {
+  if (Array.isArray(obj)) return obj.map(sanitizeValue);
+  const result = {};
+  for (const key in obj) {
+    const cleanKey = key.replace(/\$|\./g, '');
+    result[cleanKey] = sanitizeValue(obj[key]);
+  }
+  return result;
+};
+
+app.use((req, res, next) => {
+  if (req.body && typeof req.body === 'object') {
+    req.body = sanitizeObject(req.body);
+  }
+
+  next();
+});
+
 app.use(logger);
 app.use(setLanguage);
-
 app.use('/api/', globalLimiter);
 
 connectDB();
-
-const { authLimiter } = require('./middleware/rateLimiter');
 
 app.use('/api/portfolio',     require('./routes/portfolioRoutes'));
 app.use('/api/blog',          require('./routes/blogRoutes'));
@@ -135,4 +169,4 @@ app.listen(PORT, () => {
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
 
-module.exports = app; 
+module.exports = app;

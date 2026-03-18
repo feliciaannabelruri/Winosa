@@ -8,10 +8,8 @@ const { getAnalytics } = require('../../controllers/analyticsController');
 router.use(protect);
 router.use(admin);
 
-// Analytics
 router.get('/', getAnalytics);
 
-// Cache management
 router.get('/cache/stats', asyncHandler(async (req, res) => {
   res.json({ success: true, data: cache.stats() });
 }));
