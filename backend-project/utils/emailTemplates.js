@@ -1,4 +1,3 @@
-// Contact Form Email Template (to Admin)
 exports.contactFormTemplate = (data) => {
   return `
     <!DOCTYPE html>
@@ -93,7 +92,6 @@ exports.contactFormTemplate = (data) => {
   `;
 };
 
-// Newsletter Subscription Confirmation (to Subscriber)
 exports.newsletterWelcomeTemplate = (email, lang = 'en') => {
   const translations = {
     en: {
@@ -101,31 +99,31 @@ exports.newsletterWelcomeTemplate = (email, lang = 'en') => {
       greeting: 'Hello there!',
       message: 'Thank you for subscribing to our newsletter. You\'re now part of our community!',
       whatToExpect: 'What to expect:',
-      updates: '📰 Latest updates and news',
-      tips: '💡 Helpful tips and insights',
-      exclusive: '🎁 Exclusive offers and content',
+      updates: 'Latest updates and news',
+      tips: 'Helpful tips and insights',
+      exclusive: 'Exclusive offers and content',
       unsubscribe: 'You can unsubscribe at any time.',
       footer: 'This email was sent because you subscribed to Winosa Newsletter'
     },
     id: {
-      title: '🎉 Selamat Datang di Newsletter Winosa!',
+      title: 'Selamat Datang di Newsletter Winosa!',
       greeting: 'Halo!',
       message: 'Terima kasih telah berlangganan newsletter kami. Anda sekarang menjadi bagian dari komunitas kami!',
       whatToExpect: 'Yang akan Anda dapatkan:',
-      updates: '📰 Update dan berita terbaru',
-      tips: '💡 Tips dan wawasan bermanfaat',
-      exclusive: '🎁 Penawaran dan konten eksklusif',
+      updates: 'Update dan berita terbaru',
+      tips: 'Tips dan wawasan bermanfaat',
+      exclusive: 'Penawaran dan konten eksklusif',
       unsubscribe: 'Anda dapat berhenti berlangganan kapan saja.',
       footer: 'Email ini dikirim karena Anda berlangganan Newsletter Winosa'
     },
     nl: {
-      title: '🎉 Welkom bij Winosa Nieuwsbrief!',
+      title: 'Welkom bij Winosa Nieuwsbrief!',
       greeting: 'Hallo!',
       message: 'Bedankt voor het abonneren op onze nieuwsbrief. Je maakt nu deel uit van onze gemeenschap!',
       whatToExpect: 'Wat te verwachten:',
-      updates: '📰 Laatste updates en nieuws',
-      tips: '💡 Nuttige tips en inzichten',
-      exclusive: '🎁 Exclusieve aanbiedingen en inhoud',
+      updates: 'Laatste updates en nieuws',
+      tips: 'Nuttige tips en inzichten',
+      exclusive: 'Exclusieve aanbiedingen en inhoud',
       unsubscribe: 'Je kunt je op elk moment afmelden.',
       footer: 'Deze e-mail is verzonden omdat je je hebt geabonneerd op Winosa Nieuwsbrief'
     }
@@ -214,7 +212,6 @@ exports.newsletterWelcomeTemplate = (email, lang = 'en') => {
   `;
 };
 
-// Newsletter Notification to Admin
 exports.newsletterAdminTemplate = (email) => {
   return `
     <!DOCTYPE html>
