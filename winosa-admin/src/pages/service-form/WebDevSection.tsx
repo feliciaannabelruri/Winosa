@@ -1,14 +1,12 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import { SectionCard, Label, AddMoreButton, TagListEditor, inputCls } from './shared/FormShared';
-import ImageUpload from './shared/ImageUpload';
 import PricingSection from './PricingSection';
 import { ServiceFormState, ProcessStep, PricingPlan } from './types';
 
 interface Props {
   form: Pick<
     ServiceFormState,
-    | 'heroImage' | 'subtitle'
     | 'process'
     | 'techStack'
     | 'webPricingPlans' | 'whatsappNumber'
@@ -40,30 +38,6 @@ const WebDevSection: React.FC<Props> = ({
   pricing,
 }) => (
   <>
-    {/* ── Hero ── */}
-    <SectionCard title="Hero Section" badge="Web Dev" badgeColor="bg-blue-100 text-blue-700">
-      <p className="text-xs text-gray-400">
-        Title, Description, dan tombol CTA sudah diatur dari sisi user — tidak perlu diubah di sini.
-      </p>
-      <ImageUpload
-        label="Background Image"
-        hint="Gambar full-screen di bagian atas halaman Web Dev"
-        value={form.heroImage}
-        onChange={val => set('heroImage', val)}
-        aspectRatio="16/9"
-      />
-      <div>
-        <Label>Subtitle</Label>
-        <textarea
-          rows={2}
-          placeholder="Build fast, secure, and scalable websites for your business"
-          value={form.subtitle}
-          onChange={e => set('subtitle', e.target.value)}
-          className={`${inputCls} resize-none`}
-        />
-      </div>
-    </SectionCard>
-
     {/* ── Process Steps ── */}
     <SectionCard
       title="Process Steps"

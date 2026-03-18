@@ -17,15 +17,17 @@ interface StatCardProps {
   iconColor: string;
 }
 
+// FIX 1: overflow-hidden + min-w-0 biar konten tidak meluber dari kartu
+// FIX 2: text-3xl (bukan text-5xl) biar angka tidak keluar dari kotak di layar kecil
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon, bg, iconColor }) => (
-  <div className="rounded-3xl border-2 border-yellow-100 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
-    <div className="flex items-center justify-between mb-2 sm:mb-3">
-      <p className="text-xs font-medium text-gray-500 leading-tight">{label}</p>
-      <div className={`w-8 h-8 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center flex-shrink-0 ${bg}`}>
+  <div className="rounded-3xl border-2 border-yellow-100 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 overflow-hidden min-w-0">
+    <div className="flex items-center justify-between mb-2 sm:mb-3 gap-1">
+      <p className="text-xs font-medium text-gray-500 leading-tight truncate">{label}</p>
+      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${bg}`}>
         <span className={iconColor}>{icon}</span>
       </div>
     </div>
-    <p className="text-2xl sm:text-5xl font-display font-bold text-dark">{value ?? 0}</p>
+    <p className="text-2xl sm:text-3xl font-display font-bold text-dark truncate">{value ?? 0}</p>
   </div>
 );
 
@@ -101,7 +103,8 @@ const DashboardPage: React.FC = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+      {/* FIX 3: grid-cols-2 di mobile, 3 di md, 5 di lg — biar tidak terlalu sempit */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <StatCard label="Portfolios"  value={counts.portfolios}  icon={<FolderOpen size={16} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
         <StatCard label="Blogs"       value={counts.blogs}       icon={<FileText size={16} />}   bg="bg-primary/10" iconColor="text-primary"    />
         <StatCard label="Services"    value={counts.services}    icon={<Briefcase size={16} />}  bg="bg-purple-50"  iconColor="text-purple-500" />
@@ -113,8 +116,15 @@ const DashboardPage: React.FC = () => {
       <div>
         <h2 className="text-xl sm:text-2xl font-display font-bold text-dark mb-4 sm:mb-5">Recent Activities</h2>
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          {/* FIX 4: overflow-x-auto sudah ada — pastikan tabel pakai table-fixed + w-full */}
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[520px]">
+            <table className="w-full min-w-[520px] table-fixed">
+              <colgroup>
+                <col className="w-[110px]" />
+                <col /> {/* Title mengambil sisa ruang */}
+                <col className="w-[90px]" />
+                <col className="w-[110px]" />
+              </colgroup>
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100">
                   {['Type', 'Title / Name', 'Date', 'Status'].map(h => (
@@ -137,15 +147,15 @@ const DashboardPage: React.FC = () => {
                         }`}
                       >
                         {/* Type badge */}
-                        <td className="py-3 px-4 pl-6 whitespace-nowrap">
+                        <td className="py-3 px-4 pl-6">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.bg} ${cfg.text}`}>
                             {cfg.icon}
                             {activity.type}
                           </span>
                         </td>
 
-                        {/* Title */}
-                        <td className="py-3 px-4 max-w-[200px]">
+                        {/* FIX 5: Title cell pakai overflow-hidden agar truncate bekerja di table-fixed */}
+                        <td className="py-3 px-4 overflow-hidden">
                           <p className="text-sm text-dark font-medium truncate">{activity.title}</p>
                           {activity.subtitle && (
                             <p className="text-xs text-gray-400 truncate mt-0.5">{activity.subtitle}</p>
@@ -184,22 +194,23 @@ const DashboardPage: React.FC = () => {
       {/* Popular + Recent Blogs */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Blogs */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6 overflow-hidden">
           <button
             onClick={() => navigate('/blogs')}
             className="flex items-center justify-between mb-4 sm:mb-5 w-full group"
           >
-            <div className="flex items-center gap-2">
-              <Clock size={16} className="text-gray-400" />
-              <h3 className="font-semibold text-dark text-sm">Recent Blogs</h3>
+            <div className="flex items-center gap-2 min-w-0">
+              <Clock size={16} className="text-gray-400 flex-shrink-0" />
+              <h3 className="font-semibold text-dark text-sm truncate">Recent Blogs</h3>
             </div>
-            <ArrowRight size={14} className="text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            <ArrowRight size={14} className="text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
           </button>
           {analytics?.recentBlogs && analytics.recentBlogs.length > 0 ? (
             <div className="space-y-3">
               {analytics.recentBlogs.map((blog, i) => (
-                <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
-                  <p className="text-sm text-dark font-medium truncate flex-1 mr-4">{blog.title}</p>
+                <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0 gap-3 min-w-0">
+                  {/* FIX 6: min-w-0 + truncate agar judul blog tidak meluber */}
+                  <p className="text-sm text-dark font-medium truncate min-w-0 flex-1">{blog.title}</p>
                   <span className="text-xs text-gray-400 flex-shrink-0">
                     {new Date(blog.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
                   </span>
@@ -212,24 +223,25 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Popular Blogs */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6 overflow-hidden">
           <button
             onClick={() => navigate('/blogs')}
             className="flex items-center justify-between mb-4 sm:mb-5 w-full group"
           >
-            <div className="flex items-center gap-2">
-              <TrendingUp size={16} className="text-primary" />
-              <h3 className="font-semibold text-dark text-sm">Popular Blogs</h3>
+            <div className="flex items-center gap-2 min-w-0">
+              <TrendingUp size={16} className="text-primary flex-shrink-0" />
+              <h3 className="font-semibold text-dark text-sm truncate">Popular Blogs</h3>
             </div>
-            <ArrowRight size={14} className="text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            <ArrowRight size={14} className="text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
           </button>
           {analytics?.popularBlogs && analytics.popularBlogs.length > 0 ? (
             <div className="space-y-3">
               {analytics.popularBlogs.map((blog, i) => (
-                <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
-                  <div className="flex items-center gap-3 flex-1 mr-4">
+                <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0 gap-3 min-w-0">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <span className="text-xs font-bold text-gray-200 w-5 text-right flex-shrink-0">{i + 1}</span>
-                    <p className="text-sm text-dark font-medium truncate">{blog.title}</p>
+                    {/* FIX 7: min-w-0 wajib agar truncate di flex child bekerja */}
+                    <p className="text-sm text-dark font-medium truncate min-w-0">{blog.title}</p>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <Eye size={12} className="text-gray-400" />

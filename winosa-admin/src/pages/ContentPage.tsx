@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../components/ConfirmModal';
 
 /* ─────────────────── Types ─────────────────── */
 
@@ -64,7 +65,6 @@ function ImageUploadBox({
         {value ? (
           <>
             <img src={value} alt={label} className="w-full h-full object-cover" />
-            {/* Hover overlay dengan ikon saja */}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3">
               {loading ? (
                 <Loader2 size={24} className="animate-spin text-white" />
@@ -197,6 +197,9 @@ const ContentPage: React.FC = () => {
   const [loadingTeam, setLoadingTeam] = useState(true);
   const [modalOpen, setModalOpen]     = useState(false);
   const [editing, setEditing]         = useState<TeamMember | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean; id: string | null; name: string; loading: boolean;
+  }>({ open: false, id: null, name: '', loading: false });
 
   const [glass, setGlass] = useState<GlassImages>({
     whoWeAre: { image1: '', image2: '' },
@@ -235,13 +238,18 @@ const ContentPage: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Delete ${name} dari tim?`)) return;
+  const handleDelete = async () => {
+    if (!deleteModal.id) return;
+    setDeleteModal(prev => ({ ...prev, loading: true }));
     try {
-      await api.delete(`/admin/content/team/${id}`);
-      setMembers(prev => prev.filter(m => m._id !== id));
+      await api.delete(`/admin/content/team/${deleteModal.id}`);
+      setMembers(prev => prev.filter(m => m._id !== deleteModal.id));
       toast.success('Anggota tim berhasil dihapus');
-    } catch { toast.error('Gagal menghapus anggota tim'); }
+      setDeleteModal({ open: false, id: null, name: '', loading: false });
+    } catch {
+      toast.error('Gagal menghapus anggota tim');
+      setDeleteModal(prev => ({ ...prev, loading: false }));
+    }
   };
 
   const moveOrder = async (index: number, dir: -1 | 1) => {
@@ -371,7 +379,7 @@ const ContentPage: React.FC = () => {
                         <Pencil size={12} /> Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(m._id, m.name)}
+                        onClick={() => setDeleteModal({ open: true, id: m._id, name: m.name, loading: false })}
                         className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full border border-red-100 text-xs font-semibold text-red-400 hover:bg-red-50 transition-colors"
                       >
                         <Trash2 size={12} /> Delete
@@ -458,6 +466,16 @@ const ContentPage: React.FC = () => {
       {modalOpen && (
         <MemberModal initial={editing} onSave={handleSave} onClose={() => setModalOpen(false)} />
       )}
+
+      <ConfirmModal
+        isOpen={deleteModal.open}
+        title="Delete Anggota"
+        message={`Apakah Anda yakin ingin menghapus ${deleteModal.name} dari tim? Tindakan ini tidak dapat dibatalkan.`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteModal({ open: false, id: null, name: '', loading: false })}
+        loading={deleteModal.loading}
+      />
+
     </div>
   );
 };

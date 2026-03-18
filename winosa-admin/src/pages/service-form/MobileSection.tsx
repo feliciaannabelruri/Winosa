@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { SectionCard, Label, AddMoreButton, TagListEditor, inputCls } from './shared/FormShared';
+import { SectionCard, AddMoreButton, TagListEditor, inputCls } from './shared/FormShared';
 import ImageUpload from './shared/ImageUpload';
 import PricingSection from './PricingSection';
 import { ServiceFormState, MobileFeature, MobileTechItem, PricingPlan } from './types';
@@ -8,7 +8,7 @@ import { ServiceFormState, MobileFeature, MobileTechItem, PricingPlan } from './
 interface Props {
   form: Pick<
     ServiceFormState,
-    | 'heroLabel' | 'heroImagePrimary' | 'heroImageSecondary'
+    | 'heroImagePrimary' | 'heroImageSecondary'
     | 'mobileFeatures'
     | 'mobileTech'
     | 'mobilePricingPlans' | 'whatsappNumber'
@@ -50,16 +50,6 @@ const MobileSection: React.FC<Props> = ({
       <p className="text-xs text-gray-400">
         Title, Description, dan tombol CTA sudah diatur dari sisi user — tidak perlu diubah di sini.
       </p>
-      <div>
-        <Label>Hero Label</Label>
-        <input
-          type="text"
-          placeholder="MODERN EXPERIENCE"
-          value={form.heroLabel}
-          onChange={e => set('heroLabel', e.target.value)}
-          className={inputCls}
-        />
-      </div>
       <ImageUpload
         label="App Screen — Belakang"
         hint="Gambar di belakang, rotasi -12°"
