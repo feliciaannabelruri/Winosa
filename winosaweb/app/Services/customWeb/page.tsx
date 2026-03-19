@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -29,57 +31,31 @@ const FEATURES = [
   { key: "integration", label: "Third-party Integration", price: 350, keywords: ["integration"] },
 ];
 
+const whatsappNumber = "6281234567890";
+
 export default function CustomQuotePage() {
 
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
   const [description,setDescription] = useState("");
   const [selected,setSelected] = useState<string[]>([]);
   const [result,setResult] = useState<any>(null);
   const [error,setError] = useState("");
-
-  // ================= SEO =================
+  const [translatedFeatures,setTranslatedFeatures] = useState(FEATURES);
 
   useEffect(() => {
-
-    document.title = "Custom Website Quote Generator";
-
-    const descriptionMeta =
-      "Estimate the cost of your custom website project by selecting features and describing your requirements.";
-
-    const image = "/bg/bg1.jpg";
-
-    const url = `${window.location.origin}/custom-website`;
-
-    const setMeta = (property:string,content:string,isName=false)=>{
-      let element = document.querySelector(
-        `meta[${isName ? "name" : "property"}="${property}"]`
-      ) as HTMLMetaElement;
-
-      if(!element){
-        element = document.createElement("meta");
-        if(isName) element.setAttribute("name",property);
-        else element.setAttribute("property",property);
-        document.head.appendChild(element);
-      }
-
-      element.setAttribute("content",content);
+    const run = async () => {
+      const mapped = await Promise.all(
+        FEATURES.map(async (f) => ({
+          ...f,
+          label: await translateHybrid(f.label, language, tApi),
+        }))
+      );
+      setTranslatedFeatures(mapped);
     };
-
-    setMeta("description",descriptionMeta,true);
-
-    setMeta("og:title","Custom Website Quote Generator");
-    setMeta("og:description",descriptionMeta);
-    setMeta("og:image",image);
-    setMeta("og:url",url);
-    setMeta("og:type","website");
-
-    setMeta("twitter:card","summary_large_image",true);
-    setMeta("twitter:title","Custom Website Quote Generator",true);
-    setMeta("twitter:description",descriptionMeta,true);
-    setMeta("twitter:image",image,true);
-
-  },[]);
+    run();
+  }, [language]);
 
   const toggle = (key:string)=>{
     setSelected(prev =>
@@ -91,7 +67,7 @@ export default function CustomQuotePage() {
 
   const isValid = description.trim().length>0 || selected.length>0;
 
-  const generate = () => {
+  const generate = async () => {
 
     if(!isValid){
       setError(t("customWebsite","error"));
@@ -117,12 +93,16 @@ export default function CustomQuotePage() {
 
     const featureCost = activeFeatures.reduce((s,f)=>s+f.price,0);
 
-    const estimates = Object.entries(PACKAGES).map(([name,base])=>({
-      name,
-      price: base + featureCost
-    }));
+    const estimates = await Promise.all(
+      Object.entries(PACKAGES).map(async ([name,base])=>({
+        name: await translateHybrid(name, language, tApi),
+        price: base + featureCost
+      }))
+    );
 
-    setResult({websiteType,estimates});
+    const translatedType = await translateHybrid(websiteType, language, tApi);
+
+    setResult({websiteType: translatedType, estimates});
   };
 
   return (
@@ -138,27 +118,24 @@ export default function CustomQuotePage() {
           </h1>
 
           <textarea
-            aria-label="Website project description"
             value={description}
             onChange={(e)=>setDescription(e.target.value)}
             placeholder={t("customWebsite","placeholder")}
-            className="w-full h-40 p-6 border border-black rounded-2xl mb-12 focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full h-40 p-6 border border-black rounded-2xl mb-12"
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-14">
 
-            {FEATURES.map(f=>(
+            {translatedFeatures.map(f=>(
 
               <button
                 key={f.key}
-                type="button"
-                aria-pressed={selected.includes(f.key)}
                 onClick={()=>toggle(f.key)}
-                className={`px-5 py-3 rounded-full border text-sm focus:outline-none focus:ring-2 focus:ring-black ${
+                className={`px-5 py-3 rounded-full border text-sm ${
                   selected.includes(f.key)
                   ? "bg-black text-white"
                   : "border-black text-black hover:bg-black/10"
-                } transition`}
+                }`}
               >
                 {f.label}
               </button>
@@ -168,13 +145,12 @@ export default function CustomQuotePage() {
           </div>
 
           <button
-            type="button"
             onClick={generate}
             disabled={!isValid}
-            className={`w-full py-4 rounded-full font-semibold transition focus:outline-none focus:ring-2 focus:ring-black ${
+            className={`w-full py-4 rounded-full font-semibold ${
               isValid
-              ? "bg-yellow-400 text-black hover:bg-yellow-300"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              ? "bg-yellow-400 text-black"
+              : "bg-gray-300 text-gray-500"
             }`}
           >
             {t("customWebsite","generate")}

@@ -6,6 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "@/app/portofolio/[slug]/detail.module.css";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useEffect, useState } from "react";
 
 interface NextProjectSectionProps {
   nextProject: {
@@ -18,14 +21,33 @@ interface NextProjectSectionProps {
 
 export default function NextProjectSection({ nextProject }: NextProjectSectionProps) {
 
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
+
+  // ✅ state translate
+  const [translated, setTranslated] = useState(nextProject);
+
+  useEffect(() => {
+
+    const run = async () => {
+
+      const mapped = {
+        ...nextProject,
+        title: await translateHybrid(nextProject.title, language, tApi),
+        description: await translateHybrid(nextProject.description, language, tApi),
+      };
+
+      setTranslated(mapped);
+
+    };
+
+    run();
+
+  }, [nextProject, language]);
 
   return (
     <FadeUp>
-      <section
-        className={styles.nextProjectSection}
-        aria-label="Next project"
-      >
+      <section className={styles.nextProjectSection}>
 
         <div className={styles.nextProjectContainer}>
 
@@ -36,17 +58,15 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
           <motion.div>
 
             <Link
-              href={`/portofolio/${nextProject.slug}`}
-              aria-label={`Open next project ${nextProject.title}`}
+              href={`/portofolio/${nextProject.slug}`} // ❌ slug tetap original
               className={styles.nextProjectCard}
             >
 
               <div className={styles.nextProjectImageWrapper}>
                 <Image
                   src={nextProject.image}
-                  alt={nextProject.title}
+                  alt={translated.title}
                   fill
-                  sizes="(max-width:768px) 100vw, 50vw"
                   style={{ objectFit: "cover" }}
                   className={styles.nextProjectImage}
                 />
@@ -55,17 +75,14 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
               <div className={styles.nextProjectContent}>
 
                 <h3 className={styles.nextProjectTitle}>
-                  {nextProject.title}
+                  {translated.title}
                 </h3>
 
                 <p className={styles.nextProjectDescription}>
-                  {nextProject.description}
+                  {translated.description}
                 </p>
 
-                <span
-                  className={styles.nextProjectArrow}
-                  aria-hidden="true"
-                >
+                <span className={styles.nextProjectArrow}>
                   →
                 </span>
 
@@ -78,7 +95,6 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
           <motion.div className={styles.backToPortfolioWrapper}>
             <Link
               href="/portofolio"
-              aria-label="Back to portfolio"
               className={styles.backToPortfolioButton}
             >
               ← {t("portfolioDetail", "backToPortfolio")}

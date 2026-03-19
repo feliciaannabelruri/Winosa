@@ -1,6 +1,3 @@
-/**
- * Pagination helper with optimized queries
- */
 exports.paginate = async (model, query = {}, options = {}) => {
   const page = parseInt(options.page) || 1;
   const limit = parseInt(options.limit) || 10;
@@ -9,7 +6,6 @@ exports.paginate = async (model, query = {}, options = {}) => {
   const select = options.select || '';
   const populate = options.populate || '';
 
-  // Execute queries in parallel for better performance
   const [data, total] = await Promise.all([
     model
       .find(query)
@@ -18,7 +14,7 @@ exports.paginate = async (model, query = {}, options = {}) => {
       .sort(sort)
       .skip(skip)
       .limit(limit)
-      .lean(), // Use lean() for better performance (returns plain objects)
+      .lean(), 
     model.countDocuments(query)
   ]);
 

@@ -1,6 +1,5 @@
 const { z } = require('zod');
 
-// Create Blog Validation
 exports.createBlogSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
   slug: z.string().min(5, 'Slug must be at least 5 characters'),
@@ -12,7 +11,6 @@ exports.createBlogSchema = z.object({
   isPublished: z.boolean().optional()
 });
 
-// Update Blog Validation (semua field optional)
 exports.updateBlogSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').optional(),
   slug: z.string().min(5, 'Slug must be at least 5 characters').optional(),

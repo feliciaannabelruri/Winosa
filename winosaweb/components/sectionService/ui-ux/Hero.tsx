@@ -5,15 +5,33 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import Button from "@/components/UI/Button";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useEffect, useState } from "react";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionHeroUIUX({ data }: { data?: any }) {
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
-  const title = data?.title || t("uiuxHero", "title");
-  const description = data?.description || t("uiuxHero", "subtitle");
-  const ctaText = data?.ctaText || t("uiuxHero", "cta");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [ctaText, setCtaText] = useState("");
+
+  useEffect(() => {
+    const run = async () => {
+      const rawTitle = data?.title || t("uiuxHero", "title");
+      const rawDesc = data?.description || t("uiuxHero", "subtitle");
+      const rawCta = data?.ctaText || t("uiuxHero", "cta");
+
+      setTitle(await translateHybrid(rawTitle, language, tApi));
+      setDescription(await translateHybrid(rawDesc, language, tApi));
+      setCtaText(await translateHybrid(rawCta, language, tApi));
+    };
+
+    run();
+  }, [data, language]);
 
   return (
     <FadeUp>
@@ -73,7 +91,7 @@ export default function SectionHeroUIUX({ data }: { data?: any }) {
             {description}
           </p>
 
-          <Link href="/Contact" aria-label="Contact our UI UX design team">
+          <Link href="/Contact">
             <Button text={ctaText} />
           </Link>
         </motion.div>

@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -31,55 +33,66 @@ const APP_FEATURES = [
 
 export default function CustomQuoteMobilePage() {
 
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
   const [description,setDescription] = useState("");
   const [selected,setSelected] = useState<string[]>([]);
   const [result,setResult] = useState<any>(null);
   const [error,setError] = useState("");
 
-  // ================= SEO =================
+  // ✅ state hasil translate
+  const [translatedFeatures, setTranslatedFeatures] = useState(APP_FEATURES);
+  const [translatedResult, setTranslatedResult] = useState<any>(null);
 
-useEffect(() => {
+  // ================= AUTO TRANSLATE FEATURES =================
+  useEffect(() => {
 
-  document.title = "UI/UX Design Cost Estimator";
+    const run = async () => {
 
-  const descriptionMeta =
-    "Estimate the cost of your UI/UX design project including research, wireframes, prototypes, and full interface design.";
+      const mapped = await Promise.all(
+        APP_FEATURES.map(async (f) => ({
+          ...f,
+          label: await translateHybrid(f.label, language, tApi),
+        }))
+      );
 
-  const image = "/bg/bg1.jpg";
+      setTranslatedFeatures(mapped);
+    };
 
-  const url = `${window.location.origin}/custom-uiux`;
+    run();
 
-  const setMeta = (property:string,content:string,isName=false)=>{
-    let element = document.querySelector(
-      `meta[${isName ? "name" : "property"}="${property}"]`
-    ) as HTMLMetaElement;
+  }, [language]);
 
-    if(!element){
-      element = document.createElement("meta");
-      if(isName) element.setAttribute("name",property);
-      else element.setAttribute("property",property);
-      document.head.appendChild(element);
-    }
+  // ================= AUTO TRANSLATE RESULT =================
+  useEffect(() => {
 
-    element.setAttribute("content",content);
-  };
+    if (!result) return;
 
-  setMeta("description",descriptionMeta,true);
+    const run = async () => {
 
-  setMeta("og:title","UI/UX Design Cost Estimator");
-  setMeta("og:description",descriptionMeta);
-  setMeta("og:image",image);
-  setMeta("og:url",url);
-  setMeta("og:type","website");
+      const translatedAppType = await translateHybrid(result.appType, language, tApi);
 
-  setMeta("twitter:card","summary_large_image",true);
-  setMeta("twitter:title","UI/UX Design Cost Estimator",true);
-  setMeta("twitter:description",descriptionMeta,true);
-  setMeta("twitter:image",image,true);
+      const translatedEstimates = await Promise.all(
+        result.estimates.map(async (p:any) => ({
+          ...p,
+          name: await translateHybrid(p.name, language, tApi),
+        }))
+      );
 
-},[]);
+      setTranslatedResult({
+        ...result,
+        appType: translatedAppType,
+        estimates: translatedEstimates,
+      });
+
+    };
+
+    run();
+
+  }, [result, language]);
+
+  // ================= LOGIC ASLI (JANGAN DIUBAH) =================
 
   const toggle = (key:string) => {
     setSelected(prev =>
@@ -123,6 +136,8 @@ useEffect(() => {
     setResult({appType,estimates});
   };
 
+  // ================= UI =================
+
   return (
     <main>
 
@@ -144,26 +159,24 @@ useEffect(() => {
           </div>
 
           <textarea
-            aria-label="Mobile app project description"
             value={description}
             onChange={(e)=>setDescription(e.target.value)}
             placeholder={t("customMobile","placeholder")}
-            className="w-full h-40 p-6 border border-black rounded-2xl mb-12 focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full h-40 p-6 border border-black rounded-2xl mb-12"
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-14">
 
-            {APP_FEATURES.map(f=>(
+            {translatedFeatures.map(f=>(
               <button
                 key={f.key}
                 type="button"
-                aria-pressed={selected.includes(f.key)}
                 onClick={()=>toggle(f.key)}
-                className={`px-5 py-3 rounded-full border text-sm focus:outline-none focus:ring-2 focus:ring-black ${
+                className={`px-5 py-3 rounded-full border ${
                   selected.includes(f.key)
                   ? "bg-black text-white"
                   : "border-black text-black hover:bg-black/10"
-                } transition`}
+                }`}
               >
                 {f.label}
               </button>
@@ -175,11 +188,7 @@ useEffect(() => {
             type="button"
             onClick={generate}
             disabled={!isValid}
-            className={`w-full py-4 rounded-full font-semibold transition focus:outline-none focus:ring-2 focus:ring-black ${
-              isValid
-              ? "bg-yellow-400 text-black hover:bg-yellow-300"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
+            className="w-full py-4 rounded-full bg-yellow-400"
           >
             {t("customMobile","generate")}
           </button>
@@ -190,7 +199,7 @@ useEffect(() => {
             </p>
           )}
 
-          {result && (
+          {(translatedResult || result) && (
 
             <FadeUp delay={0.2}>
             <div className="mt-20 border border-black rounded-[28px] p-10">
@@ -200,12 +209,14 @@ useEffect(() => {
               </h2>
 
               <p className="mb-10">
-                <strong>{result.appType}</strong>
+                <strong>
+                  {(translatedResult?.appType) || result.appType}
+                </strong>
               </p>
 
               <div className="grid md:grid-cols-3 gap-8 mb-12">
 
-                {result.estimates.map((p:any)=>(
+                {(translatedResult?.estimates || result.estimates).map((p:any)=>(
                   <div key={p.name} className="border border-black rounded-[28px] p-8">
 
                     <h3 className="font-bold text-lg mb-3">
@@ -221,7 +232,7 @@ useEffect(() => {
 
               </div>
 
-               <Link
+              <Link
               href="https://wa.me/6281234567890"
               target="_blank"
               rel="noopener noreferrer"

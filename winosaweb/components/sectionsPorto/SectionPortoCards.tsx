@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
 import styles from "@/app/portofolio/portfolio.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 type Project = {
   _id: string;
@@ -28,10 +30,35 @@ type FilterType =
 
 export default function SectionPortoCards({ data }: { data: Project[] }) {
 
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // ✅ STATE HASIL TRANSLATE
+  const [translatedProjects, setTranslatedProjects] = useState<Project[]>(data);
+
+  // ================= AUTO TRANSLATE =================
+  useEffect(() => {
+
+    const run = async () => {
+
+      const mapped = await Promise.all(
+        data.map(async (project) => ({
+          ...project,
+          title: await translateHybrid(project.title, language, tApi),
+          description: await translateHybrid(project.description, language, tApi),
+        }))
+      );
+
+      setTranslatedProjects(mapped);
+
+    };
+
+    run();
+
+  }, [data, language]);
 
   const filters: FilterType[] = [
     "All",
@@ -45,8 +72,8 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
 
   const filteredProjects =
     activeFilter === "All"
-      ? data
-      : data.filter((project) => project.category === activeFilter);
+      ? translatedProjects
+      : translatedProjects.filter((project) => project.category === activeFilter);
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % filteredProjects.length);
@@ -91,7 +118,6 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
       <motion.section
         id="portfolio-cards"
         className={styles.cardsSection}
-        aria-label="Portfolio projects"
         initial={{ opacity: 0, y: 80 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -103,8 +129,6 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
           {filters.map((filter) => (
             <button
               key={filter}
-              tabIndex={0}
-              aria-label={`Filter portfolio by ${filter}`}
               className={`${styles.filterBtn} ${
                 activeFilter === filter ? styles.filterActive : ""
               }`}
@@ -120,7 +144,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
 
           <div className={styles.emptyState}>
             <div style={{ fontSize: "40px", marginBottom: "12px" }}>🔍</div>
-            <h3 style={{ fontWeight: 600 }}>
+            <h3>
               {t("portfolio", "empty")}
             </h3>
           </div>
@@ -132,7 +156,6 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
             <div className={styles.carouselWrapper}>
 
               <button
-                aria-label="Previous project"
                 className={`${styles.navButton} ${styles.navLeft}`}
                 onClick={handlePrev}
               >
@@ -148,21 +171,16 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
                     style={getCardStyle(index)}
                   >
 
-                    {/* IMAGE */}
-<div className={styles.cardImage}>
+                    <div className={styles.cardImage}>
+                      <Image
+                        src={project.image || "/no-image.jpg"}
+                        alt={project.title}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        priority={index === currentIndex}
+                      />
+                    </div>
 
-  <Image
-    src={project.image || "/no-image.jpg"}
-    alt={project.title || "portfolio image"}
-    fill
-    sizes="(max-width: 768px) 100vw, 33vw"
-    style={{ objectFit: "cover" }}
-    priority={index === currentIndex}
-  />
-
-</div>
-
-                    {/* CONTENT */}
                     <div className={styles.cardContent}>
 
                       <h3 className={styles.cardTitle}>
@@ -181,10 +199,9 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
 
                         <Link
                           href={`/portofolio/${project.slug}`}
-                          aria-label={`Open project ${project.title}`}
                           className={styles.learnMore}
                         >
-                          {t("portfolio", "learnMore")} <span>→</span>
+                          {t("portfolio", "learnMore")} →
                         </Link>
 
                       </div>
@@ -197,7 +214,6 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
               </div>
 
               <button
-                aria-label="Next project"
                 className={`${styles.navButton} ${styles.navRight}`}
                 onClick={handleNext}
               >
@@ -212,7 +228,6 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
 
                 <button
                   key={index}
-                  aria-label={`Go to project ${index + 1}`}
                   className={`${styles.dot} ${
                     index === currentIndex ? styles.dotActive : ""
                   }`}

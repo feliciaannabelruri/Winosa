@@ -3,6 +3,9 @@
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useEffect, useState } from "react";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -12,7 +15,8 @@ type FeatureItem = {
 };
 
 export default function SectionMobileFeatures({ data }: { data?: any }) {
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
   const defaultFeatures: FeatureItem[] = [
     { title: t("mobileFeaturesSection", "f1Title"), desc: t("mobileFeaturesSection", "f1Desc") },
@@ -23,10 +27,38 @@ export default function SectionMobileFeatures({ data }: { data?: any }) {
     { title: t("mobileFeaturesSection", "f6Title"), desc: t("mobileFeaturesSection", "f6Desc") },
   ];
 
-  const features: FeatureItem[] =
-    Array.isArray(data?.mobileFeatures)
-      ? data.mobileFeatures
-      : defaultFeatures;
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [features, setFeatures] = useState<FeatureItem[]>([]);
+
+  useEffect(() => {
+    const run = async () => {
+
+      const rawTitle =
+        data?.mobileFeatureTitle || t("mobileFeaturesSection", "title");
+
+      const rawSubtitle =
+        data?.mobileFeatureSubtitle || t("mobileFeaturesSection", "subtitle");
+
+      const rawFeatures: FeatureItem[] =
+        Array.isArray(data?.mobileFeatures)
+          ? data.mobileFeatures
+          : defaultFeatures;
+
+      const translatedFeatures = await Promise.all(
+        rawFeatures.map(async (item) => ({
+          title: await translateHybrid(item.title, language, tApi),
+          desc: await translateHybrid(item.desc, language, tApi),
+        }))
+      );
+
+      setTitle(await translateHybrid(rawTitle, language, tApi));
+      setSubtitle(await translateHybrid(rawSubtitle, language, tApi));
+      setFeatures(translatedFeatures);
+    };
+
+    run();
+  }, [data, language]);
 
   return (
     <section className="w-full bg-white py-32 overflow-hidden">
@@ -35,11 +67,11 @@ export default function SectionMobileFeatures({ data }: { data?: any }) {
         <FadeUp>
           <div className="mb-20 max-w-2xl">
             <h2 className="text-3xl font-bold mb-4">
-              {data?.mobileFeatureTitle || t("mobileFeaturesSection", "title")}
+              {title}
             </h2>
 
             <p className="text-black/70 text-base leading-relaxed">
-              {data?.mobileFeatureSubtitle || t("mobileFeaturesSection", "subtitle")}
+              {subtitle}
             </p>
           </div>
         </FadeUp>
@@ -58,7 +90,6 @@ export default function SectionMobileFeatures({ data }: { data?: any }) {
             {features.map((item, i) => (
               <motion.div
                 key={i}
-                role="article"
                 tabIndex={0}
                 variants={{
                   hidden: { opacity: 0, y: 60 },

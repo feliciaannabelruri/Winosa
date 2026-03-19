@@ -3,12 +3,16 @@
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useEffect, useState } from "react";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionTechUIUX({ data }: { data?: any }) {
 
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
 
   const defaultTools = [
     "Figma",
@@ -19,16 +23,34 @@ export default function SectionTechUIUX({ data }: { data?: any }) {
     "Maze Testing",
   ];
 
-  const tools =
-    Array.isArray(data?.tools) && data.tools.length > 0
-      ? data.tools
-      : defaultTools;
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [tools, setTools] = useState<string[]>([]);
 
-  const title =
-    data?.techTitle || t("uiuxTech", "title");
+  useEffect(() => {
+    const run = async () => {
 
-  const subtitle =
-    data?.techDescription || t("uiuxTech", "subtitle");
+      const rawTitle = data?.techTitle || t("uiuxTech", "title");
+      const rawSubtitle = data?.techDescription || t("uiuxTech", "subtitle");
+
+      const rawTools =
+        Array.isArray(data?.tools) && data.tools.length > 0
+          ? data.tools
+          : defaultTools;
+
+      const translatedTools = await Promise.all(
+        rawTools.map((tool: string) =>
+          translateHybrid(tool, language, tApi)
+        )
+      );
+
+      setTitle(await translateHybrid(rawTitle, language, tApi));
+      setSubtitle(await translateHybrid(rawSubtitle, language, tApi));
+      setTools(translatedTools);
+    };
+
+    run();
+  }, [data, language]);
 
   return (
     <section className="relative w-full bg-white py-32 overflow-hidden">

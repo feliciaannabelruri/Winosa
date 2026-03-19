@@ -16,18 +16,9 @@ const SectionInfo = dynamic(() =>
   import("@/components/sectionService/SectionInfo")
 );
 
-const SectionPricing = dynamic(() =>
-  import("@/components/sectionService/SectionPricing")
-);
-
-/* SECTION BARU */
-
-const SectionPlan = dynamic(() =>
-  import("@/components/sectionService/SectionPlan")
-);
-
-const SectionFeature = dynamic(() =>
-  import("@/components/sectionService/SectionFeature")
+// SECTION PLAN + SMART RECOMMEND (gabungan)
+const SectionPlanWithRecommend = dynamic(() =>
+  import("@/components/sectionService/SectionPlanWithRecommend")
 );
 
 const SectionCTA = dynamic(() =>
@@ -90,14 +81,8 @@ export default function ServicesPage() {
 
       <SectionInfo />
 
-      {/* PRICING PACKAGES */}
-      <SectionPricing />
-
-      {/* PLAN PACKAGES */}
-      <SectionPlan />
-
-      {/* FEATURE COMPARISON */}
-      <SectionFeature />
+      {/* SMART RECOMMEND + PLAN */}
+      <SectionPlanWithRecommend />
 
       <SectionCTA />
 

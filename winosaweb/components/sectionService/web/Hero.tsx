@@ -17,12 +17,21 @@ type HeroData = {
 };
 
 export default function Hero({ data }: { data?: HeroData }) {
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
 
   const link = data?.ctaLink || "/Contact";
-  const title = data?.title || t("serviceHero", "defaultTitle");
-  const subtitle = data?.subtitle || t("serviceHero", "defaultSubtitle");
-  const ctaText = data?.ctaText || t("serviceHero", "defaultCTA");
+
+  const title = data?.title
+    ? tApi(data.title)
+    : t("serviceHero", "defaultTitle");
+
+  const subtitle = data?.subtitle
+    ? tApi(data.subtitle)
+    : t("serviceHero", "defaultSubtitle");
+
+  const ctaText = data?.ctaText
+    ? tApi(data.ctaText)
+    : t("serviceHero", "defaultCTA");
 
   return (
     <FadeUp>

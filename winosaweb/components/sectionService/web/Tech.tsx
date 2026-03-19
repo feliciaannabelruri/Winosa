@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -27,18 +29,52 @@ const defaultTechStack: TechGroup[] = [
 ];
 
 export default function SectionTechWeb({ data }: { data?: TechData }) {
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
+
   const [active, setActive] = useState<number | null>(null);
 
-  let techStack: TechGroup[] = [];
+  const baseStack: TechGroup[] =
+    data?.techStack?.length
+      ? data.techStack
+      : data?.features?.length
+      ? [{ category: data.title || t("techSection", "fallbackCategory"), tech: data.features }]
+      : defaultTechStack;
 
-  if (data?.techStack?.length) techStack = data.techStack;
-  else if (data?.features?.length)
-    techStack = [{ category: data.title || t("techSection", "fallbackCategory"), tech: data.features }];
-  else techStack = defaultTechStack;
+  const [techStack, setTechStack] = useState<TechGroup[]>(baseStack);
+  const [title, setTitle] = useState(data?.techTitle || t("techSection", "title"));
+  const [subtitle, setSubtitle] = useState(
+    data?.techSubtitle || t("techSection", "subtitle")
+  );
 
-  const title = data?.techTitle || t("techSection", "title");
-  const subtitle = data?.techSubtitle || t("techSection", "subtitle");
+  useEffect(() => {
+    const run = async () => {
+      const mapped = await Promise.all(
+        baseStack.map(async (group) => ({
+          category: await translateHybrid(group.category, language, tApi),
+          tech: await Promise.all(
+            group.tech.map((tech) =>
+              translateHybrid(tech, language, tApi)
+            )
+          ),
+        }))
+      );
+
+      const translatedTitle = data?.techTitle
+        ? await translateHybrid(data.techTitle, language, tApi)
+        : t("techSection", "title");
+
+      const translatedSubtitle = data?.techSubtitle
+        ? await translateHybrid(data.techSubtitle, language, tApi)
+        : t("techSection", "subtitle");
+
+      setTechStack(mapped);
+      setTitle(translatedTitle);
+      setSubtitle(translatedSubtitle);
+    };
+
+    run();
+  }, [language, data]);
 
   return (
     <section className="w-full bg-white py-32">
@@ -57,57 +93,50 @@ export default function SectionTechWeb({ data }: { data?: TechData }) {
       <div className="max-w-7xl mx-auto px-6">
 
         <FadeUp delay={0.2}>
-          <div className="relative flex h-[500px] rounded-[40px] border border-black overflow-hidden">
+          <div className="group relative rounded-[40px] p-6 bg-white border border-black shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-300 hover:shadow-[0_30px_80px_rgba(0,0,0,0.18)]">
 
-            {techStack.map((group, i) => (
-              <motion.div
-                key={i}
-                onMouseEnter={() => setActive(i)}
-                onMouseLeave={() => setActive(null)}
-                animate={{ flex: active === i ? 3 : 1 }}
-                transition={{ duration: 0.5 }}
-                className="relative cursor-pointer flex items-center justify-center bg-white border-r border-black last:border-r-0"
-              >
+            {/* FULL HOVER GLOW */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
+              <div className="w-full h-full bg-[radial-gradient(circle,rgba(255,200,0,0.45)_0%,rgba(255,200,0,0.25)_40%,transparent_70%)] blur-[120px]" />
+            </div>
 
-                {active === i && (
-                  <motion.div
-                    layoutId="techGlow"
-                    transition={{ duration: 0.4 }}
-                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                  >
-                    <div
-                      className="
-                        w-[120%] h-[120%]
-                        bg-[radial-gradient(circle,rgba(255,200,0,0.55)_0%,rgba(255,200,0,0.3)_40%,transparent_70%)]
-                        blur-[100px]
-                      "
-                    />
-                  </motion.div>
-                )}
+            <div className="relative flex h-[500px] overflow-hidden rounded-[28px]">
 
-                <div className="relative z-10 text-center px-8">
+              {techStack.map((group, i) => (
+                <motion.div
+                  key={i}
+                  onMouseEnter={() => setActive(i)}
+                  onMouseLeave={() => setActive(null)}
+                  animate={{ flex: active === i ? 3 : 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex items-center justify-center cursor-pointer"
+                >
 
-                  <h3 className="text-2xl font-semibold text-black mb-6">
-                    {group.category}
-                  </h3>
+                  <div className="text-center px-8">
 
-                  {active === i && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="flex flex-wrap justify-center gap-4 text-black/70 text-lg"
-                    >
-                      {group.tech.map((tech, idx) => (
-                        <span key={idx}>{tech}</span>
-                      ))}
-                    </motion.div>
-                  )}
+                    <h3 className="text-2xl font-semibold text-black mb-6">
+                      {group.category}
+                    </h3>
 
-                </div>
+                    {active === i && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex flex-wrap justify-center gap-4 text-black/70 text-lg"
+                      >
+                        {group.tech.map((tech, idx) => (
+                          <span key={idx}>{tech}</span>
+                        ))}
+                      </motion.div>
+                    )}
 
-              </motion.div>
-            ))}
+                  </div>
+
+                </motion.div>
+              ))}
+
+            </div>
 
           </div>
         </FadeUp>

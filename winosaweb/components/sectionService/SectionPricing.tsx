@@ -5,6 +5,8 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import api from "@/lib/axios";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore"; 
+import { translateHybrid } from "@/lib/translateHybrid"; 
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -19,7 +21,8 @@ type Service = {
 
 export default function SectionPricingService() {
 
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate(); 
+  const { language } = useLanguageStore(); 
 
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +37,21 @@ export default function SectionPricingService() {
 
         const res = await api.get("/services");
 
-        setServices(res.data?.data || []);
+        const data = res.data?.data || [];
+
+        const mapped = await Promise.all(
+          data.map(async (service: Service) => ({
+            ...service,
+            title: await translateHybrid(service.title, language, tApi),
+            features: await Promise.all(
+              (service.features || []).map((f) =>
+                translateHybrid(f, language, tApi)
+              )
+            ),
+          }))
+        );
+
+        setServices(mapped);
 
       } catch {
 
@@ -50,7 +67,7 @@ export default function SectionPricingService() {
 
     fetchPricing();
 
-  }, []);
+  }, [language]); 
 
   const cleanPrice = (price?: string) =>
     price?.replace(/starting\s*from\s*/i, "").trim() || "";
@@ -96,7 +113,7 @@ export default function SectionPricingService() {
                     <div>
 
                       <h3 className="text-xl font-bold text-black mb-3">
-                        {service.title}
+                        {service.title} 
                       </h3>
 
                       <span className="block text-sm text-black mb-2">
@@ -120,7 +137,7 @@ export default function SectionPricingService() {
 
                           <span className="w-2 h-2 rounded-full bg-yellow-400" />
 
-                          {feature}
+                          {feature} 
 
                         </li>
 

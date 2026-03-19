@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
 import Button from "@/components/UI/Button";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
@@ -61,53 +63,84 @@ const defaultPlans: Plan[] = [
 ];
 
 export default function SectionPricingMobile({ data }: { data?: any }) {
-  const { t } = useTranslate();
+
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
+
   const [active, setActive] = useState<number>(1);
+  const [plans, setPlans] = useState<Plan[]>(defaultPlans);
 
-  const cleanPrice = data?.price
-    ? data.price.replace(/Starting from\s*/i, "")
-    : null;
+  useEffect(() => {
 
-  let plans: Plan[];
+    const buildPlans = () => {
 
-  if (data?.price) {
-    const dynamicPlan: Plan = {
-      name: data.title || "Starter App",
-      price: cleanPrice || "$999",
-      desc: data.description || "Professional mobile app solution.",
-      features: data.features || [],
-      type: "normal",
+      const cleanPrice = data?.price
+        ? data.price.replace(/Starting from\s*/i, "")
+        : null;
+
+      if (data?.price) {
+
+        return [
+          {
+            name: data.title || "Starter App",
+            price: cleanPrice || "$999",
+            desc: data.description || "Professional mobile app solution.",
+            features: data.features || [],
+            type: "normal",
+          },
+          {
+            name: "Business App",
+            price: "$1499",
+            desc: "Advanced features for scalable mobile apps.",
+            features: [
+              ...(data.features || []),
+              "User Authentication",
+              "Cloud Deployment",
+            ],
+            type: "normal",
+          },
+          {
+            name: "Enterprise App",
+            price: "Custom",
+            desc: "Full custom architecture & scalable mobile platform.",
+            features: [
+              "Custom Backend",
+              "High Scalability",
+              "Payment Integration",
+              "Dedicated Team",
+            ],
+            type: "custom",
+          },
+        ] as Plan[];
+
+      }
+
+      return defaultPlans;
     };
 
-    const businessPlan: Plan = {
-      name: "Business App",
-      price: "$1499",
-      desc: "Advanced features for scalable mobile apps.",
-      features: [
-        ...(data.features || []),
-        "User Authentication",
-        "Cloud Deployment",
-      ],
-      type: "normal",
+    const run = async () => {
+
+      const rawPlans = buildPlans();
+
+      const mapped = await Promise.all(
+        rawPlans.map(async (plan) => ({
+          ...plan,
+          name: await translateHybrid(plan.name, language, tApi),
+          desc: await translateHybrid(plan.desc, language, tApi),
+          features: await Promise.all(
+            plan.features.map((f) =>
+              translateHybrid(f, language, tApi)
+            )
+          ),
+        }))
+      );
+
+      setPlans(mapped);
     };
 
-    const customPlan: Plan = {
-      name: "Enterprise App",
-      price: "Custom",
-      desc: "Full custom architecture & scalable mobile platform.",
-      features: [
-        "Custom Backend",
-        "High Scalability",
-        "Payment Integration",
-        "Dedicated Team",
-      ],
-      type: "custom",
-    };
+    run();
 
-    plans = [dynamicPlan, businessPlan, customPlan];
-  } else {
-    plans = defaultPlans;
-  }
+  }, [data, language]);
 
   return (
     <section className="w-full bg-white py-32">
@@ -135,6 +168,7 @@ export default function SectionPricingMobile({ data }: { data?: any }) {
                   : "hover:shadow-[0_0_40px_rgba(255,200,80,0.4)]"
               }`}
             >
+
               <div>
                 <h3 className="text-xl font-bold text-black mb-3">
                   {plan.name}
@@ -166,11 +200,7 @@ export default function SectionPricingMobile({ data }: { data?: any }) {
 
               <div className="w-full">
                 {plan.type === "custom" ? (
-                  <Link
-                    href="/Services/customMobile"
-                    aria-label="View custom mobile app development service"
-                    className="block w-full"
-                  >
+                  <Link href="/Services/customMobile" className="block w-full">
                     <Button
                       text={t("pricing", "custom")}
                       className="w-full border-black text-black hover:bg-black/10"
@@ -178,12 +208,9 @@ export default function SectionPricingMobile({ data }: { data?: any }) {
                   </Link>
                 ) : (
                   <a
-                    href={`https://wa.me/6281234567890?text=Hello%20I%20am%20interested%20in%20${encodeURIComponent(
-                      plan.name
-                    )}`}
+                    href={`https://wa.me/6281234567890?text=Hello%20I%20am%20interested%20in%20${encodeURIComponent(plan.name)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Contact via WhatsApp about ${plan.name}`}
                     className="block w-full"
                   >
                     <Button

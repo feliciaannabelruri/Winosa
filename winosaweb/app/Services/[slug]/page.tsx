@@ -10,19 +10,19 @@ import SectionCTA from "@/components/layout/SectionCTA";
 import UIUXHero from "@/components/sectionService/ui-ux/Hero";
 import UIUXFeatures from "@/components/sectionService/ui-ux/Features";
 import UIUXTech from "@/components/sectionService/ui-ux/Tech";
-import UIUXPricing from "@/components/sectionService/ui-ux/Pricing";
+import UIUXPricing from "@/components/sectionService/ui-ux/uiux_Pricing";
 
 // Mobile
 import MobileHero from "@/components/sectionService/mobile/Hero";
 import MobileFeatures from "@/components/sectionService/mobile/Features";
 import MobileTech from "@/components/sectionService/mobile/Tech";
-import MobilePricing from "@/components/sectionService/mobile/Pricing";
+import MobilePricing from "@/components/sectionService/mobile/mobile_Pricing";
 
 // Web
 import WebHero from "@/components/sectionService/web/Hero";
 import WebFeatures from "@/components/sectionService/web/Features";
 import WebTech from "@/components/sectionService/web/Tech";
-import WebPricing from "@/components/sectionService/web/Pricing";
+import WebPricing from "@/components/sectionService/web/web_Pricing";
 
 export default function ServiceDetailPage() {
   const params = useParams();

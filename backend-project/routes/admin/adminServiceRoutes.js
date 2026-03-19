@@ -11,14 +11,11 @@ const { protect, admin } = require('../../middleware/auth');
 const { validate } = require('../../middleware/validate');
 const { createServiceSchema, updateServiceSchema } = require('../../validators/serviceValidator');
 
-// All routes are protected and admin only
 router.use(protect);
 router.use(admin);
 
-// GET tidak perlu validation
 router.get('/', getAllServices);
 
-// POST dan PUT pakai validation
 router.post('/', validate(createServiceSchema), createService);
 
 router.route('/:id')
