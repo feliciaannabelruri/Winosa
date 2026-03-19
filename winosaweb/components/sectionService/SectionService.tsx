@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   Monitor,
   Briefcase,
@@ -39,12 +38,6 @@ const iconMap: Record<string, any> = {
   "trending-up": TrendingUp,
 };
 
-const allowedButtons = [
-  "ui-ux-design",
-  "mobile-app-development",
-  "web-development",
-];
-
 export default function SectionServices() {
   const { language } = useLanguageStore();
   const { t, tApi } = useTranslate();
@@ -67,22 +60,22 @@ export default function SectionServices() {
       setLoading(false);
 
       initial.forEach(async (item: Service) => {
-      const translatedTitle = await translateHybrid(item.title, language, tApi);
-      const translatedDesc = await translateHybrid(item.description, language, tApi);
+        const translatedTitle = await translateHybrid(item.title, language, tApi);
+        const translatedDesc = await translateHybrid(item.description, language, tApi);
 
-      setServices((prev) =>
-        prev.map((s: Service) =>
-          s._id === item._id
-            ? {
-                ...s,
-                title: translatedTitle,
-                description: translatedDesc,
-                isTranslating: false,
-              }
-            : s
-        )
-      );
-    });
+        setServices((prev) =>
+          prev.map((s: Service) =>
+            s._id === item._id
+              ? {
+                  ...s,
+                  title: translatedTitle,
+                  description: translatedDesc,
+                  isTranslating: false,
+                }
+              : s
+          )
+        );
+      });
     };
 
     fetchData();
@@ -108,8 +101,6 @@ export default function SectionServices() {
             const IconComponent =
               iconMap[item.icon?.toLowerCase() || ""] || Monitor;
 
-            const showButton = allowedButtons.includes(item.slug);
-
             return (
               <motion.div
                 key={item._id}
@@ -121,50 +112,36 @@ export default function SectionServices() {
                 }}
                 viewport={{ once: true }}
               >
+                <motion.div
+                  whileHover={{ y: -8 }}
+                  className="group relative h-full"
+                >
 
-                <Link href={`/Services/${item.slug}`}>
+                  {item.isTranslating && (
+                    <div className="absolute inset-0 rounded-[28px] border-2 border-yellow-400 animate-pulse pointer-events-none" />
+                  )}
 
-                  <motion.div
-                    whileHover={{ y: -8 }}
-                    className="group relative h-full"
-                  >
+                  <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)]">
 
-                    {item.isTranslating && (
-                      <div className="absolute inset-0 rounded-[28px] border-2 border-yellow-400 animate-pulse pointer-events-none" />
-                    )}
+                    <div className="flex items-start gap-6 mb-6">
 
-                    <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)]">
-
-                      <div className="flex items-start gap-6 mb-6">
-
-                        <div className="w-16 h-16 flex items-center justify-center rounded-full border border-black">
-                          <IconComponent size={28} strokeWidth={1.5} />
-                        </div>
-
-                        <h3 className="text-xl font-semibold leading-tight">
-                          {item.title}
-                        </h3>
-
+                      <div className="w-16 h-16 flex items-center justify-center rounded-full border border-black flex-shrink-0">
+                        <IconComponent size={28} strokeWidth={1.5} />
                       </div>
 
-                      <p className="text-gray-600 leading-relaxed flex-1">
-                        {item.description}
-                      </p>
-
-                      {showButton && (
-                        <div className="mt-6">
-                          <span className="inline-block px-5 py-2 rounded-full border border-black text-sm font-medium hover:bg-black/10 transition">
-                            {t("services", "viewDetails")}
-                          </span>
-                        </div>
-                      )}
+                      <h3 className="text-xl font-semibold leading-tight pt-3">
+                        {item.title}
+                      </h3>
 
                     </div>
 
-                  </motion.div>
+                    <p className="text-gray-600 leading-relaxed">
+                      {item.description}
+                    </p>
 
-                </Link>
+                  </div>
 
+                </motion.div>
               </motion.div>
             );
           })}
