@@ -62,17 +62,17 @@ export default function SectionCTA() {
   };
 
   return (
-    <section className="w-full bg-white py-32">
+    <section className="w-full bg-white py-16">
       <div className="max-w-5xl mx-auto px-6 text-center text-black">
 
+        {/* Newsletter */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="mb-20"
+          className="mb-12"
         >
-
           <p className="text-sm text-gray-600 mb-6">
             {t("newsletter", "title")}
           </p>
@@ -82,7 +82,6 @@ export default function SectionCTA() {
             aria-label="Newsletter subscription form"
             className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-lg mx-auto"
           >
-
             <input
               type="email"
               value={email}
@@ -93,10 +92,13 @@ export default function SectionCTA() {
             />
 
             <Button
-              text={loading ? t("newsletter", "subscribing") : t("newsletter", "subscribe")}
+              text={
+                loading
+                  ? t("newsletter", "subscribing")
+                  : t("newsletter", "subscribe")
+              }
               className="text-sm px-6 py-2"
             />
-
           </form>
 
           {success && (
@@ -110,18 +112,18 @@ export default function SectionCTA() {
               {error}
             </p>
           )}
-
         </motion.div>
 
-        <div className="w-24 h-px bg-black/20 mx-auto mb-20" />
+        {/* Divider */}
+        <div className="w-24 h-px bg-black/20 mx-auto mb-12" />
 
+        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-
           <h2 className="text-4xl font-bold mb-6">
             {t("cta", "title")}
           </h2>
@@ -135,7 +137,6 @@ export default function SectionCTA() {
               <Button text={t("cta", "button")} />
             </Link>
           </div>
-
         </motion.div>
 
       </div>

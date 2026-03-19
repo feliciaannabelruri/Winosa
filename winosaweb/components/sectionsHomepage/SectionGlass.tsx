@@ -17,16 +17,19 @@ export default function SectionGlass({ data }: { data: GlassData | null }) {
   const { t } = useTranslate();
 
   return (
-    <section className="w-full bg-white py-24 md:py-32">
+    <section className="w-full bg-white pt-10 pb-16 md:pt-12 md:pb-20">
       <div className="max-w-[1200px] mx-auto px-6 text-black">
+
+        {/* Heading */}
         <FadeUp>
-          <h2 className="text-center text-3xl md:text-4xl font-bold mb-20 md:mb-24 leading-tight">
+          <h2 className="text-center text-3xl md:text-4xl font-bold mb-10 md:mb-12 leading-tight">
             {t("glass", "headingLine1")}
             <br />
             {t("glass", "headingLine2")}
           </h2>
         </FadeUp>
 
+        {/* Timeline */}
         <FadeUp>
           <TimelineRow
             side="right"
@@ -64,6 +67,7 @@ export default function SectionGlass({ data }: { data: GlassData | null }) {
             <SingleOvalImage image={data?.vision?.image} />
           </TimelineRow>
         </FadeUp>
+
       </div>
     </section>
   );
@@ -77,10 +81,12 @@ function TimelineRow({
   isLast,
 }: any) {
   return (
-    <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-24 lg:mb-32">
-      <div className="hidden lg:flex absolute top-16 left-1/2 -translate-x-1/2 flex-col items-center">
+    <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center mb-14 lg:mb-16">
+
+      {/* Line */}
+      <div className="hidden lg:flex absolute top-12 left-1/2 -translate-x-1/2 flex-col items-center">
         <div className="w-4 h-4 bg-black rounded-full z-10" />
-        {!isLast && <div className="w-px bg-black mt-2 h-[340px]" />}
+        {!isLast && <div className="w-px bg-black mt-2 h-[220px]" />}
       </div>
 
       <div className="flex justify-center lg:justify-end">
@@ -101,7 +107,7 @@ function TimelineRow({
 function TextBlock({ title, text, align }: any) {
   return (
     <div className={`max-w-md text-center lg:text-left ${align === "right" ? "lg:text-right" : ""}`}>
-      <h3 className="text-lg md:text-xl font-semibold mb-4 text-black">
+      <h3 className="text-lg md:text-xl font-semibold mb-2 text-black">
         {title}
       </h3>
       <p className="text-gray-600 leading-relaxed text-sm md:text-base">

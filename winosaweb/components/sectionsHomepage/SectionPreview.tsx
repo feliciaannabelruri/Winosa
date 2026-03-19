@@ -24,7 +24,6 @@ export default function SectionPreview({ title, items = [] }: any) {
   const { language } = useLanguageStore();
 
   const [data, setData] = useState<Item[]>([]);
-
   const previewItems = data.slice(0, 3);
 
   useEffect(() => {
@@ -67,19 +66,22 @@ export default function SectionPreview({ title, items = [] }: any) {
   }
 
   return (
-    <section className="w-full bg-white py-32">
+    <section className="w-full bg-white py-20">
       <div className="max-w-7xl mx-auto px-8">
+
+        {/* Title */}
         <motion.h2
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center text-4xl font-bold text-black mb-16"
+          className="text-center text-4xl font-bold text-black mb-12"
         >
           {getTranslatedTitle()}
         </motion.h2>
 
-        <div className="grid md:grid-cols-3 gap-16">
+        {/* Cards */}
+        <div className="grid md:grid-cols-3 gap-10">
           {previewItems.map((item: Item, index: number) => {
             const uniqueKey =
               item._id ?? item.slug ?? `${item.title}-${index}`;
@@ -91,19 +93,14 @@ export default function SectionPreview({ title, items = [] }: any) {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.15 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -12 }}
-                className="group relative h-[420px]"
+                whileHover={{ y: -10 }}
+                className="group relative h-[380px]"
               >
-                <div className="absolute -inset-12 opacity-0 blur-[100px] transition duration-500 group-hover:opacity-100 bg-[radial-gradient(circle,rgba(255,185,0,0.8)_0%,rgba(255,185,0,0.4)_40%,transparent_75%)]" />
-
-                <div className="relative h-full rounded-[32px] overflow-hidden bg-white shadow-[0_25px_60px_rgba(0,0,0,0.08)] transition duration-500 group-hover:shadow-[0_40px_90px_rgba(0,0,0,0.15)]">
-
-                  {item.isTranslating && (
-                    <div className="absolute inset-0 border-2 border-yellow-400 rounded-[32px] animate-pulse pointer-events-none" />
-                  )}
+                <div className="relative h-full rounded-[28px] overflow-hidden bg-white border border-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.15),0_10px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.25),0_20px_40px_rgba(0,0,0,0.12)] transition duration-500">
 
                   {item.image ? (
-                    <div className="relative h-full overflow-hidden">
+                    <>
+                      {/* IMAGE */}
                       <Image
                         src={item.image}
                         alt={item.title}
@@ -111,34 +108,41 @@ export default function SectionPreview({ title, items = [] }: any) {
                         className="object-cover transition duration-700 group-hover:scale-110"
                       />
 
-                      <div className="absolute bottom-0 p-8 text-black">
-                        <h3 className="text-xl font-semibold mb-2">
+                      {/* GRADIENT (CUMA BAWAH) */}
+                      <div className="absolute bottom-0 left-0 w-full h-[45%] bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+                      {/* TEXT */}
+                      <div className="absolute bottom-0 p-6 text-white">
+                        <h3 className="text-lg font-semibold mb-2 drop-shadow-[0_3px_10px_rgba(0,0,0,0.6)]">
                           {item.title}
                         </h3>
 
-                        <p className="text-gray-600 text-sm line-clamp-2">
+                        <p className="text-white/90 text-sm line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
                           {item.desc || item.description}
                         </p>
                       </div>
-                    </div>
+                    </>
                   ) : (
                     <div className="flex flex-col justify-center items-center h-full p-10 text-center">
-                      <div className="mb-6 flex justify-center">
-                        <Monitor
-                          size={48}
-                          strokeWidth={1.5}
-                          className="text-black"
-                        />
-                      </div>
+                      <Monitor
+                        size={42}
+                        strokeWidth={1.5}
+                        className="text-black mb-4"
+                      />
 
-                      <h3 className="text-xl font-semibold text-black mb-4">
+                      <h3 className="text-lg font-semibold text-black mb-3">
                         {item.title}
                       </h3>
 
-                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                      <p className="text-gray-600 text-sm line-clamp-3">
                         {item.desc || item.description}
                       </p>
                     </div>
+                  )}
+
+                  {/* Loading */}
+                  {item.isTranslating && (
+                    <div className="absolute inset-0 border border-yellow-400 rounded-[28px] animate-pulse pointer-events-none" />
                   )}
 
                 </div>
@@ -146,6 +150,7 @@ export default function SectionPreview({ title, items = [] }: any) {
             );
           })}
         </div>
+
       </div>
     </section>
   );
