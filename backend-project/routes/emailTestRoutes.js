@@ -4,7 +4,6 @@ const sendEmail = require('../utils/sendEmail');
 const { protect, admin } = require('../middleware/auth');
 const asyncHandler = require('../middleware/asyncHandler');
 
-// Test send email
 router.post('/send-test', protect, admin, asyncHandler(async (req, res) => {
   const { to, subject, message } = req.body;
 

@@ -8,7 +8,6 @@ const sendEmail = async (options, retries = 3) => {
         to: options.to,
         subject: options.subject,
         html: options.html,
-        // Add text fallback
         text: options.text || options.html.replace(/<[^>]*>/g, '')
       };
 
@@ -20,11 +19,9 @@ const sendEmail = async (options, retries = 3) => {
       console.error(`Attempt ${i + 1} - Email send error:`, error.message);
       
       if (i === retries - 1) {
-        // Last attempt failed
         throw new Error(`Failed to send email after ${retries} attempts: ${error.message}`);
       }
       
-      // Wait before retry (1 second)
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
