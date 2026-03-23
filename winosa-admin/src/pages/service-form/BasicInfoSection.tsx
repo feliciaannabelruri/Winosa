@@ -1,7 +1,6 @@
 import React from 'react';
 import { SectionCard, Label, FeatureListEditor, inputCls } from './shared/FormShared';
 import IconPicker from './shared/IconPicker';
-import { DETAIL_SLUGS, DetailSlug } from './types';
 
 interface Props {
   form: {
@@ -31,10 +30,8 @@ const BasicInfoSection: React.FC<Props> = ({
   onAddFeature, onRemoveFeature,
   onWhatsappChange,
 }) => {
-  const isDetailSlug = DETAIL_SLUGS.includes(form.slug as DetailSlug);
-
   return (
-    <SectionCard title="Basic Info">
+    <SectionCard title="Service Info">
       {/* Title */}
       <div>
         <Label>Service Title</Label>
@@ -49,7 +46,7 @@ const BasicInfoSection: React.FC<Props> = ({
 
       {/* Slug */}
       <div>
-        <Label hint="Slug menentukan URL halaman dan jenis tampilan di website">Slug</Label>
+        <Label hint="Digunakan sebagai URL: /services/[slug]">Slug</Label>
         <input
           type="text"
           placeholder="web-development"
@@ -57,27 +54,6 @@ const BasicInfoSection: React.FC<Props> = ({
           onChange={e => onSlugChange(e.target.value)}
           className={inputCls}
         />
-        <div className="flex flex-wrap gap-2 mt-2">
-          {DETAIL_SLUGS.map(s => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => onSlugChange(s)}
-              className={`px-3 py-1 rounded-full text-xs border font-medium transition-colors ${
-                form.slug === s
-                  ? 'bg-dark text-white border-dark'
-                  : 'border-gray-200 text-gray-500 hover:border-gray-400'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-        {isDetailSlug && (
-          <p className="text-xs text-primary font-medium mt-2">
-            Slug ini memiliki halaman detail — form tambahan tersedia di bawah.
-          </p>
-        )}
       </div>
 
       {/* Description */}
@@ -100,7 +76,7 @@ const BasicInfoSection: React.FC<Props> = ({
 
       {/* Price */}
       <div>
-        <Label hint='Prefix "Starting from" otomatis dihapus saat ditampilkan. Dipakai di pricing card halaman /Services.'>
+        <Label hint='Ditampilkan di pricing card halaman /Services'>
           Price
         </Label>
         <input
@@ -114,7 +90,7 @@ const BasicInfoSection: React.FC<Props> = ({
 
       {/* Features */}
       <div>
-        <Label hint="Tampil di pricing card /Services dan Features section UI/UX">Features</Label>
+        <Label hint="Tampil di pricing card halaman /Services">Features</Label>
         <FeatureListEditor
           items={form.features ?? []}
           onAdd={onAddFeature}
@@ -122,9 +98,9 @@ const BasicInfoSection: React.FC<Props> = ({
         />
       </div>
 
-      {/* WhatsApp Number — shown for all services */}
+      {/* WhatsApp Number */}
       <div>
-        <Label hint='Nomor WA untuk tombol pricing di halaman /Services. Detail page punya setting WA sendiri di section Pricing.'>
+        <Label hint="Nomor WA untuk tombol pricing di halaman /Services">
           WhatsApp Number
         </Label>
         <div className="relative">

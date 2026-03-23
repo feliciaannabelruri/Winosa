@@ -16,54 +16,48 @@ import {
 type FilterType = 'all' | 'draft' | 'published';
 
 const iconMap: Record<string, React.FC<any>> = {
-  monitor:        Monitor,
-  briefcase:      Briefcase,
-  smartphone:     Smartphone,
-  mobile:         Smartphone,
-  cloud:          CloudCog,
-  palette:        Palette,
-  shield:         Shield,
-  code:           Code,
-  'trending-up':  TrendingUp,
-  globe:          Globe,
-  layers:         Layers,
-  zap:            Zap,
-  settings:       Settings,
-  database:       Database,
-  lock:           Lock,
-  'bar-chart':    BarChart,
-  mail:           Mail,
-  search:         SearchIcon,
-  star:           Star,
-  cpu:            Cpu,
-  layout:         Layout,
-  'pen-tool':     PenTool,
-  camera:         Camera,
-  video:          Video,
-  music:          Music,
-  'shopping-cart':ShoppingCart,
-  users:          Users,
-  heart:          Heart,
-  message:        MessageSquare,
-  map:            Map,
-  clock:          Clock,
-  wifi:           Wifi,
-  terminal:       Terminal,
-  package:        Package,
-};
-
-const DETAIL_SLUG_META: Record<string, { label: string; color: string }> = {
-  'web-development':        { label: 'Web Dev',  color: 'bg-blue-100 text-blue-700 border-blue-200' },
-  'mobile-app-development': { label: 'Mobile',   color: 'bg-green-100 text-green-700 border-green-200' },
-  'ui-ux-design':           { label: 'UI/UX',    color: 'bg-purple-100 text-purple-700 border-purple-200' },
+  monitor:         Monitor,
+  briefcase:       Briefcase,
+  smartphone:      Smartphone,
+  mobile:          Smartphone,
+  cloud:           CloudCog,
+  palette:         Palette,
+  shield:          Shield,
+  code:            Code,
+  'trending-up':   TrendingUp,
+  globe:           Globe,
+  layers:          Layers,
+  zap:             Zap,
+  settings:        Settings,
+  database:        Database,
+  lock:            Lock,
+  'bar-chart':     BarChart,
+  mail:            Mail,
+  search:          SearchIcon,
+  star:            Star,
+  cpu:             Cpu,
+  layout:          Layout,
+  'pen-tool':      PenTool,
+  camera:          Camera,
+  video:           Video,
+  music:           Music,
+  'shopping-cart': ShoppingCart,
+  users:           Users,
+  heart:           Heart,
+  message:         MessageSquare,
+  map:             Map,
+  clock:           Clock,
+  wifi:            Wifi,
+  terminal:        Terminal,
+  package:         Package,
 };
 
 const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
-  const [services, setServices]   = useState<Service[]>([]);
-  const [loading,  setLoading]    = useState(true);
-  const [search,   setSearch]     = useState('');
-  const [filter,   setFilter]     = useState<FilterType>('all');
+  const [services,    setServices]    = useState<Service[]>([]);
+  const [loading,     setLoading]     = useState(true);
+  const [search,      setSearch]      = useState('');
+  const [filter,      setFilter]      = useState<FilterType>('all');
   const [deleteModal, setDeleteModal] = useState<{
     open: boolean; id: string | null; loading: boolean;
   }>({ open: false, id: null, loading: false });
@@ -106,9 +100,9 @@ const ServicesPage: React.FC = () => {
   });
 
   const filterLabels: Record<FilterType, string> = {
-    all: 'All',
+    all:       'All',
     published: 'Published',
-    draft: 'Draft',
+    draft:     'Draft',
   };
 
   return (
@@ -158,90 +152,57 @@ const ServicesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Keterangan Slug Detail */}
-      <div className="flex flex-wrap gap-2 items-center">
-        <span className="text-xs text-gray-400">Halaman detail:</span>
-        {Object.entries(DETAIL_SLUG_META).map(([slug, meta]) => (
-          <span
-            key={slug}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-full border ${meta.color}`}
-          >
-            {meta.label}
-          </span>
-        ))}
-        <span className="text-xs text-gray-400 ml-1">— slug ini memiliki halaman detail di website</span>
-      </div>
-
       {/* Daftar Layanan */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400 text-sm">Tidak ada layanan yang ditemukan</div>
+        <div className="text-center py-16 text-gray-400 text-sm">
+          Tidak ada layanan yang ditemukan
+        </div>
       ) : (
         <div className="space-y-4">
           {filtered.map(service => {
             const IconComponent = iconMap[service.icon?.toLowerCase() || ''] || null;
-            const detailMeta    = DETAIL_SLUG_META[service.slug];
 
             return (
               <div
                 key={service._id}
                 className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200"
               >
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-start">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-center">
 
                   {/* Ikon */}
-                  <div className="w-16 h-16 flex-shrink-0 rounded-full border border-black flex items-center justify-center bg-white">
+                  <div className="w-14 h-14 flex-shrink-0 rounded-full border border-black flex items-center justify-center bg-white">
                     {IconComponent ? (
-                      <IconComponent size={24} strokeWidth={1.5} className="text-dark" />
+                      <IconComponent size={22} strokeWidth={1.5} className="text-dark" />
                     ) : service.icon ? (
                       <span className="text-2xl">{service.icon}</span>
                     ) : (
-                      <Sparkles size={20} className="text-gray-300" />
+                      <Sparkles size={18} className="text-gray-300" />
                     )}
                   </div>
 
-                  {/* Konten */}
+                  {/* Title + Description */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-3 flex-wrap">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-lg font-bold text-dark leading-tight">{service.title}</h3>
-                        {detailMeta && (
-                          <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full border ${detailMeta.color}`}>
-                            {detailMeta.label}
-                          </span>
-                        )}
-                      </div>
-                      <span
-                        className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium border ${
-                          service.isActive
-                            ? 'bg-green-50 text-green-600 border-green-200'
-                            : 'bg-gray-100 text-gray-500 border-gray-200'
-                        }`}
-                      >
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h3 className="text-base font-bold text-dark leading-tight">{service.title}</h3>
+                      <span className={`px-3 py-0.5 rounded-full text-xs font-medium border flex-shrink-0 ${
+                        service.isActive
+                          ? 'bg-green-50 text-green-600 border-green-200'
+                          : 'bg-gray-100 text-gray-500 border-gray-200'
+                      }`}>
                         {service.isActive ? 'Published' : 'Draft'}
                       </span>
                     </div>
-
-                    <p className="text-sm text-gray-500 mt-1.5 leading-relaxed line-clamp-2">
+                    <p className="text-sm text-gray-500 mt-1 leading-relaxed line-clamp-2">
                       {service.description}
                     </p>
-
-                    <div className="flex items-center gap-3 mt-2 flex-wrap">
-                      {service.price && (
-                        <p className="text-sm font-semibold text-primary">{service.price}</p>
-                      )}
-                      {service.features && service.features.length > 0 && (
-                        <p className="text-xs text-gray-400">{service.features.length} fitur</p>
-                      )}
-                      <p className="text-xs text-gray-300 font-mono">{service.slug}</p>
-                    </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 sm:flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => setDeleteModal({ open: true, id: service._id, loading: false })}
                       className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
