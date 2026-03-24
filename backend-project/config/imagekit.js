@@ -56,15 +56,6 @@ const uploadToImageKit = async (file, folder = 'general') => {
       fileName: `${Date.now()}_${file.originalname}`,
       folder: `winosa/${folder}`,
       useUniqueFileName: true,
-      transformation: {
-        pre: 'l-text,i-Winosa,fs-50,l-end', // Optional watermark
-        post: [
-          {
-            type: 'transformation',
-            value: 'w-1200,h-800,c-at_max' // Max dimensions
-          }
-        ]
-      }
     });
 
     return {
