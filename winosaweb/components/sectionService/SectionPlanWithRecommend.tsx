@@ -120,6 +120,9 @@ export default function SectionPlanWithRecommend() {
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
 
+  // ── NEW: state untuk translate UI ──
+
+
   const [plans, setPlans] = useState<Subscription[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
 
@@ -133,6 +136,62 @@ export default function SectionPlanWithRecommend() {
 
   const resultRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // ── NEW: translate UI text (AMAN, tidak ganggu logic AI) ──
+const [translatedChips, setTranslatedChips] = useState<typeof CHIPS>(CHIPS);
+const [uiText, setUiText] = useState<any>({});
+
+useEffect(() => {
+  const run = async () => {
+    const chips = await Promise.all(
+      CHIPS.map(async (c) => ({
+        ...c,
+        label: await translateHybrid(c.label, language, tApi),
+      }))
+    );
+
+    setTranslatedChips(chips);
+
+    setUiText({
+      helper: await translateHybrid(
+        "Ceritakan kebutuhan bisnis Anda — AI akan rekomendasikan paket yang tepat",
+        language,
+        tApi
+      ),
+      placeholder: await translateHybrid(
+        "Contoh: Saya punya startup fintech, butuh sistem manajemen user, dashboard analytics, dan integrasi payment...",
+        language,
+        tApi
+      ),
+      analyzing: await translateHybrid(
+        "AI sedang menganalisa kebutuhan Anda...",
+        language,
+        tApi
+      ),
+      analyze: await translateHybrid(
+        "Analisa dengan AI → temukan paket yang tepat",
+        language,
+        tApi
+      ),
+      retry: await translateHybrid("Coba lagi ↩", language, tApi),
+      confused: await translateHybrid("Masih bingung?", language, tApi),
+      show: await translateHybrid("Lihat paket lainnya ↓", language, tApi),
+      hide: await translateHybrid("Sembunyikan ↑", language, tApi),
+      popular: await translateHybrid("Populer", language, tApi),
+      wa: await translateHybrid("Konsultasi langsung via WhatsApp", language, tApi),
+      atau: await translateHybrid("atau", language, tApi),
+      tidakMasalah: await translateHybrid("Tidak masalah — tim kami siap bantu", language, tApi),
+      konsultasiGratis: await translateHybrid(
+        "Konsultasi gratis, kami akan bantu pilihkan paket yang benar-benar sesuai kebutuhan bisnis Anda.",
+        language,
+        tApi
+      ),
+      waSekarang: await translateHybrid("Konsultasi via WhatsApp sekarang", language, tApi),
+    });
+  };
+
+  run();
+}, [language]);
 
   // ── Fetch subscription plans from backend ─────────────────────────────────
 
@@ -231,107 +290,105 @@ export default function SectionPlanWithRecommend() {
           </div>
         </FadeUp>
 
-        {/* ── INPUT PHASE ─────────────────────────────────────────────────── */}
-        <AnimatePresence mode="wait">
-          {status !== "done" && (
-            <motion.div
-              key="input-phase"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.28 }}
+ {/* ── INPUT PHASE ─────────────────────────────────────────────────── */}
+<AnimatePresence mode="wait">
+  {status !== "done" && (
+    <motion.div
+      key="input-phase"
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.28 }}
+    >
+      <p className="text-center text-xs text-black/40 mb-4 tracking-wide uppercase">
+        {uiText.helper}
+      </p>
+
+      {/* Textarea */}
+      <div className="relative mb-4">
+        <textarea
+          ref={textareaRef}
+          value={input}
+          onChange={(e) => { setInput(e.target.value); if (status !== "idle") reset(); }}
+          placeholder={uiText.placeholder}
+          rows={3}
+          maxLength={400}
+          className="w-full resize-none text-black text-sm leading-relaxed border border-black/12 rounded-2xl bg-gray-50/80 p-5 outline-none focus:border-black/35 focus:bg-white transition-all"
+          style={{ fontFamily: "inherit" }}
+        />
+        <span className="absolute bottom-3 right-4 text-[11px] text-black/20 pointer-events-none">
+          {input.length}/400
+        </span>
+      </div>
+
+      {/* Quick-pick chips */}
+      <div className="flex flex-wrap gap-2 mb-5">
+        {(translatedChips || CHIPS).map((chip) => {
+          const active = activeChips.includes(chip.text);
+          return (
+            <button
+              key={chip.label}
+              type="button"
+              onClick={() => toggleChip(chip.text)}
+              className={`text-xs px-4 py-2 rounded-full border transition-all ${
+                active
+                  ? "bg-black text-white border-black"
+                  : "bg-white text-black/55 border-black/18 hover:border-black/40 hover:text-black"
+              }`}
+              style={{ fontFamily: "inherit" }}
             >
-              <p className="text-center text-xs text-black/40 mb-4 tracking-wide uppercase">
-                Ceritakan kebutuhan bisnis Anda — AI akan rekomendasikan paket yang tepat
-              </p>
+              {chip.label}
+            </button>
+          );
+        })}
+      </div>
 
-              {/* Textarea */}
-              <div className="relative mb-4">
-                <textarea
-                  ref={textareaRef}
-                  value={input}
-onChange={(e) => { setInput(e.target.value); if (status !== "idle") reset(); }}                  placeholder="Contoh: Saya punya startup fintech, butuh sistem manajemen user, dashboard analytics, dan integrasi payment..."
-                  rows={3}
-                  maxLength={400}
-                  className="w-full resize-none text-black text-sm leading-relaxed border border-black/12 rounded-2xl bg-gray-50/80 p-5 outline-none focus:border-black/35 focus:bg-white transition-all"
-                  style={{ fontFamily: "inherit" }}
-                />
-                <span className="absolute bottom-3 right-4 text-[11px] text-black/20 pointer-events-none">
-                  {input.length}/400
-                </span>
-              </div>
+      {/* Analyze CTA */}
+      <button
+        type="button"
+        onClick={handleAnalyze}
+        disabled={!canAnalyze || status === "thinking"}
+        className={`w-full py-4 rounded-full font-semibold text-sm transition-all ${
+          canAnalyze && status !== "thinking"
+            ? "bg-black text-white hover:bg-black/82 active:scale-[0.99]"
+            : "bg-black/8 text-black/28 cursor-not-allowed"
+        }`}
+        style={{ fontFamily: "inherit" }}
+      >
+        {status === "thinking" ? (
+          <span className="flex items-center justify-center gap-2">
+            <span
+              className="inline-block w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white"
+              style={{ animation: "hf-spin .7s linear infinite" }}
+            />
+            {uiText.analyzing}
+          </span>
+        ) : (
+          uiText.analyze
+        )}
+      </button>
 
-              {/* Quick-pick chips */}
-              <div className="flex flex-wrap gap-2 mb-5">
-                {CHIPS.map((chip) => {
-                  const active = activeChips.includes(chip.text);
-                  return (
-                    <button
-                      key={chip.label}
-                      type="button"
-                      onClick={() => toggleChip(chip.text)}
-                      className={`text-xs px-4 py-2 rounded-full border transition-all ${
-                        active
-                          ? "bg-black text-white border-black"
-                          : "bg-white text-black/55 border-black/18 hover:border-black/40 hover:text-black"
-                      }`}
-                      style={{ fontFamily: "inherit" }}
-                    >
-                      {chip.label}
-                    </button>
-                  );
-                })}
-              </div>
+      <style>{`@keyframes hf-spin{to{transform:rotate(360deg)}}`}</style>
 
-              {/* Analyze CTA */}
-              <button
-                type="button"
-                onClick={handleAnalyze}
-                disabled={!canAnalyze || status === "thinking"}
-                className={`w-full py-4 rounded-full font-semibold text-sm transition-all ${
-                  canAnalyze && status !== "thinking"
-                    ? "bg-black text-white hover:bg-black/82 active:scale-[0.99]"
-                    : "bg-black/8 text-black/28 cursor-not-allowed"
-                }`}
-                style={{ fontFamily: "inherit" }}
-              >
-                {status === "thinking" ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span
-                      className="inline-block w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white"
-                      style={{ animation: "hf-spin .7s linear infinite" }}
-                    />
-                    AI sedang menganalisa kebutuhan Anda...
-                  </span>
-                ) : (
-                  "Analisa dengan AI → temukan paket yang tepat"
-                )}
-              </button>
-              <style>{`@keyframes hf-spin{to{transform:rotate(360deg)}}`}</style>
-
-              {/* WA shortcut */}
-              <div className="mt-5 flex flex-col items-center gap-3">
-                <div className="flex items-center gap-3 w-full max-w-xs">
-                  <div className="flex-1 h-px bg-black/8" />
-                  <span className="text-xs text-black/28">atau</span>
-                  <div className="flex-1 h-px bg-black/8" />
-                </div>
-                <a
-                  href="https://wa.me/6281234567890?text=Halo%20Winosa%2C%20saya%20ingin%20konsultasi%20memilih%20paket%20yang%20sesuai%20untuk%20bisnis%20saya"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-black/45 hover:text-black transition-colors"
-                  style={{ fontFamily: "inherit" }}
-                >
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0" fill="#25D366">
-                    <path d="M20.52 3.48A11.91 11.91 0 0012.01 0C5.38 0 .02 5.36.02 12c0 2.11.55 4.18 1.6 6.02L0 24l6.15-1.6a11.94 11.94 0 005.86 1.49h.01c6.63 0 11.99-5.36 11.99-12 0-3.19-1.24-6.19-3.49-8.41z"/>
-                  </svg>
-                  Konsultasi langsung via WhatsApp
-                </a>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* WA shortcut */}
+      <div className="mt-5 flex flex-col items-center gap-3">
+        <div className="flex items-center gap-3 w-full max-w-xs">
+          <div className="flex-1 h-px bg-black/8" />
+          <span className="text-xs text-black/28">{uiText.atau}</span>
+          <div className="flex-1 h-px bg-black/8" />
+        </div>
+        <a
+          href="https://wa.me/6281234567890?text=Halo%20Winosa%2C%20saya%20ingin%20konsultasi%20memilih%20paket%20yang%20sesuai%20untuk%20bisnis%20saya"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-sm text-black/45 hover:text-black transition-colors"
+        >
+          {uiText.wa}
+        </a>
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
         {/* ── RESULT PHASE ────────────────────────────────────────────────── */}
         <AnimatePresence>

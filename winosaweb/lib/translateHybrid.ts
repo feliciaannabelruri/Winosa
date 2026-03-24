@@ -1,24 +1,40 @@
 import { autoTranslate } from "@/lib/autoTranslateHelper";
 
+const cache = new Map<string, string>();
+
 export async function translateHybrid(
   text: string,
   lang: string,
   tApi: (val: string) => string
 ) {
-  console.log("🔍 translateHybrid:", text, "->", lang);
-
   if (!text) return "";
+
+  //  jangan translate kalau bahasa default
+  if (lang === "en") return text;
+
+  const cacheKey = `${lang}:${text}`;
+
+  //  ambil dari cache
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)!;
+  }
 
   const manual = tApi(text);
 
-  console.log("📘 manual result:", manual);
-
-  if (manual !== text) {
-    console.log("✅ pakai dictionary");
+  if (manual && manual !== text) {
+    cache.set(cacheKey, manual);
     return manual;
   }
 
-  console.log("🌐 pakai auto translate");
+  try {
+    const result = await autoTranslate(text, lang);
 
-  return await autoTranslate(text, lang);
+    // simpan ke cache biar gak spam API
+    cache.set(cacheKey, result);
+
+    return result;
+  } catch (err) {
+    console.error("translate error:", err);
+    return text; // fallback aman
+  }
 }

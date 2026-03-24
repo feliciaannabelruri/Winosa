@@ -51,34 +51,45 @@ export default function SectionBlog() {
     fetchBlogs();
   }, []);
 
-  // ✅ AUTO TRANSLATE
-  useEffect(() => {
+  //  AUTO TRANSLATE
+ useEffect(() => {
 
-    if (!blogs.length) return;
+  if (!blogs.length) return;
 
-    const run = async () => {
+  // langsung tampilkan dulu (EN / original)
+  setTranslatedBlogs(blogs);
 
-      const mapped = await Promise.all(
-        blogs.map(async (blog) => ({
-          ...blog,
-          title: await translateHybrid(blog.title, language, tApi),
-          content: await translateHybrid(blog.content, language, tApi),
-          excerpt: blog.excerpt
-            ? await translateHybrid(blog.excerpt, language, tApi)
-            : "",
-          tags: blog.tags?.length
-            ? [await translateHybrid(blog.tags[0], language, tApi)]
-            : [],
-        }))
-      );
+  const run = async () => {
 
-      setTranslatedBlogs(mapped);
+    for (const blog of blogs) {
 
-    };
+      const translated: Blog = {
+        ...blog,
+        title: await translateHybrid(blog.title, language, tApi),
+        content: await translateHybrid(blog.content, language, tApi),
+        excerpt: blog.excerpt
+          ? await translateHybrid(blog.excerpt, language, tApi)
+          : "",
+        tags: blog.tags?.length
+          ? [await translateHybrid(blog.tags[0], language, tApi)]
+          : [],
+      };
 
-    run();
+      // update satu-satu 
+      setTranslatedBlogs((prev) => {
+        const updated = [...prev];
+        const index = updated.findIndex((b) => b._id === blog._id);
+        if (index !== -1) updated[index] = translated;
+        return updated;
+      });
 
-  }, [blogs, language]);
+    }
+
+  };
+
+  run();
+
+}, [blogs, language]);
 
   const filteredBlogs = useMemo(() => {
     const searchTerm = search.trim().toLowerCase();

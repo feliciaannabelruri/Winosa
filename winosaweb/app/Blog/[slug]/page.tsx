@@ -39,29 +39,65 @@ export default function BlogDetailPage() {
   const [loading, setLoading] = useState(true);
 
   const [comments, setComments] = useState<
-    { name: string; message: string }[]
-  >([]);
+  { name: string; message: string }[]
+>(() => {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const slugKey = typeof window !== "undefined"
+      ? window.location.pathname.split("/").pop()
+      : null;
+
+    if (!slugKey) return [];
+
+    const saved = localStorage.getItem(`comments-${slugKey}`);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+});
 
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
 
   // ================= LOAD COMMENTS =================
-  useEffect(() => {
-    if (!slug) return;
+    useEffect(() => {
+      if (!slug) return;
 
-    try {
-      const saved = localStorage.getItem(`comments-${slug}`);
-      if (saved) setComments(JSON.parse(saved));
-    } catch {
-      setComments([]);
-    }
-  }, [slug]);
+      try {
+        const saved = localStorage.getItem(`comments-${slug}`);
+
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setComments(parsed);
+          } else {
+            setComments([]);
+          }
+        } else {
+          setComments([]);
+        }
+
+      } catch {
+        setComments([]);
+      }
+    }, [slug]);
 
   // ================= SAVE COMMENTS =================
-  useEffect(() => {
+    useEffect(() => {
     if (!slug) return;
-    localStorage.setItem(`comments-${slug}`, JSON.stringify(comments));
+
+    // ❗ jangan save kalau masih initial kosong (biar gak overwrite)
+    if (!comments) return;
+
+    try {
+      localStorage.setItem(`comments-${slug}`, JSON.stringify(comments));
+    } catch (err) {
+      console.error("failed save comments", err);
+    }
+
   }, [comments, slug]);
+
 
   const handlePost = () => {
     if (!name.trim() || !message.trim()) return;
@@ -111,8 +147,12 @@ export default function BlogDetailPage() {
   useEffect(() => {
     if (!blog) return;
 
+  // tampilkan dulu (no loading)
+    setTranslatedBlog(blog);
+
     const run = async () => {
-      const translated = {
+
+      const translated: Blog = {
         ...blog,
         title: await translateHybrid(blog.title, language, tApi),
         content: await translateHybrid(blog.content, language, tApi),
@@ -129,6 +169,7 @@ export default function BlogDetailPage() {
       };
 
       setTranslatedBlog(translated);
+
     };
 
     run();
@@ -139,17 +180,34 @@ export default function BlogDetailPage() {
     if (!related.length) return;
 
     const run = async () => {
-      const mapped = await Promise.all(
-        related.map(async (post) => ({
-          ...post,
-          title: await translateHybrid(post.title, language, tApi),
-          excerpt: post.excerpt
-            ? await translateHybrid(post.excerpt, language, tApi)
-            : "",
-        }))
-      );
+      // tampilkan dulu (langsung)
+        setTranslatedRelated(related);
 
-      setTranslatedRelated(mapped);
+        const run = async () => {
+
+          for (const post of related) {
+
+            const translated: Blog = {
+              ...post,
+              title: await translateHybrid(post.title, language, tApi),
+              excerpt: post.excerpt
+                ? await translateHybrid(post.excerpt, language, tApi)
+                : "",
+            };
+
+            // update satu-satu (smooth)
+            setTranslatedRelated((prev) => {
+              const updated = [...prev];
+              const index = updated.findIndex((p) => p.slug === post.slug);
+              if (index !== -1) updated[index] = translated;
+              return updated;
+            });
+
+          }
+
+        };
+
+        run();
     };
 
     run();
@@ -302,61 +360,61 @@ export default function BlogDetailPage() {
         </div>
       </section>
 
-      {/* COMMENTS */}
-{/* COMMENTS */}
-<section
-  aria-label="Blog comments section"
-  className="w-full py-20 bg-white"
->
-  <div className="max-w-7xl mx-auto px-6 text-black">
-
-    <FadeUp>
-      <h2 className="text-2xl font-bold mb-8">
-        {t("blogDetail", "comments")}
-      </h2>
-    </FadeUp>
-
-    <div className="grid md:grid-cols-2 gap-6 mb-10">
-      {comments.map((c, i) => (
-        <div key={i} className="border border-black rounded-[28px] p-6">
-          <p className="font-semibold mb-2">{c.name}</p>
-          <p className="text-sm text-black/70">{c.message}</p>
-        </div>
-      ))}
-    </div>
-
-    <FadeUp>
-      <div className="border border-black rounded-[28px] p-8">
-
-        <input
-          aria-label="Your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={t("blogDetail", "yourName")}
-          className="w-full px-5 py-3 border border-black rounded-full mb-5"
-        />
-
-        <textarea
-          aria-label="Write your comment"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder={t("blogDetail", "writeComment")}
-          className="w-full min-h-[140px] px-6 py-4 border border-black rounded-[20px]"
-        />
-
-        <button
-          aria-label="Post comment"
-          onClick={handlePost}
-          className="mt-4 px-8 py-3 rounded-full border border-black hover:bg-black/10"
+     
+        {/* COMMENTS */}
+        <section
+          aria-label="Blog comments section"
+          className="w-full py-20 bg-white"
         >
-          {t("blogDetail", "post")}
-        </button>
+          <div className="max-w-7xl mx-auto px-6 text-black">
 
-      </div>
-    </FadeUp>
+            <FadeUp>
+              <h2 className="text-2xl font-bold mb-8">
+                {t("blogDetail", "comments")}
+              </h2>
+            </FadeUp>
 
-  </div>
-</section>
+            <div className="grid md:grid-cols-2 gap-6 mb-10">
+              {comments.map((c, i) => (
+                <div key={i} className="border border-black rounded-[28px] p-6">
+                  <p className="font-semibold mb-2">{c.name}</p>
+                  <p className="text-sm text-black/70">{c.message}</p>
+                </div>
+              ))}
+            </div>
+
+            <FadeUp>
+              <div className="border border-black rounded-[28px] p-8">
+
+                <input
+                  aria-label="Your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t("blogDetail", "yourName")}
+                  className="w-full px-5 py-3 border border-black rounded-full mb-5"
+                />
+
+                <textarea
+                  aria-label="Write your comment"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={t("blogDetail", "writeComment")}
+                  className="w-full min-h-[140px] px-6 py-4 border border-black rounded-[20px]"
+                />
+
+                <button
+                  aria-label="Post comment"
+                  onClick={handlePost}
+                  className="mt-4 px-8 py-3 rounded-full border border-black hover:bg-black/10"
+                >
+                  {t("blogDetail", "post")}
+                </button>
+
+              </div>
+            </FadeUp>
+
+          </div>
+        </section>
       <Footer />
     </main>
   );
