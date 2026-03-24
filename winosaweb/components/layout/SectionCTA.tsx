@@ -1,10 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Button from "@/components/UI/Button";
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
+
+// FIX gtag
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
 
 export default function SectionCTA() {
   const { t } = useTranslate();
@@ -13,6 +20,20 @@ export default function SectionCTA() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  const [variant, setVariant] = useState<"A" | "B">("A");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("cta_variant");
+
+    if (saved === "A" || saved === "B") {
+      setVariant(saved);
+    } else {
+      const random: "A" | "B" = Math.random() > 0.5 ? "A" : "B";
+      localStorage.setItem("cta_variant", random);
+      setVariant(random);
+    }
+  }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,11 +63,23 @@ export default function SectionCTA() {
 
       if (res.status === 400) {
         setError(t("newsletter", "errorDuplicate"));
+
+        window.gtag?.("event", "newsletter_submit", {
+          status: "duplicate",
+          variant,
+        });
+
         return;
       }
 
       if (res.status === 429) {
         setError(t("newsletter", "errorTooMany"));
+
+        window.gtag?.("event", "newsletter_submit", {
+          status: "too_many_requests",
+          variant,
+        });
+
         return;
       }
 
@@ -54,8 +87,20 @@ export default function SectionCTA() {
 
       setSuccess(t("newsletter", "success"));
       setEmail("");
+
+      window.gtag?.("event", "newsletter_submit", {
+        status: "success",
+        variant,
+      });
+
     } catch {
       setError(t("newsletter", "errorGeneral"));
+
+      window.gtag?.("event", "newsletter_submit", {
+        status: "error",
+        variant,
+      });
+
     } finally {
       setLoading(false);
     }
@@ -79,7 +124,6 @@ export default function SectionCTA() {
 
           <form
             onSubmit={handleSubscribe}
-            aria-label="Newsletter subscription form"
             className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-lg mx-auto"
           >
             <input
@@ -87,7 +131,6 @@ export default function SectionCTA() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("newsletter", "placeholder")}
-              aria-label="Email address"
               className="flex-1 border-b border-black/30 focus:border-black outline-none py-2 bg-transparent text-black text-sm"
             />
 
@@ -101,16 +144,19 @@ export default function SectionCTA() {
             />
           </form>
 
-          {success && (
-            <p className="text-green-600 text-xs mt-4" role="status">
-              {success}
+          {/* ✅ A/B TEST (TRANSLATED) */}
+          {variant === "B" && (
+            <p className="text-xs text-gray-500 mt-2">
+              {t("newsletter", "trustMessage")}
             </p>
           )}
 
+          {success && (
+            <p className="text-green-600 text-xs mt-4">{success}</p>
+          )}
+
           {error && (
-            <p className="text-red-600 text-xs mt-4" role="alert">
-              {error}
-            </p>
+            <p className="text-red-600 text-xs mt-4">{error}</p>
           )}
         </motion.div>
 
@@ -133,8 +179,20 @@ export default function SectionCTA() {
           </p>
 
           <div className="flex justify-center">
-            <Link href="/Contact" aria-label="Go to contact page">
-              <Button text={t("cta", "button")} />
+            <Link href="/Contact">
+              <Button
+                text={t("cta", "button")}
+                className={
+                  variant === "A"
+                    ? ""
+                    : "shadow-lg hover:scale-105 transition duration-300"
+                }
+                onClick={() => {
+                  window.gtag?.("event", "cta_click", {
+                    variant,
+                  });
+                }}
+              />
             </Link>
           </div>
         </motion.div>

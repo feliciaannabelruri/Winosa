@@ -182,6 +182,11 @@ newsletter: {
     nl: "uw@email.com",
     id: "emailanda@email.com",
   },
+  trustMessage: {
+  en: "No spam. Unsubscribe anytime.",
+  nl: "Geen spam. U kunt zich altijd uitschrijven.",
+  id: "Tidak ada spam. Bisa berhenti kapan saja.",
+},
 },
 
 
