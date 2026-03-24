@@ -26,12 +26,12 @@ interface Subscription {
 // ─── Chips ────────────────────────────────────────────────────────────────────
 
 const CHIPS = [
-  { label: "Startup baru", text: "small startup just starting out limited budget need MVP simple" },
-  { label: "Toko online", text: "ecommerce online shop with payment gateway and inventory management" },
-  { label: "Bisnis berkembang", text: "growing business needs analytics dashboard and team collaboration" },
+  { label: "New Startup", text: "small startup just starting out limited budget need MVP simple" },
+  { label: "Online Store", text: "ecommerce online shop with payment gateway and inventory management" },
+  { label: "Business Grows", text: "growing business needs analytics dashboard and team collaboration" },
   { label: "Mobile app", text: "mobile application android ios cross platform push notifications" },
-  { label: "Sistem enterprise", text: "large enterprise system custom integrations thousands of users high volume" },
-  { label: "Masih bingung", text: "not sure what I need want consultation and guidance first" },
+  { label: "Enterprise System", text: "large enterprise system custom integrations thousands of users high volume" },
+  { label: "Still Confused", text: "not sure what I need want consultation and guidance first" },
 ];
 
 // ─── Keyword fallback (jika HF lambat / error) ────────────────────────────────
@@ -581,7 +581,6 @@ useEffect(() => {
               {formatPrice(plan.price, plan.duration)}
             </div>
 
-            {/* ⬇️ INI YANG PENTING */}
             <ul className="space-y-2 text-sm text-black/55 mb-5 flex-1">
               {plan.features.map((f, i) => (
                 <li key={i} className="flex items-center gap-2">
@@ -591,7 +590,6 @@ useEffect(() => {
               ))}
             </ul>
 
-            {/* ⬇️ BUTTON AUTO KE BAWAH */}
             <Link
               href={`https://wa.me/6281234567890?text=${encodeURIComponent(
                 `${t("plansPricing", "whatsappText")} ${plan.name}`

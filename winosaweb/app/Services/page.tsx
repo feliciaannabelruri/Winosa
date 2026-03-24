@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { getAllServices } from "@/services/service.service";
 
 /* ===============================
    Code Splitting (Dynamic Import)
@@ -29,6 +30,16 @@ const Footer = dynamic(() =>
   import("@/components/layout/Footer")
 );
 
+/* FETCH DI SERVER */
+async function getServicesData() {
+  try {
+    const data = await getAllServices("en"); // default dulu
+    return data || [];
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
 
 /* ===============================
    SEO META TAGS
@@ -70,18 +81,20 @@ export const metadata = {
    PAGE
 ================================ */
 
-export default function ServicesPage() {
-  return (
+export default async function ServicesPage() {
+  const services = await getServicesData();
 
+  console.log("SERVICES:", services); // optional debug
+
+  return (
     <main aria-label="Winosa services page">
 
       <SectionHero />
 
-      <SectionServices />
+      <SectionServices initialServices={services} />
 
       <SectionInfo />
 
-      {/* SMART RECOMMEND + PLAN */}
       <SectionPlanWithRecommend />
 
       <SectionCTA />
@@ -89,6 +102,5 @@ export default function ServicesPage() {
       <Footer />
 
     </main>
-
   );
 }
