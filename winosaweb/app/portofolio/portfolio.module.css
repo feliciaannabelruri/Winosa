@@ -18,8 +18,8 @@
   background: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.4) 60%,
-    rgba(255, 255, 255, 0.85) 80%,
+    rgba(255, 255, 255, 0.219) 60%,
+    rgba(255, 255, 255, 0.555) 80%,
     #ffffff 100%
   );
 }
@@ -35,12 +35,12 @@
 .title {
   font-size: clamp(2.8rem, 5.5vw, 4.2rem);
   font-weight: 800;
-  color: #1a1a1a;
+  color: #ffffff;
   letter-spacing: -0.02em;
 }
 
 .title span {
-  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #daa520 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -50,14 +50,14 @@
   margin-top: 16px;
   font-size: 1.6rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #ffffff;
   letter-spacing: -0.01em;
 }
 
 .subtitle {
   margin-top: 20px;
   font-size: 1.15rem;
-  color: #1a1a1a;
+  color: #ffffff;
   line-height: 1.7;
 }
 
@@ -65,7 +65,7 @@
   margin-top: 40px;
   padding: 16px 36px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  background: linear-gradient(135deg, #1a1a1aca 0%, #2a2a2a 100%);
   color: white;
   font-size: 1.05rem;
   font-weight: 600;
@@ -80,7 +80,7 @@
 
 .heroButton:hover {
   transform: translateY(-3px);
-  background: linear-gradient(135deg, #f4c430 0%, #daa520 100%);
+  background: linear-gradient(135deg, #f4c330a8 0%, #daa520 100%);
   color: #1a1a1a;
   box-shadow: 0 12px 32px rgba(244, 196, 48, 0.4);
 }
@@ -142,12 +142,14 @@
 
 /* Carousel */
 .carouselWrapper {
-  position: relative;
+ position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 50px;
-  padding: 0 90px;
+  margin-bottom: 20px;
+  padding: 0;
+  gap: 32px;
 }
 
 .carouselContainer {

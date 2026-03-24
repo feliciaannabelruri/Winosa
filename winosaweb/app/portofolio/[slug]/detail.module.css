@@ -26,7 +26,6 @@
   object-fit: cover;
 }
 
-/* seamless fade ke putih di bawah */
 .heroOverlay {
   position: absolute;
   inset: 0;
@@ -82,14 +81,13 @@
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
 }
 
-/*  INFO SECTION  */
+/* INFO SECTION */
 .infoSection {
   padding: 80px 24px 100px;
   background: #ffffff;
   position: relative;
 }
 
-/* seamless dari hero */
 .infoSection::before {
   content: '';
   position: absolute;
@@ -203,7 +201,7 @@
   box-shadow: 0 4px 12px rgba(244, 196, 48, 0.25);
 }
 
-/* CASE STUDY SECTION  */
+/* CASE STUDY SECTION */
 .caseStudySection {
   padding: 100px 24px;
   background: #ffffff;
@@ -261,7 +259,7 @@
   line-height: 1.8;
 }
 
-/* Metrics */
+/* ========== METRICS — FIX: card + center untuk semua jumlah ========== */
 .metricsWrapper {
   margin-top: 90px;
 }
@@ -275,18 +273,32 @@
   letter-spacing: -0.01em;
 }
 
+/* Flex wrap + center → otomatis rapih berapa pun jumlah card */
 .metricsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 24px;
+  justify-content: center;
+  max-width: 960px;
+  margin: 0 auto;
 }
 
+/*
+  flex: 0 1 260px → tiap card lebar 260px, tidak grow, boleh shrink
+  Hasilnya:
+  - 1 card  → 1 di tengah
+  - 2 cards → 2 di tengah
+  - 3 cards → 3 sejajar tengah
+  - 4 cards → 3 + 1 (yang 1 tetap tengah)
+  - 5 cards → 3 + 2 (yang 2 tetap tengah)
+*/
 .metricCard {
+  flex: 0 1 260px;
   background: #fafafa;
   padding: 40px 28px;
   border-radius: 16px;
   border-top: 3px solid transparent;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
   text-align: center;
 }
@@ -501,9 +513,6 @@
     gap: 32px;
     padding: 36px;
   }
-  .metricsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (max-width: 768px) {
@@ -520,14 +529,15 @@
   .sectionTitle { font-size: 2rem; }
   .caseStudyTitle { font-size: 1.5rem; }
   .galleryGrid { grid-template-columns: 1fr; }
+  .metricCard { flex: 0 1 200px; }
 }
 
 @media (max-width: 480px) {
   .heroTitle { font-size: 2.2rem; }
-  .infoCard, .metricCard { padding: 32px 20px; }
+  .infoCard { padding: 32px 20px; }
+  .metricCard { flex: 0 1 100%; padding: 32px 20px; }
   .techStack { padding: 36px 28px; }
   .caseStudyBlock { padding: 32px 24px; }
   .nextProjectCard { padding: 28px 20px; }
   .nextProjectTitle { font-size: 1.7rem; }
-  .metricsGrid { grid-template-columns: 1fr; }
 }

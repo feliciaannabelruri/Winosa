@@ -139,17 +139,22 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
 
           {/* METRICS (optional) */}
           {translated.metrics && translated.metrics.length > 0 && (
-            <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              {translated.metrics.map((m, i) => (
-                <div key={i}>
-                  <div className="text-3xl font-bold text-black">
-                    {m.value}
-                  </div>
-                  <div className="text-sm text-black/60">
-                    {m.label}
-                  </div>
-                </div>
-              ))}
+            <div className={styles.metricsWrapper}>
+              <div className={styles.metricsGrid}>
+                {translated.metrics.map((m, i) => (
+                  <motion.div
+                    key={i}
+                    className={styles.metricCard}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    viewport={{ once: true }}
+                  >
+                    <span className={styles.metricValue}>{m.value}</span>
+                    <span className={styles.metricLabel}>{m.label}</span>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           )}
 
