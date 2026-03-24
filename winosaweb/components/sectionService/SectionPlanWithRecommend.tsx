@@ -153,41 +153,49 @@ useEffect(() => {
     setTranslatedChips(chips);
 
     setUiText({
-      helper: await translateHybrid(
-        "Ceritakan kebutuhan bisnis Anda — AI akan rekomendasikan paket yang tepat",
-        language,
-        tApi
-      ),
-      placeholder: await translateHybrid(
-        "Contoh: Saya punya startup fintech, butuh sistem manajemen user, dashboard analytics, dan integrasi payment...",
-        language,
-        tApi
-      ),
-      analyzing: await translateHybrid(
-        "AI sedang menganalisa kebutuhan Anda...",
-        language,
-        tApi
-      ),
-      analyze: await translateHybrid(
-        "Analisa dengan AI → temukan paket yang tepat",
-        language,
-        tApi
-      ),
-      retry: await translateHybrid("Coba lagi ↩", language, tApi),
-      confused: await translateHybrid("Masih bingung?", language, tApi),
-      show: await translateHybrid("Lihat paket lainnya ↓", language, tApi),
-      hide: await translateHybrid("Sembunyikan ↑", language, tApi),
-      popular: await translateHybrid("Populer", language, tApi),
-      wa: await translateHybrid("Konsultasi langsung via WhatsApp", language, tApi),
-      atau: await translateHybrid("atau", language, tApi),
-      tidakMasalah: await translateHybrid("Tidak masalah — tim kami siap bantu", language, tApi),
-      konsultasiGratis: await translateHybrid(
-        "Konsultasi gratis, kami akan bantu pilihkan paket yang benar-benar sesuai kebutuhan bisnis Anda.",
-        language,
-        tApi
-      ),
-      waSekarang: await translateHybrid("Konsultasi via WhatsApp sekarang", language, tApi),
-    });
+    helper: await translateHybrid(
+      "Describe your business needs — AI will recommend the right plan",
+      language,
+      tApi
+    ),
+    placeholder: await translateHybrid(
+      "Example: I have a fintech startup, need user management system, analytics dashboard, and payment integration...",
+      language,
+      tApi
+    ),
+    analyzing: await translateHybrid(
+      "AI is analyzing your needs...",
+      language,
+      tApi
+    ),
+    analyze: await translateHybrid(
+      "Analyze with AI → find the right plan",
+      language,
+      tApi
+    ),
+    retry: await translateHybrid("Try again ↩", language, tApi),
+    confused: await translateHybrid("Still confused?", language, tApi),
+    show: await translateHybrid("See other plans ↓", language, tApi),
+    hide: await translateHybrid("Hide ↑", language, tApi),
+    popular: await translateHybrid("Popular", language, tApi),
+    wa: await translateHybrid("Consult via WhatsApp", language, tApi),
+    atau: await translateHybrid("or", language, tApi),
+    tidakMasalah: await translateHybrid(
+      "No problem — our team is ready to help",
+      language,
+      tApi
+    ),
+    konsultasiGratis: await translateHybrid(
+      "Free consultation, we will help you choose the plan that truly fits your business needs.",
+      language,
+      tApi
+    ),
+    waSekarang: await translateHybrid(
+      "Consult via WhatsApp now",
+      language,
+      tApi
+    ),
+  });
   };
 
   run();
@@ -425,7 +433,7 @@ useEffect(() => {
                     className="text-xs text-white/38 hover:text-white/65 transition flex-shrink-0"
                     style={{ fontFamily: "inherit" }}
                   >
-                    Coba lagi ↩
+                    {uiText.retry}
                   </button>
                 </div>
                 <div className="px-5 py-2 bg-gray-50 border-t border-black/8 text-[11px] text-black/35">
@@ -486,7 +494,7 @@ useEffect(() => {
                     className="text-sm text-black/38 hover:text-black transition underline underline-offset-2"
                     style={{ fontFamily: "inherit" }}
                   >
-                    {stillConfused ? "Sembunyikan ↑" : "Masih bingung?"}
+                    {stillConfused ? uiText.confused : uiText.hide }
                   </button>
                   {otherPlans.length > 0 && (
                     <>
@@ -497,7 +505,7 @@ useEffect(() => {
                         className="text-sm text-black/38 hover:text-black transition underline underline-offset-2"
                         style={{ fontFamily: "inherit" }}
                       >
-                        {showAll ? "Sembunyikan ↑" : "Lihat paket lainnya ↓"}
+                        {showAll ? uiText.hide : uiText.show}
                       </button>
                     </>
                   )}
@@ -517,11 +525,9 @@ useEffect(() => {
                   >
                     <div className="rounded-2xl border border-black/10 bg-gray-50 p-6 text-center">
                       <p className="text-sm font-semibold text-black mb-1">
-                        Tidak masalah — tim kami siap bantu
-                      </p>
+                          {uiText.tidakMasalah}                      </p>
                       <p className="text-xs text-black/45 mb-5">
-                        Konsultasi gratis, kami akan bantu pilihkan paket yang benar-benar sesuai kebutuhan bisnis Anda.
-                      </p>
+                            {uiText.konsultasiGratis}                      </p>
                       <a
                         href="https://wa.me/6281234567890?text=Halo%20Winosa%2C%20saya%20sudah%20coba%20AI%20recommend%20tapi%20masih%20bingung%2C%20bisa%20bantu%20pilihkan%20paket%20yang%20sesuai%3F"
                         target="_blank"
@@ -531,8 +537,7 @@ useEffect(() => {
                         <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white flex-shrink-0">
                           <path d="M20.52 3.48A11.91 11.91 0 0012.01 0C5.38 0 .02 5.36.02 12c0 2.11.55 4.18 1.6 6.02L0 24l6.15-1.6a11.94 11.94 0 005.86 1.49h.01c6.63 0 11.99-5.36 11.99-12 0-3.19-1.24-6.19-3.49-8.41zM12 21.5a9.45 9.45 0 01-4.82-1.32l-.35-.21-3.65.95.97-3.56-.23-.36a9.48 9.48 0 0114.67-11.63A9.45 9.45 0 0112 21.5zm5.18-7.1c-.28-.14-1.66-.82-1.92-.91-.26-.1-.45-.14-.63.14-.19.28-.73.91-.9 1.1-.16.19-.33.21-.61.07-.28-.14-1.17-.43-2.23-1.37-.82-.73-1.37-1.63-1.53-1.91-.16-.28-.02-.43.12-.57.12-.12.28-.33.42-.49.14-.16.19-.28.28-.47.09-.19.05-.35-.02-.49-.07-.14-.63-1.52-.87-2.08-.23-.55-.47-.47-.63-.47h-.54c-.19 0-.49.07-.75.35-.26.28-.98.96-.98 2.34s1 2.72 1.14 2.91c.14.19 1.96 3 4.75 4.2.66.28 1.18.45 1.58.58.66.21 1.27.18 1.75.11.53-.08 1.66-.68 1.89-1.34.23-.66.23-1.23.16-1.34-.07-.12-.26-.19-.54-.33z"/>
                         </svg>
-                        Konsultasi via WhatsApp sekarang
-                      </a>
+                        {uiText.waSekarang}                      </a>
                     </div>
                   </motion.div>
                 )}
@@ -540,57 +545,68 @@ useEffect(() => {
 
               {/* Other plans */}
               <AnimatePresence>
-                {showAll && !loadingPlans && otherPlans.length > 0 && (
-                  <motion.div
-                    key="other-plans"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.32 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
-                      {otherPlans.map((plan) => (
-                        <div
-                          key={plan._id}
-                          className="rounded-[22px] p-7 bg-white border border-black/10 hover:border-black/28 transition"
-                        >
-                          {plan.isPopular && (
-                            <span
-                              className="inline-block text-[11px] font-semibold px-3 py-1 rounded-full mb-3"
-                              style={{ background: "rgba(196,168,50,0.12)", color: "#8a6e00" }}
-                            >
-                              Populer
-                            </span>
-                          )}
-                          <h3 className="text-lg font-bold text-black mb-0.5">{plan.name}</h3>
-                          <div className="text-[11px] text-black/38 mb-0.5">{t("pricing", "startFrom")}</div>
-                          <div className="text-2xl font-bold text-black mb-4">
-                            {formatPrice(plan.price, plan.duration)}
-                          </div>
-                          <ul className="space-y-2 text-sm text-black/55 mb-5">
-                            {plan.features.map((f, i) => (
-                              <li key={i} className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-black/18 flex-shrink-0" />
-                                {f}
-                              </li>
-                            ))}
-                          </ul>
-                          <Link
-                            href={`https://wa.me/6281234567890?text=${encodeURIComponent(
-                              `${t("plansPricing", "whatsappText")} ${plan.name}`
-                            )}`}
-                            target="_blank"
-                            className="block text-center w-full py-2.5 rounded-full border border-black/12 text-black text-sm font-medium hover:border-black/35 hover:bg-black/4 transition"
-                          >
-                            {t("plansPricing", "chooseButton")}
-                          </Link>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+  {showAll && !loadingPlans && otherPlans.length > 0 && (
+    <motion.div
+      key="other-plans"
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.32 }}
+      className="overflow-hidden"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1 items-stretch">
+        {otherPlans.map((plan) => (
+          <div
+            key={plan._id}
+            className="rounded-[22px] p-7 bg-white border border-black/10 hover:border-black/28 transition flex flex-col h-full"
+          >
+            {plan.isPopular && (
+              <span
+                className="inline-block text-[11px] font-semibold px-3 py-1 rounded-full mb-3"
+                style={{ background: "rgba(196,168,50,0.12)", color: "#8a6e00" }}
+              >
+                {uiText.popular}
+              </span>
+            )}
+
+            <h3 className="text-lg font-bold text-black mb-0.5">
+              {plan.name}
+            </h3>
+
+            <div className="text-[11px] text-black/38 mb-0.5">
+              {t("pricing", "startFrom")}
+            </div>
+
+            <div className="text-2xl font-bold text-black mb-4">
+              {formatPrice(plan.price, plan.duration)}
+            </div>
+
+            {/* ⬇️ INI YANG PENTING */}
+            <ul className="space-y-2 text-sm text-black/55 mb-5 flex-1">
+              {plan.features.map((f, i) => (
+                <li key={i} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-black/18 flex-shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            {/* ⬇️ BUTTON AUTO KE BAWAH */}
+            <Link
+              href={`https://wa.me/6281234567890?text=${encodeURIComponent(
+                `${t("plansPricing", "whatsappText")} ${plan.name}`
+              )}`}
+              target="_blank"
+              className="block text-center w-full py-2.5 rounded-full border border-black/12 text-black text-sm font-medium hover:border-black/35 hover:bg-black/4 transition"
+            >
+              {t("plansPricing", "chooseButton")}
+            </Link>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
             </motion.div>
           )}
