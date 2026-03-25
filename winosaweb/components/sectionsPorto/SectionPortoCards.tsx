@@ -36,23 +36,35 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // ✅ STATE HASIL TRANSLATE
-  const [translatedProjects, setTranslatedProjects] = useState<Project[]>(data);
+  // STATE HASIL TRANSLATE
+  const [translatedProjects, setTranslatedProjects] = useState<Project[]>([]);
 
   // ================= AUTO TRANSLATE =================
   useEffect(() => {
 
+    setTranslatedProjects(data);
+
     const run = async () => {
 
-      const mapped = await Promise.all(
-        data.map(async (project) => ({
+      for (const project of data) {
+
+        const translated = {
           ...project,
           title: await translateHybrid(project.title, language, tApi),
           description: await translateHybrid(project.description, language, tApi),
-        }))
-      );
+        };
 
-      setTranslatedProjects(mapped);
+        // update satu-satu 
+        setTranslatedProjects((prev) => {
+          const updated = [...prev];
+          const index = updated.findIndex(
+            (p) => p._id === project._id
+          );
+          if (index !== -1) updated[index] = translated;
+          return updated;
+        });
+
+      }
 
     };
 

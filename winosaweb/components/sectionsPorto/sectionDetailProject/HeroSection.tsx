@@ -24,29 +24,51 @@ export default function HeroSection({ project }: HeroSectionProps) {
   const { tApi } = useTranslate();
   const { language } = useLanguageStore();
 
-  // ✅ state hasil translate
+  //  state hasil translate
   const [translated, setTranslated] = useState(project);
 
   useEffect(() => {
 
-    const run = async () => {
+  setTranslated(project);
 
-      const mapped = {
-        ...project,
-        title: await translateHybrid(project.title, language, tApi),
-        category: await translateHybrid(project.category, language, tApi),
-        longDescription: project.longDescription
-          ? await translateHybrid(project.longDescription, language, tApi)
-          : "",
-      };
+  const run = async () => {
 
-      setTranslated(mapped);
+    const translatedTitle = await translateHybrid(project.title, language, tApi);
 
-    };
+    setTranslated((prev) => ({
+      ...prev,
+      title: translatedTitle,
+    }));
 
-    run();
 
-  }, [project, language]);
+    const translatedCategory = await translateHybrid(project.category, language, tApi);
+
+    setTranslated((prev) => ({
+      ...prev,
+      category: translatedCategory,
+    }));
+
+
+    if (project.longDescription) {
+
+      const translatedDesc = await translateHybrid(
+        project.longDescription,
+        language,
+        tApi
+      );
+
+      setTranslated((prev) => ({
+        ...prev,
+        longDescription: translatedDesc,
+      }));
+
+    }
+
+  };
+
+  run();
+
+}, [project, language]);
 
   const firstParagraph = translated.longDescription
     ? translated.longDescription.split(/\n\n|\r\n\r\n/)[0].trim()
