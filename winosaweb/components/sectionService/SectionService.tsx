@@ -14,7 +14,6 @@ import {
 import { motion } from "framer-motion";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { useTranslate } from "@/lib/useTranslate";
-import { getAllServices } from "@/services/service.service";
 import { translateHybrid } from "@/lib/translateHybrid";
 
 type Service = {
@@ -23,7 +22,6 @@ type Service = {
   description: string;
   icon?: string;
   slug: string;
-  isTranslating?: boolean;
 };
 
 const iconMap: Record<string, any> = {
@@ -38,113 +36,110 @@ const iconMap: Record<string, any> = {
   "trending-up": TrendingUp,
 };
 
-export default function SectionServices() {
-  const { language } = useLanguageStore();
-  const { t, tApi } = useTranslate();
+type Props = {
+  initialServices?: Service[];
+};
 
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function SectionServices({ initialServices }: Props) {
+  const { language } = useLanguageStore();
+  const { tApi } = useTranslate();
+
+  const [services, setServices] = useState<Service[]>(
+    Array.isArray(initialServices) ? initialServices : []
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    if (!initialServices || initialServices.length === 0) return;
 
-      const data = await getAllServices(language);
+    if (language === "en") {
+      setServices(initialServices);
+      return;
+    }
 
-      const initial = (data || []).map((item: Service) => ({
-        ...item,
-        isTranslating: true,
-      }));
+    const translateAll = async () => {
+      try {
+        const updated = await Promise.all(
+          initialServices.map(async (item) => {
+            const translatedTitle = await translateHybrid(
+              item.title,
+              language,
+              tApi
+            );
+            const translatedDesc = await translateHybrid(
+              item.description,
+              language,
+              tApi
+            );
 
-      setServices(initial);
-      setLoading(false);
-
-      initial.forEach(async (item: Service) => {
-        const translatedTitle = await translateHybrid(item.title, language, tApi);
-        const translatedDesc = await translateHybrid(item.description, language, tApi);
-
-        setServices((prev) =>
-          prev.map((s: Service) =>
-            s._id === item._id
-              ? {
-                  ...s,
-                  title: translatedTitle,
-                  description: translatedDesc,
-                  isTranslating: false,
-                }
-              : s
-          )
+            return {
+              ...item,
+              title: translatedTitle,
+              description: translatedDesc,
+            };
+          })
         );
-      });
+
+        setServices(updated);
+      } catch (err) {
+        console.error("Translate error:", err);
+        setServices(initialServices); // fallback
+      }
     };
 
-    fetchData();
-  }, [language]);
-
-  if (loading) {
-    return (
-      <section className="w-full bg-white py-32 text-center">
-        <p className="animate-pulse text-gray-600">
-          {t("global", "loading")}
-        </p>
-      </section>
-    );
-  }
+    translateAll();
+  }, [language, initialServices]);
 
   return (
     <section className="w-full bg-white py-32">
       <div className="max-w-7xl mx-auto px-6 text-black">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
 
-          {services.map((item, index) => {
+          {services.length === 0 ? (
+            <p className="text-center col-span-2">
+              No services available
+            </p>
+          ) : (
+            services.map((item, index) => {
+              const IconComponent =
+                iconMap[item.icon?.toLowerCase() || ""] || Monitor;
 
-            const IconComponent =
-              iconMap[item.icon?.toLowerCase() || ""] || Monitor;
-
-            return (
-              <motion.div
-                key={item._id}
-                initial={{ opacity: 0, y: 80 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.6,
-                  delay: index * 0.15,
-                }}
-                viewport={{ once: true }}
-              >
+              return (
                 <motion.div
-                  whileHover={{ y: -8 }}
-                  className="group relative h-full"
+                  key={item._id}
+                  initial={{ opacity: 0, y: 80 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.15,
+                  }}
+                  viewport={{ once: true }}
                 >
+                  <motion.div
+                    whileHover={{ y: -8 }}
+                    className="group relative h-full"
+                  >
+                    <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)]">
 
-                  {item.isTranslating && (
-                    <div className="absolute inset-0 rounded-[28px] border-2 border-yellow-400 animate-pulse pointer-events-none" />
-                  )}
+                      <div className="flex items-start gap-6 mb-6">
+                        <div className="w-16 h-16 flex items-center justify-center rounded-full border border-black flex-shrink-0">
+                          <IconComponent size={28} strokeWidth={1.5} />
+                        </div>
 
-                  <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)]">
-
-                    <div className="flex items-start gap-6 mb-6">
-
-                      <div className="w-16 h-16 flex items-center justify-center rounded-full border border-black flex-shrink-0">
-                        <IconComponent size={28} strokeWidth={1.5} />
+                        <h3 className="text-xl font-semibold leading-tight pt-3">
+                          {item.title}
+                        </h3>
                       </div>
 
-                      <h3 className="text-xl font-semibold leading-tight pt-3">
-                        {item.title}
-                      </h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {item.description}
+                      </p>
 
                     </div>
-
-                    <p className="text-gray-600 leading-relaxed">
-                      {item.description}
-                    </p>
-
-                  </div>
-
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            );
-          })}
+              );
+            })
+          )}
 
         </div>
       </div>

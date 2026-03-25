@@ -27,36 +27,77 @@ export default function SectionPreview({ title, items = [] }: any) {
   const previewItems = data.slice(0, 3);
 
   useEffect(() => {
-    const initial = (items || []).map((item: Item) => ({
-      ...item,
-      isTranslating: true,
-    }));
+  let cancelled = false;
 
-    setData(initial);
+  const initial = (items || []).map((item: Item) => ({
+    ...item,
+    isTranslating: true,
+  }));
 
-    initial.forEach(async (item: Item) => {
-      const translatedTitle = await translateHybrid(item.title, language, tApi);
-      const translatedDesc = await translateHybrid(
-        item.desc || item.description || "",
-        language,
-        tApi
-      );
+  setData(initial);
 
-      setData((prev) =>
-        prev.map((s: Item) =>
-          s._id === item._id
-            ? {
-                ...s,
-                title: translatedTitle,
-                desc: translatedDesc,
-                description: translatedDesc,
-                isTranslating: false,
-              }
-            : s
-        )
-      );
+  let chain = Promise.resolve();
+
+  initial.forEach((item: Item, index: number) => {
+    chain = chain.then(async () => {
+      if (cancelled) return;
+
+      try {
+        const translatedTitle = await translateHybrid(
+          item.title,
+          language,
+          tApi
+        );
+
+        const translatedDesc = await translateHybrid(
+          item.desc || item.description || "",
+          language,
+          tApi
+        );
+
+        if (cancelled) return;
+
+        setData((prev) => {
+          const updated = [...prev];
+
+          if (!updated[index]) return prev;
+
+          updated[index] = {
+            ...updated[index],
+            title: translatedTitle,
+            desc: translatedDesc,
+            description: translatedDesc,
+            isTranslating: false,
+          };
+
+          return updated;
+        });
+      } catch (err) {
+        console.error(err);
+
+        if (cancelled) return;
+
+        setData((prev) => {
+          const updated = [...prev];
+
+          if (!updated[index]) return prev;
+
+          updated[index] = {
+            ...updated[index],
+            isTranslating: false,
+          };
+
+          return updated;
+        });
+      }
     });
-  }, [items, language]);
+  });
+
+  return () => {
+    cancelled = true;
+  };
+}, [items, language]);
+
 
   function getTranslatedTitle() {
     if (title === "Our Services") return t("preview", "services");

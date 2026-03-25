@@ -20,65 +20,67 @@ type Blog = {
   createdAt: string;
 };
 
-export default function SectionBlog() {
+type Props = {
+  initialBlogs?: Blog[];
+};
+
+export default function SectionBlog({ initialBlogs }: Props) {
 
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
 
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [translatedBlogs, setTranslatedBlogs] = useState<Blog[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [blogs, setBlogs] = useState<Blog[]>(
+    Array.isArray(initialBlogs) ? initialBlogs : []
+  );
+
+  const [translatedBlogs, setTranslatedBlogs] = useState<Blog[]>(
+    Array.isArray(initialBlogs) ? initialBlogs : []
+  );
+
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/blog`,
-          { cache: "no-store" }
-        );
-        const data = await res.json();
-        setBlogs(data.data || []);
-        setTranslatedBlogs(data.data || []); // fallback awal
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchBlogs();
-  }, []);
 
-  // ✅ AUTO TRANSLATE
-  useEffect(() => {
+  //  AUTO TRANSLATE
+ useEffect(() => {
 
-    if (!blogs.length) return;
+  if (!blogs.length) return;
 
-    const run = async () => {
+  // langsung tampilkan dulu (EN / original)
+  setTranslatedBlogs(blogs);
 
-      const mapped = await Promise.all(
-        blogs.map(async (blog) => ({
-          ...blog,
-          title: await translateHybrid(blog.title, language, tApi),
-          content: await translateHybrid(blog.content, language, tApi),
-          excerpt: blog.excerpt
-            ? await translateHybrid(blog.excerpt, language, tApi)
-            : "",
-          tags: blog.tags?.length
-            ? [await translateHybrid(blog.tags[0], language, tApi)]
-            : [],
-        }))
-      );
+  const run = async () => {
 
-      setTranslatedBlogs(mapped);
+    for (const blog of blogs) {
 
-    };
+      const translated: Blog = {
+        ...blog,
+        title: await translateHybrid(blog.title, language, tApi),
+        content: await translateHybrid(blog.content, language, tApi),
+        excerpt: blog.excerpt
+          ? await translateHybrid(blog.excerpt, language, tApi)
+          : "",
+        tags: blog.tags?.length
+          ? [await translateHybrid(blog.tags[0], language, tApi)]
+          : [],
+      };
 
-    run();
+      // update satu-satu 
+      setTranslatedBlogs((prev) => {
+        const updated = [...prev];
+        const index = updated.findIndex((b) => b._id === blog._id);
+        if (index !== -1) updated[index] = translated;
+        return updated;
+      });
 
-  }, [blogs, language]);
+    }
+
+  };
+
+  run();
+
+}, [blogs, language]);
 
   const filteredBlogs = useMemo(() => {
     const searchTerm = search.trim().toLowerCase();
@@ -143,11 +145,7 @@ export default function SectionBlog() {
           </div>
         </FadeUp>
 
-        {loading ? (
-          <div className="text-center py-20">
-            {t("global", "loading")}
-          </div>
-        ) : filteredBlogs.length === 0 ? (
+        {filteredBlogs.length === 0 ? (
           <EmptyState
             title={t("blogSection", "emptyTitle")}
             description={t("blogSection", "emptyDesc")}
@@ -209,10 +207,17 @@ function BlogCard({ blog }: { blog: Blog }) {
             {blog.excerpt || blog.content?.slice(0, 120) || ""}
           </p>
 
-          <Link
+          
+            <Link
             href={`/Blog/${blog.slug}`}
             className="inline-block px-6 py-2 rounded-full border border-black text-sm hover:bg-black/10"
-          >
+            onClick={() => {
+            sessionStorage.setItem(
+            "selectedBlog",
+               JSON.stringify(blog)
+                  );
+                }}
+              >
             {t("blogSection", "readMore")}
           </Link>
         </div>
