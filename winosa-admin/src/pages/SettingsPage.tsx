@@ -3,7 +3,7 @@ import {
   Globe, Search, Share2, Phone,
   Upload, Save, AlertCircle,
   Instagram, Linkedin, Facebook, Youtube,
-  Mail, MapPin, MessageCircle, BarChart2,
+  Mail, MapPin, MessageCircle,
   X, RefreshCw, WifiOff, CheckCircle, Image,
 } from 'lucide-react';
 import api from '../services/api';
@@ -18,10 +18,8 @@ export interface SiteSettings {
   siteTagline: string;
   logo?:       string;
   // SEO
-  metaTitle:         string;
-  metaDescription:   string;
-  metaKeywords:      string;
-  googleAnalyticsId: string;
+  metaTitle:       string;
+  metaDescription: string;
   // Social
   socialInstagram: string;
   socialFacebook:  string;
@@ -36,7 +34,7 @@ export interface SiteSettings {
 
 const DEFAULT: SiteSettings = {
   siteName: '', siteTagline: '', logo: '',
-  metaTitle: '', metaDescription: '', metaKeywords: '', googleAnalyticsId: '',
+  metaTitle: '', metaDescription: '',
   socialInstagram: '', socialFacebook: '', socialLinkedin: '', socialYoutube: '', socialWhatsapp: '',
   siteEmail: '', sitePhone: '', siteAddress: '',
 };
@@ -46,8 +44,8 @@ type TabKey = 'general' | 'seo' | 'social' | 'contact';
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: 'general', label: 'General', icon: <Globe  size={14} /> },
   { key: 'seo',     label: 'SEO',     icon: <Search size={14} /> },
-  { key: 'social',  label: 'Social',  icon: <Share2 size={14} /> },
-  { key: 'contact', label: 'Contact', icon: <Phone  size={14} /> },
+  { key: 'social',  label: 'Sosial',  icon: <Share2 size={14} /> },
+  { key: 'contact', label: 'Kontak',  icon: <Phone  size={14} /> },
 ];
 
 const TAB_FIELDS: Record<TabKey, (keyof SiteSettings)[]> = {
@@ -105,17 +103,16 @@ const LogoSlot: React.FC<{
     const f = e.target.files?.[0];
     if (!f) return;
     if (!['image/png','image/jpeg','image/jpg','image/svg+xml','image/webp'].includes(f.type)) {
-      toast.error('Must be PNG, JPG, SVG, or WebP'); return;
+      toast.error('Harus berformat PNG, JPG, SVG, atau WebP'); return;
     }
-    if (f.size > 2 * 1024 * 1024) { toast.error('Max 2 MB'); return; }
+    if (f.size > 2 * 1024 * 1024) { toast.error('Ukuran maksimal 2 MB'); return; }
     onUpload(f);
     e.target.value = '';
   };
   return (
     <div>
-      <FieldLabel hint="PNG, SVG, or WebP — transparent background — max 2 MB">Logo</FieldLabel>
+      <FieldLabel hint="PNG, SVG, atau WebP — latar transparan — maks. 2 MB">Logo</FieldLabel>
       <div className="flex items-center gap-4">
-        {/* Preview box */}
         <div
           onClick={() => ref.current?.click()}
           className="w-24 h-16 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center flex-shrink-0 cursor-pointer hover:border-dark transition-colors overflow-hidden group"
@@ -124,11 +121,10 @@ const LogoSlot: React.FC<{
             ? <img src={preview} alt="logo" className="w-full h-full object-contain p-2" />
             : <div className="flex flex-col items-center gap-1">
                 <Image size={18} className="text-gray-300 group-hover:text-dark transition-colors" />
-                <p className="text-[10px] text-gray-300">No logo</p>
+                <p className="text-[10px] text-gray-300">Belum ada logo</p>
               </div>
           }
         </div>
-        {/* Actions */}
         <div className="flex flex-col gap-2">
           <button
             type="button"
@@ -143,7 +139,7 @@ const LogoSlot: React.FC<{
               onClick={onRemove}
               className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-500 transition-colors border border-red-100 rounded-xl px-3 py-2 hover:bg-red-50"
             >
-              <X size={12} /> Remove
+              <X size={12} /> Hapus
             </button>
           )}
         </div>
@@ -171,11 +167,11 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
   <div className="flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3">
     <WifiOff size={15} className="text-orange-400 flex-shrink-0 mt-0.5" />
     <div className="flex-1">
-      <p className="text-sm font-semibold text-orange-700">Backend not connected</p>
-      <p className="text-xs text-orange-500 mt-0.5">Changes won't be saved until the server is running.</p>
+      <p className="text-sm font-semibold text-orange-700">Backend tidak terhubung</p>
+      <p className="text-xs text-orange-500 mt-0.5">Perubahan tidak akan tersimpan sampai server aktif.</p>
     </div>
     <button onClick={onRetry} className="flex items-center gap-1 text-xs font-semibold text-orange-600 hover:text-orange-700 transition-colors flex-shrink-0">
-      <RefreshCw size={12} /> Retry
+      <RefreshCw size={12} /> Coba lagi
     </button>
   </div>
 );
@@ -219,17 +215,16 @@ const SettingsPage: React.FC = () => {
 
   const validate = (): boolean => {
     const e: typeof errors = {};
-    if (!form.siteName.trim())     e.siteName        = 'Site name is required';
-    if (form.metaTitle.length > 70)       e.metaTitle       = 'Keep under 70 characters';
-    if (form.metaDescription.length > 160) e.metaDescription = 'Keep under 160 characters';
+    if (form.metaTitle.length > 70)        e.metaTitle       = 'Maksimal 70 karakter';
+    if (form.metaDescription.length > 160) e.metaDescription = 'Maksimal 160 karakter';
     if (form.siteEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.siteEmail))
-                                   e.siteEmail       = 'Invalid email address';
+                                           e.siteEmail       = 'Format email tidak valid';
     if (form.socialWhatsapp && !/^\d{8,15}$/.test(form.socialWhatsapp.replace(/\s/g,'')))
-                                   e.socialWhatsapp  = 'Digits only, 8–15 characters';
+                                           e.socialWhatsapp  = 'Hanya angka, 8–15 digit';
     (['socialInstagram','socialFacebook','socialLinkedin','socialYoutube'] as (keyof SiteSettings)[])
       .forEach(k => {
         const v = form[k] as string;
-        if (v && !/^https?:\/\//.test(v)) e[k] = 'Must start with https://';
+        if (v && !/^https?:\/\//.test(v)) e[k] = 'Harus diawali https://';
       });
     setErrors(e);
     if (Object.keys(e).length) {
@@ -240,7 +235,7 @@ const SettingsPage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!validate()) { toast.error('Please fix the errors before saving'); return; }
+    if (!validate()) { toast.error('Perbaiki error sebelum menyimpan'); return; }
     setSaving(true);
     try {
       const fd = new FormData();
@@ -248,7 +243,7 @@ const SettingsPage: React.FC = () => {
       (Object.keys(form) as (keyof SiteSettings)[]).forEach(k => {
         if (!skip.includes(k)) fd.append(k, String(form[k] ?? ''));
       });
-      if (logoFile)         fd.append('logo', logoFile);
+      if (logoFile)         fd.append('image', logoFile);
       else if (logoRemoved) fd.append('removeLogo', 'true');
 
       const res = await api.put('/admin/settings', fd, {
@@ -260,14 +255,14 @@ const SettingsPage: React.FC = () => {
         setLogoFile(null); setLogoRemoved(false);
         if (d.logo) setLogoPreview(d.logo);
         setApiError(false);
-        toast.success('Settings saved!');
-      } else toast.error(res.data?.message || 'Save failed');
+        toast.success('Pengaturan berhasil disimpan!');
+      } else toast.error(res.data?.message || 'Gagal menyimpan');
     } catch (err: any) {
       const s = err?.response?.status;
       const m = err?.response?.data?.message;
-      if (s === 413)            toast.error('File too large — max 2 MB');
-      else if (s === 400 || s === 422) toast.error(m || 'Validation error');
-      else                      toast.error(m || 'Failed to save settings');
+      if (s === 413)                   toast.error('File terlalu besar — maks. 2 MB');
+      else if (s === 400 || s === 422) toast.error(m || 'Error validasi');
+      else                             toast.error(m || 'Gagal menyimpan pengaturan');
     } finally { setSaving(false); }
   };
 
@@ -304,7 +299,7 @@ const SettingsPage: React.FC = () => {
 
       {/* GENERAL */}
       {tab === 'general' && (
-        <Card icon={<Globe size={16} className="text-primary" />} iconBg="bg-primary/10" title="Site Settings" subtitle="Brand identity shown in navbar and footer">
+        <Card icon={<Globe size={16} className="text-primary" />} iconBg="bg-primary/10" title="Pengaturan Umum" subtitle="Identitas brand yang tampil di navbar dan footer">
           <LogoSlot
             preview={logoPreview}
             onUpload={f => { setLogoFile(f); setLogoPreview(URL.createObjectURL(f)); setLogoRemoved(false); }}
@@ -312,7 +307,7 @@ const SettingsPage: React.FC = () => {
           />
           <div className="border-t border-gray-100 pt-5 space-y-5">
             <div>
-              <FieldLabel>Site Name <span className="text-red-400">*</span></FieldLabel>
+              <FieldLabel hint="Nama resmi perusahaan, ditampilkan di berbagai bagian situs">Nama Situs</FieldLabel>
               <input type="text" placeholder="e.g. PT. Winosa Mitra Bharatadjaya" value={form.siteName} onChange={set('siteName')} maxLength={100} className={errors.siteName ? inpErr : inp} />
               {errors.siteName
                 ? <ErrMsg msg={errors.siteName} />
@@ -320,9 +315,9 @@ const SettingsPage: React.FC = () => {
               }
             </div>
             <div>
-              <FieldLabel hint="Shown in footer and used as fallback SEO description">Site Tagline</FieldLabel>
+              <FieldLabel hint="Ditampilkan di footer dan digunakan sebagai deskripsi SEO cadangan">Tagline Situs</FieldLabel>
               <div className="relative">
-                <textarea placeholder="Short description of your business..." value={form.siteTagline} onChange={set('siteTagline')} rows={3} maxLength={300} className={txt} />
+                <textarea placeholder="Deskripsi singkat bisnis Anda..." value={form.siteTagline} onChange={set('siteTagline')} rows={3} maxLength={300} className={txt} />
                 <span className={`absolute bottom-3 right-3 text-[11px] ${cc(form.siteTagline.length, 300)}`}>{form.siteTagline.length}/300</span>
               </div>
             </div>
@@ -333,57 +328,45 @@ const SettingsPage: React.FC = () => {
       {/* SEO */}
       {tab === 'seo' && (
         <div className="space-y-4">
-          <Card icon={<Search size={16} className="text-blue-500" />} iconBg="bg-blue-50" title="SEO Settings" subtitle="Controls how Winosa appears in Google search results">
+          <Card icon={<Search size={16} className="text-blue-500" />} iconBg="bg-blue-50" title="Pengaturan SEO" subtitle="Mengatur tampilan Winosa di hasil pencarian Google">
+
+            {/* Google Preview */}
             <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 space-y-0.5">
-              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-3">Google Preview</p>
+              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-3">Pratinjau Google</p>
               <p className="text-xs text-gray-400">winosa.com</p>
-              <p className="text-[15px] text-blue-600 font-medium leading-snug truncate">{form.metaTitle || form.siteName || 'Your page title here'}</p>
-              <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{form.metaDescription || form.siteTagline || 'Your meta description will appear here.'}</p>
+              <p className="text-[15px] text-blue-600 font-medium leading-snug truncate">{form.metaTitle || form.siteName || 'Judul halaman Anda'}</p>
+              <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{form.metaDescription || form.siteTagline || 'Deskripsi meta akan muncul di sini.'}</p>
             </div>
+
             <div>
-              <FieldLabel hint="Ideal: 50–60 characters. Shown as the blue link in Google.">Meta Title</FieldLabel>
-              <input type="text" placeholder="e.g. Winosa — Digital Solutions & IT Consulting" value={form.metaTitle} onChange={set('metaTitle')} maxLength={70} className={errors.metaTitle ? inpErr : inp} />
+              <FieldLabel hint="Ideal 50–60 karakter. Muncul sebagai judul biru di Google.">Meta Title</FieldLabel>
+              <input type="text" placeholder="e.g. Winosa — Solusi Digital & Konsultasi IT" value={form.metaTitle} onChange={set('metaTitle')} maxLength={70} className={errors.metaTitle ? inpErr : inp} />
               <div className="flex items-center justify-between mt-1">
                 {errors.metaTitle ? <ErrMsg msg={errors.metaTitle} /> : <span />}
                 <span className={`text-[11px] ${cc(form.metaTitle.length, 60)}`}>{form.metaTitle.length}/60</span>
               </div>
             </div>
+
             <div>
-              <FieldLabel hint="Ideal: 120–160 characters. The grey text shown below the title in Google.">Meta Description</FieldLabel>
+              <FieldLabel hint="Ideal 120–160 karakter. Teks abu-abu di bawah judul di Google.">Meta Description</FieldLabel>
               <div className="relative">
-                <textarea placeholder="Describe your website in 1–2 compelling sentences..." value={form.metaDescription} onChange={set('metaDescription')} rows={3} maxLength={200} className={errors.metaDescription ? `${inpErr} resize-none` : txt} />
+                <textarea placeholder="Deskripsikan website Anda dalam 1–2 kalimat yang menarik..." value={form.metaDescription} onChange={set('metaDescription')} rows={3} maxLength={200} className={errors.metaDescription ? `${inpErr} resize-none` : txt} />
                 <span className={`absolute bottom-3 right-3 text-[11px] ${cc(form.metaDescription.length, 160)}`}>{form.metaDescription.length}/160</span>
               </div>
               {errors.metaDescription && <ErrMsg msg={errors.metaDescription} />}
             </div>
-            <div>
-              <FieldLabel hint="Comma-separated. Useful for search engines other than Google.">Meta Keywords</FieldLabel>
-              <input type="text" placeholder="web development, digital agency, IT consulting, Lampung" value={form.metaKeywords} onChange={set('metaKeywords')} className={inp} />
-            </div>
-            <div className="border-t border-gray-100 pt-5">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 bg-orange-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <BarChart2 size={15} className="text-orange-500" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-dark text-sm">Google Analytics</h3>
-                  <p className="text-xs text-gray-400">Track website traffic automatically</p>
-                </div>
-              </div>
-              <FieldLabel hint='Starts with "G-" — find it in GA4 Admin → Property → Data Streams'>Measurement ID</FieldLabel>
-              <input type="text" placeholder="G-XXXXXXXXXX" value={form.googleAnalyticsId} onChange={set('googleAnalyticsId')} className={inp} />
-            </div>
+
           </Card>
+
           <div className="bg-blue-50/60 border border-blue-100 rounded-2xl p-4">
             <div className="flex items-start gap-3">
               <CheckCircle size={15} className="text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-dark">Where does this appear?</p>
+                <p className="text-sm font-semibold text-dark">Di mana ini muncul?</p>
                 <ul className="space-y-1 text-xs text-gray-500">
-                  <li>• <strong>Meta Title</strong> → the clickable blue link in Google results</li>
-                  <li>• <strong>Meta Description</strong> → the grey summary text below the link</li>
-                  <li>• <strong>Meta Keywords</strong> → not shown publicly, only read by search engines</li>
-                  <li>• <strong>GA ID</strong> → injected into <code className="bg-gray-100 px-1 rounded text-[11px]">&lt;head&gt;</code> automatically</li>
+                  <li>• <strong>Meta Title</strong> → judul biru yang bisa diklik di hasil Google</li>
+                  <li>• <strong>Meta Description</strong> → teks ringkasan abu-abu di bawah judul</li>
+                  <li>• Keduanya <strong>tidak muncul di halaman website</strong>, hanya di hasil pencarian Google</li>
                 </ul>
               </div>
             </div>
@@ -393,7 +376,7 @@ const SettingsPage: React.FC = () => {
 
       {/* SOCIAL */}
       {tab === 'social' && (
-        <Card icon={<Share2 size={16} className="text-purple-500" />} iconBg="bg-purple-50" title="Social Media" subtitle="Links shown in the footer social icons">
+        <Card icon={<Share2 size={16} className="text-purple-500" />} iconBg="bg-purple-50" title="Media Sosial" subtitle="Link yang tampil di ikon sosial pada footer">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             {([
               { icon: <Instagram size={14}/>, label: 'Instagram', key: 'socialInstagram' as const, ph: 'https://instagram.com/winosa' },
@@ -415,7 +398,7 @@ const SettingsPage: React.FC = () => {
             ))}
           </div>
           <div className="border-t border-gray-100 pt-5">
-            <FieldLabel hint="Digits only with country code — drives the wa.me link in footer and contact page">WhatsApp Number</FieldLabel>
+            <FieldLabel hint="Hanya angka dengan kode negara — digunakan untuk link wa.me di footer dan halaman kontak">Nomor WhatsApp</FieldLabel>
             <div className="relative max-w-xs">
               <MessageCircle size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="tel" placeholder="6281234567890" value={form.socialWhatsapp}
@@ -426,19 +409,19 @@ const SettingsPage: React.FC = () => {
             {errors.socialWhatsapp && <ErrMsg msg={errors.socialWhatsapp} />}
             {form.socialWhatsapp && !errors.socialWhatsapp && (
               <p className="text-[11px] text-gray-400 mt-1.5">
-                Link preview: <span className="text-dark font-medium">wa.me/{form.socialWhatsapp}</span>
+                Pratinjau link: <span className="text-dark font-medium">wa.me/{form.socialWhatsapp}</span>
               </p>
             )}
           </div>
         </Card>
       )}
 
-      {/* ══ CONTACT ══ */}
+      {/* CONTACT */}
       {tab === 'contact' && (
-        <Card icon={<Phone size={16} className="text-green-500" />} iconBg="bg-green-50" title="Contact Information" subtitle="Shown in the Contact page and footer">
+        <Card icon={<Phone size={16} className="text-green-500" />} iconBg="bg-green-50" title="Informasi Kontak" subtitle="Ditampilkan di halaman Kontak dan footer">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <FieldLabel>Email Address</FieldLabel>
+              <FieldLabel>Alamat Email</FieldLabel>
               <div className="relative">
                 <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="email" placeholder="hello@winosa.com" value={form.siteEmail} onChange={set('siteEmail')} className={errors.siteEmail ? `${inpErr} pl-11` : inpIcon} />
@@ -446,7 +429,7 @@ const SettingsPage: React.FC = () => {
               {errors.siteEmail && <ErrMsg msg={errors.siteEmail} />}
             </div>
             <div>
-              <FieldLabel hint='Shown as "Call us" on the Contact page'>Phone Number</FieldLabel>
+              <FieldLabel hint='Muncul sebagai "Hubungi kami" di halaman Kontak'>Nomor Telepon</FieldLabel>
               <div className="relative">
                 <Phone size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="tel" placeholder="+62 21 xxxx xxxx" value={form.sitePhone} onChange={set('sitePhone')} className={inpIcon} />
@@ -454,7 +437,7 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
           <div>
-            <FieldLabel hint='Shown as "Visit us" on the Contact page'>Office Address</FieldLabel>
+            <FieldLabel hint='Muncul sebagai "Kunjungi kami" di halaman Kontak'>Alamat Kantor</FieldLabel>
             <div className="relative">
               <MapPin size={14} className="absolute left-4 top-[14px] text-gray-400" />
               <textarea placeholder="Jl. Raya No. 1, Bandar Lampung, Indonesia" value={form.siteAddress} onChange={set('siteAddress')} rows={3} className="w-full border border-gray-200 rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors resize-none placeholder:text-gray-300" />
@@ -463,8 +446,8 @@ const SettingsPage: React.FC = () => {
           <div className="bg-green-50 border border-green-100 rounded-2xl px-4 py-3 flex items-start gap-3">
             <CheckCircle size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-green-700 leading-relaxed">
-              <strong>WhatsApp</strong> number is managed under the <strong>Social</strong> tab —
-              it drives the footer WhatsApp icon and "Live Chat" link on the Contact page.
+              Nomor <strong>WhatsApp</strong> diatur di tab <strong>Sosial</strong> —
+              digunakan untuk ikon WhatsApp di footer dan link "Live Chat" di halaman Kontak.
             </p>
           </div>
         </Card>
@@ -472,15 +455,15 @@ const SettingsPage: React.FC = () => {
 
       {/* Save bar */}
       <div className="flex justify-end items-center gap-3 pt-2 pb-4">
-        {isDirty && !saving && <span className="text-xs text-amber-500 font-medium">• Unsaved changes</span>}
+        {isDirty && !saving && <span className="text-xs text-amber-500 font-medium">• Ada perubahan yang belum disimpan</span>}
         <button
           onClick={handleSave}
           disabled={saving || !isDirty}
           className="flex items-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {saving
-            ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Saving...</>
-            : <><Save size={14} />Save Changes</>
+            ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Menyimpan...</>
+            : <><Save size={14} />Simpan Perubahan</>
           }
         </button>
       </div>
