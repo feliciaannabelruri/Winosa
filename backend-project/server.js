@@ -94,6 +94,7 @@ app.use('/api/newsletter',    require('./routes/newsletterRoutes'));
 app.use('/api/services',      require('./routes/serviceRoutes'));
 app.use('/api/subscriptions', require('./routes/subscriptionRoutes'));
 app.use('/api/content',       require('./routes/contentRoutes'));
+app.use('/api/settings',      require('./routes/settingsRoutes'));
 app.use('/api/auth',          authLimiter, require('./routes/authRoutes'));
 app.use('/api/search',        require('./routes/searchRoutes'));
 

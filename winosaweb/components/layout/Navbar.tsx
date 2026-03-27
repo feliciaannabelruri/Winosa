@@ -13,6 +13,15 @@ export default function Navbar() {
   const { language, setLanguage } = useLanguageStore();
   const { t } = useTranslate();
 
+  const [logo, setLogo] = useState("/logo.png");
+
+  useEffect(() => {
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`)
+    .then(r => r.json())
+    .then(json => { if (json?.data?.logo) setLogo(json.data.logo); })
+    .catch(() => {});
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -48,7 +57,7 @@ export default function Navbar() {
 
         <Link href="/" aria-label="Go to homepage">
           <Image
-            src="/logo.png"
+            src={logo}
             alt="Winosa company logo"
             width={44}
             height={44}
@@ -100,7 +109,7 @@ export default function Navbar() {
               aria-label="Go to homepage"
             >
               <Image
-                src="/logo.png"
+                src={logo}
                 alt="Winosa company logo"
                 width={44}
                 height={44}
