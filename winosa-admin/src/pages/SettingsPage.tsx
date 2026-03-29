@@ -42,10 +42,10 @@ const DEFAULT: SiteSettings = {
 type TabKey = 'general' | 'seo' | 'social' | 'contact';
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
-  { key: 'general', label: 'General', icon: <Globe  size={14} /> },
-  { key: 'seo',     label: 'SEO',     icon: <Search size={14} /> },
-  { key: 'social',  label: 'Sosial',  icon: <Share2 size={14} /> },
-  { key: 'contact', label: 'Kontak',  icon: <Phone  size={14} /> },
+  { key: 'general', label: 'General',  icon: <Globe  size={14} /> },
+  { key: 'seo',     label: 'SEO',      icon: <Search size={14} /> },
+  { key: 'social',  label: 'Social',   icon: <Share2 size={14} /> },
+  { key: 'contact', label: 'Contact',  icon: <Phone  size={14} /> },
 ];
 
 const TAB_FIELDS: Record<TabKey, (keyof SiteSettings)[]> = {
@@ -299,7 +299,7 @@ const SettingsPage: React.FC = () => {
 
       {/* GENERAL */}
       {tab === 'general' && (
-        <Card icon={<Globe size={16} className="text-primary" />} iconBg="bg-primary/10" title="Pengaturan Umum" subtitle="Identitas brand yang tampil di navbar dan footer">
+        <Card icon={<Globe size={16} className="text-primary" />} iconBg="bg-primary/10" title="General Settings" subtitle="Identitas brand yang tampil di navbar dan footer">
           <LogoSlot
             preview={logoPreview}
             onUpload={f => { setLogoFile(f); setLogoPreview(URL.createObjectURL(f)); setLogoRemoved(false); }}
@@ -307,7 +307,7 @@ const SettingsPage: React.FC = () => {
           />
           <div className="border-t border-gray-100 pt-5 space-y-5">
             <div>
-              <FieldLabel hint="Nama resmi perusahaan, ditampilkan di berbagai bagian situs">Nama Situs</FieldLabel>
+              <FieldLabel hint="Nama resmi perusahaan, ditampilkan di berbagai bagian situs">Site name</FieldLabel>
               <input type="text" placeholder="e.g. PT. Winosa Mitra Bharatadjaya" value={form.siteName} onChange={set('siteName')} maxLength={100} className={errors.siteName ? inpErr : inp} />
               {errors.siteName
                 ? <ErrMsg msg={errors.siteName} />
@@ -315,10 +315,10 @@ const SettingsPage: React.FC = () => {
               }
             </div>
             <div>
-              <FieldLabel hint="Ditampilkan di footer dan digunakan sebagai deskripsi SEO cadangan">Tagline Situs</FieldLabel>
+              <FieldLabel hint="Ditampilkan di footer dan digunakan sebagai deskripsi SEO cadangan">Tagline</FieldLabel>
               <div className="relative">
-                <textarea placeholder="Deskripsi singkat bisnis Anda..." value={form.siteTagline} onChange={set('siteTagline')} rows={3} maxLength={300} className={txt} />
-                <span className={`absolute bottom-3 right-3 text-[11px] ${cc(form.siteTagline.length, 300)}`}>{form.siteTagline.length}/300</span>
+                <textarea placeholder="Deskripsi singkat bisnis Anda..." value={form.siteTagline} onChange={set('siteTagline')} rows={3} maxLength={200} className={txt} />
+                <span className={`absolute bottom-3 right-3 text-[11px] ${cc(form.siteTagline.length, 200)}`}>{form.siteTagline.length}/200</span>
               </div>
             </div>
           </div>
@@ -328,7 +328,7 @@ const SettingsPage: React.FC = () => {
       {/* SEO */}
       {tab === 'seo' && (
         <div className="space-y-4">
-          <Card icon={<Search size={16} className="text-blue-500" />} iconBg="bg-blue-50" title="Pengaturan SEO" subtitle="Mengatur tampilan Winosa di hasil pencarian Google">
+          <Card icon={<Search size={16} className="text-blue-500" />} iconBg="bg-blue-50" title="SEO Settings" subtitle="Mengatur tampilan Winosa di hasil pencarian Google">
 
             {/* Google Preview */}
             <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 space-y-0.5">
@@ -418,7 +418,7 @@ const SettingsPage: React.FC = () => {
 
       {/* CONTACT */}
       {tab === 'contact' && (
-        <Card icon={<Phone size={16} className="text-green-500" />} iconBg="bg-green-50" title="Informasi Kontak" subtitle="Ditampilkan di halaman Kontak dan footer">
+        <Card icon={<Phone size={16} className="text-green-500" />} iconBg="bg-green-50" title="Contact Information" subtitle="Ditampilkan di halaman Kontak dan footer">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
               <FieldLabel>Alamat Email</FieldLabel>
@@ -463,7 +463,7 @@ const SettingsPage: React.FC = () => {
         >
           {saving
             ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Menyimpan...</>
-            : <><Save size={14} />Simpan Perubahan</>
+            : <><Save size={14} />Save Changes</>
           }
         </button>
       </div>
