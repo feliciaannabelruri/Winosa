@@ -1385,6 +1385,18 @@ blogDetail: {
     id: "Blog tidak ditemukan",
   },
 
+  relatedEmpty: {
+  en: "No Related Articles",
+  nl: "Geen gerelateerde artikelen",
+  id: "Tidak ada artikel terkait",
+},
+
+relatedEmptyDesc: {
+  en: "We couldn't find any related articles for this post.",
+  nl: "Er zijn geen gerelateerde artikelen gevonden.",
+  id: "Tidak ada artikel terkait yang ditemukan untuk postingan ini.",
+},
+
 },
 
 

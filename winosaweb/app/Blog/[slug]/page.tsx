@@ -9,6 +9,7 @@ import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
+import EmptyState from "@/components/UI/EmptyState";
 
 type Blog = {
   _id: string;
@@ -87,7 +88,6 @@ export default function BlogDetailPage() {
     useEffect(() => {
     if (!slug) return;
 
-    // ❗ jangan save kalau masih initial kosong (biar gak overwrite)
     if (!comments) return;
 
     try {
@@ -216,8 +216,41 @@ export default function BlogDetailPage() {
   // ================= LOADING =================
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        {t("global", "loading")}
+      <main className="w-full bg-white overflow-x-hidden animate-pulse">
+
+        {/* HERO SKELETON */}
+        <section className="relative w-full h-[75vh] bg-gray-200" />
+
+        {/* ARTICLE SKELETON */}
+        <section className="max-w-5xl mx-auto px-6 py-32 space-y-4">
+          <div className="h-4 bg-gray-200 rounded-full w-3/4" />
+          <div className="h-4 bg-gray-200 rounded-full w-full" />
+          <div className="h-4 bg-gray-200 rounded-full w-5/6" />
+          <div className="h-4 bg-gray-200 rounded-full w-2/3" />
+          <div className="h-4 bg-gray-200 rounded-full w-full" />
+          <div className="h-4 bg-gray-200 rounded-full w-4/5" />
+          <div className="h-4 bg-gray-200 rounded-full w-3/5" />
+          <div className="h-4 bg-gray-200 rounded-full w-full" />
+        </section>
+
+        {/* RELATED SKELETON */}
+        <section className="w-full py-32 bg-white">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="h-7 bg-gray-200 rounded-full w-48 mb-12" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-[420px] flex flex-col bg-white rounded-[28px] border border-gray-100 p-6 gap-4">
+                  <div className="h-48 w-full rounded-[20px] bg-gray-200" />
+                  <div className="h-4 bg-gray-200 rounded-full w-3/4" />
+                  <div className="h-4 bg-gray-200 rounded-full w-full" />
+                  <div className="h-4 bg-gray-200 rounded-full w-2/3" />
+                  <div className="mt-auto h-9 bg-gray-200 rounded-full w-32" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
       </main>
     );
   }
@@ -304,46 +337,55 @@ export default function BlogDetailPage() {
             </h2>
           </FadeUp>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {translatedRelated.length === 0 ? (
+            <EmptyState
+              icon="folder"
+              title={t("blogDetail", "relatedEmpty")}
+              description={t("blogDetail", "relatedEmptyDesc")}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
-            {translatedRelated.map((post) => (
+              {translatedRelated.map((post) => (
 
-              <div key={post.slug} className="group relative">
+                <div key={post.slug} className="group relative">
 
-                <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-[radial-gradient(circle,rgba(255,200,0,0.65)_0%,rgba(255,200,0,0.45)_35%,transparent_75%)] opacity-0 blur-[80px] transition-all duration-500 group-hover:opacity-100" />
+                  <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-[radial-gradient(circle,rgba(255,200,0,0.65)_0%,rgba(255,200,0,0.45)_35%,transparent_75%)] opacity-0 blur-[80px] transition-all duration-500 group-hover:opacity-100" />
 
-                <div className="relative h-[420px] flex flex-col bg-white rounded-[28px] border border-black p-6 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
+                  <div className="relative h-[420px] flex flex-col bg-white rounded-[28px] border border-black p-6 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
 
-                  <div className="h-48 w-full rounded-[20px] overflow-hidden bg-gray-200 mb-5">
+                    <div className="h-48 w-full rounded-[20px] overflow-hidden bg-gray-200 mb-5">
 
-                    {post.image && (
-                      <img
-                        src={post.image}
-                        alt={post.title}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
+                      {post.image && (
+                        <img
+                          src={post.image}
+                          alt={post.title}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
 
-                  </div>
+                    </div>
 
-                  <div className="flex flex-col flex-grow">
+                    <div className="flex flex-col flex-grow">
 
-                    <h3 className="font-semibold text-lg mb-3 line-clamp-2">
-                      {post.title}
-                    </h3>
+                      <h3 className="font-semibold text-lg mb-3 line-clamp-2">
+                        {post.title}
+                      </h3>
 
-                    <p className="text-sm text-black/70 line-clamp-3">
-                      {post.excerpt}
-                    </p>
+                      <p className="text-sm text-black/70 line-clamp-3">
+                        {post.excerpt}
+                      </p>
 
-                    <div className="mt-auto pt-6">
+                      <div className="mt-auto pt-6">
 
-                      <Link
-                        href={`/Blog/${post.slug}`}
-                        className="inline-block px-6 py-2 rounded-full border border-black text-sm text-black hover:bg-black/10 transition"
-                      >
-                        {t("blogDetail", "readMore")}
-                      </Link>
+                        <Link
+                          href={`/Blog/${post.slug}`}
+                          className="inline-block px-6 py-2 rounded-full border border-black text-sm text-black hover:bg-black/10 transition"
+                        >
+                          {t("blogDetail", "readMore")}
+                        </Link>
+
+                      </div>
 
                     </div>
 
@@ -351,16 +393,14 @@ export default function BlogDetailPage() {
 
                 </div>
 
-              </div>
+              ))}
 
-            ))}
-
-          </div>
+            </div>
+          )}
 
         </div>
       </section>
 
-     
         {/* COMMENTS */}
         <section
           aria-label="Blog comments section"
