@@ -9,7 +9,7 @@ import { SiteSettings } from "@/types/settings";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
-async function fetchSettings() {
+async function fetchSettings(): Promise<SiteSettings | null> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
       next: { revalidate: 3600 },
@@ -24,7 +24,7 @@ async function fetchSettings() {
 export default function SectionContactForm() {
   const { t } = useTranslate();
 
-  const [settings, setSettings] = useState(null);
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -38,7 +38,11 @@ export default function SectionContactForm() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchSettings().then(setSettings);
+    const load = async () => {
+      const data = await fetchSettings();
+      setSettings(data);
+    };
+    load();
   }, []);
 
   const phone = settings?.sitePhone || "(235) 325-1351";
@@ -47,7 +51,7 @@ export default function SectionContactForm() {
   const waUrl = waNum ? `https://wa.me/${waNum}` : "#";
 
   const handleChange = useCallback(
-    (e) => {
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setForm({ ...form, [e.target.name]: e.target.value });
     },
     [form]
@@ -62,7 +66,7 @@ export default function SectionContactForm() {
     return "";
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setSuccess("");
@@ -90,7 +94,7 @@ export default function SectionContactForm() {
 
       setSuccess(t("contact", "success"));
       setForm({ name: "", email: "", interest: "", phone: "", message: "" });
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || t("contact", "errorSubmit"));
     } finally {
       setLoading(false);
@@ -98,10 +102,11 @@ export default function SectionContactForm() {
   };
 
   return (
-    <FadeUp disableInView> {/* 🔥 FIX UTAMA */}
+    <FadeUp disableInView> {/* 🔥 FIX */}
       <section
         className="w-full py-24 bg-white"
         aria-labelledby="contact-title"
+        style={{ transform: "translateZ(0)" }} // 🔥 Safari fix
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-16">
 
@@ -138,10 +143,12 @@ export default function SectionContactForm() {
                 <div className="grid sm:grid-cols-2 gap-8">
 
                   <div>
-                    <label className="text-sm text-black/60">
+                    <label htmlFor="name" className="text-sm text-black/60">
                       {t("contact", "name")}
                     </label>
+
                     <input
+                      id="name"
                       name="name"
                       type="text"
                       required
@@ -152,10 +159,12 @@ export default function SectionContactForm() {
                   </div>
 
                   <div>
-                    <label className="text-sm text-black/60">
+                    <label htmlFor="email" className="text-sm text-black/60">
                       {t("contact", "email")}
                     </label>
+
                     <input
+                      id="email"
                       name="email"
                       type="email"
                       required
@@ -168,10 +177,12 @@ export default function SectionContactForm() {
                 </div>
 
                 <div>
-                  <label className="text-sm text-black/60">
+                  <label htmlFor="message" className="text-sm text-black/60">
                     {t("contact", "message")}
                   </label>
+
                   <textarea
+                    id="message"
                     name="message"
                     rows={4}
                     required
@@ -216,6 +227,7 @@ export default function SectionContactForm() {
                 <h4 className="font-semibold mb-3">
                   {t("contact", "call")}
                 </h4>
+
                 <div className="flex gap-3 text-black/70">
                   <Phone size={18} />
                   <span>{phone}</span>
@@ -226,6 +238,7 @@ export default function SectionContactForm() {
                 <h4 className="font-semibold mb-3">
                   {t("contact", "visit")}
                 </h4>
+
                 <div className="flex gap-3 text-black/70">
                   <MapPin size={18} />
                   <span>{address}</span>
@@ -236,6 +249,7 @@ export default function SectionContactForm() {
                 <h4 className="font-semibold mb-3">
                   {t("contact", "liveChat")}
                 </h4>
+
                 <a
                   href={waUrl}
                   target="_blank"
@@ -243,7 +257,9 @@ export default function SectionContactForm() {
                   className="flex gap-3 text-black/70 hover:text-black transition"
                 >
                   <MessageCircle size={18} />
-                  <span>WhatsApp{waNum ? ` +${waNum}` : ""}</span>
+                  <span>
+                    WhatsApp{waNum ? ` +${waNum}` : ""}
+                  </span>
                 </a>
               </div>
 

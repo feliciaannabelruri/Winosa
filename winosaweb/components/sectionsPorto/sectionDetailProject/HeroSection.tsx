@@ -20,65 +20,53 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ project }: HeroSectionProps) {
-
   const { tApi } = useTranslate();
   const { language } = useLanguageStore();
 
-  //  state hasil translate
   const [translated, setTranslated] = useState(project);
 
   useEffect(() => {
+    setTranslated(project);
 
-  setTranslated(project);
-
-  const run = async () => {
-
-    const translatedTitle = await translateHybrid(project.title, language, tApi);
-
-    setTranslated((prev) => ({
-      ...prev,
-      title: translatedTitle,
-    }));
-
-
-    const translatedCategory = await translateHybrid(project.category, language, tApi);
-
-    setTranslated((prev) => ({
-      ...prev,
-      category: translatedCategory,
-    }));
-
-
-    if (project.longDescription) {
-
-      const translatedDesc = await translateHybrid(
-        project.longDescription,
-        language,
-        tApi
-      );
+    const run = async () => {
+      const translatedTitle = await translateHybrid(project.title, language, tApi);
 
       setTranslated((prev) => ({
         ...prev,
-        longDescription: translatedDesc,
+        title: translatedTitle,
       }));
 
-    }
+      const translatedCategory = await translateHybrid(project.category, language, tApi);
 
-  };
+      setTranslated((prev) => ({
+        ...prev,
+        category: translatedCategory,
+      }));
 
-  run();
+      if (project.longDescription) {
+        const translatedDesc = await translateHybrid(
+          project.longDescription,
+          language,
+          tApi
+        );
 
-}, [project, language]);
+        setTranslated((prev) => ({
+          ...prev,
+          longDescription: translatedDesc,
+        }));
+      }
+    };
+
+    run();
+  }, [project, language]);
 
   const firstParagraph = translated.longDescription
     ? translated.longDescription.split(/\n\n|\r\n\r\n/)[0].trim()
     : "";
 
   return (
-    <FadeUp>
-      <div style={{ position: "relative" }}>
-
-        {/* HERO IMAGE + OVERLAY */}
+    <FadeUp disableInView>
+      <div style={{ position: "relative", transform: "translateZ(0)" }}>
         <section
           className={styles.heroSection}
           style={{ marginBottom: firstParagraph ? "0" : undefined }}
@@ -96,12 +84,10 @@ export default function HeroSection({ project }: HeroSectionProps) {
             <div className={styles.heroOverlay} />
           </div>
 
-          {/* TITLE + CATEGORY */}
           <motion.div
             className={styles.heroContent}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate="visible"
             variants={{
               hidden: {},
               visible: { transition: { staggerChildren: 0.2 } },
@@ -125,13 +111,11 @@ export default function HeroSection({ project }: HeroSectionProps) {
           </motion.div>
         </section>
 
-        {/* LONG DESC */}
         {firstParagraph && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9 }}
-            viewport={{ once: true }}
             style={{
               position: "relative",
               marginTop: "-20px",
@@ -153,7 +137,6 @@ export default function HeroSection({ project }: HeroSectionProps) {
             </p>
           </motion.div>
         )}
-
       </div>
     </FadeUp>
   );
