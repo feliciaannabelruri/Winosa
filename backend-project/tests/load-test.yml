@@ -1,0 +1,85 @@
+config:
+  target: "http://localhost:5000"   # ganti ke production URL saat testing prod
+  phases:
+    # Warm up — 10 users selama 30 detik
+    - duration: 30
+      arrivalRate: 10
+      name: "Warm up"
+    # Ramp up — naik dari 10 ke 100 users dalam 60 detik
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 100
+      name: "Ramp up to 100 users"
+    # Sustained load — 100 users selama 120 detik
+    - duration: 120
+      arrivalRate: 100
+      name: "Sustained 100 users"
+    # Stress test — spike ke 200 users
+    - duration: 30
+      arrivalRate: 200
+      name: "Stress spike"
+
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+
+  # Thresholds — test FAIL jika melewati ini
+  ensure:
+    p95: 500      # 95th percentile response < 500ms
+    p99: 1000     # 99th percentile response < 1000ms
+    maxErrorRate: 5  # error rate < 5%
+
+scenarios:
+  # ── Public endpoints (heavy traffic) ─────────────────────────────
+  - name: "Browse portfolio & blog"
+    weight: 50   # 50% of virtual users run this
+    flow:
+      - get:
+          url: "/api/portfolio"
+          expect:
+            - statusCode: 200
+      - think: 1   # 1 second pause (realistic user behaviour)
+      - get:
+          url: "/api/blog?page=1&limit=10"
+          expect:
+            - statusCode: 200
+      - think: 2
+      - get:
+          url: "/api/services"
+          expect:
+            - statusCode: 200
+
+  - name: "Search"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/search?q=web+development"
+          expect:
+            - statusCode: 200
+
+  - name: "Health check"
+    weight: 10
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+
+  - name: "Newsletter subscribe (rate limited)"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/newsletter"
+          json:
+            email: "loadtest_{{ $randomInt(1, 99999) }}@test.com"
+
+  - name: "Contact form (rate limited)"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/contact"
+          json:
+            name: "Load Test User"
+            email: "test@loadtest.com"
+            message: "This is a load test message, please ignore."
