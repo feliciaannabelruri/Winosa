@@ -4,6 +4,7 @@ const asyncHandler = require('../../middleware/asyncHandler');
 const { ErrorResponse } = require('../../middleware/errorHandler');
 const { uploadSingle, uploadToImageKit, deleteFromImageKit } = require('../../config/imagekit');
 const { cache } = require('../../utils/cache');
+const { triggerMLRetrain } = require('../../middleware/mlTrigger');
 
 // Helper: bungkus callback multer jadi Promise (wajib untuk Express 5)
 const runUpload = (req, res) =>
@@ -29,10 +30,9 @@ exports.createBlog = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Blog with this slug already exists', 400));
   }
 
-  let imageUrl = req.body.image || null; // URL dari ImageUpload component (sudah diupload terpisah)
+  let imageUrl = req.body.image || null;
   let imageId  = null;
 
-  // Kalau ada file langsung di request ini → upload ke ImageKit
   if (req.file) {
     const uploadResult = await uploadToImageKit(req.file, 'blog');
     imageUrl = uploadResult.url;
@@ -50,6 +50,9 @@ exports.createBlog = asyncHandler(async (req, res, next) => {
 
   cache.invalidatePrefix(CACHE_PREFIX);
 
+  // Trigger ML retrain setelah blog baru dibuat (fire and forget)
+  triggerMLRetrain().catch(e => console.warn('ML retrain skipped:', e.message));
+
   res.status(201).json({
     success: true,
     message: 'Blog created successfully',
@@ -61,7 +64,6 @@ exports.createBlog = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/admin/blog/:id
 // @access  Private/Admin
 exports.updateBlog = asyncHandler(async (req, res, next) => {
-  // Gunakan runUpload (Promise) — wajib untuk Express 5, callback style tidak kompatibel
   await runUpload(req, res);
 
   const lang = req.language || 'en';
@@ -71,7 +73,6 @@ exports.updateBlog = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(getTranslation(lang, 'blogNotFound'), 404));
   }
 
-  // Cek slug duplicate kalau diubah
   if (req.body.slug && req.body.slug !== blog.slug) {
     const existing = await Blog.findOne({ slug: req.body.slug }).lean();
     if (existing) {
@@ -79,15 +80,10 @@ exports.updateBlog = asyncHandler(async (req, res, next) => {
     }
   }
 
-  // Parse tags kalau masih JSON string
   if (req.body.tags && typeof req.body.tags === 'string') {
     try { req.body.tags = JSON.parse(req.body.tags); } catch { /* biarkan as-is */ }
   }
 
-  // Handle image:
-  // 1. File baru di request → upload ke ImageKit, hapus yang lama
-  // 2. req.body.image ada (URL string dari ImageUpload) → pakai itu
-  // 3. Tidak ada keduanya → jangan ubah image existing
   if (req.file) {
     if (blog.imageId) {
       try { await deleteFromImageKit(blog.imageId); } catch (e) {
@@ -98,12 +94,10 @@ exports.updateBlog = asyncHandler(async (req, res, next) => {
     req.body.image   = uploadResult.url;
     req.body.imageId = uploadResult.fileId;
   } else if (!req.body.image) {
-    // Tidak ada perubahan image → hapus dari body agar tidak overwrite dengan null/empty
     delete req.body.image;
     delete req.body.imageId;
   }
 
-  // Normalize isPublished string → boolean
   if (typeof req.body.isPublished === 'string') {
     req.body.isPublished = req.body.isPublished === 'true';
   }
@@ -114,6 +108,9 @@ exports.updateBlog = asyncHandler(async (req, res, next) => {
   });
 
   cache.invalidatePrefix(CACHE_PREFIX);
+
+  // Trigger ML retrain setelah blog diupdate (fire and forget)
+  triggerMLRetrain().catch(e => console.warn('ML retrain skipped:', e.message));
 
   res.json({
     success: true,
@@ -141,6 +138,9 @@ exports.deleteBlog = asyncHandler(async (req, res, next) => {
 
   await Blog.findByIdAndDelete(req.params.id);
   cache.invalidatePrefix(CACHE_PREFIX);
+
+  // Trigger ML retrain setelah blog dihapus (fire and forget)
+  triggerMLRetrain().catch(e => console.warn('ML retrain skipped:', e.message));
 
   res.json({ success: true, message: 'Blog deleted successfully' });
 });

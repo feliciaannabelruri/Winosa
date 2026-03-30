@@ -1,17 +1,23 @@
 require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+
+// ── Sentry HARUS diinit paling awal ──────────────────────────────────────────
+const { initSentry, sentryRequestHandler, sentryErrorHandler } = require('./config/sentry');
+initSentry();
+
+const express      = require('express');
+const cors         = require('cors');
 const sanitizeHtml = require('sanitize-html');
-const connectDB = require('./config/db');
-const { setLanguage } = require('./middleware/language');
+const connectDB    = require('./config/db');
+const { setLanguage }  = require('./middleware/language');
 const { errorHandler } = require('./middleware/errorHandler');
-const logger = require('./middleware/logger');
+const logger           = require('./middleware/logger');
 const { globalLimiter, authLimiter } = require('./middleware/rateLimiter');
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app = express();
 
+// ── CORS ──────────────────────────────────────────────────────────────────────
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map((o) => o.trim())
@@ -40,6 +46,7 @@ app.use(
   })
 );
 
+// ── Security headers ──────────────────────────────────────────────────────────
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -48,9 +55,14 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── Sentry request handler (sebelum routes) ───────────────────────────────────
+app.use(sentryRequestHandler());
+
+// ── Body parser ───────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// ── Sanitize input ────────────────────────────────────────────────────────────
 const sanitizeValue = (val) => {
   if (typeof val === 'string') {
     val = sanitizeHtml(val, { allowedTags: [], allowedAttributes: {} });
@@ -77,7 +89,6 @@ app.use((req, res, next) => {
   if (req.body && typeof req.body === 'object') {
     req.body = sanitizeObject(req.body);
   }
-
   next();
 });
 
@@ -85,8 +96,10 @@ app.use(logger);
 app.use(setLanguage);
 app.use('/api/', globalLimiter);
 
+// ── DB ────────────────────────────────────────────────────────────────────────
 connectDB();
 
+// ── Public Routes ─────────────────────────────────────────────────────────────
 app.use('/api/portfolio',     require('./routes/portfolioRoutes'));
 app.use('/api/blog',          require('./routes/blogRoutes'));
 app.use('/api/contact',       require('./routes/contactRoutes'));
@@ -101,6 +114,7 @@ app.use('/api/search',        require('./routes/searchRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/email',  require('./routes/emailTestRoutes'));
 
+// ── Admin Routes ──────────────────────────────────────────────────────────────
 app.use('/api/admin/services',      require('./routes/admin/adminServiceRoutes'));
 app.use('/api/admin/portfolio',     require('./routes/admin/adminPortfolioRoutes'));
 app.use('/api/admin/blog',          require('./routes/admin/adminBlogRoutes'));
@@ -110,6 +124,7 @@ app.use('/api/admin/settings',      require('./routes/admin/adminSettingsRoutes'
 app.use('/api/admin/content',       require('./routes/admin/adminContentRoutes'));
 app.use('/api/admin/upload',        require('./routes/uploadRoutes'));
 
+// ── Root & Health ─────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
     message: 'Winosa Backend API is running! 🚀',
@@ -121,13 +136,13 @@ app.get('/', (req, res) => {
 
 app.get('/health', async (req, res) => {
   const health = {
-    uptime: process.uptime(),
-    status: 'OK',
-    timestamp: new Date().toISOString(),
+    uptime:      process.uptime(),
+    status:      'OK',
+    timestamp:   new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    database: 'disconnected',
-    email: 'unknown',
-    cache: 'ok',
+    database:    'disconnected',
+    email:       'unknown',
+    cache:       'ok',
   };
 
   try {
@@ -148,11 +163,12 @@ app.get('/health', async (req, res) => {
     res.json(health);
   } catch (error) {
     health.status = 'ERROR';
-    health.error = error.message;
+    health.error  = error.message;
     res.status(503).json(health);
   }
 });
 
+// ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -160,14 +176,19 @@ app.use((req, res) => {
   });
 });
 
+// ── Sentry error handler (sebelum custom error handler) ───────────────────────
+app.use(sentryErrorHandler());
+
+// ── Custom Error Handler ──────────────────────────────────────────────────────
 app.use(errorHandler);
 
+// ── Start ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`\n Server running on port ${PORT}`);
   console.log(` API: http://localhost:${PORT}`);
-  console.log(`Health: http://localhost:${PORT}/health`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}\n`);
+  console.log(` Health: http://localhost:${PORT}/health`);
+  console.log(` Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
 
 module.exports = app;
