@@ -9,7 +9,7 @@ import { SiteSettings } from "@/types/settings";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
-async function fetchSettings(): Promise<SiteSettings | null> {
+async function fetchSettings() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
       next: { revalidate: 3600 },
@@ -24,7 +24,7 @@ async function fetchSettings(): Promise<SiteSettings | null> {
 export default function SectionContactForm() {
   const { t } = useTranslate();
 
-  const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const [settings, setSettings] = useState(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -47,7 +47,7 @@ export default function SectionContactForm() {
   const waUrl = waNum ? `https://wa.me/${waNum}` : "#";
 
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (e) => {
       setForm({ ...form, [e.target.name]: e.target.value });
     },
     [form]
@@ -62,7 +62,7 @@ export default function SectionContactForm() {
     return "";
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     setSuccess("");
@@ -90,7 +90,7 @@ export default function SectionContactForm() {
 
       setSuccess(t("contact", "success"));
       setForm({ name: "", email: "", interest: "", phone: "", message: "" });
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || t("contact", "errorSubmit"));
     } finally {
       setLoading(false);
@@ -98,7 +98,7 @@ export default function SectionContactForm() {
   };
 
   return (
-    <FadeUp>
+    <FadeUp disableInView> {/* 🔥 FIX UTAMA */}
       <section
         className="w-full py-24 bg-white"
         aria-labelledby="contact-title"
@@ -108,9 +108,8 @@ export default function SectionContactForm() {
           <motion.h2
             id="contact-title"
             initial={{ opacity: 0, y: 80 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }} // 🔥 FIX
             transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
             className="text-5xl font-bold text-black mb-16"
           >
             {t("contact", "title")}
@@ -120,9 +119,8 @@ export default function SectionContactForm() {
 
             <motion.div
               initial={{ opacity: 0, y: 80 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }} // 🔥 FIX
               transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
             >
               <h3 className="text-xl font-semibold text-black mb-4">
                 {t("contact", "sendMessage")}
@@ -140,19 +138,13 @@ export default function SectionContactForm() {
                 <div className="grid sm:grid-cols-2 gap-8">
 
                   <div>
-                    <label
-                      htmlFor="name"
-                      className="text-sm text-black/60"
-                    >
+                    <label className="text-sm text-black/60">
                       {t("contact", "name")}
                     </label>
-
                     <input
-                      id="name"
                       name="name"
                       type="text"
                       required
-                      aria-required="true"
                       value={form.name}
                       onChange={handleChange}
                       className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black"
@@ -160,19 +152,13 @@ export default function SectionContactForm() {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="email"
-                      className="text-sm text-black/60"
-                    >
+                    <label className="text-sm text-black/60">
                       {t("contact", "email")}
                     </label>
-
                     <input
-                      id="email"
                       name="email"
                       type="email"
                       required
-                      aria-required="true"
                       value={form.email}
                       onChange={handleChange}
                       className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black"
@@ -182,19 +168,13 @@ export default function SectionContactForm() {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="message"
-                    className="text-sm text-black/60"
-                  >
+                  <label className="text-sm text-black/60">
                     {t("contact", "message")}
                   </label>
-
                   <textarea
-                    id="message"
                     name="message"
                     rows={4}
                     required
-                    aria-required="true"
                     value={form.message}
                     onChange={handleChange}
                     className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black"
@@ -202,29 +182,17 @@ export default function SectionContactForm() {
                 </div>
 
                 {success && (
-                  <p
-                    role="status"
-                    aria-live="polite"
-                    className="text-green-600 text-sm"
-                  >
-                    {success}
-                  </p>
+                  <p className="text-green-600 text-sm">{success}</p>
                 )}
 
                 {error && (
-                  <p
-                    role="alert"
-                    className="text-red-600 text-sm"
-                  >
-                    {error}
-                  </p>
+                  <p className="text-red-600 text-sm">{error}</p>
                 )}
 
                 <div className="flex justify-end">
                   <button
                     type="submit"
                     disabled={loading}
-                    aria-busy={loading}
                     className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-black text-black font-medium transition hover:bg-black/10 disabled:opacity-50"
                   >
                     {loading
@@ -237,19 +205,19 @@ export default function SectionContactForm() {
             </motion.div>
 
             {/* RIGHT */}
-
             <motion.div
               className="lg:border-l lg:border-black/20 lg:pl-16 space-y-12 text-black"
-              aria-label="Contact information"
+              initial={{ opacity: 0, y: 80 }}
+              animate={{ opacity: 1, y: 0 }} // 🔥 FIX
+              transition={{ duration: 0.8 }}
             >
 
               <div>
                 <h4 className="font-semibold mb-3">
                   {t("contact", "call")}
                 </h4>
-
                 <div className="flex gap-3 text-black/70">
-                  <Phone size={18} aria-hidden="true" />
+                  <Phone size={18} />
                   <span>{phone}</span>
                 </div>
               </div>
@@ -258,9 +226,8 @@ export default function SectionContactForm() {
                 <h4 className="font-semibold mb-3">
                   {t("contact", "visit")}
                 </h4>
-
                 <div className="flex gap-3 text-black/70">
-                  <MapPin size={18} aria-hidden="true" />
+                  <MapPin size={18} />
                   <span>{address}</span>
                 </div>
               </div>
@@ -269,18 +236,14 @@ export default function SectionContactForm() {
                 <h4 className="font-semibold mb-3">
                   {t("contact", "liveChat")}
                 </h4>
-
                 <a
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Open WhatsApp chat"
                   className="flex gap-3 text-black/70 hover:text-black transition"
                 >
-                  <MessageCircle size={18} aria-hidden="true" />
-                  <span>
-                    WhatsApp{waNum ? ` +${waNum}` : ""}
-                  </span>
+                  <MessageCircle size={18} />
+                  <span>WhatsApp{waNum ? ` +${waNum}` : ""}</span>
                 </a>
               </div>
 

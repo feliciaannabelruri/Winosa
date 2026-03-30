@@ -17,13 +17,17 @@ export default function SectionHero() {
         backgroundImage: "url('/bg/bg2.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
+        transform: "translateZ(0)", // ✅ Safari fix
       }}
     >
-      <div className="absolute inset-0 bg-black/20" />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/20 z-0" />
 
-      <div className="relative z-10 w-full">
+      {/* Content */}
+      <div className="relative z-20 w-full">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
           <div className="max-w-[620px] ml-auto text-white text-right">
+
             <FadeUp>
               <h1
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
@@ -50,11 +54,20 @@ export default function SectionHero() {
                 </Link>
               </div>
             </FadeUp>
+
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full h-[35%] bg-gradient-to-t from-white to-transparent" />
+      {/* Gradient FIX (Safari + TS safe + Tailwind friendly) */}
+      <div
+        className="absolute bottom-0 left-0 w-full h-[35%] z-10 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(to top, rgba(255,255,255,1) 10%, rgba(255,255,255,0) 100%)
+          `,
+        }}
+      />
     </section>
   );
 }

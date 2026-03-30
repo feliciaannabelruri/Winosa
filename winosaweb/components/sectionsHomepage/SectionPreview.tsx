@@ -27,77 +27,76 @@ export default function SectionPreview({ title, items = [] }: any) {
   const previewItems = data.slice(0, 3);
 
   useEffect(() => {
-  let cancelled = false;
+    let cancelled = false;
 
-  const initial = (items || []).map((item: Item) => ({
-    ...item,
-    isTranslating: true,
-  }));
+    const initial = (items || []).map((item: Item) => ({
+      ...item,
+      isTranslating: true,
+    }));
 
-  setData(initial);
+    setData(initial);
 
-  let chain = Promise.resolve();
+    let chain = Promise.resolve();
 
-  initial.forEach((item: Item, index: number) => {
-    chain = chain.then(async () => {
-      if (cancelled) return;
-
-      try {
-        const translatedTitle = await translateHybrid(
-          item.title,
-          language,
-          tApi
-        );
-
-        const translatedDesc = await translateHybrid(
-          item.desc || item.description || "",
-          language,
-          tApi
-        );
-
+    initial.forEach((item: Item, index: number) => {
+      chain = chain.then(async () => {
         if (cancelled) return;
 
-        setData((prev) => {
-          const updated = [...prev];
+        try {
+          const translatedTitle = await translateHybrid(
+            item.title,
+            language,
+            tApi
+          );
 
-          if (!updated[index]) return prev;
+          const translatedDesc = await translateHybrid(
+            item.desc || item.description || "",
+            language,
+            tApi
+          );
 
-          updated[index] = {
-            ...updated[index],
-            title: translatedTitle,
-            desc: translatedDesc,
-            description: translatedDesc,
-            isTranslating: false,
-          };
+          if (cancelled) return;
 
-          return updated;
-        });
-      } catch (err) {
-        console.error(err);
+          setData((prev) => {
+            const updated = [...prev];
 
-        if (cancelled) return;
+            if (!updated[index]) return prev;
 
-        setData((prev) => {
-          const updated = [...prev];
+            updated[index] = {
+              ...updated[index],
+              title: translatedTitle,
+              desc: translatedDesc,
+              description: translatedDesc,
+              isTranslating: false,
+            };
 
-          if (!updated[index]) return prev;
+            return updated;
+          });
+        } catch (err) {
+          console.error(err);
 
-          updated[index] = {
-            ...updated[index],
-            isTranslating: false,
-          };
+          if (cancelled) return;
 
-          return updated;
-        });
-      }
+          setData((prev) => {
+            const updated = [...prev];
+
+            if (!updated[index]) return prev;
+
+            updated[index] = {
+              ...updated[index],
+              isTranslating: false,
+            };
+
+            return updated;
+          });
+        }
+      });
     });
-  });
 
-  return () => {
-    cancelled = true;
-  };
-}, [items, language]);
-
+    return () => {
+      cancelled = true;
+    };
+  }, [items, language]);
 
   function getTranslatedTitle() {
     if (title === "Our Services") return t("preview", "services");
@@ -113,9 +112,8 @@ export default function SectionPreview({ title, items = [] }: any) {
         {/* Title */}
         <motion.h2
           initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }} // 🔥 FIX (langsung muncul, bukan nunggu scroll)
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
           className="text-center text-4xl font-bold text-black mb-12"
         >
           {getTranslatedTitle()}
@@ -131,14 +129,18 @@ export default function SectionPreview({ title, items = [] }: any) {
               <motion.div
                 key={uniqueKey}
                 initial={{ opacity: 0, y: 60 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, y: 0 }} // 🔥 FIX
                 transition={{ duration: 0.6, delay: index * 0.15 }}
-                viewport={{ once: true }}
                 whileHover={{ y: -10 }}
                 className="group relative h-[380px]"
               >
-                <div className="relative h-full rounded-[28px] overflow-hidden bg-white border border-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.15),0_10px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.25),0_20px_40px_rgba(0,0,0,0.12)] transition duration-500">
-
+                <div
+                  className="relative h-full rounded-[28px] overflow-hidden bg-white border border-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.15),0_10px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.25),0_20px_40px_rgba(0,0,0,0.12)] transition duration-500"
+                  style={{
+                    transform: "translateZ(0)", // 🔥 Safari fix
+                    backfaceVisibility: "hidden",
+                  }}
+                >
                   {item.image ? (
                     <>
                       {/* IMAGE */}
@@ -146,14 +148,20 @@ export default function SectionPreview({ title, items = [] }: any) {
                         src={item.image}
                         alt={item.title}
                         fill
-                        className="object-cover transition duration-700 group-hover:scale-110"
+                        className="object-cover transition duration-700 group-hover:scale-110 z-0"
                       />
 
-                      {/* GRADIENT (CUMA BAWAH) */}
-                      <div className="absolute bottom-0 left-0 w-full h-[45%] bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                      {/* ✅ GRADIENT FIX SAFARI */}
+                      <div
+                        className="absolute bottom-0 left-0 w-full h-[45%] z-10 pointer-events-none"
+                        style={{
+                          backgroundImage:
+                            "linear-gradient(to top, rgba(0,0,0,0.9) 10%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%)",
+                        }}
+                      />
 
                       {/* TEXT */}
-                      <div className="absolute bottom-0 p-6 text-white">
+                      <div className="absolute bottom-0 p-6 text-white z-20">
                         <h3 className="text-lg font-semibold mb-2 drop-shadow-[0_3px_10px_rgba(0,0,0,0.6)]">
                           {item.title}
                         </h3>
@@ -185,7 +193,6 @@ export default function SectionPreview({ title, items = [] }: any) {
                   {item.isTranslating && (
                     <div className="absolute inset-0 border border-yellow-400 rounded-[28px] animate-pulse pointer-events-none" />
                   )}
-
                 </div>
               </motion.div>
             );
