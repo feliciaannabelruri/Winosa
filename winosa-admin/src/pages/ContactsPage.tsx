@@ -8,6 +8,7 @@ import { contactService } from '../services/analyticsService';
 import api from '../services/api';
 import { Contact } from '../types';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../components/ConfirmModal';
 
 /* ─── Types ─── */
 interface Reply {
@@ -116,6 +117,7 @@ const ContactsPage: React.FC = () => {
   const [replying, setReplying]         = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [deleting, setDeleting]         = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -173,7 +175,6 @@ const ContactsPage: React.FC = () => {
 
   const handleDelete = async () => {
     if (!selected) return;
-    if (!window.confirm(`Hapus pesan dari ${selected.name}? Tindakan ini tidak dapat dibatalkan.`)) return;
     setDeleting(true);
     try {
       await api.delete(`/contact/${selected._id}`);
@@ -396,7 +397,7 @@ const ContactsPage: React.FC = () => {
                         {selected.isRead ? 'Mark Unread' : 'Mark as Read'}
                       </button>
                       <button
-                        onClick={handleDelete}
+                        onClick={() => setDeleteModal(true)}
                         disabled={deleting}
                         className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
                       >
@@ -494,6 +495,14 @@ const ContactsPage: React.FC = () => {
 
         </div>
       )}
+      <ConfirmModal
+      isOpen={deleteModal}
+      title="Delete Message"
+      message={`Hapus pesan dari ${selected?.name}? Tindakan ini tidak dapat dibatalkan.`}
+      onConfirm={() => { setDeleteModal(false); handleDelete(); }}
+      onCancel={() => setDeleteModal(false)}
+      loading={deleting}
+/>
     </div>
   );
 };
