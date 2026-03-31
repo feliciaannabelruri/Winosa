@@ -76,6 +76,10 @@ const ServiceFormPage: React.FC = () => {
       {/* Form Card */}
       <Card title="Service Info">
 
+        <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-2.5">
+        <span className="text-xs text-amber-600 font-medium">⚠ Semua konten harus ditulis dalam bahasa Inggris.</span>
+        </div>
+
         {/* Icon */}
         <Field label="Icon" required>
           <IconPicker value={form.icon} onChange={val => set('icon', val)} />

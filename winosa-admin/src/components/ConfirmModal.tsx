@@ -8,6 +8,7 @@ interface ConfirmModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
+  okOnly?: boolean;
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -17,6 +18,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onConfirm,
   onCancel,
   loading,
+  okOnly,
 }) => {
   if (!isOpen) return null;
 
@@ -34,18 +36,20 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           </div>
         </div>
         <div className="flex gap-3 mt-6">
-          <button
-            onClick={onCancel}
-            className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-          >
-            Cancel
-          </button>
+          {!okOnly && (
+            <button
+              onClick={onCancel}
+              className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+          )}
           <button
             onClick={onConfirm}
             disabled={loading}
             className="flex-1 px-4 py-2 bg-red-500 rounded-xl text-sm font-medium text-white hover:bg-red-600 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Deleting...' : 'Delete'}
+            {okOnly ? 'OK' : loading ? 'Deleting...' : 'Delete'}
           </button>
         </div>
       </div>

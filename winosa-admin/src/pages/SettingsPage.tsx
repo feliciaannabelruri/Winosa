@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Globe, Search, Share2, Phone,
   Upload, Save, AlertCircle,
-  Instagram, Linkedin, Facebook, Youtube,
+  Instagram, Linkedin,
   Mail, MapPin, MessageCircle,
   X, RefreshCw, WifiOff, CheckCircle, Image,
 } from 'lucide-react';
@@ -51,7 +51,7 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
 const TAB_FIELDS: Record<TabKey, (keyof SiteSettings)[]> = {
   general: ['siteName', 'siteTagline'],
   seo:     ['metaTitle', 'metaDescription'],
-  social:  ['socialInstagram', 'socialFacebook', 'socialLinkedin', 'socialYoutube'],
+  social:  ['socialInstagram', 'socialLinkedin'],
   contact: ['siteEmail', 'sitePhone', 'siteAddress', 'socialWhatsapp'],
 };
 
@@ -380,9 +380,7 @@ const SettingsPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             {([
               { icon: <Instagram size={14}/>, label: 'Instagram', key: 'socialInstagram' as const, ph: 'https://instagram.com/winosa' },
-              { icon: <Facebook  size={14}/>, label: 'Facebook',  key: 'socialFacebook'  as const, ph: 'https://facebook.com/winosa' },
-              { icon: <Linkedin  size={14}/>, label: 'LinkedIn',  key: 'socialLinkedin'  as const, ph: 'https://linkedin.com/company/winosa' },
-              { icon: <Youtube   size={14}/>, label: 'YouTube',   key: 'socialYoutube'   as const, ph: 'https://youtube.com/@winosa' },
+              { icon: <Linkedin  size={14}/>, label: 'LinkedIn',  key: 'socialLinkedin'  as const, ph: 'https://linkedin.com/company/winosa' }
             ] as const).map(({ icon, label, key, ph }) => (
               <div key={key}>
                 <FieldLabel>{label}</FieldLabel>

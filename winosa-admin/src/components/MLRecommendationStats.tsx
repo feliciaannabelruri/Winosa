@@ -10,6 +10,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ConfirmModal from "../components/ConfirmModal";
 
 interface MLStats {
   is_trained: boolean;
@@ -23,10 +24,9 @@ export default function MLRecommendationStats() {
   const [stats, setStats] = useState<MLStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [retraining, setRetraining] = useState(false);
-
   const ML_SERVICE_URL =
     import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:5001";
-    
+  const [modal, setModal] = useState<{show: boolean; message: string}>({show: false, message: ""});
   const fetchStats = async () => {
     try {
       const res = await fetch(`${ML_SERVICE_URL}/stats`);
@@ -46,12 +46,12 @@ export default function MLRecommendationStats() {
       const data = await res.json();
       if (data.success) {
         await fetchStats();
-        alert(`Training selesai! MAE = ${data.mae}`);
+        setModal({show: true, message: `Training selesai! MAE = ${data.mae}`});
       } else {
-        alert(`Training gagal: ${data.error}`);
+        setModal({show: true, message: `Training gagal: ${data.error}`});
       }
     } catch {
-      alert("ML service tidak tersedia");
+      setModal({show: true, message: "ML service tidak tersedia"});
     } finally {
       setRetraining(false);
     }
@@ -78,6 +78,15 @@ export default function MLRecommendationStats() {
   }
 
   return (
+  <>
+    <ConfirmModal
+      isOpen={modal.show}
+      title="Info"
+      message={modal.message}
+      onConfirm={() => setModal({show: false, message: ""})}
+      onCancel={() => setModal({show: false, message: ""})}
+      okOnly
+    />
     <div className="bg-white rounded-2xl border border-black/10 p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-black/60 uppercase tracking-wide">
@@ -91,7 +100,6 @@ export default function MLRecommendationStats() {
           {retraining ? "Training..." : "Retrain"}
         </button>
       </div>
-
       {stats === null ? (
         <p className="text-sm text-red-500">
           ML Service tidak tersedia (port 5001)
@@ -147,5 +155,6 @@ export default function MLRecommendationStats() {
         </>
       )}
     </div>
+    </>
   );
 }

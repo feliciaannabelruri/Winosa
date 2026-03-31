@@ -218,6 +218,9 @@ const PortfolioFormPage: React.FC = () => {
       {/* 1. Info Dasar */}
       <SectionCard title="Basic Info">
         <div>
+          <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-2.5">
+            <span className="text-xs text-amber-600 font-medium">⚠ Semua konten harus ditulis dalam bahasa Inggris.</span>
+          </div>
           <Label>Project Title</Label>
           <input type="text" placeholder="cth. Prowerty"
             value={form.title}
