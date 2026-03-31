@@ -23,6 +23,8 @@ export default function SectionCTA() {
 
   const [variant, setVariant] = useState<"A" | "B">("A");
 
+  const EXPERIMENT_NAME = "cta_experiment_v1";
+
   useEffect(() => {
     const saved = localStorage.getItem("cta_variant");
 
@@ -34,6 +36,32 @@ export default function SectionCTA() {
       setVariant(random);
     }
   }, []);
+
+  useEffect(() => {
+    window.gtag?.("event", "experiment_view", {
+      experiment_name: EXPERIMENT_NAME,
+      variant: variant,
+    });
+  }, [variant]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          window.gtag?.("event", "cta_visible", {
+            experiment_name: EXPERIMENT_NAME,
+            variant,
+          });
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    const el = document.getElementById("cta-section");
+    if (el) observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [variant]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,10 +93,12 @@ export default function SectionCTA() {
         setError(t("newsletter", "errorDuplicate"));
 
         window.gtag?.("event", "newsletter_submit", {
+          event_category: "engagement",
+          event_label: "newsletter_form",
+          experiment_name: EXPERIMENT_NAME,
+          variant: variant,
           status: "duplicate",
-          variant,
         });
-
         return;
       }
 
@@ -76,8 +106,11 @@ export default function SectionCTA() {
         setError(t("newsletter", "errorTooMany"));
 
         window.gtag?.("event", "newsletter_submit", {
+          event_category: "engagement",
+          event_label: "newsletter_form",
+          experiment_name: EXPERIMENT_NAME,
+          variant: variant,
           status: "too_many_requests",
-          variant,
         });
 
         return;
@@ -89,16 +122,22 @@ export default function SectionCTA() {
       setEmail("");
 
       window.gtag?.("event", "newsletter_submit", {
+        event_category: "engagement",
+        event_label: "newsletter_form",
+        experiment_name: EXPERIMENT_NAME,
+        variant: variant,
         status: "success",
-        variant,
       });
 
     } catch {
       setError(t("newsletter", "errorGeneral"));
 
       window.gtag?.("event", "newsletter_submit", {
+        event_category: "engagement",
+        event_label: "newsletter_form",
+        experiment_name: EXPERIMENT_NAME,
+        variant: variant,
         status: "error",
-        variant,
       });
 
     } finally {
@@ -107,7 +146,7 @@ export default function SectionCTA() {
   };
 
   return (
-    <section className="w-full bg-white py-16">
+    <section id="cta-section" className="w-full bg-white py-16">
       <div className="max-w-5xl mx-auto px-6 text-center text-black">
 
         {/* Newsletter */}
@@ -188,9 +227,12 @@ export default function SectionCTA() {
                     : "shadow-lg hover:scale-105 transition duration-300"
                 }
                 onClick={() => {
-                  window.gtag?.("event", "cta_click", {
-                    variant,
-                  });
+                 window.gtag?.("event", "cta_click", {
+                  event_category: "engagement",
+                  event_label: "contact_button",
+                  experiment_name: EXPERIMENT_NAME,
+                  variant: variant,
+                });
                 }}
               />
             </Link>

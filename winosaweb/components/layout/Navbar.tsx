@@ -50,7 +50,8 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-md" : "bg-transparent"
+        scrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-transparent"
+
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
@@ -65,7 +66,10 @@ export default function Navbar() {
           />
         </Link>
 
-        <ul className="hidden lg:flex gap-8 text-sm font-medium text-black">
+        <ul 
+          role="menubar"
+          className="hidden lg:flex gap-8 text-sm font-medium text-black"
+        >
           {menus.map((m) => (
             <li key={m.name}>
               <Link
