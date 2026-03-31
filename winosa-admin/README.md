@@ -4,7 +4,7 @@ Admin dashboard for **PT. Winosa Mitra Bharatadjaya** — built with React, Type
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 winosa-admin/
@@ -41,7 +41,7 @@ winosa-admin/
 
 ---
 
-## 🚀 Step-by-Step Setup
+## Step-by-Step Setup
 
 ### Step 1 — Prerequisites
 
@@ -64,7 +64,7 @@ Create a `.env` file in the `winosa-admin` folder:
 VITE_API_URL=http://localhost:5000/api
 ```
 
-> ⚠️ If your backend runs on a different port, update this accordingly.
+> If your backend runs on a different port, update this accordingly.
 
 ### Step 4 — Setup & Start Backend First
 
