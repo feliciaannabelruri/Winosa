@@ -18,7 +18,7 @@ export default function SectionHero() {
         backgroundImage: "url('/bg/bg2.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        transform: "translateZ(0)", // ✅ Safari fix
+        transform: "translateZ(0)", 
       }}
     >
       {/* Overlay */}
