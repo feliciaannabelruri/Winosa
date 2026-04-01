@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import Script from "next/script";
 import { useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
  const PageTransition = dynamic(
   () => import("@/components/animation/PageTransition"),
@@ -53,7 +54,7 @@ export default function RootLayout({
           </PageTransition>
         </AnimatePresence>
 
-        
+        <Analytics />
 
       </body>
     </html>
