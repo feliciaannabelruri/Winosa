@@ -8,50 +8,20 @@ import api from "@/lib/axios";
 
 /* ================= SEO META TAGS ================= */
 
-export const metadata = {
-  title: "Portfolio | Winosa Digital Agency",
-  description:
-    "Explore Winosa portfolio showcasing web development, mobile app development, and UI UX design projects for modern businesses.",
+import { getSiteSettings } from '@/lib/getSiteSettings';
 
-  keywords: [
-    "portfolio web development",
-    "ui ux portfolio",
-    "mobile app portfolio",
-    "digital agency projects",
-    "winosa portfolio",
-  ],
-
-  openGraph: {
-    title: "Portfolio | Winosa Digital Agency",
-    description:
-      "Explore Winosa portfolio showcasing web development, mobile app development, and UI UX design projects.",
-    url: "https://winosa.com/portofolio",
-    siteName: "Winosa Digital Agency",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Winosa Portfolio",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Portfolio | Winosa Digital Agency",
-    description:
-      "Explore Winosa portfolio showcasing web development, mobile app development, and UI UX design projects.",
-    images: ["/og-image.jpg"],
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+export async function generateMetadata() {
+  const s = await getSiteSettings();
+  return {
+    title: s?.metaTitle ? `Portfolio | ${s.metaTitle}` : 'Portfolio | Winosa Digital Agency',
+    description: s?.metaDescription || 'Explore our portfolio of web and mobile projects.',
+    openGraph: {
+      title: s?.metaTitle || 'Portfolio | Winosa Digital Agency',
+      description: s?.metaDescription || '',
+      images: [s?.logo || '/og-image.jpg'],
+    },
+  };
+}
 
 /* ================= PAGE ================= */
 

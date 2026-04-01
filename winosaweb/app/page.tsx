@@ -2,6 +2,20 @@ import dynamic from "next/dynamic";
 import api from "@/lib/axios";
 
 export const revalidate = 60;
+import { getSiteSettings } from '@/lib/getSiteSettings';
+
+export async function generateMetadata() {
+  const s = await getSiteSettings();
+  return {
+    title: s?.metaTitle || s?.siteName || 'Winosa Digital Agency',
+    description: s?.metaDescription || s?.siteTagline || '',
+    openGraph: {
+      title: s?.metaTitle || 'Winosa Digital Agency',
+      description: s?.metaDescription || '',
+      images: [s?.logo || '/og-image.jpg'],
+    },
+  };
+}
 
 /* ===============================
    Dynamic Imports (Code Splitting)
@@ -17,21 +31,6 @@ const SectionTeam = dynamic(() => import("@/components/sectionsHomepage/SectionT
 const SectionCTA = dynamic(() => import("@/components/layout/SectionCTA"));
 const Footer = dynamic(() => import("@/components/layout/Footer"));
 
-/* ===============================
-   SEO META TAGS
-================================ */
-
-export const metadata = {
-  title: "Winosa Digital Agency",
-  description:
-    "Winosa Digital Agency provides web development, UI UX design, branding, and digital solutions for modern businesses.",
-  openGraph: {
-    title: "Winosa Digital Agency",
-    description:
-      "Web development, UI UX design, branding, and digital solutions",
-    images: ["/og-image.jpg"],
-  },
-};
 
 /* ===============================
    HOMEPAGE

@@ -45,36 +45,20 @@ async function getServicesData() {
    SEO META TAGS
 ================================ */
 
-export const metadata = {
-  title: "Services | Winosa Digital Agency",
+import { getSiteSettings } from '@/lib/getSiteSettings';
 
-  description:
-    "Explore Winosa services including web development, mobile app development, UI UX design, and digital solutions for modern businesses.",
-
-  keywords: [
-    "web development service",
-    "mobile app development",
-    "UI UX design agency",
-    "digital agency services",
-    "custom software development",
-  ],
-
-  openGraph: {
-    title: "Services | Winosa Digital Agency",
-    description:
-      "Explore Winosa services including web development, mobile app development, UI UX design, and digital solutions for modern businesses.",
-    images: ["/og-image.jpg"],
-    type: "website",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Services | Winosa Digital Agency",
-    description:
-      "Explore Winosa services including web development, mobile app development, UI UX design, and digital solutions for modern businesses.",
-    images: ["/og-image.jpg"],
-  },
-};
+export async function generateMetadata() {
+  const s = await getSiteSettings();
+  return {
+    title: s?.metaTitle ? `Services | ${s.metaTitle}` : 'Services | Winosa Digital Agency',
+    description: s?.metaDescription || 'Explore our web development and digital services.',
+    openGraph: {
+      title: s?.metaTitle || 'Services | Winosa Digital Agency',
+      description: s?.metaDescription || '',
+      images: [s?.logo || '/og-image.jpg'],
+    },
+  };
+}
 
 
 /* ===============================
