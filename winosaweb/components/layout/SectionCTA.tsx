@@ -163,9 +163,16 @@ export default function SectionCTA() {
 
           <form
             onSubmit={handleSubscribe}
+            aria-label="Newsletter subscription form"
             className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-lg mx-auto"
           >
+
+            <label htmlFor="email-input" className="sr-only">
+              Email address
+            </label>
+
             <input
+              id="email-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -183,7 +190,7 @@ export default function SectionCTA() {
             />
           </form>
 
-          {/* ✅ A/B TEST (TRANSLATED) */}
+          {/* A/B TEST (TRANSLATED) */}
           {variant === "B" && (
             <p className="text-xs text-gray-500 mt-2">
               {t("newsletter", "trustMessage")}
@@ -191,11 +198,13 @@ export default function SectionCTA() {
           )}
 
           {success && (
-            <p className="text-green-600 text-xs mt-4">{success}</p>
+            <p className="text-green-600 text-xs mt-4"  aria-live="polite">
+            {success}</p>
           )}
 
           {error && (
-            <p className="text-red-600 text-xs mt-4">{error}</p>
+            <p className="text-red-600 text-xs mt-4" aria-live="assertive">
+            {error}</p>
           )}
         </motion.div>
 

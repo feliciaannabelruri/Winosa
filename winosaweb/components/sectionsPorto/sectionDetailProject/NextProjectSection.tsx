@@ -20,17 +20,13 @@ interface NextProjectSectionProps {
 }
 
 export default function NextProjectSection({ nextProject }: NextProjectSectionProps) {
-
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
 
-  // ✅ state translate
   const [translated, setTranslated] = useState(nextProject);
 
   useEffect(() => {
-
     const run = async () => {
-
       const mapped = {
         ...nextProject,
         title: await translateHybrid(nextProject.title, language, tApi),
@@ -38,27 +34,30 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
       };
 
       setTranslated(mapped);
-
     };
 
     run();
-
   }, [nextProject, language]);
 
   return (
     <FadeUp>
-      <section className={styles.nextProjectSection}>
-
+      <section
+        className={styles.nextProjectSection}
+        aria-labelledby="next-project-title"
+      >
         <div className={styles.nextProjectContainer}>
 
-          <motion.h2 className={styles.nextProjectLabel}>
+          <motion.h2
+            id="next-project-title"
+            className={styles.nextProjectLabel}
+          >
             {t("portfolioDetail", "nextProject")}
           </motion.h2>
 
           <motion.div>
-
             <Link
-              href={`/portofolio/${nextProject.slug}`} // ❌ slug tetap original
+              href={`/portofolio/${nextProject.slug}`}
+              aria-label={`View next project ${translated.title}`}
               className={styles.nextProjectCard}
             >
 
@@ -82,19 +81,22 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
                   {translated.description}
                 </p>
 
-                <span className={styles.nextProjectArrow}>
+                <span
+                  className={styles.nextProjectArrow}
+                  aria-hidden="true"
+                >
                   →
                 </span>
 
               </div>
 
             </Link>
-
           </motion.div>
 
           <motion.div className={styles.backToPortfolioWrapper}>
             <Link
               href="/portofolio"
+              aria-label="Back to portfolio"
               className={styles.backToPortfolioButton}
             >
               ← {t("portfolioDetail", "backToPortfolio")}
@@ -102,7 +104,6 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
           </motion.div>
 
         </div>
-
       </section>
     </FadeUp>
   );

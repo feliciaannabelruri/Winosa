@@ -16,10 +16,10 @@ export default function Navbar() {
   const [logo, setLogo] = useState("/logo.png");
 
   useEffect(() => {
-  fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`)
-    .then(r => r.json())
-    .then(json => { if (json?.data?.logo) setLogo(json.data.logo); })
-    .catch(() => {});
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`)
+      .then(r => r.json())
+      .then(json => { if (json?.data?.logo) setLogo(json.data.logo); })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -30,6 +30,11 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // FIX: lock scroll saat menu kebuka
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "auto";
+  }, [open]);
 
   const cycleLanguage = () => {
     if (language === "en") setLanguage("nl");
@@ -51,7 +56,6 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         scrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-transparent"
-
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
@@ -95,6 +99,8 @@ export default function Navbar() {
           <button
             onClick={() => setOpen(true)}
             aria-label="Open menu"
+            aria-expanded={open} // FIX
+            aria-controls="mobile-menu" // FIX
             className="lg:hidden text-black text-2xl focus:outline-none"
           >
             ☰
@@ -104,7 +110,14 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 bg-white/90 backdrop-blur-xl px-6 py-8 overflow-y-auto">
+        <div
+          id="mobile-menu" // FIX
+          role="dialog" // FIX
+          aria-modal="true" // FIX
+          className={`fixed inset-0 z-50 bg-white/90 backdrop-blur-xl px-6 py-8 overflow-y-auto transform transition-transform duration-300 ${
+            open ? "translate-x-0" : "translate-x-full"
+          }`} // FIX
+        >
           <div className="flex items-center justify-between">
 
             <Link

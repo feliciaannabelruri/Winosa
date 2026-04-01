@@ -90,12 +90,20 @@ export default function SectionServices({ initialServices }: Props) {
   }, [language, initialServices]);
 
   return (
-    <section className="w-full bg-white py-32">
+    <section className="w-full bg-white py-32" aria-labelledby="services-title">
       <div className="max-w-7xl mx-auto px-6 text-black">
+        <h2
+        id="services-title"
+        className="sr-only"
+        ></h2>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
 
           {services.length === 0 ? (
-            <p className="text-center col-span-2">
+            <p className="text-center col-span-2"
+            role="status"
+              aria-live="polite"
+              >
               No services available
             </p>
           ) : (
@@ -118,14 +126,20 @@ export default function SectionServices({ initialServices }: Props) {
                     whileHover={{ y: -8 }}
                     className="group relative h-full"
                   >
-                    <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)]">
+                    <div className="relative h-full flex flex-col bg-white rounded-[28px] p-10 shadow-[0_12px_30px_rgba(0,0,0,0.15)]" 
+                    role="article"
+                      aria-labelledby={`service-title-${item._id}`}
+                      >
 
                       <div className="flex items-start gap-6 mb-6">
                         <div className="w-16 h-16 flex items-center justify-center rounded-full border border-black flex-shrink-0">
-                          <IconComponent size={28} strokeWidth={1.5} />
+                          <IconComponent size={28} strokeWidth={1.5}  aria-hidden="true"/>
+
                         </div>
 
-                        <h3 className="text-xl font-semibold leading-tight pt-3">
+                        <h3 
+                        id={`service-title-${item._id}`}
+                        className="text-xl font-semibold leading-tight pt-3">
                           {item.title}
                         </h3>
                       </div>

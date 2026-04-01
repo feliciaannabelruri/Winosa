@@ -102,18 +102,18 @@ export default function SectionContactForm() {
   };
 
   return (
-    <FadeUp disableInView> {/* 🔥 FIX */}
+    <FadeUp disableInView>
       <section
         className="w-full py-24 bg-white"
         aria-labelledby="contact-title"
-        style={{ transform: "translateZ(0)" }} // 🔥 Safari fix
+        style={{ transform: "translateZ(0)" }}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-16">
 
           <motion.h2
             id="contact-title"
             initial={{ opacity: 0, y: 80 }}
-            animate={{ opacity: 1, y: 0 }} // 🔥 FIX
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-5xl font-bold text-black mb-16"
           >
@@ -124,7 +124,7 @@ export default function SectionContactForm() {
 
             <motion.div
               initial={{ opacity: 0, y: 80 }}
-              animate={{ opacity: 1, y: 0 }} // 🔥 FIX
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
               <h3 className="text-xl font-semibold text-black mb-4">
@@ -138,7 +138,7 @@ export default function SectionContactForm() {
               <form
                 onSubmit={handleSubmit}
                 className="space-y-8"
-                aria-label="Contact form"
+                aria-labelledby="contact-title"
               >
                 <div className="grid sm:grid-cols-2 gap-8">
 
@@ -193,17 +193,22 @@ export default function SectionContactForm() {
                 </div>
 
                 {success && (
-                  <p className="text-green-600 text-sm">{success}</p>
+                  <p role="status" className="text-green-600 text-sm">
+                    {success}
+                  </p>
                 )}
 
                 {error && (
-                  <p className="text-red-600 text-sm">{error}</p>
+                  <p role="alert" className="text-red-600 text-sm">
+                    {error}
+                  </p>
                 )}
 
                 <div className="flex justify-end">
                   <button
                     type="submit"
                     disabled={loading}
+                    aria-busy={loading}
                     className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-black text-black font-medium transition hover:bg-black/10 disabled:opacity-50"
                   >
                     {loading
@@ -215,11 +220,10 @@ export default function SectionContactForm() {
               </form>
             </motion.div>
 
-            {/* RIGHT */}
             <motion.div
               className="lg:border-l lg:border-black/20 lg:pl-16 space-y-12 text-black"
               initial={{ opacity: 0, y: 80 }}
-              animate={{ opacity: 1, y: 0 }} // 🔥 FIX
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
 
@@ -229,7 +233,7 @@ export default function SectionContactForm() {
                 </h4>
 
                 <div className="flex gap-3 text-black/70">
-                  <Phone size={18} />
+                  <Phone size={18} aria-hidden="true" />
                   <span>{phone}</span>
                 </div>
               </div>
@@ -240,7 +244,7 @@ export default function SectionContactForm() {
                 </h4>
 
                 <div className="flex gap-3 text-black/70">
-                  <MapPin size={18} />
+                  <MapPin size={18} aria-hidden="true" />
                   <span>{address}</span>
                 </div>
               </div>
@@ -254,9 +258,10 @@ export default function SectionContactForm() {
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={`Chat via WhatsApp ${waNum}`}
                   className="flex gap-3 text-black/70 hover:text-black transition"
                 >
-                  <MessageCircle size={18} />
+                  <MessageCircle size={18} aria-hidden="true" />
                   <span>
                     WhatsApp{waNum ? ` +${waNum}` : ""}
                   </span>

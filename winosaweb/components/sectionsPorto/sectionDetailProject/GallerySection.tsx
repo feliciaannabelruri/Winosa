@@ -21,11 +21,12 @@ export default function GallerySection({ project }: GallerySectionProps) {
     <FadeUp>
       <section
         className={styles.gallerySection}
-        aria-label="Project gallery"
+        aria-labelledby="project-gallery-title"
       >
         <div className={styles.galleryContainer}>
 
           <motion.h2
+            id="project-gallery-title"
             className={styles.sectionTitle}
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -37,20 +38,20 @@ export default function GallerySection({ project }: GallerySectionProps) {
 
           <motion.div
             className={styles.galleryGrid}
+            role="list"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
           >
-
             {gallery.map((image, index) => (
-
               <motion.div
                 key={index}
+                role="listitem"
                 className={styles.galleryItem}
               >
                 <Image
                   src={image}
-                  alt={`${project.title || "Project"} gallery ${index + 1}`}
+                  alt={`${project.title || "Project"} gallery image ${index + 1}`}
                   width={600}
                   height={400}
                   sizes="(max-width:768px) 100vw, 33vw"
@@ -58,9 +59,7 @@ export default function GallerySection({ project }: GallerySectionProps) {
                   className={styles.galleryImage}
                 />
               </motion.div>
-
             ))}
-
           </motion.div>
 
         </div>

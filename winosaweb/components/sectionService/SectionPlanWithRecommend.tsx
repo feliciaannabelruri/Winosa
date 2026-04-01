@@ -283,13 +283,15 @@ useEffect(() => {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <section className="w-full bg-white py-24 md:py-32">
+    <section className="w-full bg-white py-24 md:py-32" aria-labelledby="plan-title">
       <div className="max-w-4xl mx-auto px-6">
 
         {/* Header */}
         <FadeUp>
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-black mb-3">
+            <h2 
+              id="plan-title"
+              className="text-3xl md:text-4xl font-bold text-black mb-3">
               {t("plansPricing", "title")}
             </h2>
             <p className="text-black/50 text-base max-w-xl mx-auto">
@@ -312,9 +314,14 @@ useEffect(() => {
         {uiText.helper}
       </p>
 
+      <label htmlFor="ai-input" className="sr-only">
+        Describe your business needs
+      </label>
+
       {/* Textarea */}
       <div className="relative mb-4">
         <textarea
+          id="ai-input"
           ref={textareaRef}
           value={input}
           onChange={(e) => { setInput(e.target.value); if (status !== "idle") reset(); }}
@@ -338,6 +345,7 @@ useEffect(() => {
               key={chip.label}
               type="button"
               onClick={() => toggleChip(chip.text)}
+              aria-pressed={active}
               className={`text-xs px-4 py-2 rounded-full border transition-all ${
                 active
                   ? "bg-black text-white border-black"
@@ -356,6 +364,7 @@ useEffect(() => {
         type="button"
         onClick={handleAnalyze}
         disabled={!canAnalyze || status === "thinking"}
+        aria-busy={status === "thinking"}
         className={`w-full py-4 rounded-full font-semibold text-sm transition-all ${
           canAnalyze && status !== "thinking"
             ? "bg-black text-white hover:bg-black/82 active:scale-[0.99]"
@@ -364,7 +373,10 @@ useEffect(() => {
         style={{ fontFamily: "inherit" }}
       >
         {status === "thinking" ? (
-          <span className="flex items-center justify-center gap-2">
+          <span
+           role="status" 
+           aria-live="polite"
+           className="flex items-center justify-center gap-2">
             <span
               className="inline-block w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white"
               style={{ animation: "hf-spin .7s linear infinite" }}
@@ -404,6 +416,8 @@ useEffect(() => {
             <motion.div
               key="result-phase"
               ref={resultRef}
+              role="region" 
+              aria-live="polite"
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.38 }}
@@ -446,6 +460,8 @@ useEffect(() => {
                 <div className="rounded-[28px] h-64 bg-gray-100 animate-pulse" />
               ) : recommendedPlan ? (
                 <motion.div
+                  role="region" 
+                  aria-live="polite"
                   initial={{ opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.32, delay: 0.08 }}
@@ -454,6 +470,7 @@ useEffect(() => {
                 >
                   {recommendedPlan.isPopular && (
                     <div
+                      
                       className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold px-4 py-1.5 rounded-full"
                       style={{ background: "linear-gradient(135deg,#c4a832,#f4c430)", color: "#1a1a1a" }}
                     >
@@ -474,6 +491,7 @@ useEffect(() => {
                     ))}
                   </ul>
                   <Link
+                    aria-label={`Choose plan ${recommendedPlan.name}`}
                     href={`https://wa.me/6281234567890?text=${encodeURIComponent(
                       `${t("plansPricing", "whatsappText")} ${recommendedPlan.name}`
                     )}`}

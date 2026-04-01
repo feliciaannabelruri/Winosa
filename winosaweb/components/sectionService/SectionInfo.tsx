@@ -48,12 +48,12 @@ export default function SectionInfo() {
   ];
 
   return (
-    <section className="w-full bg-white py-32">
+    <section className="w-full bg-white py-32" aria-labelledby="process-title">
       <div className="max-w-7xl mx-auto px-6 text-black">
 
         <FadeUp>
           <div className="text-center mb-24">
-            <h2 className="text-3xl font-bold mb-4">
+            <h2  id="process-title" className="text-3xl font-bold mb-4">
               {t("info", "processTitle")}
             </h2>
             <p className="text-gray-600">
@@ -63,12 +63,13 @@ export default function SectionInfo() {
         </FadeUp>
 
         <FadeUp>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-28">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-28" role="list">
 
             {process.map((item, i) => (
 
               <motion.div
                 key={i}
+                role="listitem"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.15 }}
@@ -80,9 +81,9 @@ export default function SectionInfo() {
                   {item.title}
                 </div>
 
-                <div className="w-px h-12 bg-black" />
+                <div className="w-px h-12 bg-black" aria-hidden="true"/>
 
-                <div className="w-3 h-3 bg-black rounded-full mb-4" />
+                <div className="w-3 h-3 bg-black rounded-full mb-4" aria-hidden="true"/>
 
                 <p className="text-gray-600 text-sm">
                   {item.desc}
@@ -99,7 +100,7 @@ export default function SectionInfo() {
 
           <div className="text-center mb-16">
 
-            <h2 className="text-3xl font-bold mb-4">
+            <h2 id="why-title" className="text-3xl font-bold mb-4">
               {t("info", "whyTitle")}
             </h2>
 
@@ -113,12 +114,17 @@ export default function SectionInfo() {
 
         <FadeUp>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div 
+              className="grid grid-cols-1 md:grid-cols-2 gap-12"
+              role="list" 
+              aria-labelledby="why-title" 
+            >
 
             {reasons.map((item, i) => (
 
               <motion.div
                 key={i}
+                role="listitem"
                 initial={{ opacity: 0, x: 80 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: i * 0.2 }}
@@ -154,7 +160,7 @@ function ReasonCard({
 
     <div className="flex gap-6 items-start">
 
-      <div className="w-12 h-12 flex items-center justify-center">
+      <div className="w-12 h-12 flex items-center justify-center" aria-hidden="true">
         <Icon className="w-10 h-10 text-black" />
       </div>
 

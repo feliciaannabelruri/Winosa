@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image"; // ✅ tambah ini
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
 
@@ -10,21 +10,19 @@ export default function SectionBlogHero() {
 
   return (
     <section
-      aria-label="Blog hero section"
+      aria-labelledby="blog-hero-title"
       className="relative w-full min-h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* ✅ BACKGROUND IMAGE FIX */}
       <Image
         src="/bg/bg9.jpg"
-        alt="Blog Background"
+        alt=""
         fill
-        priority // 🔥 biar langsung load
+        priority
         quality={75}
         sizes="100vw"
         className="object-cover z-0"
       />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/50 z-10" />
 
       <motion.div
@@ -35,9 +33,7 @@ export default function SectionBlogHero() {
           hidden: {},
           visible: { transition: { staggerChildren: 0.2 } },
         }}
-        style={{
-          transform: "translateZ(0)", // Safari fix
-        }}
+        style={{ transform: "translateZ(0)" }}
       >
 
         <motion.div
@@ -47,16 +43,20 @@ export default function SectionBlogHero() {
             visible: { opacity: 1, y: 0 },
           }}
         >
-          <span className="w-10 h-px bg-white/60" />
+          <span className="w-10 h-px bg-white/60" aria-hidden="true" />
 
-          <span className="px-6 py-2 rounded-full border border-white/70 text-xs font-semibold tracking-wider">
+          <span
+            className="px-6 py-2 rounded-full border border-white/70 text-xs font-semibold tracking-wider"
+            role="text"
+          >
             {t("blogHero", "badge")}
           </span>
 
-          <span className="w-10 h-px bg-white/60" />
+          <span className="w-10 h-px bg-white/60" aria-hidden="true" />
         </motion.div>
 
         <motion.h1
+          id="blog-hero-title"
           className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight"
           variants={{
             hidden: { opacity: 0, y: 60 },
@@ -84,7 +84,7 @@ export default function SectionBlogHero() {
         >
           <Link
             href="/Contact"
-            aria-label="Contact us"
+            aria-label={`Contact us about ${t("blogHero", "title")}`}
             className="inline-block px-8 py-3 rounded-full border border-white text-white font-semibold transition hover:bg-white/20"
           >
             {t("blogHero", "cta")}
@@ -93,7 +93,6 @@ export default function SectionBlogHero() {
 
       </motion.div>
 
-      {/* Gradient */}
       <div
         className="absolute bottom-0 left-0 w-full h-[30%] z-10 pointer-events-none"
         style={{

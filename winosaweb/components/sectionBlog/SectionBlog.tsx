@@ -40,47 +40,36 @@ export default function SectionBlog({ initialBlogs }: Props) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
 
+  useEffect(() => {
+    if (!blogs.length) return;
 
+    setTranslatedBlogs(blogs);
 
-  //  AUTO TRANSLATE
- useEffect(() => {
+    const run = async () => {
+      for (const blog of blogs) {
+        const translated: Blog = {
+          ...blog,
+          title: await translateHybrid(blog.title, language, tApi),
+          content: await translateHybrid(blog.content, language, tApi),
+          excerpt: blog.excerpt
+            ? await translateHybrid(blog.excerpt, language, tApi)
+            : "",
+          tags: blog.tags?.length
+            ? [await translateHybrid(blog.tags[0], language, tApi)]
+            : [],
+        };
 
-  if (!blogs.length) return;
+        setTranslatedBlogs((prev) => {
+          const updated = [...prev];
+          const index = updated.findIndex((b) => b._id === blog._id);
+          if (index !== -1) updated[index] = translated;
+          return updated;
+        });
+      }
+    };
 
-  // langsung tampilkan dulu (EN / original)
-  setTranslatedBlogs(blogs);
-
-  const run = async () => {
-
-    for (const blog of blogs) {
-
-      const translated: Blog = {
-        ...blog,
-        title: await translateHybrid(blog.title, language, tApi),
-        content: await translateHybrid(blog.content, language, tApi),
-        excerpt: blog.excerpt
-          ? await translateHybrid(blog.excerpt, language, tApi)
-          : "",
-        tags: blog.tags?.length
-          ? [await translateHybrid(blog.tags[0], language, tApi)]
-          : [],
-      };
-
-      // update satu-satu 
-      setTranslatedBlogs((prev) => {
-        const updated = [...prev];
-        const index = updated.findIndex((b) => b._id === blog._id);
-        if (index !== -1) updated[index] = translated;
-        return updated;
-      });
-
-    }
-
-  };
-
-  run();
-
-}, [blogs, language]);
+    run();
+  }, [blogs, language]);
 
   const filteredBlogs = useMemo(() => {
     const searchTerm = search.trim().toLowerCase();
@@ -106,18 +95,27 @@ export default function SectionBlog({ initialBlogs }: Props) {
   const categories = ["All", "Insight", "Design", "Tech", "Tutorial", "News", "Case Study"];
 
   return (
-    <section className="w-full bg-white py-32 overflow-hidden">
+    <section
+      className="w-full bg-white py-32 overflow-hidden"
+      aria-labelledby="blog-section-title"
+    >
       <div className="max-w-7xl mx-auto px-6 text-black">
 
         <FadeUp>
-          <h2 className="text-3xl font-bold mb-8">
+          <h2 id="blog-section-title" className="text-3xl font-bold mb-8">
             {t("blogSection", "title")}
           </h2>
         </FadeUp>
 
         <FadeUp>
           <div className="flex gap-4 mb-6">
+
+            <label htmlFor="blog-search" className="sr-only">
+              Search blog
+            </label>
+
             <input
+              id="blog-search"
               type="text"
               placeholder={t("blogSection", "search")}
               value={search}
@@ -128,11 +126,16 @@ export default function SectionBlog({ initialBlogs }: Props) {
         </FadeUp>
 
         <FadeUp>
-          <div className="flex justify-end gap-3 mb-14 flex-wrap">
+          <div
+            className="flex justify-end gap-3 mb-14 flex-wrap"
+            role="group"
+            aria-label="Filter blog categories"
+          >
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
+                aria-pressed={activeCategory === cat}
                 className={`px-5 py-2 rounded-full border text-sm ${
                   activeCategory === cat
                     ? "bg-black text-white"
@@ -172,13 +175,15 @@ export default function SectionBlog({ initialBlogs }: Props) {
 function BlogCard({ blog }: { blog: Blog }) {
 
   const { t } = useTranslate();
-
   const category = blog.tags?.[0] || "";
 
   return (
-    <div className="group relative">
+    <article className="group relative">
 
-      <div className="pointer-events-none absolute -inset-5 rounded-[32px] bg-[radial-gradient(circle,rgba(255,200,0,0.45)_0%,rgba(255,200,0,0.25)_35%,transparent_70%)] opacity-0 blur-[60px] group-hover:opacity-100" />
+      <div
+        className="pointer-events-none absolute -inset-5 rounded-[32px] bg-[radial-gradient(circle,rgba(255,200,0,0.45)_0%,rgba(255,200,0,0.25)_35%,transparent_70%)] opacity-0 blur-[60px] group-hover:opacity-100"
+        aria-hidden="true"
+      />
 
       <div className="relative flex gap-6 bg-white border border-black rounded-[28px] px-8 py-8 transition group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
 
@@ -190,11 +195,12 @@ function BlogCard({ blog }: { blog: Blog }) {
               alt={blog.title}
             />
           ) : (
-            <div className="w-full h-full bg-gray-200" />
+            <div className="w-full h-full bg-gray-200" aria-hidden="true" />
           )}
         </div>
 
         <div className="flex-1">
+
           <span className="text-xs font-semibold text-black/60">
             {category}
           </span>
@@ -207,22 +213,23 @@ function BlogCard({ blog }: { blog: Blog }) {
             {blog.excerpt || blog.content?.slice(0, 120) || ""}
           </p>
 
-          
-            <Link
+          <Link
             href={`/Blog/${blog.slug}`}
+            aria-label={`Read more about ${blog.title}`}
             className="inline-block px-6 py-2 rounded-full border border-black text-sm hover:bg-black/10"
             onClick={() => {
-            sessionStorage.setItem(
-            "selectedBlog",
-               JSON.stringify(blog)
-                  );
-                }}
-              >
+              sessionStorage.setItem(
+                "selectedBlog",
+                JSON.stringify(blog)
+              );
+            }}
+          >
             {t("blogSection", "readMore")}
           </Link>
+
         </div>
 
       </div>
-    </div>
+    </article>
   );
 }

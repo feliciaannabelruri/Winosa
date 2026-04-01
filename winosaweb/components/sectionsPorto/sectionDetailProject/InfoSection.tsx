@@ -22,11 +22,12 @@ export default function InfoSection({ project }: InfoSectionProps) {
     <FadeUp>
       <section
         className={styles.infoSection}
-        aria-label="Project overview"
+        aria-labelledby="project-overview-title"
       >
         <div className={styles.infoContainer}>
 
           <motion.h2
+            id="project-overview-title"
             className={styles.sectionTitle}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -36,9 +37,9 @@ export default function InfoSection({ project }: InfoSectionProps) {
             {t("portfolioDetail", "overview")}
           </motion.h2>
 
-          <div className={styles.infoGrid}>
+          <div className={styles.infoGrid} role="list">
 
-            <div className={styles.infoCard}>
+            <div className={styles.infoCard} role="listitem">
               <span className={styles.infoLabel}>
                 {t("portfolioDetail", "client")}
               </span>
@@ -47,7 +48,7 @@ export default function InfoSection({ project }: InfoSectionProps) {
               </span>
             </div>
 
-            <div className={styles.infoCard}>
+            <div className={styles.infoCard} role="listitem">
               <span className={styles.infoLabel}>
                 {t("portfolioDetail", "year")}
               </span>
@@ -59,13 +60,25 @@ export default function InfoSection({ project }: InfoSectionProps) {
           </div>
 
           {project.technologies?.length > 0 && (
-            <div className={styles.techStack}>
-              <h3 className={styles.techStackTitle}>
+            <div
+              className={styles.techStack}
+              role="region"
+              aria-labelledby="tech-stack-title"
+            >
+              <h3
+                id="tech-stack-title"
+                className={styles.techStackTitle}
+              >
                 {t("portfolioDetail", "technologies")}
               </h3>
-              <div className={styles.techTags}>
+
+              <div className={styles.techTags} role="list">
                 {project.technologies.map((tech, index) => (
-                  <span key={index} className={styles.techTag}>
+                  <span
+                    key={index}
+                    role="listitem"
+                    className={styles.techTag}
+                  >
                     {tech}
                   </span>
                 ))}

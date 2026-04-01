@@ -219,7 +219,9 @@ export default function BlogDetailPage() {
       <main className="w-full bg-white overflow-x-hidden animate-pulse">
 
         {/* HERO SKELETON */}
-        <section className="relative w-full h-[75vh] bg-gray-200" />
+        <section
+          aria-labelledby="blog-title"
+          className="relative w-full h-[75vh] flex items-end" />
 
         {/* ARTICLE SKELETON */}
         <section className="max-w-5xl mx-auto px-6 py-32 space-y-4">
@@ -278,7 +280,7 @@ export default function BlogDetailPage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pb-16 text-white">
           <FadeUp>
@@ -287,8 +289,7 @@ export default function BlogDetailPage() {
               {category}
             </span>
 
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">
-              {translatedBlog.title}
+            <h1 id="blog-title" className="text-3xl md:text-5xl font-bold mb-4">
             </h1>
 
             <div className="text-sm text-white/80 flex gap-4">
@@ -297,7 +298,7 @@ export default function BlogDetailPage() {
                 {translatedBlog.author || t("blogDetail", "defaultAuthor")}
               </span>
 
-              <span>•</span>
+              <span aria-hidden="true">•</span>
 
               <span>
                 {new Date(translatedBlog.createdAt).toLocaleDateString()}
@@ -314,6 +315,7 @@ export default function BlogDetailPage() {
       <section className="max-w-5xl mx-auto px-6 py-32 text-black">
         <FadeUp>
           <motion.article
+            role="article"
             className="prose prose-lg max-w-none
               prose-headings:font-bold prose-headings:text-black
               prose-p:text-black/80 prose-p:leading-relaxed
@@ -328,11 +330,14 @@ export default function BlogDetailPage() {
       </section>
 
       {/* RELATED */}
-      <section className="w-full py-32 bg-white">
+      <section
+          aria-labelledby="related-title"
+          className="w-full py-32 bg-white"
+        >
         <div className="max-w-7xl mx-auto px-6 text-black">
 
           <FadeUp>
-            <h2 className="text-2xl font-bold mb-12">
+           <h2 id="related-title" className="text-2xl font-bold mb-12">
               {t("blogDetail", "related")}
             </h2>
           </FadeUp>
@@ -359,7 +364,7 @@ export default function BlogDetailPage() {
                       {post.image && (
                         <img
                           src={post.image}
-                          alt={post.title}
+                          alt={post.title || "Blog image"}
                           className="w-full h-full object-cover"
                         />
                       )}
@@ -380,6 +385,7 @@ export default function BlogDetailPage() {
 
                         <Link
                           href={`/Blog/${post.slug}`}
+                          aria-label={`Read more about ${post.title}`}
                           className="inline-block px-6 py-2 rounded-full border border-black text-sm text-black hover:bg-black/10 transition"
                         >
                           {t("blogDetail", "readMore")}
@@ -403,13 +409,13 @@ export default function BlogDetailPage() {
 
         {/* COMMENTS */}
         <section
-          aria-label="Blog comments section"
+          aria-labelledby="comments-title"
           className="w-full py-20 bg-white"
         >
           <div className="max-w-7xl mx-auto px-6 text-black">
 
             <FadeUp>
-              <h2 className="text-2xl font-bold mb-8">
+              <h2 id="comments-title" className="text-2xl font-bold mb-8">
                 {t("blogDetail", "comments")}
               </h2>
             </FadeUp>
@@ -426,15 +432,24 @@ export default function BlogDetailPage() {
             <FadeUp>
               <div className="border border-black rounded-[28px] p-8">
 
+                <label htmlFor="name" className="sr-only">
+                  Your name
+                </label>
+
                 <input
-                  aria-label="Your name"
+                  id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t("blogDetail", "yourName")}
                   className="w-full px-5 py-3 border border-black rounded-full mb-5"
                 />
 
+                <label htmlFor="message" className="sr-only">
+                  Write your comment
+                </label>
+
                 <textarea
+                  id="message"
                   aria-label="Write your comment"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
@@ -444,6 +459,7 @@ export default function BlogDetailPage() {
 
                 <button
                   aria-label="Post comment"
+                  type="button"
                   onClick={handlePost}
                   className="mt-4 px-8 py-3 rounded-full border border-black hover:bg-black/10"
                 >

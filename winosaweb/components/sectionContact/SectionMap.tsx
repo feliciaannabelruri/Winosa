@@ -34,7 +34,10 @@ export default function SectionMap() {
               {t("map", "title")}
             </h2>
 
-            <p className="text-black/70">
+            <p
+              id="map-description"
+              className="text-black/70"
+            >
               {t("map", "subtitle")}
             </p>
 
@@ -50,6 +53,7 @@ export default function SectionMap() {
 
             <iframe
               title="Company location on Google Maps"
+              aria-describedby="map-description"
               src="https://maps.google.com/maps?q=Bandar%20Lampung&t=&z=13&ie=UTF8&iwloc=&output=embed"
               width="100%"
               height="450"

@@ -12,10 +12,9 @@ export default function SectionExplanation() {
     <FadeUp>
       <section
         className={styles.explanationSection}
-        aria-label="Portfolio explanation"
+        aria-labelledby="portfolio-explanation-title"
       >
         <div className={styles.explanationContainer}>
-
           <motion.div
             className={styles.explanationContent}
             initial="hidden"
@@ -30,7 +29,6 @@ export default function SectionExplanation() {
               },
             }}
           >
-
             <motion.span
               className={styles.explanationBadge}
               variants={{
@@ -43,6 +41,7 @@ export default function SectionExplanation() {
             </motion.span>
 
             <motion.h2
+              id="portfolio-explanation-title"
               className={styles.explanationTitle}
               variants={{
                 hidden: { opacity: 0, y: 60 },
@@ -69,6 +68,7 @@ export default function SectionExplanation() {
 
             <motion.div
               className={styles.highlightStats}
+              role="list"
               variants={{
                 hidden: {},
                 visible: {
@@ -78,8 +78,8 @@ export default function SectionExplanation() {
                 },
               }}
             >
-
               <motion.div
+                role="listitem"
                 className={styles.highlightItem}
                 variants={{
                   hidden: { opacity: 0, y: 60 },
@@ -94,6 +94,7 @@ export default function SectionExplanation() {
               </motion.div>
 
               <motion.div
+                role="listitem"
                 className={styles.highlightItem}
                 variants={{
                   hidden: { opacity: 0, y: 60 },
@@ -108,6 +109,7 @@ export default function SectionExplanation() {
               </motion.div>
 
               <motion.div
+                role="listitem"
                 className={styles.highlightItem}
                 variants={{
                   hidden: { opacity: 0, y: 60 },
@@ -120,11 +122,8 @@ export default function SectionExplanation() {
                   {t("portfolioExplanation.stats", "quality")}
                 </p>
               </motion.div>
-
             </motion.div>
-
           </motion.div>
-
         </div>
       </section>
     </FadeUp>

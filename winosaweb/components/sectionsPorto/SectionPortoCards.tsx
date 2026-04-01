@@ -29,47 +29,34 @@ type FilterType =
   | "Branding";
 
 export default function SectionPortoCards({ data }: { data: Project[] }) {
-
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
 
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // STATE HASIL TRANSLATE
   const [translatedProjects, setTranslatedProjects] = useState<Project[]>([]);
 
-  // ================= AUTO TRANSLATE =================
   useEffect(() => {
-
     setTranslatedProjects(data);
 
     const run = async () => {
-
       for (const project of data) {
-
         const translated = {
           ...project,
           title: await translateHybrid(project.title, language, tApi),
           description: await translateHybrid(project.description, language, tApi),
         };
 
-        // update satu-satu 
         setTranslatedProjects((prev) => {
           const updated = [...prev];
-          const index = updated.findIndex(
-            (p) => p._id === project._id
-          );
+          const index = updated.findIndex((p) => p._id === project._id);
           if (index !== -1) updated[index] = translated;
           return updated;
         });
-
       }
-
     };
 
     run();
-
   }, [data, language]);
 
   const filters: FilterType[] = [
@@ -93,8 +80,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
 
   const handlePrev = () => {
     setCurrentIndex(
-      (prev) =>
-        (prev - 1 + filteredProjects.length) % filteredProjects.length
+      (prev) => (prev - 1 + filteredProjects.length) % filteredProjects.length
     );
   };
 
@@ -126,9 +112,9 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
 
   return (
     <FadeUp>
-
       <motion.section
         id="portfolio-cards"
+        aria-labelledby="portfolio-cards-title"
         className={styles.cardsSection}
         initial={{ opacity: 0, y: 80 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -136,11 +122,17 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
         viewport={{ once: true }}
       >
 
+        <h2 id="portfolio-cards-title" className="sr-only">
+          Portfolio Projects
+        </h2>
+
         {/* FILTER */}
-        <div className={styles.filterContainer}>
+        <div className={styles.filterContainer} role="tablist">
           {filters.map((filter) => (
             <button
               key={filter}
+              role="tab"
+              aria-selected={activeFilter === filter}
               className={`${styles.filterBtn} ${
                 activeFilter === filter ? styles.filterActive : ""
               }`}
@@ -153,36 +145,34 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
 
         {/* EMPTY */}
         {filteredProjects.length === 0 ? (
-
-          <div className={styles.emptyState}>
-            <div style={{ fontSize: "40px", marginBottom: "12px" }}>🔍</div>
-            <h3>
-              {t("portfolio", "empty")}
-            </h3>
+          <div className={styles.emptyState} role="status">
+            <div aria-hidden="true" style={{ fontSize: "40px", marginBottom: "12px" }}>
+              🔍
+            </div>
+            <h3>{t("portfolio", "empty")}</h3>
           </div>
-
         ) : (
-
           <>
             {/* CAROUSEL */}
             <div className={styles.carouselWrapper}>
 
               <button
+                type="button"
+                aria-label="Previous project"
                 className={`${styles.navButton} ${styles.navLeft}`}
                 onClick={handlePrev}
               >
                 ‹
               </button>
 
-              <div className={styles.carouselContainer}>
+              <div className={styles.carouselContainer} role="list">
                 {filteredProjects.map((project, index) => (
-
                   <div
                     key={project._id}
+                    role="listitem"
                     className={styles.carouselCard}
                     style={getCardStyle(index)}
                   >
-
                     <div className={styles.cardImage}>
                       <Image
                         src={project.image || "/no-image.jpg"}
@@ -194,7 +184,6 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
                     </div>
 
                     <div className={styles.cardContent}>
-
                       <h3 className={styles.cardTitle}>
                         {project.title}
                       </h3>
@@ -204,28 +193,27 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
                       </p>
 
                       <div className={styles.cardFooter}>
-
                         <span className={styles.cardCategory}>
                           {t("portfolioFilters", project.category)}
                         </span>
 
                         <Link
                           href={`/portofolio/${project.slug}`}
+                          aria-label={`View project ${project.title}`}
                           className={styles.learnMore}
                         >
-                          {t("portfolio", "learnMore")} →
+                          {t("portfolio", "learnMore")}
+                          <span aria-hidden="true"> →</span>
                         </Link>
-
                       </div>
-
                     </div>
-
                   </div>
-
                 ))}
               </div>
 
               <button
+                type="button"
+                aria-label="Next project"
                 className={`${styles.navButton} ${styles.navRight}`}
                 onClick={handleNext}
               >
@@ -235,26 +223,23 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
             </div>
 
             {/* DOTS */}
-            <div className={styles.dotsContainer}>
+            <div className={styles.dotsContainer} role="tablist">
               {filteredProjects.map((_, index) => (
-
                 <button
                   key={index}
+                  role="tab"
+                  aria-selected={index === currentIndex}
+                  aria-label={`Go to project ${index + 1}`}
                   className={`${styles.dot} ${
                     index === currentIndex ? styles.dotActive : ""
                   }`}
                   onClick={() => setCurrentIndex(index)}
                 />
-
               ))}
             </div>
-
           </>
-
         )}
-
       </motion.section>
-
     </FadeUp>
   );
 }

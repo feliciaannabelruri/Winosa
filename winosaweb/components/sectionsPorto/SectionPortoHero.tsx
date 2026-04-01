@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-// import FadeUp from "@/components/animation/FadeUp"; ❌ hapus
 import styles from "@/app/portofolio/portfolio.module.css";
 import { useTranslate } from "@/lib/useTranslate";
 
@@ -21,9 +20,9 @@ export default function SectionPortoHero() {
   return (
     <section
       className={styles.hero}
-      aria-label="Portfolio hero section"
+      aria-labelledby="portfolio-hero-title"
     >
-      <div className={styles.overlay} />
+      <div className={styles.overlay} aria-hidden="true" />
 
       <motion.div
         className={styles.content}
@@ -39,6 +38,7 @@ export default function SectionPortoHero() {
         }}
       >
         <motion.h1
+          id="portfolio-hero-title"
           className={styles.title}
           variants={{
             hidden: { opacity: 0, y: 60 },
@@ -75,6 +75,8 @@ export default function SectionPortoHero() {
         </motion.p>
 
         <motion.button
+          type="button"
+          aria-controls="portfolio-cards"
           aria-label="Scroll to portfolio projects"
           className={styles.heroButton}
           onClick={scrollToCards}
@@ -91,8 +93,8 @@ export default function SectionPortoHero() {
         </motion.button>
       </motion.div>
 
-      {/* ✅ Gradient (TIDAK ganggu layout) */}
       <div
+        aria-hidden="true"
         style={{
           position: "absolute",
           bottom: 0,

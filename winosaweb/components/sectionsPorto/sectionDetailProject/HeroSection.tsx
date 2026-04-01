@@ -69,6 +69,7 @@ export default function HeroSection({ project }: HeroSectionProps) {
       <div style={{ position: "relative", transform: "translateZ(0)" }}>
         <section
           className={styles.heroSection}
+          aria-labelledby="project-hero-title"
           style={{ marginBottom: firstParagraph ? "0" : undefined }}
         >
           <div className={styles.heroImageWrapper}>
@@ -81,7 +82,7 @@ export default function HeroSection({ project }: HeroSectionProps) {
               style={{ objectFit: "cover" }}
               className={styles.heroImage}
             />
-            <div className={styles.heroOverlay} />
+            <div className={styles.heroOverlay} aria-hidden="true" />
           </div>
 
           <motion.div
@@ -102,6 +103,7 @@ export default function HeroSection({ project }: HeroSectionProps) {
             </motion.span>
 
             <motion.h1
+              id="project-hero-title"
               className={styles.heroTitle}
               variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.8 }}
@@ -113,6 +115,8 @@ export default function HeroSection({ project }: HeroSectionProps) {
 
         {firstParagraph && (
           <motion.div
+            role="region"
+            aria-label="Project description"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9 }}

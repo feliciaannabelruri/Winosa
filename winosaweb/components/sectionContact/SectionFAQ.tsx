@@ -30,7 +30,6 @@ export default function SectionCompanyInfo() {
 
         <div className="max-w-7xl mx-auto px-6 lg:px-16 grid lg:grid-cols-2 gap-20">
 
-          {/* LEFT */}
           <motion.div
             initial={{ opacity: 0, y: 80 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -53,9 +52,10 @@ export default function SectionCompanyInfo() {
 
           </motion.div>
 
-          {/* RIGHT */}
           <motion.div
             className="space-y-8"
+            role="region"
+            aria-labelledby="faq-title"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -82,34 +82,34 @@ export default function SectionCompanyInfo() {
                   className="border-b border-black/20 pb-6"
                 >
 
-                  <button
-                    onClick={() => setActive(isOpen ? null : index)}
-                    aria-expanded={isOpen}
-                    aria-controls={`faq-content-${index}`}
-                    className="w-full flex justify-between items-center text-left"
-                  >
-
-                    <h4
-                      id={`faq-question-${index}`}
-                      className="text-lg font-semibold text-black"
+                  <h3>
+                    <button
+                      onClick={() => setActive(isOpen ? null : index)}
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-content-${index}`}
+                      id={`faq-button-${index}`}
+                      className="w-full flex justify-between items-center text-left"
                     >
-                      {faq.question}
-                    </h4>
 
-                    {isOpen ? (
-                      <Minus size={18} className="text-black" aria-hidden="true" />
-                    ) : (
-                      <Plus size={18} className="text-black/50" aria-hidden="true" />
-                    )}
+                      <span className="text-lg font-semibold text-black">
+                        {faq.question}
+                      </span>
 
-                  </button>
+                      {isOpen ? (
+                        <Minus size={18} className="text-black" aria-hidden="true" />
+                      ) : (
+                        <Plus size={18} className="text-black/50" aria-hidden="true" />
+                      )}
+
+                    </button>
+                  </h3>
 
                   <AnimatePresence initial={false}>
                     {isOpen && (
-                      <motion.p
+                      <motion.div
                         id={`faq-content-${index}`}
                         role="region"
-                        aria-labelledby={`faq-question-${index}`}
+                        aria-labelledby={`faq-button-${index}`}
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
@@ -117,7 +117,7 @@ export default function SectionCompanyInfo() {
                         className="mt-4 text-black/70 leading-relaxed overflow-hidden"
                       >
                         {faq.answer}
-                      </motion.p>
+                      </motion.div>
                     )}
                   </AnimatePresence>
 

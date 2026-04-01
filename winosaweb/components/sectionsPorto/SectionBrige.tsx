@@ -12,7 +12,7 @@ export default function SectionBridge() {
     <FadeUp>
       <section
         className={styles.bridgeSection}
-        aria-label="Portfolio bridge section"
+        aria-labelledby="portfolio-bridge-title"
       >
         <motion.div
           className={styles.bigTitle}
@@ -21,7 +21,7 @@ export default function SectionBridge() {
           transition={{ duration: 0.9, ease: "easeOut" }}
           viewport={{ once: true }}
         >
-          <h2>
+          <h2 id="portfolio-bridge-title">
             {t("portfolioBridge", "title")}
           </h2>
         </motion.div>

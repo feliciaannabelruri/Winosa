@@ -21,17 +21,13 @@ interface CaseStudySectionProps {
 }
 
 export default function CaseStudySection({ project }: CaseStudySectionProps) {
-
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
 
-  // ✅ state hasil translate
   const [translated, setTranslated] = useState(project);
 
   useEffect(() => {
-
     const run = async () => {
-
       const mapped = {
         ...project,
         challenge: await translateHybrid(project.challenge, language, tApi),
@@ -48,19 +44,21 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
       };
 
       setTranslated(mapped);
-
     };
 
     run();
-
   }, [project, language]);
 
   return (
     <FadeUp>
-      <section className={styles.caseStudySection}>
+      <section
+        className={styles.caseStudySection}
+        aria-labelledby="case-study-title"
+      >
         <div className={styles.caseStudyContainer}>
 
           <motion.h2
+            id="case-study-title"
             className={styles.sectionTitle}
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -72,6 +70,7 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
 
           <motion.div
             className={styles.caseStudyFlow}
+            role="list"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -81,8 +80,8 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
             }}
           >
 
-            {/* CHALLENGE */}
             <motion.div
+              role="listitem"
               className={styles.caseStudyBlock}
               variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } }}
             >
@@ -99,8 +98,8 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
               </p>
             </motion.div>
 
-            {/* SOLUTION */}
             <motion.div
+              role="listitem"
               className={styles.caseStudyBlock}
               variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } }}
             >
@@ -117,8 +116,8 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
               </p>
             </motion.div>
 
-            {/* RESULT */}
             <motion.div
+              role="listitem"
               className={styles.caseStudyBlock}
               variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } }}
             >
@@ -137,13 +136,21 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
 
           </motion.div>
 
-          {/* METRICS (optional) */}
           {translated.metrics && translated.metrics.length > 0 && (
-            <div className={styles.metricsWrapper}>
-              <div className={styles.metricsGrid}>
+            <div
+              className={styles.metricsWrapper}
+              role="region"
+              aria-labelledby="metrics-title"
+            >
+              <h3 id="metrics-title" className="sr-only">
+                Project Metrics
+              </h3>
+
+              <div className={styles.metricsGrid} role="list">
                 {translated.metrics.map((m, i) => (
                   <motion.div
                     key={i}
+                    role="listitem"
                     className={styles.metricCard}
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}

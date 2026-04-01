@@ -10,12 +10,13 @@ export default function SectionHero() {
   const { t } = useTranslate();
 
   return (
-    <section className="relative w-full h-screen overflow-hidden">
+    <section className="relative w-full h-screen overflow-hidden" aria-labelledby="services-hero-title">
 
       {/* Background Image (OPTIMIZED) */}
       <Image
         src="/bg/bg7.jpg"
-        alt="Hero Background"
+        alt=""
+        aria-hidden="true"
         fill
         priority //  
         quality={75} //  compress
@@ -24,7 +25,7 @@ export default function SectionHero() {
       />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/10 z-10" />
+      <div className="absolute inset-0 bg-black/10 z-10" aria-hidden="true"/>
 
       {/* Content */}
       <div
@@ -36,6 +37,7 @@ export default function SectionHero() {
 
         {/* Title */}
         <motion.h1
+          id="services-hero-title"
           initial={{ opacity: 0, y: 80 }}
           animate={{ opacity: 1, y: 0 }} // 
           transition={{ duration: 0.8 }}
@@ -79,6 +81,7 @@ export default function SectionHero() {
           backgroundImage:
             "linear-gradient(to top, rgba(255,255,255,1) 10%, rgba(255,255,255,0) 100%)",
         }}
+        aria-label="Go to contact page"
       />
 
     </section>
