@@ -13,11 +13,18 @@ type GlassData = {
   vision?: { image?: string };
 };
 
+type MagnifyOvalProps = {
+  size?: "sm" | "md" | "lg";
+  className?: string;
+  imageUrl?: string;
+  altText?: string;
+};
+
 export default function SectionGlass({ data }: { data: GlassData | null }) {
   const { t } = useTranslate();
 
   return (
-    <section className="w-full bg-white pt-10 pb-16 md:pt-12 md:pb-20">
+    <section className="w-full bg-white pt-10 pb-16 md:pt-12 md:pb-20" aria-labelledby="glass-title">
       <div className="max-w-[1200px] mx-auto px-6 text-black">
 
         {/* Heading */}
@@ -85,8 +92,9 @@ function TimelineRow({
 
       {/* Line */}
       <div className="hidden lg:flex absolute top-12 left-1/2 -translate-x-1/2 flex-col items-center">
-        <div className="w-4 h-4 bg-black rounded-full z-10" />
-        {!isLast && <div className="w-px bg-black mt-2 h-[220px]" />}
+        <div aria-hidden="true" className="w-4 h-4 bg-black rounded-full" />
+        {!isLast && <div aria-hidden="true"
+            className="w-px bg-black mt-2 h-[220px]"/>}
       </div>
 
       <div className="flex justify-center lg:justify-end">
@@ -124,6 +132,7 @@ function DoubleOvalImage({ reverse, image1, image2 }: any) {
         className={`${reverse ? "right-0" : "left-0"} top-6`}
         size="lg"
         imageUrl={image1}
+        
       />
       <MagnifyOval
         className={`${reverse ? "left-0" : "right-0"} bottom-0`}
@@ -142,7 +151,7 @@ function SingleOvalImage({ image }: any) {
   );
 }
 
-function MagnifyOval({ size = "md", className = "", imageUrl }: any) {
+function MagnifyOval({ size = "md", className = "", imageUrl, altText = "Image",}: any) {
   const sizeMap: any = {
     sm: "w-[140px] h-[90px] md:w-[160px] md:h-[100px]",
     md: "w-[200px] h-[120px] md:w-[220px] md:h-[140px]",
@@ -161,7 +170,7 @@ function MagnifyOval({ size = "md", className = "", imageUrl }: any) {
       {imageUrl && (
         <Image
           src={imageUrl}
-          alt="glass image"
+          alt={altText}
           fill
           className="object-cover"
         />

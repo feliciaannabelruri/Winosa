@@ -12,7 +12,7 @@ export default function SectionMissionVision() {
   return (
     <FadeUp>
       <section
-        aria-label="Company mission and vision"
+        aria-labelledby="Company mission and vision"
         role="region"
         className="w-full py-24 bg-white"
       >
@@ -38,13 +38,14 @@ export default function SectionMissionVision() {
 
               {/* center */}
               <div className="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center shadow-xl relative z-10">
-                <Target className="text-white w-8 h-8" />
+                <Target className="text-white w-8 h-8" aria-hidden="true"/>
               </div>
 
               {/* ARROW */}
               <svg
                 className="absolute w-64 h-64 z-20"
                 viewBox="0 0 256 256"
+                aria-hidden="true"
               >
                 <g transform="rotate(45 128 128) translate(0 70)">
 
@@ -84,15 +85,14 @@ export default function SectionMissionVision() {
           <motion.div className="flex-1">
 
             <h2
+              id="mission-title"
               className="text-4xl font-bold text-black mb-6"
-              tabIndex={0}
             >
               {t("missionVision", "title")}
             </h2>
 
             <p
               className="text-black/70 mb-10 leading-relaxed max-w-xl"
-              tabIndex={0}
             >
               {t("missionVision", "description")}
             </p>
@@ -100,7 +100,7 @@ export default function SectionMissionVision() {
             <div className="grid sm:grid-cols-2 gap-10">
 
               <div className="flex gap-4" tabIndex={0}>
-                <Rocket className="text-yellow-500 w-6 h-6 mt-1" />
+                <Rocket className="text-yellow-500 w-6 h-6 mt-1" aria-hidden="true"/>
                 <div>
                   <h4 className="font-semibold text-black">
                     {t("missionVision", "innovationTitle")}

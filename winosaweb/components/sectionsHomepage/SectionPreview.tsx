@@ -106,11 +106,12 @@ export default function SectionPreview({ title, items = [] }: any) {
   }
 
   return (
-    <section className="w-full bg-white py-20">
+    <section className="w-full bg-white py-20" aria-labelledby="preview-title">
       <div className="max-w-7xl mx-auto px-8">
 
         {/* Title */}
         <motion.h2
+          id="preview-title" 
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }} // 🔥 FIX (langsung muncul, bukan nunggu scroll)
           transition={{ duration: 0.6 }}
@@ -128,6 +129,8 @@ export default function SectionPreview({ title, items = [] }: any) {
             return (
               <motion.div
                 key={uniqueKey}
+                role="article" 
+                aria-label={`Preview item ${item.title}`}
                 initial={{ opacity: 0, y: 60 }}
                 animate={{ opacity: 1, y: 0 }} // 🔥 FIX
                 transition={{ duration: 0.6, delay: index * 0.15 }}
@@ -137,7 +140,7 @@ export default function SectionPreview({ title, items = [] }: any) {
                 <div
                   className="relative h-full rounded-[28px] overflow-hidden bg-white border border-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.15),0_10px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.25),0_20px_40px_rgba(0,0,0,0.12)] transition duration-500"
                   style={{
-                    transform: "translateZ(0)", // 🔥 Safari fix
+                    transform: "translateZ(0)", //  Safari fix
                     backfaceVisibility: "hidden",
                   }}
                 >
@@ -151,7 +154,7 @@ export default function SectionPreview({ title, items = [] }: any) {
                         className="object-cover transition duration-700 group-hover:scale-110 z-0"
                       />
 
-                      {/* ✅ GRADIENT FIX SAFARI */}
+                      {/* GRADIENT FIX SAFARI */}
                       <div
                         className="absolute bottom-0 left-0 w-full h-[45%] z-10 pointer-events-none"
                         style={{
@@ -177,6 +180,7 @@ export default function SectionPreview({ title, items = [] }: any) {
                         size={42}
                         strokeWidth={1.5}
                         className="text-black mb-4"
+                        aria-hidden="true"
                       />
 
                       <h3 className="text-lg font-semibold text-black mb-3">
@@ -191,7 +195,9 @@ export default function SectionPreview({ title, items = [] }: any) {
 
                   {/* Loading */}
                   {item.isTranslating && (
-                    <div className="absolute inset-0 border border-yellow-400 rounded-[28px] animate-pulse pointer-events-none" />
+                    <div 
+                    aria-live="polite"
+                    className="absolute inset-0 border border-yellow-400 rounded-[28px] animate-pulse pointer-events-none" />
                   )}
                 </div>
               </motion.div>

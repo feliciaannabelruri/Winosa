@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
+import Image from "next/image";
 
 interface TeamMember {
   _id: string;
@@ -61,7 +62,7 @@ export default function SectionTeam() {
   if (!loaded) {
     return (
       <section className="w-full bg-white py-24 md:py-40">
-        <div className="text-center">Loading...</div>
+        <div role="status" aria-live="polite" className="text-center">Loading...</div>
       </section>
     );
   }
@@ -69,11 +70,13 @@ export default function SectionTeam() {
   if (team.length === 0) return null;
 
   return (
-    <section className="w-full bg-white py-24 md:py-40">
+    <section className="w-full bg-white py-24 md:py-40" aria-labelledby="team-title">
       <div className="max-w-7xl mx-auto px-6 text-black">
 
         <div className="text-center mb-14 md:mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 
+            id="team-title"
+            className="text-3xl md:text-4xl font-bold mb-4">
             {t("team", "title")}
           </h2>
 
@@ -82,7 +85,11 @@ export default function SectionTeam() {
           </p>
         </div>
 
-        <div className="relative h-[420px] md:h-[520px] flex items-center justify-center">
+        <div className="relative h-[420px] md:h-[520px] flex items-center justify-center"
+        role="region"
+          aria-label="Team members carousel"
+          aria-live="polite"
+        >
 
           {team.map((member, i) => {
 
@@ -104,11 +111,14 @@ export default function SectionTeam() {
                 key={member._id}
                 className={`absolute transition-all duration-700 ease-in-out ${styles}`}
               >
-                <div className="w-[300px] h-[400px] bg-white border border-black rounded-[28px] overflow-hidden">
+                <div className="w-[300px] h-[400px] bg-white border border-black rounded-[28px] overflow-hidden" role="article"
+                  aria-label={`Team member ${member.name}`}>
 
                   <img
                     src={member.image}
                     alt={member.name}
+                    width={300}
+                    height={256}
                     className="w-full h-64 object-cover"
                   />
 

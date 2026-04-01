@@ -46,8 +46,8 @@ export default function SectionFrame() {
               transform: "translate(-50%, -100%)",
             }}
           >
-            <div className="map-pin"></div>
-            <div className="map-stick"></div>
+            <div className="map-pin" aria-hidden="true"></div>
+            <div className="map-stick" aria-hidden="true"></div>
 
             <span className="absolute left-full ml-2 sm:ml-3 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs text-black bg-white px-2 sm:px-3 py-1 rounded shadow whitespace-nowrap">
               {t("frame", "location")}

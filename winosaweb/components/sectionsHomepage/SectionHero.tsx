@@ -12,6 +12,7 @@ export default function SectionHero() {
 
   return (
     <section
+      aria-label="Hero section with company introduction"
       className="relative w-full min-h-screen overflow-hidden flex items-center"
       style={{
         backgroundImage: "url('/bg/bg2.jpg')",
