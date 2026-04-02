@@ -19,6 +19,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
+from datetime import datetime, timezone
 import requests
 import json
 import os
@@ -27,6 +28,17 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+_semantic_model = None
+
+def get_semantic_model():
+    global _semantic_model
+    if _semantic_model is None:
+        try:
+            from sentence_transformers import SentenceTransformer
+            _semantic_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+        except:
+            _semantic_model = None
+    return _semantic_model
 
 class BlogRecommendationModel:
     """
@@ -51,33 +63,79 @@ class BlogRecommendationModel:
         self.blogs_df: pd.DataFrame = None
         self.mae: float = None
         self.is_trained: bool = False
+        self.semantic_matrix    = None
+        self.hot_scores         = None
+        self.semantic_available = False
 
     # DATA PREPARATION
     def _prepare_features(self, blogs: list) -> pd.DataFrame:
-        """
-        Ubah list blog (dict) jadi DataFrame dengan kolom tambahan:
-          - text_features : gabungan title + tags untuk TF-IDF
-          - views_normalized : views dinormalisasi ke 0-1
-        """
         df = pd.DataFrame(blogs)
 
-        # Pastikan kolom yang diperlukan ada
-        for col in ["title", "tags", "views", "slug"]:
+        for col in ["title", "tags", "views", "slug", "createdAt"]:
             if col not in df.columns:
-                df[col] = "" if col in ["title", "slug"] else ([] if col == "tags" else 0)
+                df[col] = "" if col in ["title", "slug"] else ([] if col == "tags" else (0 if col == "views" else datetime.now(timezone.utc).isoformat()))
 
-        # Buat fitur teks: title + semua tag
         df["text_features"] = df.apply(
             lambda row: str(row.get("title", "")) + " " +
                         " ".join(row.get("tags", []) if isinstance(row.get("tags", []), list) else []),
             axis=1,
         )
 
-        # Normalisasi views ke rentang 0–1
+        df["semantic_text"] = df.apply(
+            lambda row: str(row.get("title", "")) + ". " + str(row.get("excerpt", "")),
+            axis=1,
+        )
+
         max_views = df["views"].max() if df["views"].max() > 0 else 1
         df["views_normalized"] = df["views"].fillna(0) / max_views
 
         return df
+
+    def _compute_hot_scores(self, df):
+        now = datetime.now(timezone.utc)
+        recency_scores = []
+        for ts in df["createdAt"]:
+            try:
+                ts_clean = ts.replace("Z", "+00:00")
+                published = datetime.fromisoformat(ts_clean)
+                if published.tzinfo is None:
+                    published = published.replace(tzinfo=timezone.utc)
+                age_days = (now - published).days
+                recency = np.exp(-age_days / 30)
+            except Exception:
+                recency = 0.5
+            recency_scores.append(recency)
+        recency = np.array(recency_scores)
+        hot = 0.6 * df["views_normalized"].values + 0.4 * recency
+        max_hot = hot.max() if hot.max() > 0 else 1
+        return hot / max_hot
+
+    def _compute_semantic_matrix(self, df):
+        model = get_semantic_model()
+        if model is None:
+            return None
+        try:
+            texts = df["semantic_text"].tolist()
+            logger.info(f"Encoding {len(texts)} blog texts semantically...")
+            embeddings = model.encode(texts, show_progress_bar=False, batch_size=32)
+            matrix = cosine_similarity(embeddings)
+            logger.info(f"✅ Semantic matrix shape: {matrix.shape}")
+            return matrix
+        except Exception as e:
+            logger.warning(f"⚠️  Semantic encoding gagal: {e}")
+            return None
+
+    def _build_hybrid_matrix(self):
+        n = len(self.blogs_df)
+        tfidf = self.similarity_matrix
+        if self.semantic_available:
+            semantic = self.semantic_matrix
+            w_tfidf, w_semantic, w_hot = 0.4, 0.4, 0.2
+        else:
+            semantic = np.zeros((n, n))
+            w_tfidf, w_semantic, w_hot = 0.8, 0.0, 0.2
+        hot_matrix = np.tile(self.hot_scores, (n, 1))
+        return w_tfidf * tfidf + w_semantic * semantic + w_hot * hot_matrix
 
     # TRAINING & EVALUASI MAE
     def train(self, blogs: list) -> dict:
@@ -106,6 +164,9 @@ class BlogRecommendationModel:
 
         # === Step 2: Cosine Similarity Matrix ===
         self.similarity_matrix = cosine_similarity(tfidf_matrix)
+        self.semantic_matrix = self._compute_semantic_matrix(df)
+        self.semantic_available = self.semantic_matrix is not None
+        self.hot_scores = self._compute_hot_scores(df)
         logger.info(f"Similarity matrix shape: {self.similarity_matrix.shape}")
 
         # === Step 3: MAE Evaluation ===
@@ -181,13 +242,25 @@ class BlogRecommendationModel:
 
         idx = matching.index[0]
 
-        # Ambil similarity score semua blog terhadap blog ini
-        sim_scores = list(enumerate(self.similarity_matrix[idx]))
+        n_total = len(self.blogs_df)
+        tfidf_scores = self.similarity_matrix[idx]
 
-        # Exclude blog itu sendiri, sort descending
+        if self.semantic_available:
+            semantic_scores = self.semantic_matrix[idx]
+            w_tfidf, w_semantic, w_hot = 0.4, 0.4, 0.2
+        else:
+            semantic_scores = np.zeros(n_total)
+            w_tfidf, w_semantic, w_hot = 0.8, 0.0, 0.2
+
+        hybrid_scores = (
+            w_tfidf    * tfidf_scores +
+            w_semantic * semantic_scores +
+            w_hot      * self.hot_scores
+        )
+
         sim_scores = [
-            (i, score) for i, score in sim_scores
-            if i != idx
+            (i, float(hybrid_scores[i]))
+            for i in range(n_total) if i != idx
         ]
         sim_scores.sort(key=lambda x: x[1], reverse=True)
 
@@ -220,5 +293,7 @@ class BlogRecommendationModel:
             "total_blogs": len(self.blogs_df) if self.blogs_df is not None else 0,
             "mae": round(self.mae, 4) if self.mae is not None else None,
             "mae_interpretation": self._interpret_mae(self.mae) if self.mae is not None else None,
-            "algorithm": "TF-IDF Cosine Similarity + Ridge Regression",
+            "algorithm": "Hybrid: TF-IDF + Semantic + Hot Score",
+            "semantic_enabled": self.semantic_available,
+        "weights": { "tfidf": 0.4, "semantic": 0.4, "hot_score": 0.2 }
         }
