@@ -20,6 +20,19 @@ export async function generateMetadata() {
 }
 
 /* ================= PAGE ================= */
+async function getTrendingBlogs() {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/blog?limit=3&sortBy=views&order=desc`,
+      { cache: "no-store" }
+    );
+    const data = await res.json();
+    if (Array.isArray(data.data)) return data.data;
+    return [];
+  } catch {
+    return [];
+  }
+}
 
 async function getBlogsData() {
   try {
@@ -46,14 +59,17 @@ async function getBlogsData() {
 }
 
 export default async function BlogPage() {
-  const blogs = await getBlogsData();
+  const [blogs, trendingBlogs] = await Promise.all([
+    getBlogsData(),
+    getTrendingBlogs(),
+  ]);
 
   return (
     <main>
       <SectionBlogHero />
 
       {/* 🔥 KIRIM DATA */}
-      <SectionBlog initialBlogs={blogs} />
+      <SectionBlog initialBlogs={blogs} trendingBlogs={trendingBlogs} />
 
       <Footer />
     </main>

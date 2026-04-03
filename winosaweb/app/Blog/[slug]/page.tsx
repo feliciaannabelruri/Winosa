@@ -290,6 +290,7 @@ export default function BlogDetailPage() {
             </span>
 
             <h1 id="blog-title" className="text-3xl md:text-5xl font-bold mb-4">
+              {translatedBlog.title}
             </h1>
 
             <div className="text-sm text-white/80 flex gap-4">
