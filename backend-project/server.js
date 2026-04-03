@@ -1,4 +1,6 @@
 require('dotenv').config();
+const { initSentry, sentryRequestHandler, sentryErrorHandler } = require('./config/sentry');
+initSentry();
 const express = require('express');
 const cors = require('cors');
 const sanitizeHtml = require('sanitize-html');
@@ -12,7 +14,7 @@ const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app = express();
-
+app.use(sentryRequestHandler());
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map((o) => o.trim())
@@ -162,6 +164,8 @@ app.use((req, res) => {
   });
 });
 
+app.use(sentryErrorHandler());
+app.use(errorHandler);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

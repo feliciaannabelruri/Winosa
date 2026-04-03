@@ -109,6 +109,45 @@ def stats():
     """
     return jsonify(model.get_stats())
 
+@app.route("/trending", methods=["GET"])
+def trending():
+    """
+    Dapatkan blog yang sedang trending (hot score tertinggi).
+    
+    Params:
+      limit : jumlah blog (default 5)
+    
+    Contoh:
+      GET http://localhost:5001/trending?limit=5
+    """
+    if not model.is_trained:
+        result = train_model()
+        if not result.get("success"):
+            return jsonify({
+                "success": False,
+                "error": "Model training failed",
+                "data": [],
+            }), 500
+
+    limit = int(request.args.get("limit", 5))
+
+    indices = np.argsort(model.hot_scores)[::-1][:limit]
+
+    output_cols = ["title", "slug", "excerpt", "image", 
+                   "author", "tags", "views", "readTime", "createdAt"]
+    available_cols = [c for c in output_cols if c in model.blogs_df.columns]
+
+    result = model.blogs_df.iloc[indices][available_cols].to_dict("records")
+
+    for i, rec in enumerate(result):
+        rec["_hot_score"] = round(float(model.hot_scores[indices[i]]), 4)
+
+    return jsonify({
+        "success": True,
+        "algorithm": "Hot Score (views × recency decay)",
+        "count": len(result),
+        "data": result,
+    })
 
 @app.route("/recommendations/<slug>", methods=["GET"])
 def recommendations(slug):
