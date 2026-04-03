@@ -2,7 +2,7 @@
 
 /* =========================
    THEME VARIABLES
-========================= */
+=====.glass==================== */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -90,7 +90,7 @@ body {
 /* =========================
    GLASS CARD
 ========================= */
-.glass-card {
+-card {
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -193,4 +193,16 @@ body {
 
 .animate-slide-left {
   animation: slideInLeft 0.7s ease forwards;
+}
+
+/* SAFE GLOBAL FIX */
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
 }

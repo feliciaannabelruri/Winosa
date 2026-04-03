@@ -6,8 +6,10 @@ import { useTranslate } from "@/lib/useTranslate";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
-export default function SectionMap() {
+import { useState } from "react";
 
+export default function SectionMap() {
+  const [loadMap, setLoadMap] = useState(false);
   const { t } = useTranslate();
 
   return (
@@ -51,17 +53,26 @@ export default function SectionMap() {
             className="rounded-[28px] overflow-hidden border border-black shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
           >
 
-            <iframe
-              title="Company location on Google Maps"
-              aria-describedby="map-description"
-              src="https://maps.google.com/maps?q=Bandar%20Lampung&t=&z=13&ie=UTF8&iwloc=&output=embed"
-              width="100%"
-              height="450"
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              className="w-full"
-            />
+           {!loadMap ? (
+          <div className="flex flex-col items-center justify-center h-[450px] bg-gray-100 gap-4">
+            <p className="text-black/60">Click to load map</p>
+            <button
+              onClick={() => setLoadMap(true)}
+              className="px-6 py-3 bg-black text-white rounded-full"
+            >
+              Load Map
+            </button>
+          </div>
+        ) : (
+          <iframe
+            title="Company location on Google Maps"
+            src="https://maps.google.com/maps?q=Bandar%20Lampung&output=embed"
+            width="100%"
+            height="450"
+            loading="lazy"
+            className="w-full"
+          />
+        )}
 
           </motion.div>
 

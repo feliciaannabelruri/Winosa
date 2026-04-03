@@ -111,12 +111,12 @@ export default function Navbar() {
 
       {open && (
         <div
-          id="mobile-menu" // FIX
-          role="dialog" // FIX
-          aria-modal="true" // FIX
-          className={`fixed inset-0 z-50 bg-white/90 backdrop-blur-xl px-6 py-8 overflow-y-auto transform transition-transform duration-300 ${
-            open ? "translate-x-0" : "translate-x-full"
-          }`} // FIX
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          className={`fixed top-0 left-0 w-screen h-screen z-[999] bg-white/90 backdrop-blur-xl px-6 py-8 overflow-y-auto transition-transform duration-300 ${
+          open ? "translate-x-0" : "translate-x-full pointer-events-none"
+        }`}
         >
           <div className="flex items-center justify-between">
 
