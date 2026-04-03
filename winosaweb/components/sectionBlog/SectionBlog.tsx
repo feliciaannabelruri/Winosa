@@ -250,11 +250,12 @@ function BlogCard({ blog }: { blog: Blog }) {
 
       <div className="relative flex gap-6 bg-white border border-black rounded-[28px] px-8 py-8 transition group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
 
-       <div className="w-28 flex-shrink-0 rounded-2xl overflow-hidden bg-gray-100 self-start">
+       <div className="w-28 h-28 rounded-2xl overflow-hidden bg-gray-100">
           {blog.image ? (
             <img
               src={blog.image}
-              className="w-full h-full object-cover object-top"
+              className="w-full object-cover"
+              style={{ height: "100%" }}
               alt={blog.title}
             />
           ) : (
