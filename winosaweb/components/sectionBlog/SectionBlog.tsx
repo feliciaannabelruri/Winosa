@@ -22,9 +22,10 @@ type Blog = {
 
 type Props = {
   initialBlogs?: Blog[];
+  trendingBlogs?: Blog[];
 };
 
-export default function SectionBlog({ initialBlogs }: Props) {
+export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props) {
 
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
@@ -38,6 +39,32 @@ export default function SectionBlog({ initialBlogs }: Props) {
   );
 
   const [search, setSearch] = useState("");
+  const [translatedTrending, setTranslatedTrending] = useState<Blog[]>(
+  Array.isArray(trendingBlogs) ? trendingBlogs : []
+  );
+
+  useEffect(() => {
+    if (!trendingBlogs?.length) return;
+    setTranslatedTrending(trendingBlogs);
+
+    const run = async () => {
+      for (const blog of trendingBlogs) {
+        const translated: Blog = {
+          ...blog,
+          title: await translateHybrid(blog.title, language, tApi),
+          excerpt: blog.excerpt ? await translateHybrid(blog.excerpt, language, tApi) : "",
+          tags: blog.tags?.length ? [await translateHybrid(blog.tags[0], language, tApi)] : [],
+        };
+        setTranslatedTrending((prev) => {
+          const updated = [...prev];
+          const idx = updated.findIndex((b) => b._id === blog._id);
+          if (idx !== -1) updated[idx] = translated;
+          return updated;
+        });
+      }
+    };
+    run();
+  }, [trendingBlogs, language]);
   const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
@@ -100,6 +127,40 @@ export default function SectionBlog({ initialBlogs }: Props) {
       aria-labelledby="blog-section-title"
     >
       <div className="max-w-7xl mx-auto px-6 text-black">
+
+        {trendingBlogs.length > 0 && (
+          <FadeUp>
+            <div className="mb-16">
+              <h2 className="text-3xl font-bold mb-8 flex items-center gap-2">
+                🔥 {t("blogSection", "trending")}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {translatedTrending.map((blog) => (
+                  <Link
+                    key={blog._id}
+                    href={`/Blog/${blog.slug}`}
+                    className="group flex flex-col bg-white border border-black rounded-[28px] overflow-hidden hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all duration-300"
+                  >
+                    <div className="h-40 w-full bg-gray-100 overflow-hidden">
+                      {blog.image && (
+                        <img
+                          src={blog.image}
+                          alt={blog.title}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
+                    <div className="p-5 flex flex-col gap-2">
+                      <span className="text-xs text-black/50">{blog.tags?.[0] || ""}</span>
+                      <h3 className="font-bold text-base line-clamp-2">{blog.title}</h3>
+                      <p className="text-xs text-black/60 line-clamp-2">{blog.excerpt}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </FadeUp>
+        )}
 
         <FadeUp>
           <h2 id="blog-section-title" className="text-3xl font-bold mb-8">

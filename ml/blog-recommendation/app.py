@@ -147,7 +147,8 @@ def recommendations(slug):
 
     return jsonify({
         "success": True,
-        "algorithm": "TF-IDF Cosine Similarity + Ridge Regression",
+        "algorithm": "Hybrid: TF-IDF + Semantic (sentence-transformers) + Hot Score",
+        "semantic_enabled": model.semantic_available,
         "mae": round(model.mae, 4) if model.mae else None,
         "count": len(recs),
         "data": recs,
@@ -166,10 +167,11 @@ def server_error(e):
 #  MAIN                                                                
 if __name__ == "__main__":
     logger.info("=" * 50)
-    logger.info("🤖 Blog Recommendation ML Service")
+    logger.info("🤖 Blog Recommendation ML Service (Hybrid)")
     logger.info(f"   Backend API : {BACKEND_API_URL}")
     logger.info(f"   ML Port     : {ML_PORT}")
-    logger.info("=" * 50)
+    logger.info(f"   Mode        : TF-IDF + Semantic + Hot Score")
+    logger.info("=" * 55)
 
     if AUTO_TRAIN:
         logger.info("Auto-training model on startup...")

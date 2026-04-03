@@ -1284,6 +1284,12 @@ blogSection: {
     id: "Baca Selengkapnya",
   },
 
+  trending: {
+    en: "Trending This Week",
+    nl: "Trending Deze Week",
+    id: "Trending Minggu Ini",
+  },
+
   general: {
     en: "General",
     nl: "Algemeen",

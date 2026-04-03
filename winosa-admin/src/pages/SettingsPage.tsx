@@ -419,7 +419,7 @@ const SettingsPage: React.FC = () => {
         <Card icon={<Phone size={16} className="text-green-500" />} iconBg="bg-green-50" title="Contact Information" subtitle="Ditampilkan di halaman Kontak dan footer">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <FieldLabel>Alamat Email</FieldLabel>
+              <FieldLabel hint='Digunakan untuk kontak di halaman Contact'>Alamat Email</FieldLabel>
               <div className="relative">
                 <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="email" placeholder="hello@winosa.com" value={form.siteEmail} onChange={set('siteEmail')} className={errors.siteEmail ? `${inpErr} pl-11` : inpIcon} />
