@@ -250,15 +250,15 @@ function BlogCard({ blog }: { blog: Blog }) {
 
       <div className="relative flex gap-6 bg-white border border-black rounded-[28px] px-8 py-8 transition group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
 
-       <div className="w-32 aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0">
+       <div className="w-28 flex-shrink-0 rounded-2xl overflow-hidden bg-gray-100 self-start">
           {blog.image ? (
             <img
               src={blog.image}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-top"
               alt={blog.title}
             />
           ) : (
-            <div className="w-full h-full bg-gray-200" />
+            <div className="w-full h-full bg-gray-200" aria-hidden="true" />
           )}
         </div>
 
