@@ -40,7 +40,7 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
 
   const [search, setSearch] = useState("");
   const [translatedTrending, setTranslatedTrending] = useState<Blog[]>(
-  Array.isArray(trendingBlogs) ? trendingBlogs : []
+    Array.isArray(trendingBlogs) ? trendingBlogs : []
   );
 
   useEffect(() => {
@@ -65,6 +65,7 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
     };
     run();
   }, [trendingBlogs, language]);
+
   const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
@@ -131,17 +132,18 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
         {trendingBlogs.length > 0 && (
           <FadeUp>
             <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-8 flex items-center gap-2">
-                🔥 {t("blogSection", "trending")}
+              <h2 className="text-3xl font-bold mb-8">
+                {t("blogSection", "trending")}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+             <div className="flex gap-6 overflow-x-auto pb-6 pt-2 no-scrollbar">
                 {translatedTrending.map((blog) => (
                   <Link
                     key={blog._id}
                     href={`/Blog/${blog.slug}`}
-                    className="group flex flex-col bg-white border border-black rounded-[28px] overflow-hidden hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all duration-300"
+                    className="group min-w-[260px] max-w-[280px] flex flex-col bg-white rounded-[20px] overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                   >
-                    <div className="h-40 w-full bg-gray-100 overflow-hidden">
+                    <div className="h-32 w-full bg-gray-100 overflow-hidden">
                       {blog.image && (
                         <img
                           src={blog.image}
@@ -150,9 +152,10 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
                         />
                       )}
                     </div>
-                    <div className="p-5 flex flex-col gap-2">
+
+                    <div className="p-4 flex flex-col gap-2">
                       <span className="text-xs text-black/50">{blog.tags?.[0] || ""}</span>
-                      <h3 className="font-bold text-base line-clamp-2">{blog.title}</h3>
+                      <h3 className="font-semibold text-sm line-clamp-2">{blog.title}</h3>
                       <p className="text-xs text-black/60 line-clamp-2">{blog.excerpt}</p>
                     </div>
                   </Link>
@@ -170,7 +173,6 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
 
         <FadeUp>
           <div className="flex gap-4 mb-6">
-
             <label htmlFor="blog-search" className="sr-only">
               Search blog
             </label>
@@ -248,7 +250,7 @@ function BlogCard({ blog }: { blog: Blog }) {
 
       <div className="relative flex gap-6 bg-white border border-black rounded-[28px] px-8 py-8 transition group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
 
-        <div className="w-28 h-28 rounded-2xl overflow-hidden bg-gray-100">
+       <div className="w-32 aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0">
           {blog.image ? (
             <img
               src={blog.image}
@@ -256,12 +258,11 @@ function BlogCard({ blog }: { blog: Blog }) {
               alt={blog.title}
             />
           ) : (
-            <div className="w-full h-full bg-gray-200" aria-hidden="true" />
+            <div className="w-full h-full bg-gray-200" />
           )}
         </div>
 
         <div className="flex-1">
-
           <span className="text-xs font-semibold text-black/60">
             {category}
           </span>
@@ -287,7 +288,6 @@ function BlogCard({ blog }: { blog: Blog }) {
           >
             {t("blogSection", "readMore")}
           </Link>
-
         </div>
 
       </div>
