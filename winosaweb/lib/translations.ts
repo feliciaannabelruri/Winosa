@@ -2082,7 +2082,172 @@ plansFAQ: {
   },
 
 },
-
-
-
+maintenancePlans: {
+    title: {
+      en: "Monthly Maintenance Plans",
+      nl: "Maandelijkse Onderhoudspakketten",
+      id: "Paket Pemeliharaan Bulanan",
+    },
+    subtitle: {
+      en: "Focus on your business, let us handle the technical side.",
+      nl: "Focus op uw bedrijf, wij regelen de technische kant.",
+      id: "Tenang fokus bisnis, urusan teknis biar kami yang tangani.",
+    },
+    monthly: {
+      en: "Monthly",
+      nl: "Maandelijks",
+      id: "Bulanan",
+    },
+    yearly: {
+      en: "Yearly",
+      nl: "Jaarlijks",
+      id: "Tahunan",
+    },
+    save20: {
+      en: "save 20%",
+      nl: "bespaar 20%",
+      id: "hemat 20%",
+    },
+    perMonth: {
+      en: "per month",
+      nl: "per maand",
+      id: "per bulan",
+    },
+    perMonthYearly: {
+      en: "per month (billed yearly)",
+      nl: "per maand (jaarlijks gefactureerd)",
+      id: "per bulan (tagihan tahunan)",
+    },
+    startWith: {
+      en: "Start with",
+      nl: "Begin met",
+      id: "Mulai dengan",
+    },
+    comparison: {
+      en: "Full comparison",
+      nl: "Volledige vergelijking",
+      id: "Perbandingan lengkap",
+    },
+    noteVat: {
+      en: "All prices in IDR, VAT included. Can be customized.",
+      nl: "Alle prijzen in IDR inclusief BTW. Aanpasbaar.",
+      id: "Semua harga dalam IDR, sudah termasuk PPN. Bisa dikustomisasi.",
+    },
+    notIncluded: {
+      en: "Not included",
+      nl: "Niet inbegrepen",
+      id: "Tidak termasuk",
+    },
+    hide: {
+      en: "Hide",
+      nl: "Verbergen",
+      id: "Sembunyikan",
+    },
+    mostPopular: {
+      en: "Most Popular",
+      nl: "Meest Populair",
+      id: "Paling Populer",
+    },
+  },
+ 
+  // ─── Service Recommender ──────────────────────────────────────────────────
+  serviceRecommend: {
+    label: {
+      en: "Describe your business needs — AI will recommend the right service",
+      nl: "Beschrijf uw behoeften — AI beveelt de juiste dienst aan",
+      id: "Jelaskan kebutuhan bisnis kamu — AI akan merekomendasikan layanan yang tepat",
+    },
+    placeholder: {
+      en: "Example: I have a fintech startup, I need a user management system, analytics dashboard, and payment integration...",
+      nl: "Voorbeeld: Ik heb een fintech startup en heb een gebruikersbeheersysteem, analytisch dashboard en betalingsintegratie nodig...",
+      id: "Contoh: Saya punya startup fintech, memerlukan sistem manajemen pengguna, dasbor analitik, dan integrasi pembayaran...",
+    },
+    upload: {
+      en: "Attach reference",
+      nl: "Referentie bijvoegen",
+      id: "Lampirkan referensi",
+    },
+    uploadHint: {
+      en: "Optional — design screenshot, web reference, or logo",
+      nl: "Optioneel — schermafbeelding, webreferentie of logo",
+      id: "Opsional — screenshot desain, referensi web, atau logo",
+    },
+    analyzeBtn: {
+      en: "Analyze with AI → find the right service",
+      nl: "Analyseer met AI → vind de juiste dienst",
+      id: "Analisis dengan AI → temukan layanan yang tepat",
+    },
+    analyzing: {
+      en: "Analyzing your business needs...",
+      nl: "Uw zakelijke behoeften analyseren...",
+      id: "Menganalisis kebutuhan bisnis kamu...",
+    },
+    resultLabel: {
+      en: "Service recommendation",
+      nl: "Dienstaanbeveling",
+      id: "Rekomendasi layanan",
+    },
+    relevance: {
+      en: "relevant",
+      nl: "relevant",
+      id: "relevan",
+    },
+    waBtn: {
+      en: "Continue consultation via WhatsApp",
+      nl: "Doorgaan via WhatsApp",
+      id: "Lanjut konsultasi via WhatsApp",
+    },
+    viewService: {
+      en: "View service details",
+      nl: "Bekijk dienstdetails",
+      id: "Lihat detail layanan",
+    },
+    retry: {
+      en: "Start over",
+      nl: "Opnieuw beginnen",
+      id: "Ulangi",
+    },
+    or: {
+      en: "or",
+      nl: "of",
+      id: "atau",
+    },
+    consultFree: {
+      en: "Contact us directly for a free consultation",
+      nl: "Neem direct contact op voor een gratis consult",
+      id: "Langsung hubungi kami untuk konsultasi gratis",
+    },
+    chips: {
+      newStartup: {
+        en: "New Startup",
+        nl: "Nieuwe Startup",
+        id: "Permulaan Baru",
+      },
+      onlineStore: {
+        en: "Online Store",
+        nl: "Online Winkel",
+        id: "Toko Daring",
+      },
+      growingBusiness: {
+        en: "Growing Business",
+        nl: "Groeiend Bedrijf",
+        id: "Bisnis Tumbuh",
+      },
+      mobileApp: {
+        en: "Mobile App",
+        nl: "Mobiele App",
+        id: "Aplikasi Seluler",
+      },
+      enterpriseSystem: {
+        en: "Enterprise System",
+        nl: "Enterprise Systeem",
+        id: "Sistem Enterprise",
+      },
+      stillConfused: {
+        en: "Still Confused",
+        nl: "Nog Niet Zeker",
+        id: "Masih Bingung",
+      },
+    },
+  },
 } as const;
