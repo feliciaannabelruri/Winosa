@@ -26,7 +26,7 @@ type FilterType =
   | "Product/Platform"
   | "Web Application"
   | "UI/UX Design"
-  | "Branding";
+;
 
 export default function SectionPortoCards({ data }: { data: Project[] }) {
   const { t, tApi } = useTranslate();
@@ -66,7 +66,6 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
     "Product/Platform",
     "Web Application",
     "UI/UX Design",
-    "Branding",
   ];
 
   const filteredProjects =
