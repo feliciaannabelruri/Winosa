@@ -14,7 +14,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  turbopack: {
+    root: __dirname,
+  },
 };
+
+
+
 
 export default withSentryConfig(nextConfig, {
   // For all available options, see:
@@ -53,3 +59,4 @@ export default withSentryConfig(nextConfig, {
     },
   },
 });
+

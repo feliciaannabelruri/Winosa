@@ -4,39 +4,15 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
-import { translateHybrid } from "@/lib/translateHybrid";
 import Button from "@/components/UI/Button";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionHeroMobileApp({ data }: { data?: any }) {
-  const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { t } = useTranslate();
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [ctaText, setCtaText] = useState("");
-  const [label, setLabel] = useState("");
-
-  useEffect(() => {
-    const run = async () => {
-      const rawTitle = data?.title || t("mobileHero", "defaultTitle");
-      const rawDesc = data?.description || t("mobileHero", "description");
-      const rawCta = data?.ctaText || t("mobileHero", "cta");
-      const rawLabel = data?.heroLabel || t("mobileHero", "label");
-
-      setTitle(await translateHybrid(rawTitle, language, tApi));
-      setDescription(await translateHybrid(rawDesc, language, tApi));
-      setCtaText(await translateHybrid(rawCta, language, tApi));
-      setLabel(await translateHybrid(rawLabel, language, tApi));
-    };
-
-    run();
-  }, [data, language]);
-
+  const title = data?.title || t("mobileHero", "defaultTitle");
   const titleParts = title.split(" ");
 
   return (
@@ -86,7 +62,7 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
               transition={{ duration: 0.6 }}
               className="text-yellow-600 font-medium mb-4 uppercase tracking-wide text-sm"
             >
-              {label}
+              {data?.heroLabel || t("mobileHero", "label")}
             </motion.p>
 
             <motion.h1
@@ -113,7 +89,7 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
               transition={{ duration: 0.7, delay: 0.6 }}
               className="text-black/70 text-base leading-relaxed max-w-xl mb-10"
             >
-              {description}
+              {data?.description || t("mobileHero", "description")}
             </motion.p>
 
             <motion.div
@@ -121,9 +97,9 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.8 }}
             >
-              <Link href="/Contact">
+              <Link href="/Contact" aria-label="Contact our team">
                 <Button
-                  text={ctaText}
+                  text={data?.ctaText || t("mobileHero", "cta")}
                   className="border-black text-black hover:bg-black/10"
                 />
               </Link>

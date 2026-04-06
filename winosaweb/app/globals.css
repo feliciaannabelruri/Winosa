@@ -213,3 +213,14 @@ img {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* === MICROINTERACTIONS === */
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
