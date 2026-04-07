@@ -97,7 +97,18 @@ useEffect(() => {
         }
 
         const data = await res.json();
-        setService(data.data);
+        const fixUrl = (url?: string) => {
+          if (!url) return url;
+          return url.replace("ikimagekitio", "ik.imagekit.io");
+        };
+
+        const fixedData = {
+          ...data.data,
+          heroImageSecondary: fixUrl(data.data.heroImageSecondary),
+          heroImagePrimary: fixUrl(data.data.heroImagePrimary),
+        };
+
+setService(fixedData);
       } catch (error) {
         console.error("Error fetching service:", error);
         setService(null);

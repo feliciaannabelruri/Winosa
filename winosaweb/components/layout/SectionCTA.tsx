@@ -6,7 +6,6 @@ import Button from "@/components/UI/Button";
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
 
-// FIX gtag
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
@@ -91,28 +90,11 @@ export default function SectionCTA() {
 
       if (res.status === 400) {
         setError(t("newsletter", "errorDuplicate"));
-
-        window.gtag?.("event", "newsletter_submit", {
-          event_category: "engagement",
-          event_label: "newsletter_form",
-          experiment_name: EXPERIMENT_NAME,
-          variant: variant,
-          status: "duplicate",
-        });
         return;
       }
 
       if (res.status === 429) {
         setError(t("newsletter", "errorTooMany"));
-
-        window.gtag?.("event", "newsletter_submit", {
-          event_category: "engagement",
-          event_label: "newsletter_form",
-          experiment_name: EXPERIMENT_NAME,
-          variant: variant,
-          status: "too_many_requests",
-        });
-
         return;
       }
 
@@ -121,25 +103,8 @@ export default function SectionCTA() {
       setSuccess(t("newsletter", "success"));
       setEmail("");
 
-      window.gtag?.("event", "newsletter_submit", {
-        event_category: "engagement",
-        event_label: "newsletter_form",
-        experiment_name: EXPERIMENT_NAME,
-        variant: variant,
-        status: "success",
-      });
-
     } catch {
       setError(t("newsletter", "errorGeneral"));
-
-      window.gtag?.("event", "newsletter_submit", {
-        event_category: "engagement",
-        event_label: "newsletter_form",
-        experiment_name: EXPERIMENT_NAME,
-        variant: variant,
-        status: "error",
-      });
-
     } finally {
       setLoading(false);
     }
@@ -153,7 +118,7 @@ export default function SectionCTA() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
           viewport={{ once: true }}
           className="mb-12"
         >
@@ -166,7 +131,6 @@ export default function SectionCTA() {
             aria-label="Newsletter subscription form"
             className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-lg mx-auto"
           >
-
             <label htmlFor="email-input" className="sr-only">
               Email address
             </label>
@@ -177,7 +141,7 @@ export default function SectionCTA() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("newsletter", "placeholder")}
-              className="flex-1 border-b border-black/30 focus:border-black outline-none py-2 bg-transparent text-black text-sm"
+              className="flex-1 border-b border-black/30 focus:border-black outline-none py-2 bg-transparent text-black text-sm transition-all duration-300 focus:scale-[1.02]"
             />
 
             <Button
@@ -186,11 +150,10 @@ export default function SectionCTA() {
                   ? t("newsletter", "subscribing")
                   : t("newsletter", "subscribe")
               }
-              className="text-sm px-6 py-2"
+              className="text-sm px-6 py-2 transition-all duration-300 hover:scale-105 active:scale-95"
             />
           </form>
 
-          {/* A/B TEST (TRANSLATED) */}
           {variant === "B" && (
             <p className="text-xs text-gray-500 mt-2">
               {t("newsletter", "trustMessage")}
@@ -198,13 +161,15 @@ export default function SectionCTA() {
           )}
 
           {success && (
-            <p className="text-green-600 text-xs mt-4"  aria-live="polite">
-            {success}</p>
+            <p className="text-green-600 text-xs mt-4" aria-live="polite">
+              {success}
+            </p>
           )}
 
           {error && (
             <p className="text-red-600 text-xs mt-4" aria-live="assertive">
-            {error}</p>
+              {error}
+            </p>
           )}
         </motion.div>
 
@@ -215,7 +180,7 @@ export default function SectionCTA() {
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           viewport={{ once: true }}
         >
           <h2 className="text-4xl font-bold mb-6">
@@ -230,18 +195,18 @@ export default function SectionCTA() {
             <Link href="/Contact">
               <Button
                 text={t("cta", "button")}
-                className={
-                  variant === "A"
-                    ? ""
-                    : "shadow-lg hover:scale-105 transition duration-300"
-                }
+                className={`transition-all duration-300 ${
+                  variant === "B"
+                    ? "shadow-lg hover:scale-105 active:scale-95"
+                    : "hover:scale-105 active:scale-95"
+                }`}
                 onClick={() => {
-                 window.gtag?.("event", "cta_click", {
-                  event_category: "engagement",
-                  event_label: "contact_button",
-                  experiment_name: EXPERIMENT_NAME,
-                  variant: variant,
-                });
+                  window.gtag?.("event", "cta_click", {
+                    event_category: "engagement",
+                    event_label: "contact_button",
+                    experiment_name: EXPERIMENT_NAME,
+                    variant: variant,
+                  });
                 }}
               />
             </Link>

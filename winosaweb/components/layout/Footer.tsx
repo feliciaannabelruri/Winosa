@@ -42,7 +42,10 @@ export default function Footer() {
             {t("footer", "aboutTitle")}
           </h4>
           <div className="space-y-3 text-gray-700 text-sm">
-            <Link href="/" className="block hover:text-black transition focus:outline-none focus:underline">
+            <Link 
+              href="/" 
+              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
+            >
               {t("footer", "company")}
             </Link>
           </div>
@@ -53,10 +56,16 @@ export default function Footer() {
             {t("footer", "servicesTitle")}
           </h4>
           <div className="space-y-3 text-gray-700 text-sm">
-            <Link href="/Services" className="block hover:text-black transition focus:outline-none focus:underline">
+            <Link 
+              href="/Services" 
+              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
+            >
               {t("footer", "services")}
             </Link>
-            <Link href="/Contact" className="block hover:text-black transition focus:outline-none focus:underline">
+            <Link 
+              href="/Contact" 
+              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
+            >
               {t("footer", "contact")}
             </Link>
           </div>
@@ -67,10 +76,16 @@ export default function Footer() {
             {t("footer", "insightTitle")}
           </h4>
           <div className="space-y-3 text-gray-700 text-sm">
-            <Link href="/portofolio" className="block hover:text-black transition focus:outline-none focus:underline">
+            <Link 
+              href="/portofolio" 
+              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
+            >
               {t("footer", "portfolio")}
             </Link>
-            <Link href="/Blog" className="block hover:text-black transition focus:outline-none focus:underline">
+            <Link 
+              href="/Blog" 
+              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
+            >
               {t("footer", "blog")}
             </Link>
           </div>
@@ -84,7 +99,7 @@ export default function Footer() {
                 alt="Winosa company logo"
                 width={56}
                 height={56}
-                className="cursor-pointer"
+                className="cursor-pointer transition-transform duration-300 hover:scale-110"
               />
             </Link>
             <span className="text-2xl font-bold">
@@ -102,13 +117,12 @@ export default function Footer() {
               rel="noopener noreferrer"
               aria-label="Visit Winosa Instagram"
               title="Instagram"
-              className="w-14 h-14 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition focus:outline focus:outline-2 focus:outline-black"
+              className="w-14 h-14 rounded-full bg-black flex items-center justify-center transition-all duration-300 hover:bg-black/80 hover:scale-110 active:scale-90 focus:outline focus:outline-2 focus:outline-black"
             >
-              <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white" aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white">
                 <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm0 2h10c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3zm5 3a5 5 0 100 10 5 5 0 000-10zm0 2.2a2.8 2.8 0 110 5.6 2.8 2.8 0 010-5.6zm4.2-3.2a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/>
               </svg>
             </a>
-
 
             <a
               href={liUrl}
@@ -116,9 +130,9 @@ export default function Footer() {
               rel="noopener noreferrer"
               aria-label="Visit Winosa LinkedIn"
               title="LinkedIn"
-              className="w-14 h-14 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition"
+              className="w-14 h-14 rounded-full bg-black flex items-center justify-center transition-all duration-300 hover:bg-black/80 hover:scale-110 active:scale-90"
             >
-              <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white" aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white">
                 <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8h4.56v14H.22zM8.48 8h4.37v1.91h.06c.61-1.16 2.1-2.38 4.32-2.38 4.62 0 5.47 3.04 5.47 6.99V22h-4.56v-6.26c0-1.49-.03-3.41-2.08-3.41-2.08 0-2.4 1.62-2.4 3.3V22H8.48z"/>
               </svg>
             </a>
@@ -129,9 +143,9 @@ export default function Footer() {
               rel="noopener noreferrer"
               aria-label="Contact Winosa via WhatsApp"
               title="WhatsApp"
-              className="w-14 h-14 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition"
+              className="w-14 h-14 rounded-full bg-black flex items-center justify-center transition-all duration-300 hover:bg-black/80 hover:scale-110 active:scale-90"
             >
-              <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white" aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white">
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1v3.49a1 1 0 01-1 1C10.07 21 3 13.93 3 5.5a1 1 0 011-1H7.5a1 1 0 011 1c0 1.25.2 2.47.57 3.56a1 1 0 01-.24 1.01l-2.21 2.22z"/>
               </svg>
             </a>
