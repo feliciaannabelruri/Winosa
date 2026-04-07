@@ -71,6 +71,20 @@ exports.getBlogRecommendations = asyncHandler(async (req, res, next) => {
       `${ML_SERVICE_URL}/recommendations/${slug}?limit=${limit}`
     );
     const data = await response.json();
+        if (data.data && Array.isArray(data.data)) {
+      const slugs = data.data.map(b => b.slug);
+      
+      const verified = await Blog.find({
+        slug: { $in: slugs },
+        isPublished: true
+      }).select('title slug excerpt image author tags views readTime createdAt').lean();
+
+      return res.json({
+        ...data,
+        data: verified,
+        count: verified.length
+      });
+    }
     return res.json(data);
 
   } catch (error) {

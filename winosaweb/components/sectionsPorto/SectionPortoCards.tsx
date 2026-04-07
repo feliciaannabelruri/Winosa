@@ -25,8 +25,7 @@ type FilterType =
   | "Enterprise System"
   | "Product/Platform"
   | "Web Application"
-  | "UI/UX Design"
-;
+  | "UI/UX Design";
 
 export default function SectionPortoCards({ data }: { data: Project[] }) {
   const { t, tApi } = useTranslate();
@@ -120,7 +119,6 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-
         <h2 id="portfolio-cards-title" className="sr-only">
           Portfolio Projects
         </h2>
@@ -153,6 +151,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
         ) : (
           <>
             {/* CAROUSEL */}
+            {/* CAROUSEL */}
             <div className={styles.carouselWrapper}>
 
               <button
@@ -183,26 +182,18 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
                     </div>
 
                     <div className={styles.cardContent}>
-                      <h3 className={styles.cardTitle}>
-                        {project.title}
-                      </h3>
-
-                      <p className={styles.cardDescription}>
-                        {project.description}
-                      </p>
-
+                      <h3 className={styles.cardTitle}>{project.title}</h3>
+                      <p className={styles.cardDescription}>{project.description}</p>
                       <div className={styles.cardFooter}>
                         <span className={styles.cardCategory}>
                           {t("portfolioFilters", project.category)}
                         </span>
-
                         <Link
                           href={`/portofolio/${project.slug}`}
                           aria-label={`View project ${project.title}`}
                           className={styles.learnMore}
                         >
-                          {t("portfolio", "learnMore")}
-                          <span aria-hidden="true"> →</span>
+                          <span aria-hidden="true">→</span>
                         </Link>
                       </div>
                     </div>
