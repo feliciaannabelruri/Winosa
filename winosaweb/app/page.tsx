@@ -58,7 +58,6 @@ export default async function HomePage() {
       slug: `/services/${item.slug}`,
     }));
   } catch (error) {
-    console.error("Services API error:", error);
   }
 
   /* ===============================

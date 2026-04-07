@@ -72,46 +72,64 @@ export default function SectionProcess({ data }: { data?: ProcessData }) {
   }, [language, data]);
 
   return (
-    <section className="relative w-full bg-white py-32 overflow-hidden">
+    <section
+      className="relative w-full bg-white py-28 overflow-hidden"
+      aria-labelledby="process-title"
+    >
       <div className="max-w-7xl mx-auto px-6">
 
+        {/* heading */}
         <FadeUp>
-          <div className="text-center mb-24">
-            <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">
+          <div className="text-center mb-20">
+            <h2
+              id="process-title"
+              className="text-4xl md:text-5xl font-bold text-black mb-4"
+            >
               {title}
             </h2>
+
             <p className="text-black/60 text-lg leading-relaxed">
               {subtitle}
             </p>
           </div>
         </FadeUp>
 
-        <div className="relative">
+        {/* steps */}
+        <div role="list" className="relative">
           {steps.map((step, i) => (
-            <div key={i} className="min-h-[80vh] flex items-center">
-              <div className="grid md:grid-cols-2 gap-20 w-full">
+            <div
+              key={i}
+              role="listitem"
+              className="min-h-[75vh] flex items-center"
+            >
+              <div className="grid md:grid-cols-2 gap-16 w-full">
 
+                {/* number */}
                 <div className="relative">
                   <div className="sticky top-32">
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
+                      initial={{ opacity: 0, scale: 0.85 }}
                       whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.6 }}
+                      transition={{ duration: 0.5 }}
                       viewport={{ once: true }}
                       className="relative select-none"
+                      aria-hidden="true"
                     >
-                      <div className="absolute inset-0 text-[120px] md:text-[160px] font-bold text-yellow-400/20 blur-3xl">
+                      <div className="absolute inset-0 text-[110px] md:text-[150px] font-bold text-yellow-400/20 blur-2xl">
                         0{i + 1}
                       </div>
-                      <div className="text-[120px] md:text-[160px] font-bold text-black">
+
+                      <div className="text-[110px] md:text-[150px] font-bold text-black">
                         0{i + 1}
                       </div>
                     </motion.div>
                   </div>
                 </div>
 
+                {/* content */}
                 <FadeUp>
                   <div className="max-w-xl">
+
                     <span className="text-yellow-500 font-semibold tracking-wide">
                       {step.highlight}
                     </span>
@@ -123,6 +141,7 @@ export default function SectionProcess({ data }: { data?: ProcessData }) {
                     <p className="text-black/70 text-lg leading-relaxed">
                       {step.desc}
                     </p>
+
                   </div>
                 </FadeUp>
 

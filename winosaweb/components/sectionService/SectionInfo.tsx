@@ -48,97 +48,93 @@ export default function SectionInfo() {
   ];
 
   return (
-    <section className="w-full bg-white py-32" aria-labelledby="process-title">
+    <section className="w-full bg-white py-28" aria-labelledby="process-title">
       <div className="max-w-7xl mx-auto px-6 text-black">
 
+        {/* process title */}
         <FadeUp>
-          <div className="text-center mb-24">
-            <h2  id="process-title" className="text-3xl font-bold mb-4">
+          <div className="text-center mb-20">
+            <h2 id="process-title" className="text-3xl font-bold mb-4">
               {t("info", "processTitle")}
             </h2>
-            <p className="text-gray-600">
+
+            <p className="text-black/60">
               {t("info", "processSubtitle")}
             </p>
           </div>
         </FadeUp>
 
+        {/* process steps */}
         <FadeUp>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-28" role="list">
-
+          <div
+            className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-24"
+            role="list"
+          >
             {process.map((item, i) => (
-
               <motion.div
                 key={i}
                 role="listitem"
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.15 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
                 viewport={{ once: true }}
                 className="flex flex-col items-center text-center"
               >
 
-                <div className="px-6 py-2 border border-black rounded-full font-medium bg-white text-sm">
+                {/* step badge */}
+                <div className="px-6 py-2 border border-black/20 rounded-full font-medium bg-white text-sm">
                   {item.title}
                 </div>
 
-                <div className="w-px h-12 bg-black" aria-hidden="true"/>
+                {/* line */}
+                <div className="w-px h-10 bg-black/30" aria-hidden="true" />
 
-                <div className="w-3 h-3 bg-black rounded-full mb-4" aria-hidden="true"/>
+                {/* dot */}
+                <div className="w-3 h-3 bg-black rounded-full mb-4" aria-hidden="true" />
 
-                <p className="text-gray-600 text-sm">
+                {/* desc */}
+                <p className="text-black/60 text-sm leading-relaxed">
                   {item.desc}
                 </p>
 
               </motion.div>
-
             ))}
-
           </div>
         </FadeUp>
 
+        {/* why title */}
         <FadeUp>
-
-          <div className="text-center mb-16">
-
+          <div className="text-center mb-14">
             <h2 id="why-title" className="text-3xl font-bold mb-4">
               {t("info", "whyTitle")}
             </h2>
 
-            <p className="text-gray-600">
+            <p className="text-black/60">
               {t("info", "whySubtitle")}
             </p>
-
           </div>
-
         </FadeUp>
 
+        {/* reasons */}
         <FadeUp>
-
-            <div 
-              className="grid grid-cols-1 md:grid-cols-2 gap-12"
-              role="list" 
-              aria-labelledby="why-title" 
-            >
-
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 gap-10"
+            role="list"
+            aria-labelledby="why-title"
+          >
             {reasons.map((item, i) => (
-
               <motion.div
                 key={i}
                 role="listitem"
-                initial={{ opacity: 0, x: 80 }}
+                initial={{ opacity: 0, x: 40 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.2 }}
+                transition={{ duration: 0.5, delay: i * 0.12 }}
                 viewport={{ once: true }}
               >
-
                 <ReasonCard {...item} />
-
               </motion.div>
-
             ))}
-
           </div>
-
         </FadeUp>
 
       </div>
@@ -146,6 +142,9 @@ export default function SectionInfo() {
   );
 }
 
+/* =========================
+   Card
+========================= */
 function ReasonCard({
   title,
   desc,
@@ -155,28 +154,28 @@ function ReasonCard({
   desc: string;
   icon: any;
 }) {
-
   return (
+    <div className="flex gap-5 items-start transition-transform duration-300 hover:-translate-y-1">
 
-    <div className="flex gap-6 items-start">
-
-      <div className="w-12 h-12 flex items-center justify-center" aria-hidden="true">
-        <Icon className="w-10 h-10 text-black" />
+      {/* icon */}
+      <div
+        className="w-12 h-12 flex items-center justify-center border border-black/10 rounded-full"
+        aria-hidden="true"
+      >
+        <Icon className="w-6 h-6 text-black" />
       </div>
 
+      {/* content */}
       <div>
-
         <h3 className="text-lg font-semibold mb-2">
           {title}
         </h3>
 
-        <p className="text-gray-600 leading-relaxed">
+        <p className="text-black/60 leading-relaxed text-sm">
           {desc}
         </p>
-
       </div>
 
     </div>
-
   );
 }

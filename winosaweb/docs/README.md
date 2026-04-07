@@ -66,7 +66,7 @@ Jalankan production
 npm run start
 ```
 
-Deploy dapat dilakukan menggunakan Vercel dengan cara push project ke GitHub, lalu import ke Vercel dan deploy.
+
 
 ## Notes  
 Project ini merupakan bagian frontend sehingga dapat diintegrasikan dengan backend API. Beberapa fitur masih bisa dikembangkan lebih lanjut terutama setelah proses deployment.

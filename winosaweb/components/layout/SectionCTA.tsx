@@ -19,11 +19,11 @@ export default function SectionCTA() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-
   const [variant, setVariant] = useState<"A" | "B">("A");
 
   const EXPERIMENT_NAME = "cta_experiment_v1";
 
+  /* assign variant */
   useEffect(() => {
     const saved = localStorage.getItem("cta_variant");
 
@@ -36,14 +36,19 @@ export default function SectionCTA() {
     }
   }, []);
 
+  /* analytics view */
   useEffect(() => {
     window.gtag?.("event", "experiment_view", {
       experiment_name: EXPERIMENT_NAME,
-      variant: variant,
+      variant,
     });
   }, [variant]);
 
+  /* visibility tracking */
   useEffect(() => {
+    const el = document.getElementById("cta-section");
+    if (!el) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -53,15 +58,14 @@ export default function SectionCTA() {
           });
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.4 }
     );
 
-    const el = document.getElementById("cta-section");
-    if (el) observer.observe(el);
-
+    observer.observe(el);
     return () => observer.disconnect();
   }, [variant]);
 
+  /* submit handler */
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccess("");
@@ -114,12 +118,12 @@ export default function SectionCTA() {
     <section id="cta-section" className="w-full bg-white py-16">
       <div className="max-w-5xl mx-auto px-6 text-center text-black">
 
-        {/* Newsletter */}
+        {/* newsletter */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          viewport={{ once: true }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: true, margin: "-50px" }}
           className="mb-12"
         >
           <p className="text-sm text-gray-600 mb-6">
@@ -129,7 +133,7 @@ export default function SectionCTA() {
           <form
             onSubmit={handleSubscribe}
             aria-label="Newsletter subscription form"
-            className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-lg mx-auto"
+            className="flex flex-col sm:flex-row items-center gap-4 max-w-lg mx-auto"
           >
             <label htmlFor="email-input" className="sr-only">
               Email address
@@ -173,21 +177,21 @@ export default function SectionCTA() {
           )}
         </motion.div>
 
-        {/* Divider */}
+        {/* divider */}
         <div className="w-24 h-px bg-black/20 mx-auto mb-12" />
 
-        {/* CTA */}
+        {/* main cta */}
         <motion.div
-          initial={{ opacity: 0, y: 60 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true }}
         >
           <h2 className="text-4xl font-bold mb-6">
             {t("cta", "title")}
           </h2>
 
-          <p className="text-gray-600 mb-10">
+          <p className="text-gray-600 mb-10 max-w-xl mx-auto">
             {t("cta", "description")}
           </p>
 
@@ -197,7 +201,7 @@ export default function SectionCTA() {
                 text={t("cta", "button")}
                 className={`transition-all duration-300 ${
                   variant === "B"
-                    ? "shadow-lg hover:scale-105 active:scale-95"
+                    ? "shadow-md hover:scale-105 active:scale-95"
                     : "hover:scale-105 active:scale-95"
                 }`}
                 onClick={() => {
@@ -205,7 +209,7 @@ export default function SectionCTA() {
                     event_category: "engagement",
                     event_label: "contact_button",
                     experiment_name: EXPERIMENT_NAME,
-                    variant: variant,
+                    variant,
                   });
                 }}
               />

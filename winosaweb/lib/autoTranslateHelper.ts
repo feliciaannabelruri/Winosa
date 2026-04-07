@@ -4,7 +4,7 @@ export async function autoTranslate(text: string, lang: string) {
   if (!text) return "";
 
   if (lang === "en") {
-    console.log("⛔ skip karena en");
+    
     return text;
   }
 
@@ -22,12 +22,12 @@ export async function autoTranslate(text: string, lang: string) {
 
     const data = await res.json();
 
-    console.log("🌍 translate result:", data);
+    
 
     return data.translated || text;
 
   } catch (err) {
-    console.error("❌ translate error:", err);
+    
     return text;
   }
 }

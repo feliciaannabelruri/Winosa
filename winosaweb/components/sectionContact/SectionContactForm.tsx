@@ -25,6 +25,7 @@ export default function SectionContactForm() {
   const { t } = useTranslate();
 
   const [settings, setSettings] = useState<SiteSettings | null>(null);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -38,11 +39,7 @@ export default function SectionContactForm() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const load = async () => {
-      const data = await fetchSettings();
-      setSettings(data);
-    };
-    load();
+    fetchSettings().then(setSettings);
   }, []);
 
   const phone = settings?.sitePhone || "(235) 325-1351";
@@ -52,17 +49,22 @@ export default function SectionContactForm() {
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setForm({ ...form, [e.target.name]: e.target.value });
+      const { name, value } = e.target;
+      setForm((prev) => ({ ...prev, [name]: value }));
     },
-    [form]
+    []
   );
 
   const validate = () => {
     if (!form.name.trim()) return t("contact", "errorName");
     if (!form.email.trim()) return t("contact", "errorEmail");
     if (!form.message.trim()) return t("contact", "errorMessage");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
       return t("contact", "errorEmailInvalid");
+    }
+
     return "";
   };
 
@@ -73,7 +75,6 @@ export default function SectionContactForm() {
     setError("");
 
     const err = validate();
-
     if (err) {
       setError(err);
       return;
@@ -89,11 +90,11 @@ export default function SectionContactForm() {
       });
 
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.message || "Error");
 
       setSuccess(t("contact", "success"));
       setForm({ name: "", email: "", interest: "", phone: "", message: "" });
+
     } catch (err: any) {
       setError(err.message || t("contact", "errorSubmit"));
     } finally {
@@ -110,11 +111,12 @@ export default function SectionContactForm() {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-16">
 
+          {/* title */}
           <motion.h2
             id="contact-title"
-            initial={{ opacity: 0, y: 80 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             className="text-5xl font-bold text-black mb-16"
           >
             {t("contact", "title")}
@@ -122,10 +124,11 @@ export default function SectionContactForm() {
 
           <div className="grid lg:grid-cols-2 gap-16">
 
+            {/* form */}
             <motion.div
-              initial={{ opacity: 0, y: 80 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.6 }}
             >
               <h3 className="text-xl font-semibold text-black mb-4">
                 {t("contact", "sendMessage")}
@@ -154,7 +157,7 @@ export default function SectionContactForm() {
                       required
                       value={form.name}
                       onChange={handleChange}
-                      className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black"
+                      className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black transition-all duration-300 focus:scale-[1.02]"
                     />
                   </div>
 
@@ -170,7 +173,7 @@ export default function SectionContactForm() {
                       required
                       value={form.email}
                       onChange={handleChange}
-                      className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black"
+                      className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black transition-all duration-300 focus:scale-[1.02]"
                     />
                   </div>
 
@@ -188,7 +191,7 @@ export default function SectionContactForm() {
                     required
                     value={form.message}
                     onChange={handleChange}
-                    className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black"
+                    className="w-full border-b border-black/40 focus:border-black outline-none py-2 bg-transparent text-black transition-all duration-300 focus:scale-[1.01]"
                   />
                 </div>
 
@@ -220,11 +223,12 @@ export default function SectionContactForm() {
               </form>
             </motion.div>
 
+            {/* info */}
             <motion.div
               className="lg:border-l lg:border-black/20 lg:pl-16 space-y-12 text-black"
-              initial={{ opacity: 0, y: 80 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.6 }}
             >
 
               <div>

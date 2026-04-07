@@ -8,8 +8,24 @@ import { AnimatePresence } from "framer-motion";
 import Script from "next/script";
 import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { Poppins, Inter } from "next/font/google";
 
- const PageTransition = dynamic(
+
+/* font setup */
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+});
+
+/* animation */
+const PageTransition = dynamic(
   () => import("@/components/animation/PageTransition"),
   { ssr: false }
 );
@@ -31,7 +47,9 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className="overflow-x-hidden bg-white">
+  <body className={`${inter.className} overflow-x-hidden bg-white`}>
+
+        {/* analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
           strategy="afterInteractive"
@@ -48,6 +66,7 @@ export default function RootLayout({
 
         <Navbar />
 
+        {/* page transition */}
         <AnimatePresence mode="wait">
           <PageTransition pathname={pathname}>
             {children}

@@ -31,9 +31,7 @@ export default async function PortfolioPage() {
   try {
     const res = await api.get("/portfolio");
     portfolios = res.data.data;
-  } catch (error) {
-    console.log("Gagal fetch portfolio");
-  }
+  } catch (error) {  }
 
   return (
     <main>

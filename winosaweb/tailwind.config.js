@@ -15,14 +15,22 @@ export default {
         light: "#F5F5F5",
         white: "#FFFFFF",
       },
+
+      fontFamily: {
+        heading: ["var(--font-poppins)"],
+        body: ["var(--font-inter)"],
+      },
+
       borderRadius: {
         sm: "8px",
         md: "16px",
         lg: "24px",
       },
+
       boxShadow: {
         gold: "0 8px 24px rgba(246,185,59,0.25)",
       },
+
       spacing: {
         xs: "4px",
         sm: "8px",

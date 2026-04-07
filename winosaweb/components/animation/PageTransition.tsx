@@ -16,7 +16,7 @@ export default function PageTransition({
         initial={{
           opacity: 0,
           scale: 1.04,
-          filter: "blur(6px)",
+          filter: "blur(4px)",
         }}
         animate={{
           opacity: 1,

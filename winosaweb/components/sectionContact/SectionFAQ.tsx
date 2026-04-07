@@ -9,9 +9,7 @@ import { useTranslate } from "@/lib/useTranslate";
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
 export default function SectionCompanyInfo() {
-
   const { t } = useTranslate();
-
   const [active, setActive] = useState<number | null>(0);
 
   const faqs = [
@@ -27,16 +25,15 @@ export default function SectionCompanyInfo() {
         className="w-full py-28 bg-white"
         aria-labelledby="faq-title"
       >
-
         <div className="max-w-7xl mx-auto px-6 lg:px-16 grid lg:grid-cols-2 gap-20">
 
+          {/* left content */}
           <motion.div
-            initial={{ opacity: 0, y: 80 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-
             <p className="text-black/60 font-medium mb-4">
               {t("faq", "label")}
             </p>
@@ -49,9 +46,9 @@ export default function SectionCompanyInfo() {
               {t("faq", "titleLine2")} <br />
               {t("faq", "titleLine3")}
             </h2>
-
           </motion.div>
 
+          {/* faq list */}
           <motion.div
             className="space-y-8"
             role="region"
@@ -62,26 +59,23 @@ export default function SectionCompanyInfo() {
             variants={{
               hidden: {},
               visible: {
-                transition: { staggerChildren: 0.15 },
+                transition: { staggerChildren: 0.12 },
               },
             }}
           >
-
             {faqs.map((faq, index) => {
-
               const isOpen = active === index;
 
               return (
                 <motion.div
                   key={index}
                   variants={{
-                    hidden: { opacity: 0, y: 60 },
+                    hidden: { opacity: 0, y: 40 },
                     visible: { opacity: 1, y: 0 },
                   }}
-                  transition={{ duration: 0.6 }}
+                  transition={{ duration: 0.5 }}
                   className="border-b border-black/20 pb-6"
                 >
-
                   <h3>
                     <button
                       onClick={() => setActive(isOpen ? null : index)}
@@ -90,7 +84,6 @@ export default function SectionCompanyInfo() {
                       id={`faq-button-${index}`}
                       className="w-full flex justify-between items-center text-left"
                     >
-
                       <span className="text-lg font-semibold text-black">
                         {faq.question}
                       </span>
@@ -100,7 +93,6 @@ export default function SectionCompanyInfo() {
                       ) : (
                         <Plus size={18} className="text-black/50" aria-hidden="true" />
                       )}
-
                     </button>
                   </h3>
 
@@ -113,22 +105,19 @@ export default function SectionCompanyInfo() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.4 }}
+                        transition={{ duration: 0.35 }}
                         className="mt-4 text-black/70 leading-relaxed overflow-hidden"
                       >
                         {faq.answer}
                       </motion.div>
                     )}
                   </AnimatePresence>
-
                 </motion.div>
               );
             })}
-
           </motion.div>
 
         </div>
-
       </section>
     </FadeUp>
   );

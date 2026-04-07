@@ -6,29 +6,40 @@ import { ReactNode } from "react";
 interface FadeUpProps {
   children: ReactNode;
   delay?: number;
-  disableInView?: boolean; // 🔥 tambahan
+  duration?: number;
+  distance?: number;
+  disableInView?: boolean;
 }
 
 export default function FadeUp({
   children,
   delay = 0,
+  duration = 0.7,
+  distance = 40,
   disableInView = false,
 }: FadeUpProps) {
+  const animationProps = disableInView
+    ? {
+        animate: { opacity: 1, y: 0 },
+      }
+    : {
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: "-50px" },
+      };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60 }}
-      {...(disableInView
-        ? {
-            animate: { opacity: 1, y: 0 }, // 🔥 langsung muncul
-          }
-        : {
-            whileInView: { opacity: 1, y: 0 }, // default lama
-            viewport: { once: true, amount: 0.2 },
-          })}
-      transition={{ duration: 0.8, delay }}
+      initial={{ opacity: 0, y: distance }}
+      {...animationProps}
+      transition={{
+        duration,
+        delay,
+        ease: [0.22, 1, 0.36, 1], // smoother easing
+      }}
       style={{
         willChange: "transform, opacity",
-        transform: "translateZ(0)", // 🔥 Safari & performance fix
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
       }}
     >
       {children}

@@ -77,42 +77,62 @@ export default function SectionTechWeb({ data }: { data?: TechData }) {
   }, [language, data]);
 
   return (
-    <section className="w-full bg-white py-32">
+    <section
+      className="w-full bg-white py-28"
+      aria-labelledby="tech-title"
+    >
 
+      {/* header */}
       <FadeUp>
-        <div className="max-w-7xl mx-auto px-6 text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
+        <div className="max-w-7xl mx-auto px-6 text-center mb-16">
+          <h2
+            id="tech-title"
+            className="text-4xl md:text-5xl font-bold text-black mb-6"
+          >
             {title}
           </h2>
+
           <p className="text-black/60 text-lg leading-relaxed max-w-2xl mx-auto">
             {subtitle}
           </p>
         </div>
       </FadeUp>
 
+      {/* content */}
       <div className="max-w-7xl mx-auto px-6">
-
         <FadeUp delay={0.2}>
-          <div className="group relative rounded-[40px] p-6 bg-white border border-black shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-300 hover:shadow-[0_30px_80px_rgba(0,0,0,0.18)]">
+          <div
+            className="group relative rounded-[40px] p-6 bg-white border border-black/10 shadow-[0_16px_40px_rgba(0,0,0,0.08)] transition-all duration-300 hover:shadow-[0_28px_70px_rgba(0,0,0,0.12)]"
+            role="region"
+            aria-labelledby="tech-title"
+          >
 
-            {/* FULL HOVER GLOW */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none">
-              <div className="w-full h-full bg-[radial-gradient(circle,rgba(255,200,0,0.45)_0%,rgba(255,200,0,0.25)_40%,transparent_70%)] blur-[120px]" />
+            {/* glow */}
+            <div
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"
+              aria-hidden="true"
+            >
+              <div className="w-full h-full bg-[radial-gradient(circle,rgba(255,200,0,0.35)_0%,rgba(255,200,0,0.2)_40%,transparent_70%)] blur-[100px]" />
             </div>
 
-            <div className="relative flex h-[500px] overflow-hidden rounded-[28px]">
+            {/* stack */}
+            <div
+              className="relative flex h-[480px] overflow-hidden rounded-[28px]"
+              role="list"
+            >
 
               {techStack.map((group, i) => (
                 <motion.div
                   key={i}
+                  role="listitem"
                   onMouseEnter={() => setActive(i)}
                   onMouseLeave={() => setActive(null)}
                   animate={{ flex: active === i ? 3 : 1 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.35 }}
                   className="flex items-center justify-center cursor-pointer"
                 >
 
-                  <div className="text-center px-8">
+                  <div className="text-center px-6">
 
                     <h3 className="text-2xl font-semibold text-black mb-6">
                       {group.category}
@@ -120,10 +140,10 @@ export default function SectionTechWeb({ data }: { data?: TechData }) {
 
                     {active === i && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="flex flex-wrap justify-center gap-4 text-black/70 text-lg"
+                        transition={{ duration: 0.25 }}
+                        className="flex flex-wrap justify-center gap-3 text-black/70 text-base"
                       >
                         {group.tech.map((tech, idx) => (
                           <span key={idx}>{tech}</span>
@@ -140,7 +160,6 @@ export default function SectionTechWeb({ data }: { data?: TechData }) {
 
           </div>
         </FadeUp>
-
       </div>
 
     </section>

@@ -58,7 +58,6 @@ export default function SectionMobileTech({ data }: { data?: any }) {
 
   useEffect(() => {
     const run = async () => {
-
       const rawTitle =
         data?.mobileTechTitle || t("mobileTechSection", "title");
 
@@ -91,12 +90,19 @@ export default function SectionMobileTech({ data }: { data?: any }) {
   }, [data, language]);
 
   return (
-    <section className="w-full bg-white py-32">
+    <section
+      className="w-full bg-white py-28"
+      aria-labelledby="mobile-tech-title"
+    >
       <div className="max-w-7xl mx-auto px-6 text-black">
 
+        {/* heading */}
         <FadeUp>
-          <div className="max-w-2xl mb-24">
-            <h2 className="text-3xl font-bold mb-4">
+          <div className="max-w-2xl mb-20">
+            <h2
+              id="mobile-tech-title"
+              className="text-3xl font-bold mb-4"
+            >
               {title}
             </h2>
 
@@ -106,20 +112,26 @@ export default function SectionMobileTech({ data }: { data?: any }) {
           </div>
         </FadeUp>
 
-        <div className="divide-y divide-black/20">
+        {/* list */}
+        <div
+          className="divide-y divide-black/10"
+          role="list"
+        >
           {techStack.map((tech, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 50 }}
+              role="listitem"
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="py-12 transition hover:bg-yellow-100/30"
+              className="py-10 transition hover:bg-yellow-100/20"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
+                {/* left */}
                 <div>
-                  <h3 className="text-xl font-bold mb-2 text-black">
+                  <h3 className="text-lg font-semibold mb-2 text-black">
                     {tech.title}
                   </h3>
 
@@ -128,10 +140,16 @@ export default function SectionMobileTech({ data }: { data?: any }) {
                   </p>
                 </div>
 
-                <div className="lg:col-span-2 flex flex-wrap gap-x-10 gap-y-4 text-sm font-medium">
+                {/* right */}
+                <div
+                  className="lg:col-span-2 flex flex-wrap gap-x-8 gap-y-3 text-sm font-medium"
+                  role="list"
+                  aria-label={`Technologies for ${tech.title}`}
+                >
                   {tech.items.map((item, idx) => (
                     <span
                       key={idx}
+                      role="listitem"
                       className="relative cursor-default transition hover:text-black before:absolute before:-bottom-1 before:left-0 before:w-0 before:h-[1px] before:bg-black hover:before:w-full before:transition-all"
                     >
                       {item}

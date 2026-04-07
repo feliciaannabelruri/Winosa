@@ -1,73 +1,89 @@
 @import "tailwindcss";
 
 /* =========================
-   THEME VARIABLES
-=====.glass==================== */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-/* =========================
-   BASE STYLES
+   FONT SYSTEM
 ========================= */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 /* =========================
-   ANIMATIONS
+   BASE RESET
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+img:not([class]) {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+
+/* =========================
+   ANIMATIONS (OPTIMIZED)
 ========================= */
 
-/* Fade + Slide Up (Hero Text) */
+/* GPU friendly */
+.animate-smooth {
+  will-change: transform, opacity;
+}
+
+/* Fade Up */
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translate3d(0, 24px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-fade-up {
-  animation: fadeUp 0.9s ease-out forwards;
+  animation: fadeUp 0.8s ease-out forwards;
 }
 
-/* Floating Mascot */
+/* Slide Left */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-60px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.6s ease forwards;
+}
+
+/* Floating */
 @keyframes floatY {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-14px);
-  }
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 
-/* slide piccture */
+.animate-float {
+  animation: floatY 3s ease-in-out infinite;
+}
+
+/* Image slider */
 @keyframes fastFade {
-  0%   { opacity: 0; }
-  8%   { opacity: 1; }
-  30%  { opacity: 1; }
-  38%  { opacity: 0; }
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  30% { opacity: 1; }
+  40% { opacity: 0; }
   100% { opacity: 0; }
 }
 
@@ -77,134 +93,76 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0;
   animation: fastFade 6s infinite;
-  animation-fill-mode: both;
 }
 
 .delay-0 { animation-delay: 0s; }
 .delay-1 { animation-delay: 2s; }
 .delay-2 { animation-delay: 4s; }
 
+/* =========================
+   GLASS CARD (FIXED)
+========================= */
+.card {
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
 
 /* =========================
-   GLASS CARD
+   MICROINTERACTIONS (IMPROVED)
 ========================= */
--card {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+
+/* lift */
+.hover-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.bg-gold {
-  background-color: #F6B93B;
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
 }
 
-.shadow-gold {
-  box-shadow: 0 8px 24px rgba(246, 185, 59, 0.25);
+/* button */
+.btn-animate {
+  transition: all 0.25s ease;
 }
 
-.pin-3d {
-  width: 18px;
-  height: 18px;
-  background: radial-gradient(circle at 30% 30%, #ffb3b3, #e00000);
-  border-radius: 50%;
+.btn-animate:hover {
+  transform: scale(1.05);
+}
+
+/* press effect */
+.btn-animate:active {
+  transform: scale(0.97);
+}
+
+/* smooth link underline */
+.link-hover {
   position: relative;
-  box-shadow:
-    inset -2px -2px 5px rgba(0, 0, 0, 0.25),
-    0 4px 8px rgba(0, 0, 0, 0.35);
 }
 
-.pin-3d::after {
+.link-hover::after {
   content: "";
   position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 8px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.55);
-  border-radius: 50%;
-  filter: blur(0.5px);
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background: #F6B93B;
+  transition: width 0.3s ease;
 }
 
-.pin-stick {
-  position: absolute;
-  left: 50%;
-  bottom: -18px;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 20px;
-  background: linear-gradient(to bottom, #ff4d4d, #a00000);
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
-}
-.map-pin {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #ffb3b3, #e00000);
-  box-shadow:
-    inset -3px -3px 6px rgba(0,0,0,0.25),
-    0 6px 12px rgba(0,0,0,0.35);
-  animation: pinPulse 1.8s infinite ease-in-out;
+.link-hover:hover::after {
+  width: 100%;
 }
 
-.map-pin::after {
-  content: "";
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  width: 6px;
-  height: 6px;
-  background: rgba(255,255,255,0.7);
-  border-radius: 50%;
-}
 
-.map-stick {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 3px;
-  height: 18px;
-  background: linear-gradient(to bottom, #888, #444);
-  border-radius: 3px;
-}
-
-@keyframes pinPulse {
-  0% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.15); }
-  100% { transform: translate(-50%, -50%) scale(1); }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-60px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.animate-slide-left {
-  animation: slideInLeft 0.7s ease forwards;
-}
-
-/* SAFE GLOBAL FIX */
-
-img {
-  max-width: 100%;
-  display: block;
-}
-
-* {
-  box-sizing: border-box;
-}
+/* =========================
+   UTILITIES
+========================= */
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -212,15 +170,4 @@ img {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* === MICROINTERACTIONS === */
-
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
 }
