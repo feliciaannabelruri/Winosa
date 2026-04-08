@@ -2,6 +2,28 @@ const Blog = require('../models/Blog');
 const asyncHandler = require('../middleware/asyncHandler');
 const { paginate } = require('../utils/pagination');
 const { cache, cacheMiddleware } = require('../utils/cache');
+const mlModel = require('../services/mlRecommendation');
+
+async function ensureModelTrained() {
+  if (mlModel.isTrained) return true;
+
+  try {
+    const BACKEND_API_URL = process.env.ML_BACKEND_API_URL
+      || `http://localhost:${process.env.PORT || 5000}/api`;
+
+    const res = await fetch(`${BACKEND_API_URL}/blog?limit=100`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const blogs = json.data || [];
+
+    if (!blogs.length) return false;
+    const result = await mlModel.train(blogs);
+    return result.success;
+  } catch (e) {
+    console.warn('ensureModelTrained failed:', e.message);
+    return false;
+  }
+}
 
 // @desc    Get all blogs with pagination
 // @route   GET /api/blog?page=1&limit=10
@@ -63,31 +85,33 @@ exports.getBlogBySlug = asyncHandler(async (req, res, next) => {
 exports.getBlogRecommendations = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
   const limit = parseInt(req.query.limit) || 3;
-  const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
 
   try {
-    // Panggil Python ML service
-    const response = await fetch(
-      `${ML_SERVICE_URL}/recommendations/${slug}?limit=${limit}`
-    );
-    const data = await response.json();
-        if (data.data && Array.isArray(data.data)) {
-      const slugs = data.data.map(b => b.slug);
-      
+      const trained = await ensureModelTrained();
+      if (!trained) throw new Error('Model not trained');
+
+      const recs = mlModel.getRecommendations(slug, limit);
+
+      const slugs = recs.map(b => b.slug);
+
       const verified = await Blog.find({
         slug: { $in: slugs },
         isPublished: true
       }).select('title slug excerpt image author tags views readTime createdAt').lean();
 
-      return res.json({
-        ...data,
-        data: verified,
-        count: verified.length
-      });
-    }
-    return res.json(data);
+      const verifiedMap = Object.fromEntries(verified.map(b => [b.slug, b]));
+      const ordered = slugs.map(s => verifiedMap[s]).filter(Boolean);
 
-  } catch (error) {
+      return res.json({
+        success          : true,
+        algorithm        : 'Hybrid: TF-IDF + Semantic + Hot Score',
+        semantic_enabled : mlModel.semanticAvailable,
+        mae              : mlModel.mae,
+        count            : ordered.length,
+        data             : ordered,
+      });
+
+    } catch (error) {
     // Fallback jika ML service mati → tampilkan most viewed
     console.warn('ML service unavailable, using fallback:', error.message);
 
@@ -121,3 +145,22 @@ exports.getBlogRecommendations = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
+// @desc    Get trending blogs
+    // @route   GET /api/blog/trending
+    // @access  Public
+    exports.getTrendingBlogs = asyncHandler(async (req, res, next) => {
+      const limit = parseInt(req.query.limit) || 5;
+
+      const trending = await Blog.find({ isPublished: true })
+        .sort({ views: -1, createdAt: -1 }) // paling banyak dilihat + terbaru
+        .limit(limit)
+        .select('title slug excerpt image author tags views readTime createdAt')
+        .lean();
+
+      res.json({
+        success: true,
+        count: trending.length,
+        data: trending,
+      });
+    });

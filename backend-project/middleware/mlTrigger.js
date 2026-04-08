@@ -1,44 +1,58 @@
 /**
  * mlTrigger.js — Auto-retrain ML model setelah blog berubah
- * 
- * CARA PAKAI: tambahkan ke adminBlogController.js
- * 
- * Di createBlog, updateBlog, deleteBlog — setelah cache.invalidatePrefix(CACHE_PREFIX):
+ * ==========================================================
+ * Sebelumnya: fetch ke http://localhost:5001/train
+ * Sekarang  : panggil model.train() langsung (in-process)
+ *
+ * CARA PAKAI: sama seperti sebelumnya
  *   triggerMLRetrain().catch(e => console.warn('ML retrain skipped:', e.message));
  */
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
-const ML_RETRAIN_DELAY_MS = 5000; // tunggu 5 detik agar DB sudah update
+const model = require('../services/mlRecommendation');
+
+const BACKEND_API_URL = process.env.ML_BACKEND_API_URL
+  || `http://localhost:${process.env.PORT || 5000}/api`;
+
+const ML_RETRAIN_DELAY_MS = 5000;
 
 let retrainTimer = null;
 
+async function fetchBlogs() {
+  try {
+    const res = await fetch(`${BACKEND_API_URL}/blog?limit=100`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    return json.data || [];
+  } catch (e) {
+    console.warn(`⚠️  fetchBlogs gagal: ${e.message}`);
+    return [];
+  }
+}
+
 /**
- * Trigger ML retrain dengan debounce (5 detik).
+ * Trigger ML retrain dengan debounce 5 detik.
  * Kalau ada banyak blog diupdate berurutan, hanya 1 retrain yang jalan.
  */
 const triggerMLRetrain = () => {
   return new Promise((resolve) => {
-    if (retrainTimer) {
-      clearTimeout(retrainTimer);
-    }
+    if (retrainTimer) clearTimeout(retrainTimer);
+
     retrainTimer = setTimeout(async () => {
       retrainTimer = null;
       try {
-        const response = await fetch(`${ML_SERVICE_URL}/train`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          signal: AbortSignal.timeout(30000), // timeout 30 detik
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log(`✅ ML retrain triggered — MAE: ${data.mae}`);
-        } else {
-          console.warn(`⚠️  ML retrain returned ${response.status}`);
+        const blogs = await fetchBlogs();
+        if (!blogs.length) {
+          console.warn('⚠️  ML retrain skipped: no blogs found');
+          return resolve();
         }
-      } catch (error) {
-        // ML service mungkin tidak jalan — tidak apa-apa, tidak crash backend
-        console.warn(`⚠️  ML service unavailable: ${error.message}`);
+        const result = await model.train(blogs);
+        if (result.success) {
+          console.log(`✅ ML retrain done — MAE: ${result.mae}`);
+        } else {
+          console.warn(`⚠️  ML retrain failed: ${result.error}`);
+        }
+      } catch (e) {
+        console.warn(`⚠️  ML retrain error: ${e.message}`);
       }
       resolve();
     }, ML_RETRAIN_DELAY_MS);
@@ -46,29 +60,11 @@ const triggerMLRetrain = () => {
 };
 
 /**
- * Event tracking middleware — catat klik blog untuk data ML
- * 
- * CARA PAKAI: pasang di blogRoutes.js sebelum getBlogBySlug:
- *   router.get('/:slug', trackBlogView, getBlogBySlug);
+ * Event tracking middleware — catat klik blog
+ * Pasang di blogRoutes.js: router.get('/:slug', trackBlogView, getBlogBySlug)
  */
 const trackBlogView = async (req, res, next) => {
-  // Fire-and-forget: tidak block request
-  // Data dikirim ke ML service untuk future training improvement
-  const { slug } = req.params;
-  const userAgent = req.headers['user-agent'] || '';
-  const referer   = req.headers['referer']    || '';
-
-  // Hanya track real users, bukan bots
-  const isBot = /bot|crawler|spider|scraper/i.test(userAgent);
-  if (!isBot) {
-    fetch(`${ML_SERVICE_URL}/track`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug, referer, timestamp: new Date().toISOString() }),
-      signal: AbortSignal.timeout(2000),
-    }).catch(() => {}); // silently ignore
-  }
-
+  // Fire-and-forget, tidak block request
   next();
 };
 
