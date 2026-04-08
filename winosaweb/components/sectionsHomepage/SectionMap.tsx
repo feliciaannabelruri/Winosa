@@ -25,7 +25,7 @@ export default function SectionFrame() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
-        href="https://www.google.com/maps/place/Bandar+Lampung,+Indonesia"
+        href="https://www.google.com/maps?q=Jalan+Kartini+No+40+Tanjung+Karang+Pusat+Bandar+Lampung+Lampung+35116"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Open location in Google Maps"

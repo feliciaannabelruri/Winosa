@@ -70,7 +70,7 @@ export default function SectionMap() {
             ) : (
               <iframe
                 title="Company location on Google Maps"
-                src="https://maps.google.com/maps?q=Bandar%20Lampung&output=embed"
+                src="https://maps.google.com/maps?q=Jalan%20Kartini%20No%2040%20Tanjung%20Karang%20Pusat%20Bandar%20Lampung%20Lampung%2035116&output=embed"
                 width="100%"
                 height="450"
                 loading="lazy"
