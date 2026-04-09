@@ -1,5 +1,5 @@
 export async function autoTranslate(text: string, lang: string) {
-  console.log("🚀 autoTranslate CALL:", text, "->", lang);
+  console.log(" autoTranslate CALL:", text, "->", lang);
 
   if (!text) return "";
 

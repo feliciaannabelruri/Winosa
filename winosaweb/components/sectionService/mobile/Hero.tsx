@@ -31,7 +31,12 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
             <div className="absolute w-[480px] h-[480px] bg-yellow-400/20 rounded-full blur-[120px]" />
 
             {/* back phone */}
-            <div className="w-64 h-[500px] bg-white rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-black/10 rotate-[-10deg] absolute overflow-hidden">
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="w-64 h-[500px] bg-white rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-black/10 rotate-[-10deg] absolute overflow-hidden opacity-90 scale-[0.96]"
+            >
               {data?.heroImageSecondary ? (
                 <Image
                   src={data.heroImageSecondary}
@@ -44,23 +49,38 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
                   App Screen
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* front phone */}
-            <div className="w-64 h-[500px] bg-white rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-black/10 rotate-[6deg] relative overflow-hidden">
-              {data?.heroImagePrimary ? (
-                <Image
-                  src={data.heroImagePrimary}
-                  alt="Mobile application interface"
-                  fill
-                  className="object-cover rounded-[40px]"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-yellow-50 to-white flex items-center justify-center text-black/40 text-sm">
-                  App Screen
-                </div>
-              )}
-            </div>
+            <motion.div
+              initial={{ y: 60, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="w-64 h-[500px] bg-white rounded-[40px] shadow-[0_25px_60px_rgba(0,0,0,0.15)] border border-black/10 rotate-[6deg] relative overflow-hidden"
+            >
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="w-full h-full"
+              >
+                {data?.heroImagePrimary ? (
+                  <Image
+                    src={data.heroImagePrimary}
+                    alt="Mobile application interface"
+                    fill
+                    className="object-cover rounded-[40px]"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-yellow-50 to-white flex items-center justify-center text-black/40 text-sm">
+                    App Screen
+                  </div>
+                )}
+              </motion.div>
+            </motion.div>
           </div>
 
           {/* content */}
@@ -80,7 +100,7 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
               initial={{ x: 120, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-black leading-tight"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-black leading-tight tracking-tight"
             >
               {titleParts[0]}
             </motion.h1>
@@ -89,7 +109,7 @@ export default function SectionHeroMobileApp({ data }: { data?: any }) {
               initial={{ x: 120, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.35 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-black leading-tight mb-6"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-black leading-tight mb-6 tracking-tight"
             >
               {titleParts.slice(1).join(" ")}
             </motion.h1>

@@ -15,19 +15,26 @@ export default function SectionHero() {
       aria-labelledby="services-hero-title"
     >
 
-      {/* background */}
-      <Image
-        src="/bg/bg7.jpg"
-        alt=""
-        aria-hidden="true"
-        fill
-        priority
-        quality={75}
-        sizes="100vw"
-        className="object-cover z-0"
-      />
+      {/* background with subtle zoom */}
+      <motion.div
+        initial={{ scale: 1 }}
+        animate={{ scale: 1.05 }}
+        transition={{ duration: 12, ease: "easeOut" }}
+        className="absolute inset-0 z-0"
+      >
+        <Image
+          src="/bg/bg7.jpg"
+          alt=""
+          aria-hidden="true"
+          fill
+          priority
+          quality={75}
+          sizes="100vw"
+          className="object-cover"
+        />
+      </motion.div>
 
-      {/* overlay (lebih halus) */}
+      {/* overlay (tidak diubah, hanya layering tetap) */}
       <div
         className="absolute inset-0 z-10 pointer-events-none"
         style={{
@@ -36,6 +43,14 @@ export default function SectionHero() {
         }}
         aria-hidden="true"
       />
+
+      {/* grain texture */}
+      <div className="absolute inset-0 z-10 pointer-events-none opacity-[0.04] mix-blend-overlay bg-[url('/noise.png')]" />
+
+      {/* subtle light */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        <div className="absolute left-[15%] top-[10%] w-[280px] h-[280px] bg-white/10 blur-[120px] rounded-full" />
+      </div>
 
       {/* content */}
       <div
@@ -49,7 +64,7 @@ export default function SectionHero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="text-white text-5xl md:text-6xl font-bold mb-6"
+          className="text-white text-5xl md:text-6xl font-bold mb-6 tracking-tight"
           style={{ textShadow: "0 6px 24px rgba(0,0,0,0.6)" }}
         >
           {t("servicesHero", "title")}
@@ -60,7 +75,7 @@ export default function SectionHero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="text-white/90 text-lg mb-10 max-w-xl"
+          className="text-white/90 text-lg mb-10 max-w-xl leading-relaxed"
           style={{ textShadow: "0 4px 16px rgba(0,0,0,0.6)" }}
         >
           {t("servicesHero", "subtitle")}
@@ -82,7 +97,7 @@ export default function SectionHero() {
 
       </div>
 
-      {/* bottom gradient (FIX UTAMA: lebih smooth, no block) */}
+      {/* bottom gradient tetap */}
       <div
         className="absolute bottom-0 left-0 w-full h-[40%] z-10 pointer-events-none"
         style={{
