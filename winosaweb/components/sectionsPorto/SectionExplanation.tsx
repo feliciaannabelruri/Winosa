@@ -65,64 +65,6 @@ export default function SectionExplanation() {
             >
               {t("portfolioExplanation", "description")}
             </motion.p>
-
-            <motion.div
-              className={styles.highlightStats}
-              role="list"
-              variants={{
-                hidden: {},
-                visible: {
-                  transition: {
-                    staggerChildren: 0.2,
-                  },
-                },
-              }}
-            >
-              <motion.div
-                role="listitem"
-                className={styles.highlightItem}
-                variants={{
-                  hidden: { opacity: 0, y: 60 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                transition={{ duration: 0.8 }}
-              >
-                <h3 className={styles.highlightNumber}>24+</h3>
-                <p className={styles.highlightLabel}>
-                  {t("portfolioExplanation.stats", "team")}
-                </p>
-              </motion.div>
-
-              <motion.div
-                role="listitem"
-                className={styles.highlightItem}
-                variants={{
-                  hidden: { opacity: 0, y: 60 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                transition={{ duration: 0.8 }}
-              >
-                <h3 className={styles.highlightNumber}>15+</h3>
-                <p className={styles.highlightLabel}>
-                  {t("portfolioExplanation.stats", "projects")}
-                </p>
-              </motion.div>
-
-              <motion.div
-                role="listitem"
-                className={styles.highlightItem}
-                variants={{
-                  hidden: { opacity: 0, y: 60 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                transition={{ duration: 0.8 }}
-              >
-                <h3 className={styles.highlightNumber}>100%</h3>
-                <p className={styles.highlightLabel}>
-                  {t("portfolioExplanation.stats", "quality")}
-                </p>
-              </motion.div>
-            </motion.div>
           </motion.div>
         </div>
       </section>

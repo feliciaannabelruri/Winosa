@@ -143,9 +143,21 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
         {/* EMPTY */}
         {filteredProjects.length === 0 ? (
           <div className={styles.emptyState} role="status">
-            <div aria-hidden="true" style={{ fontSize: "40px", marginBottom: "12px" }}>
-              🔍
-            </div>
+            <div aria-hidden="true" style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  border: "2.5px solid #c8860a",
+                  margin: "0 auto 16px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#c8860a",
+                  fontSize: "20px",
+                  fontWeight: "300",
+                }}>
+                  X
+                </div>
             <h3>{t("portfolio", "empty")}</h3>
           </div>
         ) : (
