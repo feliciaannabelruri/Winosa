@@ -2,28 +2,6 @@ const Blog = require('../models/Blog');
 const asyncHandler = require('../middleware/asyncHandler');
 const { paginate } = require('../utils/pagination');
 const { cache, cacheMiddleware } = require('../utils/cache');
-const mlModel = require('../services/mlRecommendation');
-
-async function ensureModelTrained() {
-  if (mlModel.isTrained) return true;
-
-  try {
-    const BACKEND_API_URL = process.env.ML_BACKEND_API_URL
-      || `http://localhost:${process.env.PORT || 5000}/api`;
-
-    const res = await fetch(`${BACKEND_API_URL}/blog?limit=100`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    const blogs = json.data || [];
-
-    if (!blogs.length) return false;
-    const result = await mlModel.train(blogs);
-    return result.success;
-  } catch (e) {
-    console.warn('ensureModelTrained failed:', e.message);
-    return false;
-  }
-}
 
 // @desc    Get all blogs with pagination
 // @route   GET /api/blog?page=1&limit=10
@@ -86,44 +64,47 @@ exports.getBlogRecommendations = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
   const limit = parseInt(req.query.limit) || 3;
 
+  const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
+
   try {
-      const trained = await ensureModelTrained();
-      if (!trained) throw new Error('Model not trained');
+    const response = await fetch(
+      `${ML_SERVICE_URL}/recommendations/${slug}?limit=${limit}`
+    );
 
-      const recs = mlModel.getRecommendations(slug, limit);
+    if (!response.ok) throw new Error(`ML service error: ${response.status}`);
 
-      const slugs = recs.map(b => b.slug);
+    const data = await response.json();
 
-      const verified = await Blog.find({
-        slug: { $in: slugs },
-        isPublished: true
-      }).select('title slug excerpt image author tags views readTime createdAt').lean();
+    const slugs = (data.data || []).map(b => b.slug);
+    const verified = await Blog.find({
+      slug: { $in: slugs },
+      isPublished: true
+    }).select('title slug excerpt image author tags views readTime createdAt').lean();
 
-      const verifiedMap = Object.fromEntries(verified.map(b => [b.slug, b]));
-      const ordered = slugs.map(s => verifiedMap[s]).filter(Boolean);
+    const verifiedMap = Object.fromEntries(verified.map(b => [b.slug, b]));
+    const ordered = slugs.map(s => verifiedMap[s]).filter(Boolean);
 
-      return res.json({
-        success          : true,
-        algorithm        : 'Hybrid: TF-IDF + Semantic + Hot Score',
-        semantic_enabled : mlModel.semanticAvailable,
-        mae              : mlModel.mae,
-        count            : ordered.length,
-        data             : ordered,
-      });
+    return res.json({
+      success: true,
+      algorithm: data.algorithm || 'Hybrid: TF-IDF + Semantic + Hot Score',
+      semantic_enabled: data.semantic_enabled,
+      mae: data.mae,
+      count: ordered.length,
+      data: ordered,
+    });
 
-    } catch (error) {
-    // Fallback jika ML service mati → tampilkan most viewed
+  } catch (error) {
     console.warn('ML service unavailable, using fallback:', error.message);
 
-    const currentBlog = await Blog.findOne({ 
-      slug, 
-      isPublished: true 
+    const currentBlog = await Blog.findOne({
+      slug,
+      isPublished: true
     }).lean();
-    
+
     if (!currentBlog) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Blog not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Blog not found'
       });
     }
 
@@ -146,21 +127,39 @@ exports.getBlogRecommendations = asyncHandler(async (req, res, next) => {
   }
 });
 
-// @desc    Get trending blogs
+    // @desc    Get trending blogs
     // @route   GET /api/blog/trending
     // @access  Public
     exports.getTrendingBlogs = asyncHandler(async (req, res, next) => {
-      const limit = parseInt(req.query.limit) || 5;
+  const limit = parseInt(req.query.limit) || 5;
+  const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
 
-      const trending = await Blog.find({ isPublished: true })
-        .sort({ views: -1, createdAt: -1 }) // paling banyak dilihat + terbaru
-        .limit(limit)
-        .select('title slug excerpt image author tags views readTime createdAt')
-        .lean();
+  try {
+    const response = await fetch(`${ML_SERVICE_URL}/trending?limit=${limit}`);
+    if (!response.ok) throw new Error(`ML service error: ${response.status}`);
+    const data = await response.json();
 
-      res.json({
-        success: true,
-        count: trending.length,
-        data: trending,
-      });
+    return res.json({
+      success: true,
+      algorithm: data.algorithm || 'Hot Score',
+      count: data.count,
+      data: data.data,
     });
+
+  } catch (error) {
+    console.warn('ML trending unavailable, using fallback:', error.message);
+
+    const trending = await Blog.find({ isPublished: true })
+      .sort({ views: -1, createdAt: -1 })
+      .limit(limit)
+      .select('title slug excerpt image author tags views readTime createdAt')
+      .lean();
+
+    return res.json({
+      success: true,
+      algorithm: 'fallback_most_viewed',
+      count: trending.length,
+      data: trending,
+    });
+  }
+});
