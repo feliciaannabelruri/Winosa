@@ -9,7 +9,6 @@ const { setLanguage } = require('./middleware/language');
 const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./middleware/logger');
 const { globalLimiter, authLimiter } = require('./middleware/rateLimiter');
-const { startMLService, stopMLService } = require('./config/mlProcess');
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
@@ -88,8 +87,7 @@ app.use(logger);
 app.use(setLanguage);
 app.use('/api/', globalLimiter);
 
-connectDB();
-startMLService();
+connectDB();;
 
 app.use('/api/portfolio',     require('./routes/portfolioRoutes'));
 app.use('/api/blog',          require('./routes/blogRoutes'));
@@ -176,7 +174,5 @@ app.listen(PORT, () => {
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
 
-process.on('SIGTERM', () => { stopMLService(); process.exit(0); });
-process.on('SIGINT',  () => { stopMLService(); process.exit(0); });
 
 module.exports = app;

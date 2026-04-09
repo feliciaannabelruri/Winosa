@@ -29,15 +29,28 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 _semantic_model = None
+SEMANTIC_ERROR = None
 
 def get_semantic_model():
-    global _semantic_model
+    global _semantic_model, SEMANTIC_ERROR
+
     if _semantic_model is None:
         try:
             from sentence_transformers import SentenceTransformer
-            _semantic_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
-        except:
+
+            logger.info("Loading semantic model...")
+            _semantic_model = SentenceTransformer(
+                "paraphrase-multilingual-MiniLM-L12-v2"
+            )
+
+            SEMANTIC_ERROR = None
+            logger.info("Semantic model loaded successfully")
+
+        except Exception as e:
+            SEMANTIC_ERROR = str(e)
             _semantic_model = None
+            logger.warning(f"Semantic model gagal load: {e}")
+
     return _semantic_model
 
 class BlogRecommendationModel:
@@ -286,14 +299,34 @@ class BlogRecommendationModel:
         return result
 
     # UTILITY
-    def get_stats(self) -> dict:
-        """Return statistik model."""
-        return {
-            "is_trained": self.is_trained,
-            "total_blogs": len(self.blogs_df) if self.blogs_df is not None else 0,
-            "mae": round(self.mae, 4) if self.mae is not None else None,
-            "mae_interpretation": self._interpret_mae(self.mae) if self.mae is not None else None,
-            "algorithm": "Hybrid: TF-IDF + Semantic + Hot Score",
-            "semantic_enabled": self.semantic_available,
-        "weights": { "tfidf": 0.4, "semantic": 0.4, "hot_score": 0.2 }
+    # UTILITY
+def get_stats(self) -> dict:
+    semantic_status = "enabled" if self.semantic_available else "fallback_mode"
+
+    return {
+        "is_trained": self.is_trained,
+        "total_blogs": len(self.blogs_df) if self.blogs_df is not None else 0,
+        "mae": round(self.mae, 4) if self.mae is not None else None,
+        "mae_interpretation": (
+            self._interpret_mae(self.mae)
+            if self.mae is not None
+            else None
+        ),
+        "algorithm": "Hybrid: TF-IDF + Semantic + Hot Score",
+
+        "semantic_enabled": self.semantic_available,
+        "semantic_status": semantic_status,
+        "semantic_model": (
+            "paraphrase-multilingual-MiniLM-L12-v2"
+            if self.semantic_available
+            else None
+        ),
+        "semantic_error": SEMANTIC_ERROR,
+        "fallback_mode": not self.semantic_available,
+
+        "weights": {
+            "tfidf": 0.4 if self.semantic_available else 0.8,
+            "semantic": 0.4 if self.semantic_available else 0.0,
+            "hot_score": 0.2
         }
+    }

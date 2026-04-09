@@ -39,7 +39,7 @@ CORS(app)
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:5000/api")
-ML_PORT         = int(os.getenv("ML_PORT", 5001))
+ML_PORT         = int(os.getenv("PORT", os.getenv("ML_PORT", 7860)))
 AUTO_TRAIN      = os.getenv("AUTO_TRAIN", "true").lower() == "true"
 
 # Singleton blog recommendation model
