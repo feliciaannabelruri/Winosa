@@ -9,6 +9,7 @@ const { setLanguage } = require('./middleware/language');
 const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./middleware/logger');
 const { globalLimiter, authLimiter } = require('./middleware/rateLimiter');
+const mlRoutes = require("./routes/mlRoutes");
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
@@ -99,6 +100,7 @@ app.use('/api/content',       require('./routes/contentRoutes'));
 app.use('/api/settings',      require('./routes/settingsRoutes'));
 app.use('/api/auth',          authLimiter, require('./routes/authRoutes'));
 app.use('/api/search',        require('./routes/searchRoutes'));
+app.use('/api/ml',            require('./routes/mlRoutes'));
 
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/email',  require('./routes/emailTestRoutes'));

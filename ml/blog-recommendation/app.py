@@ -202,21 +202,7 @@ def run_classify_plan(text: str, service_type: str = "web") -> dict:
 #  BLOG RECOMMENDATION HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
 
-def fetch_blogs_from_backend() -> list:
-    try:
-        url      = f"{BACKEND_API_URL}/blog?limit=100"
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        blogs = response.json().get("data", [])
-        logger.info(f"Fetched {len(blogs)} blogs")
-        return blogs
-    except requests.RequestException as e:
-        logger.error(f"Failed to fetch blogs: {e}")
-        return []
-
-
 def train_model() -> dict:
-    blogs = fetch_blogs_from_backend()
     if not blogs:
         return {"success": False, "error": "No blogs fetched from backend"}
     return model.train(blogs)
@@ -233,7 +219,17 @@ def health():
 
 @app.route("/train", methods=["POST"])
 def train():
-    result = train_model()
+    data = request.get_json(silent=True) or {}
+    blogs = data.get("blogs", [])
+
+    if not blogs:
+        return jsonify({
+            "success": False,
+            "error": "No blogs provided"
+        }), 400
+
+    result = model.train(blogs)
+
     return jsonify(result), (200 if result.get("success") else 500)
 
 
@@ -392,7 +388,7 @@ if __name__ == "__main__":
     logger.info("=" * 55)
 
     if AUTO_TRAIN:
-        logger.info("Auto-training blog recommendation model...")
+        logger.info("Skipping auto-train, waiting for backend trigger...")
         result = train_model()
         if result.get("success"):
             logger.info(f"Training done! MAE = {result.get('mae', 'N/A')}")
