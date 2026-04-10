@@ -217,7 +217,7 @@ export default function SectionMaintenancePlans() {
         </FadeUp>
 
         {/* Plans grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           {plans.map((plan, i) => {
             const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
             const isExpanded = expanded === plan.id;
@@ -225,7 +225,7 @@ export default function SectionMaintenancePlans() {
             return (
               <FadeUp key={plan.id} delay={i * 0.12}>
                 <div
-                  className="group relative rounded-[24px] bg-white transition-all duration-300"
+                  className="group relative rounded-[24px] bg-white transition-all duration-300 h-full flex flex-col"
                   style={{
                     border: plan.featured ? "2px solid black" : "1.5px solid rgba(0,0,0,0.12)",
                     boxShadow: plan.featured
@@ -246,7 +246,7 @@ export default function SectionMaintenancePlans() {
                     </div>
                   )}
 
-                  <div className="p-7">
+                  <div className="p-7 flex flex-col h-full">
                     {/* Plan name */}
                     <p
                       className="text-[11px] font-bold tracking-[1.5px] uppercase mb-3"
@@ -281,7 +281,7 @@ export default function SectionMaintenancePlans() {
                     </AnimatePresence>
 
                     {/* Desc */}
-                    <p className="text-sm text-black/55 leading-relaxed mb-5">
+                    <p className="text-sm text-black/55 leading-relaxed mb-5 line-clamp-3">
                       {plan.desc}
                     </p>
 
@@ -289,7 +289,7 @@ export default function SectionMaintenancePlans() {
                     <div className="h-px bg-black/6 mb-5" />
 
                     {/* Features */}
-                    <ul className="space-y-2.5 mb-4">
+                    <ul className="space-y-2.5 mb-4 flex-1">
                       {plan.features.map((f) => (
                         <li key={f} className="flex items-start gap-2.5 text-sm text-black/65">
                           <span
@@ -353,7 +353,7 @@ export default function SectionMaintenancePlans() {
                     <button
                       type="button"
                       onClick={() => waContact(plan.name, price)}
-                      className="w-full py-3 rounded-full text-sm font-medium transition-all mt-2"
+                     className="w-full py-3 rounded-full text-sm font-medium transition-all mt-auto"
                       style={{
                         fontFamily: "inherit",
                         background: plan.featured ? "black" : "transparent",
