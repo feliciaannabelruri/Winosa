@@ -6,8 +6,8 @@ import styles from "@/app/portofolio/portfolio.module.css";
 import { useTranslate } from "@/lib/useTranslate";
 
 const stats = [
-  { icon: "✦", value: "24+", labelKey: "team" },
-  { icon: "◈", value: "15+", labelKey: "projects" },
+  { icon: "◉", value: "24+", labelKey: "team" },
+  { icon: "◉", value: "15+", labelKey: "projects" },
   { icon: "◉", value: "100%", labelKey: "quality" },
 ];
 
