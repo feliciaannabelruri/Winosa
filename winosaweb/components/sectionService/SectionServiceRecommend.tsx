@@ -51,10 +51,10 @@ function keywordFallback(text: string): ServiceResult {
   const conf   = Math.min(85, Math.max(65, 65 + Math.min(total * 2, 20)));
 
   const map: Record<string, ServiceResult> = {
-    web:  { primary: "Web Development",      primarySlug: "/Services/web-development",       others: ["UI/UX Design"],              reasoning: "Berdasarkan kebutuhan kamu, membangun website profesional adalah langkah paling strategis.", confidence: conf, algorithm: "keyword_fallback" },
-    mobile:{ primary: "Mobile App Development",primarySlug: "/Services/mobile-app-development",others: ["UI/UX Design"],             reasoning: "Kebutuhan kamu mengarah ke pengembangan aplikasi mobile.",                                    confidence: conf, algorithm: "keyword_fallback" },
-    uiux: { primary: "UI/UX Design",           primarySlug: "/Services/ui-ux-design",           others: ["Web Development"],           reasoning: "Desain yang matang adalah kunci produk digital yang sukses.",                                  confidence: conf, algorithm: "keyword_fallback" },
-    consulting:{ primary: "IT Consulting",      primarySlug: "/Contact",                         others: ["Web Development", "Mobile App Development"], reasoning: "Konsultasi dulu adalah langkah terbaik untuk memulai.", confidence: conf, algorithm: "keyword_fallback" },
+    web:  { primary: "Web Development",      primarySlug: "/Services/web-development",       others: ["UI/UX Design"],              reasoning: "Based on your needs, building a professional website is the most strategic step.", confidence: conf, algorithm: "keyword_fallback" },
+    mobile:{ primary: "Mobile App Development",primarySlug: "/Services/mobile-app-development",others: ["UI/UX Design"],             reasoning: "Your needs indicate a focus on mobile application development.",                                    confidence: conf, algorithm: "keyword_fallback" },
+    uiux: { primary: "UI/UX Design",           primarySlug: "/Services/ui-ux-design",           others: ["Web Development"],           reasoning: "A well-crafted design is the key to a successful digital product.",                                  confidence: conf, algorithm: "keyword_fallback" },
+    consulting:{ primary: "IT Consulting",      primarySlug: "/Contact",                         others: ["Web Development", "Mobile App Development"], reasoning: "Starting with a consultation is the best step to move forward.", confidence: conf, algorithm: "keyword_fallback" },
   };
 
   return map[topKey] || map.web;
@@ -113,6 +113,36 @@ export default function SectionServiceRecommend() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Translate chip labels sesuai bahasa aktif
+
+    const [translated, setTranslated] = useState<Record<string, string>>({});
+
+    const isMounted = useRef(false);
+
+    useEffect(() => {
+      isMounted.current = true;
+
+      return () => {
+        isMounted.current = false;
+      };
+    }, []);
+
+    const th = (text: string) => {
+      if (language === "en") return text;
+
+      if (translated[text]) return translated[text];
+
+      translateHybrid(text, language, tApi).then((res) => {
+        if (!isMounted.current) return; 
+
+        setTranslated((prev) => {
+          if (prev[text]) return prev;
+          return { ...prev, [text]: res };
+        });
+      });
+
+    return text;
+  };
+
   useEffect(() => {
     const run = async () => {
       const chips = await Promise.all(
@@ -347,7 +377,9 @@ export default function SectionServiceRecommend() {
 
               {/* Reasoning */}
               <div className="px-5 py-4 bg-white border-b border-black/8">
-                <p className="text-sm text-black/65 leading-relaxed">{result.reasoning}</p>
+                <p className="text-sm text-black/65 leading-relaxed">
+  {th(result.reasoning)}
+</p>
               </div>
 
               {/* CTA */}
