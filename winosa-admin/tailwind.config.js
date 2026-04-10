@@ -21,10 +21,8 @@ export default {
         }
       },
       fontFamily: {
-        // Ganti ke Inter sesuai style baru
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        // Tetap ada display tapi tidak dominan
-        display: ['Inter', 'sans-serif'],
+        sans: ['Sora', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: ['Sora', 'sans-serif'],
       },
       borderRadius: {
         // Tambah custom radius untuk sidebar

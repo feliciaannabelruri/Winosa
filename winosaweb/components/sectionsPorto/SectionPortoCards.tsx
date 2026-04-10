@@ -111,7 +111,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
   return (
     <FadeUp>
       <motion.section
-        id="portfolio-cards"
+        id="projects"
         aria-labelledby="portfolio-cards-title"
         className={styles.cardsSection}
         initial={{ opacity: 0, y: 80 }}
@@ -157,7 +157,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
                   fontWeight: "300",
                 }}>
                   X
-                </div>
+              </div>
             <h3>{t("portfolio", "empty")}</h3>
           </div>
         ) : (
@@ -172,7 +172,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
                 className={`${styles.navButton} ${styles.navLeft}`}
                 onClick={handlePrev}
               >
-                ‹
+                <span>‹</span>
               </button>
 
               <div className={styles.carouselContainer} role="list">
@@ -219,7 +219,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
                 className={`${styles.navButton} ${styles.navRight}`}
                 onClick={handleNext}
               >
-                ›
+                <span>›</span>
               </button>
 
             </div>
