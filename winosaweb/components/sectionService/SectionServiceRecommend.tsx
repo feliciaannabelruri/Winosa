@@ -107,6 +107,7 @@ export default function SectionServiceRecommend() {
   const [status, setStatus]             = useState<"idle" | "thinking" | "done">("idle");
   const [result, setResult]             = useState<ServiceResult | null>(null);
   const [translatedChips, setTranslatedChips] = useState(CHIPS_EN);
+  const [translatedResult, setTranslatedResult] = useState(result);
 
   const resultRef  = useRef<HTMLDivElement>(null);
   const textareaRef= useRef<HTMLTextAreaElement>(null);
@@ -143,6 +144,30 @@ export default function SectionServiceRecommend() {
     return text;
   };
 
+  useEffect(() => {
+  if (!result) return;
+
+  const run = async () => {
+    const primary = await translateHybrid(result.primary, language, tApi);
+
+    const others = await Promise.all(
+      result.others.map((s) => translateHybrid(s, language, tApi))
+    );
+
+    const reasoning = await translateHybrid(result.reasoning, language, tApi);
+
+    setTranslatedResult({
+      ...result,
+      primary,
+      others,
+      reasoning,
+    });
+  };
+
+  run();
+}, [result, language]);
+
+  // Translate chip labels sesuai bahasa aktif
   useEffect(() => {
     const run = async () => {
       const chips = await Promise.all(
@@ -352,7 +377,7 @@ export default function SectionServiceRecommend() {
                   >
                     ✦ {t("serviceRecommend", "resultLabel")}
                   </span>
-                  <span className="text-white font-semibold text-sm">{result.primary}</span>
+                  <span className="text-white font-semibold text-sm">{th(result.primary)}</span>
                   {result.others.length > 0 && (
                     <span className="text-white/40 text-xs">+ {result.others.join(", ")}</span>
                   )}
@@ -368,18 +393,23 @@ export default function SectionServiceRecommend() {
               {/* Service tags */}
               <div className="px-5 py-4 flex flex-wrap gap-2 border-b border-black/8 bg-white">
                 <span className="px-4 py-1.5 rounded-full text-sm font-medium" style={{ background: "black", color: "white" }}>
-                  {result.primary}
+                  {th(result.primary)}
                 </span>
                 {result.others.map((s) => (
-                  <span key={s} className="px-4 py-1.5 rounded-full text-sm border border-black/15 text-black">{s}</span>
+                  <span
+                    key={s}
+                    className="px-4 py-1.5 rounded-full text-sm border border-black/15 text-black"
+                  >
+                    {th(s)}
+                  </span>
                 ))}
               </div>
 
               {/* Reasoning */}
               <div className="px-5 py-4 bg-white border-b border-black/8">
                 <p className="text-sm text-black/65 leading-relaxed">
-  {th(result.reasoning)}
-</p>
+                {result.others.map((s) => th(s)).join(", ")}
+              </p>
               </div>
 
               {/* CTA */}

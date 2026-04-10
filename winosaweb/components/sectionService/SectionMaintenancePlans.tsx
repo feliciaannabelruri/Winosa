@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
-import { useEffect } from "react";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
 
@@ -19,20 +18,20 @@ const PLANS = [
     name: "Starter",
     monthlyPrice: 750000,
     yearlyPrice: 600000,
-    desc: "Untuk website atau landing page sederhana yang butuh perawatan rutin.",
+    desc: "For simple websites or landing pages that require regular maintenance.",
     featured: false,
     features: [
-      "Update konten & teks (2x/bulan)",
-      "Backup database mingguan",
-      "Monitoring uptime 24/7",
-      "Laporan performa bulanan",
-      "Pengecekan keamanan dasar",
-      "Respons support 1–2 hari kerja",
+      "Content & text updates (2x/month)",
+      "Weekly database backup",
+      "24/7 uptime monitoring",
+      "Monthly performance reports",
+      "Basic security checks",
+      "Support response within 1–2 business days",
     ],
     notIncluded: [
-      "Pengembangan fitur baru",
-      "Bug fix kompleks",
-      "Support < 8 jam",
+      "New feature development",
+      "Complex bug fixes",
+      "Support < 8 hours",
     ],
   },
   {
@@ -40,37 +39,40 @@ const PLANS = [
     name: "Growth",
     monthlyPrice: 1800000,
     yearlyPrice: 1440000,
-    desc: "Untuk bisnis aktif dengan traffic tumbuh dan konten yang sering berubah.",
+    desc: "For active businesses with growing traffic and frequently updated content.",
     featured: true,
     features: [
-      "Update konten & fitur (8x/bulan)",
-      "Backup otomatis harian",
-      "Monitoring uptime + alerting real-time",
-      "Optimasi kecepatan & SEO teknis",
-      "Respons support < 8 jam",
-      "Bug fix minor included",
-      "SSL & keamanan server",
-      "Laporan analitik + rekomendasi",
+      "Content & feature updates (8x/month)",
+      "Daily automated backups",
+      "Uptime monitoring + real-time alerting",
+      "Performance optimization & technical SEO",
+      "Support response < 8 hours",
+      "Minor bug fixes included",
+      "SSL & server security",
+      "Analytics reports + recommendations",
     ],
-    notIncluded: ["Fitur custom besar", "Dedicated manager"],
+    notIncluded: [
+      "Large custom features",
+      "Dedicated manager",
+    ],
   },
   {
     id: "scale",
     name: "Scale",
     monthlyPrice: 3500000,
     yearlyPrice: 2800000,
-    desc: "Untuk platform kompleks, e-commerce, atau aplikasi dengan pengguna aktif.",
+    desc: "For complex platforms, e-commerce, or applications with active users.",
     featured: false,
     features: [
-      "Update & pengembangan fitur aktif",
-      "Backup real-time",
+      "Active feature updates & development",
+      "Real-time backup",
       "SLA uptime 99.5%",
       "Dedicated support manager",
-      "Respons prioritas < 2 jam",
-      "Load testing berkala",
-      "Integrasi & API maintenance",
-      "Review kode & refactor ringan",
-      "Konsultasi strategi teknis bulanan",
+      "Priority support < 2 hours",
+      "Regular load testing",
+      "Integration & API maintenance",
+      "Code review & light refactoring",
+      "Monthly technical strategy consultation",
     ],
     notIncluded: [],
   },
@@ -95,6 +97,15 @@ export default function SectionMaintenancePlans() {
     const [plans, setPlans] = useState(PLANS);
 
     const { language } = useLanguageStore();
+
+    const isMounted = useRef(false);
+
+    useEffect(() => {
+      isMounted.current = true;
+      return () => {
+        isMounted.current = false;
+      };
+    }, []);
 
     useEffect(() => {
       if (language === "en") {
@@ -134,16 +145,31 @@ export default function SectionMaintenancePlans() {
     const [translated, setTranslated] = useState<Record<string, string>>({});
 
     const th = (text: string) => {
-      if (language === "en") return text;
+  if (!text) return "";
 
-      if (translated[text]) return translated[text];
+  if (language === "en") return text;
 
-      translateHybrid(text, language, tApi).then((res) => {
-        setTranslated((prev) => ({ ...prev, [text]: res }));
-      });
+  if (translated[text]) return translated[text];
 
-      return text;
-    };
+  // prevent double call
+  setTranslated((prev) => {
+    if (prev[text]) return prev;
+
+    translateHybrid(text, language, tApi).then((res) => {
+      if (!isMounted.current) return;
+
+      setTranslated((p) => ({ ...p, [text]: res }));
+    });
+
+    return { ...prev, [text]: text }; // placeholder biar gak spam
+  });
+
+  return text;
+};
+
+useEffect(() => {
+  setTranslated({});
+}, [language]);
 
   function waContact(planName: string, price: number) {
     const msg = `Halo Winosa! Saya tertarik dengan paket maintenance ${planName} (${fmtPrice(price)}/bulan). Bisa ceritakan lebih detail?`;
@@ -282,7 +308,7 @@ export default function SectionMaintenancePlans() {
 
                     {/* Desc */}
                     <p className="text-sm text-black/55 leading-relaxed mb-5 line-clamp-3">
-                      {plan.desc}
+                      {th(plan.desc)}
                     </p>
 
                     {/* Divider */}
@@ -299,7 +325,7 @@ export default function SectionMaintenancePlans() {
                           >
                             ✓
                           </span>
-                          {f}
+                           {th(f)}
                         </li>
                       ))}
                     </ul>
@@ -340,7 +366,7 @@ export default function SectionMaintenancePlans() {
                                   >
                                     ×
                                   </span>
-                                  {f}
+                                  {th(f)}
                                 </li>
                               ))}
                             </motion.ul>
