@@ -15,6 +15,8 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app = express();
 app.use(sentryRequestHandler());
+const compression = require('compression');
+app.use(compression());
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map((o) => o.trim())
