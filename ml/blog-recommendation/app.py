@@ -203,9 +203,7 @@ def run_classify_plan(text: str, service_type: str = "web") -> dict:
 # ══════════════════════════════════════════════════════════════════════════════
 
 def train_model() -> dict:
-    if not blogs:
-        return {"success": False, "error": "No blogs fetched from backend"}
-    return model.train(blogs)
+    return {"success": False, "error": "No blogs provided - waiting for backend trigger"}
 
 
 # ══════════════════════════════════════════════════════════════════════════════
