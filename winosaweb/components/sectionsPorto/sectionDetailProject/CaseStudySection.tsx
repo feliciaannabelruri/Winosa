@@ -13,156 +13,143 @@ interface CaseStudySectionProps {
     challenge: string;
     solution: string;
     result: string;
-    metrics?: Array<{
-      value: string;
-      label: string;
-    }>;
+    metrics?: Array<{ value: string; label: string }>;
   };
 }
+
+const STEPS = [
+  { key: "challenge" as const, stepKey: "step01" as const, num: "01" },
+  { key: "solution"  as const, stepKey: "step02" as const, num: "02" },
+  { key: "result"    as const, stepKey: "step03" as const, num: "03" },
+];
 
 export default function CaseStudySection({ project }: CaseStudySectionProps) {
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
-
   const [translated, setTranslated] = useState(project);
 
   useEffect(() => {
     const run = async () => {
-      const mapped = {
-        ...project,
-        challenge: await translateHybrid(project.challenge, language, tApi),
-        solution: await translateHybrid(project.solution, language, tApi),
-        result: await translateHybrid(project.result, language, tApi),
-        metrics: project.metrics
-          ? await Promise.all(
-              project.metrics.map(async (m) => ({
-                ...m,
-                label: await translateHybrid(m.label, language, tApi),
-              }))
-            )
-          : [],
-      };
+      const [challenge, solution, result] = await Promise.all([
+        translateHybrid(project.challenge, language, tApi),
+        translateHybrid(project.solution,  language, tApi),
+        translateHybrid(project.result,    language, tApi),
+      ]);
 
-      setTranslated(mapped);
+      const metrics = project.metrics
+        ? await Promise.all(
+            project.metrics.map(async (m) => ({
+              ...m,
+              label: await translateHybrid(m.label, language, tApi),
+            }))
+          )
+        : [];
+
+      setTranslated({ ...project, challenge, solution, result, metrics });
     };
-
     run();
   }, [project, language]);
+
+  const stepTitles: Record<string, string> = {
+    challenge: t("portfolioCaseStudy", "challenge"),
+    solution:  t("portfolioCaseStudy", "solution"),
+    result:    t("portfolioCaseStudy", "result"),
+  };
 
   return (
     <FadeUp>
       <section
-        className={styles.caseStudySection}
+        className={styles.caseStudySectionA}
         aria-labelledby="case-study-title"
       >
-        <div className={styles.caseStudyContainer}>
+        <div className={styles.caseStudyContainerA}>
 
-          <motion.h2
-            id="case-study-title"
-            className={styles.sectionTitle}
-            initial={{ opacity: 0, y: 60 }}
+          {/* Header */}
+          <motion.div
+            className={styles.caseStudyHeaderA}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.7 }}
             viewport={{ once: true }}
           >
-            {t("portfolioCaseStudy", "title")}
-          </motion.h2>
+            <span className={styles.infoEyebrow}>
+              <span className={styles.infoEyebrowLine} />
+              {t("portfolioCaseStudy", "title")}
+            </span>
+          </motion.div>
 
+          {/* Steps */}
           <motion.div
-            className={styles.caseStudyFlow}
+            className={styles.caseStudyFlowA}
             role="list"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={{
               hidden: {},
-              visible: { transition: { staggerChildren: 0.2 } },
+              visible: { transition: { staggerChildren: 0.18 } },
             }}
           >
+            {STEPS.map(({ key, stepKey, num }) => (
+              <motion.div
+                key={key}
+                role="listitem"
+                className={styles.caseStudyBlockA}
+                variants={{
+                  hidden: { opacity: 0, x: -40 },
+                  visible: { opacity: 1, x: 0 },
+                }}
+                transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span className={styles.caseStudyNumberA} aria-hidden="true">
+                  {num}
+                </span>
 
-            <motion.div
-              role="listitem"
-              className={styles.caseStudyBlock}
-              variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } }}
-            >
-              <span className={styles.caseStudyStep}>
-                {t("portfolioCaseStudy", "step01")}
-              </span>
-
-              <h3 className={styles.caseStudyTitle}>
-                {t("portfolioCaseStudy", "challenge")}
-              </h3>
-
-              <p className={styles.caseStudyText}>
-                {translated.challenge}
-              </p>
-            </motion.div>
-
-            <motion.div
-              role="listitem"
-              className={styles.caseStudyBlock}
-              variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } }}
-            >
-              <span className={styles.caseStudyStep}>
-                {t("portfolioCaseStudy", "step02")}
-              </span>
-
-              <h3 className={styles.caseStudyTitle}>
-                {t("portfolioCaseStudy", "solution")}
-              </h3>
-
-              <p className={styles.caseStudyText}>
-                {translated.solution}
-              </p>
-            </motion.div>
-
-            <motion.div
-              role="listitem"
-              className={styles.caseStudyBlock}
-              variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } }}
-            >
-              <span className={styles.caseStudyStep}>
-                {t("portfolioCaseStudy", "step03")}
-              </span>
-
-              <h3 className={styles.caseStudyTitle}>
-                {t("portfolioCaseStudy", "result")}
-              </h3>
-
-              <p className={styles.caseStudyText}>
-                {translated.result}
-              </p>
-            </motion.div>
-
+                <div className={styles.caseStudyBlockContent}>
+                  <span className={styles.caseStudyStepA}>
+                    {t("portfolioCaseStudy", stepKey)}
+                  </span>
+                  <h3 className={styles.caseStudyTitleA}>
+                    {stepTitles[key]}
+                  </h3>
+                  <p className={styles.caseStudyTextA}>
+                    {translated[key]}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
 
+          {/* Metrics — opsional */}
           {translated.metrics && translated.metrics.length > 0 && (
-            <div
-              className={styles.metricsWrapper}
-              role="region"
-              aria-labelledby="metrics-title"
+            <motion.div
+              className={styles.metricsWrapperA}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
             >
-              <h3 id="metrics-title" className="sr-only">
-                Project Metrics
-              </h3>
-
-              <div className={styles.metricsGrid} role="list">
+              <div className={styles.metricsGridA} role="list">
                 {translated.metrics.map((m, i) => (
                   <motion.div
                     key={i}
                     role="listitem"
-                    className={styles.metricCard}
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    className={styles.metricCardA}
+                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{
+                      delay: i * 0.1,
+                      duration: 0.5,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
                     viewport={{ once: true }}
                   >
-                    <span className={styles.metricValue}>{m.value}</span>
-                    <span className={styles.metricLabel}>{m.label}</span>
+                    <span className={styles.metricValueA}>{m.value}</span>
+                    <span className={styles.metricLabelA}>{m.label}</span>
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
         </div>
