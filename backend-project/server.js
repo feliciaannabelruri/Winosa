@@ -59,7 +59,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const sanitizeValue = (val) => {
   if (typeof val === 'string') {
     val = sanitizeHtml(val, { allowedTags: [], allowedAttributes: {} });
-    val = val.replace(/[\$\.]/g, '');
+    val = val.replace(/\$/g, '');
     return val;
   }
   if (typeof val === 'object' && val !== null) {
