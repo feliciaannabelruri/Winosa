@@ -23,7 +23,10 @@
   },
   "dependencies": {
     "@sentry/node": "^8.0.0",
+    "aws4": "^1.13.2",
+    "axios": "^1.15.0",
     "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",

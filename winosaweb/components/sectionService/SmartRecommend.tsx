@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useLanguageStore } from "@/store/useLanguageStore";
 
 // ─── ML Service URL ──────────────────────────────────────────────────────────
 // Menggantikan HF API (facebook/bart-large-mnli) yang cold start 10-30 detik
@@ -19,35 +21,35 @@ export interface SmartRecommendProps {
 
 const CHIPS: Record<string, { label: string; text: string }[]> = {
   web: [
-    { label: "Baru mulai",      text: "baru mulai bisnis startup budget terbatas" },
-    { label: "Toko online",     text: "toko online ecommerce pembayaran online" },
-    { label: "Company profile", text: "website company profile profesional" },
-    { label: "Bisnis berkembang",text: "bisnis sudah berjalan mau scale up" },
-    { label: "Dashboard sistem",text: "dashboard admin sistem manajemen" },
-    { label: "Enterprise",      text: "enterprise skala besar custom integrasi" },
+    { label: "Just starting",    text: "just starting a startup business with limited budget" },
+    { label: "Online store",     text: "ecommerce online store with payment system" },
+    { label: "Company profile",  text: "professional company profile website" },
+    { label: "Growing business", text: "existing business looking to scale up" },
+    { label: "Dashboard system", text: "admin dashboard management system" },
+    { label: "Enterprise",       text: "enterprise scale custom integration system" },
   ],
   mobile: [
-    { label: "App pertama",     text: "aplikasi mobile pertama startup baru" },
-    { label: "Android + iOS",   text: "android ios cross platform user auth" },
+    { label: "First app", text: "first mobile app for startup" },
+    { label: "Android + iOS", text: "android ios cross platform with authentication" },
     { label: "Delivery/booking",text: "delivery booking realtime tracking" },
-    { label: "Fintech",         text: "fintech payment dompet digital" },
-    { label: "Enterprise app",  text: "enterprise mobile custom backend ribuan user" },
-    { label: "Sederhana / MVP", text: "mvp sederhana budget terbatas cepat" },
+    { label: "Fintech", text: "fintech payment digital wallet system" },
+    { label: "Enterprise app", text: "enterprise mobile app with custom backend and many users" },
+    { label: "Simple / MVP", text: "simple mvp with limited budget fast development" },
   ],
   uiux: [
-    { label: "1–3 halaman",     text: "desain 1 sampai 3 halaman sederhana cepat" },
-    { label: "Redesign",        text: "redesign tampilan website yang sudah ada" },
-    { label: "Design system",   text: "design system komponen library lengkap" },
-    { label: "Prototype",       text: "prototype interaktif figma presentasi investor" },
-    { label: "UX research",     text: "ux research user journey mendalam" },
-    { label: "Enterprise UX",   text: "ux strategy enterprise skala besar" },
+    { label: "1–3 pages", text: "design 1 to 3 pages simple fast" },
+    { label: "Redesign", text: "redesign existing website interface" },
+    { label: "Design system", text: "full component design system library" },
+    { label: "Prototype", text: "interactive figma prototype for presentation" },
+    { label: "UX research", text: "deep ux research and user journey" },
+    { label: "Enterprise UX", text: "enterprise ux strategy large scale" },
   ],
 };
 
 const PLACEHOLDER: Record<string, string> = {
-  web:    "Contoh: Saya punya usaha skincare, butuh toko online dengan pembayaran, bisa dikelola sendiri, budget 10–15 juta...",
-  mobile: "Contoh: Butuh aplikasi Android dan iOS untuk bisnis delivery, dengan tracking realtime dan notifikasi...",
-  uiux:   "Contoh: Perlu desain ulang tampilan aplikasi yang sudah ada, fokus ke UX yang lebih intuitif dan design system...",
+  web:    "Example: I run a skincare business and need an online store with payment integration, easy content management, and a budget of around $1,000–$2,000...",
+  mobile: "Example: I need an Android and iOS app for a delivery business, with real-time tracking, notifications, and user authentication...",
+  uiux:   "Example: I want to redesign my existing app with a more intuitive user experience and a scalable design system...",
 };
 
 // ─── Keyword fallback (jika ML service tidak bisa dijangkau) ─────────────────
@@ -127,6 +129,37 @@ export default function SmartRecommend({ serviceType, onRecommend }: SmartRecomm
     if (status === "done") { setStatus("idle"); setResult(null); onRecommend(null, 0); }
   }
 
+  //----translate----//
+
+    const isMounted = useRef(false);
+
+    useEffect(() => {
+      isMounted.current = true;
+      return () => {
+        isMounted.current = false;
+      };
+    }, []);
+  
+    const [translated, setTranslated] = useState<Record<string, string>>({});
+    const { language } = useLanguageStore();
+
+      const th = (text: string) => {
+    if (language === "en") return text;
+
+    if (translated[text]) return translated[text];
+
+    translateHybrid(text, language, (v: string) => v).then((res) => {
+      if (!isMounted.current) return;
+
+      setTranslated((prev) => {
+        if (prev[text]) return prev;
+        return { ...prev, [text]: res };
+      });
+    });
+
+    return text;
+  };
+
   async function handleAnalyze() {
     if (!canAnalyze) return;
     setStatus("thinking");
@@ -146,9 +179,9 @@ export default function SmartRecommend({ serviceType, onRecommend }: SmartRecomm
   }
 
   const tierLabel: Record<string, string> = {
-    starter:    "Paket Starter",
-    business:   "Paket Business",
-    enterprise: "Paket Enterprise",
+    starter:    "Starter Plan",
+    business:   "Business Plan",
+    enterprise: "Enterprise Plan",
   };
 
   const tierDesc: Record<string, Record<string, string>> = {
@@ -168,11 +201,11 @@ export default function SmartRecommend({ serviceType, onRecommend }: SmartRecomm
             style={{ background: "rgba(196,168,50,0.1)", border: "1px solid rgba(196,168,50,0.3)", color: "#8a6e00" }}
           >
             <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: "#c4a832" }} />
-            Rekomendasi Pintar
+            {th("Smart Recommendation")}
           </div>
-          <h2 className="text-3xl font-bold text-black mb-3">Tidak yakin paket mana yang cocok?</h2>
+          <h2 className="text-3xl font-bold text-black mb-3">{th("Not sure which plan fits your needs?")}</h2>
           <p className="text-black/50 text-base max-w-xl mx-auto leading-relaxed">
-            Ceritakan kebutuhan bisnis kamu — sistem kami akan analisis dan rekomendasikan paket yang paling sesuai.
+            {th("Tell us about your business and we will recommend the best plan for you.")}
           </p>
         </div>
 
@@ -186,14 +219,14 @@ export default function SmartRecommend({ serviceType, onRecommend }: SmartRecomm
                   ref={textareaRef}
                   value={input}
                   onChange={(e) => {
-  setInput(e.target.value);
-  if ((status as string) === "done") {
-    setStatus("idle");
-    setResult(null);
-    onRecommend(null, 0);
-  }
-}}
-                  placeholder={PLACEHOLDER[serviceType]}
+                  setInput(e.target.value);
+                  if ((status as string) === "done") {
+                    setStatus("idle");
+                    setResult(null);
+                    onRecommend(null, 0);
+                  }
+                }}
+                  placeholder={th(PLACEHOLDER[serviceType])}
                   rows={4}
                   maxLength={500}
                   className="w-full resize-none text-black text-sm leading-relaxed outline-none"
@@ -216,7 +249,7 @@ export default function SmartRecommend({ serviceType, onRecommend }: SmartRecomm
                       className="text-xs transition-all"
                       style={{ padding: "6px 14px", borderRadius: "999px", border: active ? "1.5px solid black" : "1.5px solid rgba(0,0,0,0.15)", background: active ? "black" : "white", color: active ? "white" : "rgba(0,0,0,0.6)", fontFamily: "inherit", cursor: "pointer", fontWeight: active ? 500 : 400 }}
                     >
-                      {chip.label}
+                      {th(chip.label)}
                     </button>
                   );
                 })}
@@ -231,9 +264,9 @@ export default function SmartRecommend({ serviceType, onRecommend }: SmartRecomm
                 {status === "thinking" ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="inline-block w-3 h-3 rounded-full border-2 border-white/30 border-t-white" style={{ animation: "sm-spin .7s linear infinite" }} />
-                    Menganalisis kebutuhan kamu...
+                    {th("Analyzing your needs...")}
                   </span>
-                ) : "Analisis kebutuhan saya →"}
+                ) : th("Analyze my needs →")}
               </button>
               <style>{`@keyframes sm-spin{to{transform:rotate(360deg)}}`}</style>
             </motion.div>
@@ -253,27 +286,27 @@ export default function SmartRecommend({ serviceType, onRecommend }: SmartRecomm
               <div className="flex items-center justify-between px-6 py-4" style={{ background: "black" }}>
                 <div className="flex items-center gap-3">
                   <div className="text-xs font-medium px-3 py-1 rounded-full" style={{ background: "linear-gradient(135deg,#c4a832,#f4c430)", color: "black" }}>
-                    ✦ Best match
+                    ✦ {th("Best match")}
                   </div>
-                  <span className="text-white font-semibold text-sm">{tierLabel[result.tier!]}</span>
+                  <span className="text-white font-semibold text-sm">{th(tierLabel[result.tier!])}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.8)" }}>
-                    Cocok {result.confidence}%
+                    {th("Match")} {result.confidence}%
                   </span>
                   <button onClick={handleReset} className="text-xs transition-opacity" style={{ color: "rgba(255,255,255,0.5)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
-                    Coba lagi ↩
+                    {th("Try again")} ↩
                   </button>
                 </div>
               </div>
 
               <div className="px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ background: "#fafafa" }}>
                 <div>
-                  <p className="text-black text-sm leading-relaxed">{tierDesc[serviceType][result.tier!]}</p>
-                  <p className="text-black/40 text-xs mt-1.5">Berdasarkan: "{fullText.slice(0, 80)}{fullText.length > 80 ? "…" : ""}"</p>
+                  <p className="text-black text-sm leading-relaxed">{th(tierDesc[serviceType][result.tier!])}</p>
+                  <p className="text-black/40 text-xs mt-1.5">{th("Based on")}: "{fullText.slice(0, 80)}{fullText.length > 80 ? "…" : ""}"</p>
                 </div>
                 <div className="flex-shrink-0 text-center">
-                  <p className="text-xs text-black/40 mb-1">Lihat paket di bawah</p>
+                  <p className="text-xs text-black/40 mb-1">{th("See plans below")}</p>
                   <div className="text-lg" style={{ animation: "sm-bounce 1s ease infinite" }}>↓</div>
                   <style>{`@keyframes sm-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}`}</style>
                 </div>
@@ -285,7 +318,7 @@ export default function SmartRecommend({ serviceType, onRecommend }: SmartRecomm
         {/* Divider */}
         <div className="mt-12 flex items-center gap-4" style={{ color: "rgba(0,0,0,0.2)" }}>
           <div className="flex-1 h-px bg-black/10" />
-          <span className="text-xs tracking-widest uppercase">Pilih paket</span>
+          <span className="text-xs tracking-widest uppercase">{th("Choose plan")}</span>
           <div className="flex-1 h-px bg-black/10" />
         </div>
       </div>

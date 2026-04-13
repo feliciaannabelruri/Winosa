@@ -21,7 +21,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
      FETCH DETAIL
   =============================== */
   const detailRes = await fetch(
-    `http://localhost:5000/api/portfolio/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/portfolio/${slug}`,
     { cache: "no-store" }
   );
 
@@ -36,7 +36,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
      FETCH LIST
   =============================== */
   const listRes = await fetch(
-    `http://localhost:5000/api/portfolio`,
+    `${process.env.NEXT_PUBLIC_API_URL}/portfolio`,
     { cache: "no-store" }
   );
 

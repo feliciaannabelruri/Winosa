@@ -80,6 +80,24 @@ export default function SectionPricingMobile({ data }: { data?: any }) {
   const [confidence, setConfidence]           = useState<number>(0);
   const pricingRef                            = useRef<HTMLDivElement>(null);
 
+  //----translate----//
+  const [translated, setTranslated] = useState<Record<string, string>>({});
+
+  const th = (text: string) => {
+    if (language === "en") return text;
+
+    if (translated[text]) return translated[text];
+
+    translateHybrid(text, language, tApi).then((res) => {
+      setTranslated((prev) => {
+        if (prev[text]) return prev;
+        return { ...prev, [text]: res };
+      });
+    });
+
+    return text;
+  };
+
   useEffect(() => {
     const run = async () => {
       const mapped = await Promise.all(
@@ -164,7 +182,7 @@ export default function SectionPricingMobile({ data }: { data?: any }) {
                         boxShadow: "0 4px 14px rgba(196,168,50,0.4)",
                       }}
                     >
-                      ✦ Direkomendasikan untuk kamu · {confidence}%
+                      ✦ {th("Recommended for you")} · {confidence}%
                     </div>
                   )}
 

@@ -15,6 +15,8 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app = express();
 app.use(sentryRequestHandler());
+const compression = require('compression');
+app.use(compression());
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map((o) => o.trim())
@@ -57,7 +59,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const sanitizeValue = (val) => {
   if (typeof val === 'string') {
     val = sanitizeHtml(val, { allowedTags: [], allowedAttributes: {} });
-    val = val.replace(/\$|/g, '');
+    val = val.replace(/[\$\.]/g, '');
     return val;
   }
   if (typeof val === 'object' && val !== null) {
@@ -165,7 +167,6 @@ app.use((req, res) => {
 });
 
 app.use(sentryErrorHandler());
-app.use(errorHandler);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

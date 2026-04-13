@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
+
+
 
 // ─── Data paket ──────────────────────────────────────────────────────────────
 
@@ -14,20 +18,20 @@ const PLANS = [
     name: "Starter",
     monthlyPrice: 750000,
     yearlyPrice: 600000,
-    desc: "Untuk website atau landing page sederhana yang butuh perawatan rutin.",
+    desc: "For simple websites or landing pages that require regular maintenance.",
     featured: false,
     features: [
-      "Update konten & teks (2x/bulan)",
-      "Backup database mingguan",
-      "Monitoring uptime 24/7",
-      "Laporan performa bulanan",
-      "Pengecekan keamanan dasar",
-      "Respons support 1–2 hari kerja",
+      "Content & text updates (2x/month)",
+      "Weekly database backup",
+      "24/7 uptime monitoring",
+      "Monthly performance reports",
+      "Basic security checks",
+      "Support response within 1–2 business days",
     ],
     notIncluded: [
-      "Pengembangan fitur baru",
-      "Bug fix kompleks",
-      "Support < 8 jam",
+      "New feature development",
+      "Complex bug fixes",
+      "Support < 8 hours",
     ],
   },
   {
@@ -35,37 +39,40 @@ const PLANS = [
     name: "Growth",
     monthlyPrice: 1800000,
     yearlyPrice: 1440000,
-    desc: "Untuk bisnis aktif dengan traffic tumbuh dan konten yang sering berubah.",
+    desc: "For active businesses with growing traffic and frequently updated content.",
     featured: true,
     features: [
-      "Update konten & fitur (8x/bulan)",
-      "Backup otomatis harian",
-      "Monitoring uptime + alerting real-time",
-      "Optimasi kecepatan & SEO teknis",
-      "Respons support < 8 jam",
-      "Bug fix minor included",
-      "SSL & keamanan server",
-      "Laporan analitik + rekomendasi",
+      "Content & feature updates (8x/month)",
+      "Daily automated backups",
+      "Uptime monitoring + real-time alerting",
+      "Performance optimization & technical SEO",
+      "Support response < 8 hours",
+      "Minor bug fixes included",
+      "SSL & server security",
+      "Analytics reports + recommendations",
     ],
-    notIncluded: ["Fitur custom besar", "Dedicated manager"],
+    notIncluded: [
+      "Large custom features",
+      "Dedicated manager",
+    ],
   },
   {
     id: "scale",
     name: "Scale",
     monthlyPrice: 3500000,
     yearlyPrice: 2800000,
-    desc: "Untuk platform kompleks, e-commerce, atau aplikasi dengan pengguna aktif.",
+    desc: "For complex platforms, e-commerce, or applications with active users.",
     featured: false,
     features: [
-      "Update & pengembangan fitur aktif",
-      "Backup real-time",
+      "Active feature updates & development",
+      "Real-time backup",
       "SLA uptime 99.5%",
       "Dedicated support manager",
-      "Respons prioritas < 2 jam",
-      "Load testing berkala",
-      "Integrasi & API maintenance",
-      "Review kode & refactor ringan",
-      "Konsultasi strategi teknis bulanan",
+      "Priority support < 2 hours",
+      "Regular load testing",
+      "Integration & API maintenance",
+      "Code review & light refactoring",
+      "Monthly technical strategy consultation",
     ],
     notIncluded: [],
   },
@@ -80,9 +87,89 @@ function fmtPrice(n: number): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function SectionMaintenancePlans() {
-  const { t } = useTranslate();
+  const { t, tApi } = useTranslate();
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  // ─── translate ──────────────────────────────────────────────────────────────
+
+
+    const [plans, setPlans] = useState(PLANS);
+
+    const { language } = useLanguageStore();
+
+    const isMounted = useRef(false);
+
+    useEffect(() => {
+      isMounted.current = true;
+      return () => {
+        isMounted.current = false;
+      };
+    }, []);
+
+    useEffect(() => {
+      if (language === "en") {
+        setPlans(PLANS);
+        return;
+      }
+
+      const translateAll = async () => {
+        try {
+          const updated = await Promise.all(
+            PLANS.map(async (plan) => ({
+              ...plan,
+              desc: await translateHybrid(plan.desc, language, tApi),
+              features: await Promise.all(
+                plan.features.map((f) =>
+                  translateHybrid(f, language, tApi)
+                )
+              ),
+              notIncluded: await Promise.all(
+                plan.notIncluded.map((f) =>
+                  translateHybrid(f, language, tApi)
+                )
+              ),
+            }))
+          );
+
+          setPlans(updated);
+        } catch (err) {
+          console.error("Translate error:", err);
+          setPlans(PLANS);
+        }
+      };
+
+      translateAll();
+    }, [language]);
+
+    const [translated, setTranslated] = useState<Record<string, string>>({});
+
+    const th = (text: string) => {
+  if (!text) return "";
+
+  if (language === "en") return text;
+
+  if (translated[text]) return translated[text];
+
+  // prevent double call
+  setTranslated((prev) => {
+    if (prev[text]) return prev;
+
+    translateHybrid(text, language, tApi).then((res) => {
+      if (!isMounted.current) return;
+
+      setTranslated((p) => ({ ...p, [text]: res }));
+    });
+
+    return { ...prev, [text]: text }; // placeholder biar gak spam
+  });
+
+  return text;
+};
+
+useEffect(() => {
+  setTranslated({});
+}, [language]);
 
   function waContact(planName: string, price: number) {
     const msg = `Halo Winosa! Saya tertarik dengan paket maintenance ${planName} (${fmtPrice(price)}/bulan). Bisa ceritakan lebih detail?`;
@@ -100,10 +187,10 @@ export default function SectionMaintenancePlans() {
               id="maintenance-title"
               className="text-3xl md:text-4xl font-bold text-black mb-3 leading-tight"
             >
-              Paket Pemeliharaan Bulanan
+             {tApi("Monthly Maintenance Plans")} 
             </h2>
             <p className="text-black/50 text-base max-w-lg mx-auto leading-relaxed">
-              Tenang fokus bisnis, urusan teknis biar kami yang tangani. Semua harga dalam IDR, sudah termasuk PPN.
+             {th("Focus on your business while we handle the technical side. All prices are in IDR, including tax.")} 
             </p>
           </div>
         </FadeUp>
@@ -127,7 +214,7 @@ export default function SectionMaintenancePlans() {
                   fontFamily: "inherit",
                 }}
               >
-                Bulanan
+                {tApi("Monthly")}
               </button>
               <button
                 type="button"
@@ -140,7 +227,7 @@ export default function SectionMaintenancePlans() {
                   fontFamily: "inherit",
                 }}
               >
-                Tahunan
+                {tApi("Yearly")}
                 <span
                   className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
                   style={{
@@ -148,7 +235,7 @@ export default function SectionMaintenancePlans() {
                     color: "#16a34a",
                   }}
                 >
-                  hemat 20%
+                  {tApi("save 20%")}
                 </span>
               </button>
             </div>
@@ -156,15 +243,15 @@ export default function SectionMaintenancePlans() {
         </FadeUp>
 
         {/* Plans grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-          {PLANS.map((plan, i) => {
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+          {plans.map((plan, i) => {
             const price = billing === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
             const isExpanded = expanded === plan.id;
 
             return (
               <FadeUp key={plan.id} delay={i * 0.12}>
                 <div
-                  className="group relative rounded-[24px] bg-white transition-all duration-300"
+                  className="group relative rounded-[24px] bg-white transition-all duration-300 h-full flex flex-col"
                   style={{
                     border: plan.featured ? "2px solid black" : "1.5px solid rgba(0,0,0,0.12)",
                     boxShadow: plan.featured
@@ -181,17 +268,17 @@ export default function SectionMaintenancePlans() {
                         color: "#1a1a1a",
                       }}
                     >
-                      ✦ Paling Populer
+                      ✦ {th("most popular")}
                     </div>
                   )}
 
-                  <div className="p-7">
+                  <div className="p-7 flex flex-col h-full">
                     {/* Plan name */}
                     <p
                       className="text-[11px] font-bold tracking-[1.5px] uppercase mb-3"
                       style={{ color: "rgba(0,0,0,0.4)" }}
                     >
-                      {plan.name}
+                      {th(plan.name)}
                     </p>
 
                     {/* Price */}
@@ -209,7 +296,7 @@ export default function SectionMaintenancePlans() {
                           </span>
                         </div>
                         <p className="text-xs text-black/35 mb-4">
-                          {billing === "monthly" ? "per bulan" : "per bulan (tagihan tahunan)"}
+                          {billing === "monthly" ? th("per month") : th("per month (billed yearly)")}
                           {billing === "yearly" && (
                             <span className="ml-1.5 line-through text-black/25">
                               {fmtPrice(plan.monthlyPrice)}
@@ -220,15 +307,15 @@ export default function SectionMaintenancePlans() {
                     </AnimatePresence>
 
                     {/* Desc */}
-                    <p className="text-sm text-black/55 leading-relaxed mb-5">
-                      {plan.desc}
+                    <p className="text-sm text-black/55 leading-relaxed mb-5 line-clamp-3">
+                      {th(plan.desc)}
                     </p>
 
                     {/* Divider */}
                     <div className="h-px bg-black/6 mb-5" />
 
                     {/* Features */}
-                    <ul className="space-y-2.5 mb-4">
+                    <ul className="space-y-2.5 mb-4 flex-1">
                       {plan.features.map((f) => (
                         <li key={f} className="flex items-start gap-2.5 text-sm text-black/65">
                           <span
@@ -238,7 +325,7 @@ export default function SectionMaintenancePlans() {
                           >
                             ✓
                           </span>
-                          {f}
+                           {th(f)}
                         </li>
                       ))}
                     </ul>
@@ -258,7 +345,7 @@ export default function SectionMaintenancePlans() {
                           >
                             ›
                           </span>
-                          {isExpanded ? "Sembunyikan" : "Tidak termasuk"}
+                          {isExpanded ? th("Hide") : th("Not included")}
                         </button>
 
                         <AnimatePresence>
@@ -279,7 +366,7 @@ export default function SectionMaintenancePlans() {
                                   >
                                     ×
                                   </span>
-                                  {f}
+                                  {th(f)}
                                 </li>
                               ))}
                             </motion.ul>
@@ -292,7 +379,7 @@ export default function SectionMaintenancePlans() {
                     <button
                       type="button"
                       onClick={() => waContact(plan.name, price)}
-                      className="w-full py-3 rounded-full text-sm font-medium transition-all mt-2"
+                     className="w-full py-3 rounded-full text-sm font-medium transition-all mt-auto"
                       style={{
                         fontFamily: "inherit",
                         background: plan.featured ? "black" : "transparent",
@@ -314,7 +401,7 @@ export default function SectionMaintenancePlans() {
                         }
                       }}
                     >
-                      Mulai dengan {plan.name}
+                      {th("Get started with")} {plan.name}
                     </button>
                   </div>
                 </div>
@@ -327,10 +414,11 @@ export default function SectionMaintenancePlans() {
         <FadeUp delay={0.3}>
           <div className="mt-10 text-center space-y-2">
             <p className="text-xs text-black/35">
-              Semua paket dapat dikustomisasi sesuai kebutuhan. Konsultasi gratis sebelum memilih.
+              {th("All plans can be customized to your needs. Free consultation available before choosing.")}
+              
             </p>
             <p className="text-xs text-black/25">
-              Pembayaran fleksibel: transfer bank atau kartu kredit. Invoice tersedia.
+              {th("Flexible payment: bank transfer or credit card. Invoice available.")}
             </p>
           </div>
         </FadeUp>
@@ -339,60 +427,60 @@ export default function SectionMaintenancePlans() {
         <FadeUp delay={0.4}>
           <div className="mt-16 rounded-2xl border border-black/8 overflow-hidden">
             <div className="px-6 py-4 border-b border-black/8 bg-black/2">
-              <h3 className="text-sm font-semibold text-black">Perbandingan lengkap</h3>
+              <h3 className="text-sm font-semibold text-black">{th("Full comparison")}</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-black/6">
-                    <th className="text-left px-6 py-3 text-black/40 font-medium w-1/2">Fitur</th>
-                    {PLANS.map((p) => (
+                    <th className="text-left px-6 py-3 text-black/40 font-medium w-1/2">{th("Feature")}</th>
+                    {plans.map((p) => (
                       <th
                         key={p.id}
                         className="px-4 py-3 font-semibold text-center"
                         style={{ color: p.featured ? "black" : "rgba(0,0,0,0.5)" }}
                       >
-                        {p.name}
+                        {th(p.name)}
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { label: "Update konten", values: ["2x/bulan", "8x/bulan", "Unlimited"] },
-                    { label: "Backup", values: ["Mingguan", "Harian", "Real-time"] },
-                    { label: "Monitoring uptime", values: ["✓", "✓ + alerting", "✓ SLA 99.5%"] },
-                    { label: "Respons support", values: ["1–2 hari", "< 8 jam", "< 2 jam"] },
-                    { label: "SSL & keamanan", values: ["Dasar", "✓", "✓"] },
+                    { label: "Content updates", values: ["2x/month", "8x/month", "Unlimited"] },
+                    { label: "Backup", values: ["Weekly", "Daily", "Real-time"] },
+                    { label: "Uptime monitoring", values: ["✓", "✓ + alerting", "✓ SLA 99.5%"] },
+                    { label: "Support response", values: ["1–2 days", "< 8 hours", "< 2 hours"] },
+                    { label: "SSL & security", values: ["Basic", "✓", "✓"] },
                     { label: "SEO teknis", values: ["—", "✓", "✓"] },
-                    { label: "Laporan bulanan", values: ["✓", "✓ + analitik", "✓ + strategi"] },
+                    { label: "Monthly report", values: ["✓", "✓ + analytics", "✓ + strategy"] },
                     { label: "Dedicated manager", values: ["—", "—", "✓"] },
                     { label: "Bug fix", values: ["—", "Minor", "Included"] },
-                    { label: "Konsultasi teknis", values: ["—", "—", "Bulanan"] },
+                    { label: "Technical consultation", values: ["—", "—", "Monthly"] },
                   ].map((row, i) => (
                     <tr
                       key={row.label}
                       className="border-b border-black/4 last:border-none"
                       style={{ background: i % 2 === 0 ? "transparent" : "rgba(0,0,0,0.015)" }}
                     >
-                      <td className="px-6 py-3 text-black/65">{row.label}</td>
+                      <td className="px-6 py-3 text-black/65">{th(row.label)}</td>
                       {row.values.map((v, vi) => (
-                        <td
-                          key={vi}
-                          className="px-4 py-3 text-center"
-                          style={{
-                            color:
-                              v === "—"
-                                ? "rgba(0,0,0,0.2)"
-                                : PLANS[vi].featured
-                                ? "black"
-                                : "rgba(0,0,0,0.6)",
-                            fontWeight: PLANS[vi].featured ? 500 : 400,
-                          }}
-                        >
-                          {v}
-                        </td>
-                      ))}
+                      <td
+                        key={vi}
+                        className="px-4 py-3 text-center"
+                        style={{
+                          color:
+                            v === "—"
+                              ? "rgba(0,0,0,0.2)"
+                              : PLANS[vi].featured
+                              ? "black"
+                              : "rgba(0,0,0,0.6)",
+                          fontWeight: PLANS[vi].featured ? 500 : 400,
+                        }}
+                      >
+                        {th(v)}
+                      </td>
+                    ))}
                     </tr>
                   ))}
                 </tbody>
