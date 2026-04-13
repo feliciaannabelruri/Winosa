@@ -27,10 +27,6 @@ const SectionMaintenancePlans = dynamic(() =>
   import("@/components/sectionService/SectionMaintenancePlans")
 );
 
-const SectionCTA = dynamic(() =>
-  import("@/components/layout/SectionCTA")
-);
-
 const Footer = dynamic(() =>
   import("@/components/layout/Footer")
 );
@@ -96,8 +92,6 @@ export default async function ServicesPage() {
       {/* Paket maintenance bulanan */}
       <SectionMaintenancePlans />
 
-      {/* CTA global */}
-      <SectionCTA />
 
       <Footer />
 

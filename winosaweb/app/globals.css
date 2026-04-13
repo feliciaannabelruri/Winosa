@@ -101,6 +101,28 @@ img:not([class]) {
 .delay-2 { animation-delay: 4s; }
 
 /* =========================
+   PERFORMANCE OPTIMIZATION
+========================= */
+
+/* Smooth rendering */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+
+/* Prevent tap delay (mobile) */
+button, a {
+  touch-action: manipulation;
+}
+
+/* Better text rendering */
+body {
+  text-rendering: optimizeLegibility;
+}
+
+/* =========================
    GLASS CARD (FIXED)
 ========================= */
 .card {

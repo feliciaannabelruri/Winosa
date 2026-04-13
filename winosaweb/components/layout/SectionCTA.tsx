@@ -177,9 +177,7 @@ export default function SectionCTA() {
           )}
         </motion.div>
 
-        {/* divider */}
-        <div className="w-24 h-px bg-black/20 mx-auto mb-12" />
-
+        
         {/* main cta */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
