@@ -11,8 +11,6 @@ const BLOG_CATEGORIES = ['Insight', 'Design', 'Tech', 'Tutorial', 'News', 'Case 
 const generateSlug = (title: string) =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-/* ─── Shared UI ─── */
-
 const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="bg-white border border-gray-100 rounded-3xl shadow-sm p-5 space-y-4">
     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{title}</p>
@@ -39,8 +37,7 @@ const Field: React.FC<{
 const inputClass =
   'w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors';
 
-/* ─── Page ─── */
-
+/* Page */
 const BlogFormPage: React.FC = () => {
   const navigate = useNavigate();
   const { id }   = useParams<{ id: string }>();
@@ -65,7 +62,7 @@ const BlogFormPage: React.FC = () => {
   const [fetching,      setFetching]      = useState(isEdit);
   const [imageUploading, setImageUploading] = useState(false);
 
-  /* ── Fetch (edit mode) ── */
+  /* Fetch (edit mode) */
   useEffect(() => {
     if (!id) return;
     const fetchBlog = async () => {
@@ -99,7 +96,7 @@ const BlogFormPage: React.FC = () => {
     fetchBlog();
   }, [id, navigate]);
 
-  /* ── Image upload ── */
+  /* Image upload */
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -130,7 +127,7 @@ const BlogFormPage: React.FC = () => {
     setImagePreview(null);
   };
 
-  /* ── Tags ── */
+  /* Tags */
   const addTag = () => {
     const t = tagInput.trim();
     if (t && !form.tags.includes(t)) {
@@ -142,7 +139,6 @@ const BlogFormPage: React.FC = () => {
   const removeTag = (tag: string) =>
     setForm(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
 
-  /* ── Validation ── */
   const validate = (isPublished: boolean): boolean => {
     if (!form.title.trim())   { toast.error('Judul wajib diisi');   return false; }
     if (!form.slug.trim())    { toast.error('Slug wajib diisi');    return false; }
@@ -156,7 +152,7 @@ const BlogFormPage: React.FC = () => {
     return true;
   };
 
-  /* ── Submit ── */
+  /* Submit */
   const handleSubmit = async (isPublished: boolean) => {
     if (!validate(isPublished)) return;
 
@@ -189,7 +185,7 @@ const BlogFormPage: React.FC = () => {
     }
   };
 
-  /* ── Skeleton ── */
+  /* Skeleton */
   if (fetching) {
     return (
       <div className="space-y-6 animate-pulse">
@@ -212,19 +208,11 @@ const BlogFormPage: React.FC = () => {
     );
   }
 
-  /* ── Render ── */
   return (
     <div className="space-y-8">
 
       {/* Header */}
       <div>
-        <button
-          onClick={() => navigate('/blogs')}
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-dark transition-colors group mb-4"
-        >
-          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-          Back to Blog
-        </button>
         <h1 className="text-4xl font-display font-bold text-dark">
           {isEdit ? 'Edit Blog' : 'Add Blog'}
         </h1>
@@ -238,7 +226,6 @@ const BlogFormPage: React.FC = () => {
       {/* Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-        {/* ── Kiri: 2/3 ── */}
         <div className="lg:col-span-2 space-y-5">
 
           <Card title="Basic Info">
@@ -301,7 +288,6 @@ const BlogFormPage: React.FC = () => {
 
         </div>
 
-        {/* ── Kanan: 1/3 ── */}
         <div className="space-y-5 lg:sticky lg:top-6">
 
           <Card title="Publish">

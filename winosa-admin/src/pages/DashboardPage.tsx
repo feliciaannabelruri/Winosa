@@ -18,8 +18,6 @@ interface StatCardProps {
   iconColor: string;
 }
 
-// FIX 1: overflow-hidden + min-w-0 biar konten tidak meluber dari kartu
-// FIX 2: text-3xl (bukan text-5xl) biar angka tidak keluar dari kotak di layar kecil
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon, bg, iconColor }) => (
   <div className="rounded-3xl border-2 border-yellow-100 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 overflow-hidden min-w-0">
     <div className="flex items-center justify-between mb-2 sm:mb-3 gap-1">
@@ -104,7 +102,6 @@ const DashboardPage: React.FC = () => {
       </div>
 
       {/* Stats Grid */}
-      {/* FIX 3: grid-cols-2 di mobile, 3 di md, 5 di lg — biar tidak terlalu sempit */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <StatCard label="Portfolios"  value={counts.portfolios}  icon={<FolderOpen size={16} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
         <StatCard label="Blogs"       value={counts.blogs}       icon={<FileText size={16} />}   bg="bg-primary/10" iconColor="text-primary"    />
@@ -122,12 +119,11 @@ const DashboardPage: React.FC = () => {
       <div>
         <h2 className="text-xl sm:text-2xl font-display font-bold text-dark mb-4 sm:mb-5">Recent Activities</h2>
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-          {/* FIX 4: overflow-x-auto sudah ada — pastikan tabel pakai table-fixed + w-full */}
           <div className="overflow-x-auto">
             <table className="w-full min-w-[520px] table-fixed">
               <colgroup>
                 <col className="w-[110px]" />
-                <col /> {/* Title mengambil sisa ruang */}
+                <col />
                 <col className="w-[90px]" />
                 <col className="w-[110px]" />
               </colgroup>
@@ -160,7 +156,6 @@ const DashboardPage: React.FC = () => {
                           </span>
                         </td>
 
-                        {/* FIX 5: Title cell pakai overflow-hidden agar truncate bekerja di table-fixed */}
                         <td className="py-3 px-4 overflow-hidden">
                           <p className="text-sm text-dark font-medium truncate">{activity.title}</p>
                           {activity.subtitle && (
@@ -215,7 +210,6 @@ const DashboardPage: React.FC = () => {
             <div className="space-y-3">
               {analytics.recentBlogs.map((blog, i) => (
                 <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0 gap-3 min-w-0">
-                  {/* FIX 6: min-w-0 + truncate agar judul blog tidak meluber */}
                   <p className="text-sm text-dark font-medium truncate min-w-0 flex-1">{blog.title}</p>
                   <span className="text-xs text-gray-400 flex-shrink-0">
                     {new Date(blog.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
@@ -246,7 +240,6 @@ const DashboardPage: React.FC = () => {
                 <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0 gap-3 min-w-0">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <span className="text-xs font-bold text-gray-200 w-5 text-right flex-shrink-0">{i + 1}</span>
-                    {/* FIX 7: min-w-0 wajib agar truncate di flex child bekerja */}
                     <p className="text-sm text-dark font-medium truncate min-w-0">{blog.title}</p>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">

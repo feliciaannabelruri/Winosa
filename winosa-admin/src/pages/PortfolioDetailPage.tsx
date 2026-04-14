@@ -50,18 +50,11 @@ const PortfolioDetailPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6 max-w-4xl">
-
-      {/* Back */}
-      <button onClick={() => navigate('/portfolio')}
-        className="flex items-center gap-2 text-sm text-gray-400 hover:text-dark transition-colors group">
-        <ArrowLeft size={15} className="group-hover:-translate-x-0.5 transition-transform" />
-        Back to Portfolio
-      </button>
+    <div className="space-y-6 w-full overflow-x-hidden">
 
       {/* Hero Image */}
       {portfolio.heroImage ? (
-        <div className="w-full h-72 rounded-3xl overflow-hidden border-2 border-gray-100">
+        <div className="w-full h-72 rounded-3xl overflow-hidden border-2 border-gray-100 max-w-full">
           <img src={portfolio.heroImage} alt={portfolio.title} className="w-full h-full object-cover" />
         </div>
       ) : portfolio.thumbnail || portfolio.image ? (

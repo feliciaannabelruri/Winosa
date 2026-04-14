@@ -9,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Request interceptor - add auth token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('winosa_token');
@@ -21,14 +20,17 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor - handle auth errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('winosa_token');
-      localStorage.removeItem('winosa_user');
-      window.location.href = '/login';
+      const isLoginRequest = error.config?.url?.includes('/auth/login');
+      
+      if (!isLoginRequest) {
+        localStorage.removeItem('winosa_token');
+        localStorage.removeItem('winosa_user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

@@ -6,7 +6,7 @@ import Header from './Header';
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
-  const sidebarWidth = collapsed ? 'ml-20' : 'ml-20 lg:ml-56';
+  const sidebarWidth = collapsed ? 'ml-24' : 'ml-24 lg:ml-56';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -18,7 +18,7 @@ const Layout: React.FC = () => {
       />
 
       <main className={`transition-all duration-300 ${sidebarWidth} pt-16 min-h-screen`}>
-        <div className="p-4 sm:p-6 lg:p-8">
+        <div className="p-4 sm:p-6 lg:p-8 overflow-x-hidden">
           <Outlet />
         </div>
       </main>

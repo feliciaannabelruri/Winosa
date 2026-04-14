@@ -71,7 +71,6 @@ const ImageUpload: React.FC<Props> = ({
             className="w-full object-cover"
             style={{ aspectRatio: aspectRatio || 'auto', maxHeight: 240 }}
           />
-          {/* Action buttons — pojok kanan atas, selalu terlihat */}
           <div className="absolute top-2 right-2 flex gap-1.5">
             {uploading ? (
               <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm">

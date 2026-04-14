@@ -10,7 +10,6 @@ import { Contact } from '../types';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
 
-/* ─── Types ─── */
 interface Reply {
   _id:     string;
   message: string;
@@ -22,7 +21,6 @@ interface ContactWithReplies extends Contact {
   replies?: Reply[];
 }
 
-/* ─── Helpers ─── */
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleString('id-ID', {
     day: '2-digit', month: 'short', year: 'numeric',
@@ -37,7 +35,6 @@ const fmtDateShort = (iso: string) =>
 const snippet = (text: string, len = 80) =>
   text.length > len ? text.slice(0, len) + '…' : text;
 
-/* ─── Thread Item Component ─── */
 interface ThreadItemProps {
   avatarLabel: string;
   avatarBg:    string;
@@ -106,7 +103,6 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
   );
 };
 
-/* ════════════════════════════════════════════════════════ */
 const ContactsPage: React.FC = () => {
   const [contacts, setContacts]         = useState<ContactWithReplies[]>([]);
   const [loading, setLoading]           = useState(true);
@@ -167,7 +163,6 @@ const ContactsPage: React.FC = () => {
         setContacts(prev => prev.map(c => c._id === full._id ? { ...c, replies: full.replies } : c));
       }
     } catch {
-      // silent — tampilkan kontak tanpa balasan
     } finally {
       setLoadingDetail(false);
     }
@@ -309,7 +304,7 @@ const ContactsPage: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-          {/* ── Panel Daftar ── */}
+          {/* Panel Daftar */}
           <div className={`lg:col-span-1 space-y-3 ${selected ? 'hidden lg:block' : ''}`}>
             {filtered.map(contact => (
               <div
@@ -351,7 +346,7 @@ const ContactsPage: React.FC = () => {
             ))}
           </div>
 
-          {/* ── Panel Detail ── */}
+          {/* Panel Detail */}
           <div className={`lg:col-span-2 ${selected ? '' : 'hidden lg:block'}`}>
             {selected ? (
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm flex flex-col overflow-hidden">

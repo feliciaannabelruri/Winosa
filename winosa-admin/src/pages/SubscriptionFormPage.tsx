@@ -5,7 +5,6 @@ import { subscriptionService } from '../services/subscriptionService';
 import { Subscription } from '../types';
 import toast from 'react-hot-toast';
 
-// Shared UI
 const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="bg-white border border-gray-100 rounded-3xl shadow-sm p-5 space-y-4">
     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{title}</p>
@@ -32,7 +31,6 @@ const Field: React.FC<{
 const inputClass =
   'w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors';
 
-// Main Component
 const SubscriptionFormPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -49,7 +47,6 @@ const SubscriptionFormPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
 
-  // Fetch data
   useEffect(() => {
     if (!isEdit) return;
     const fetchData = async () => {
@@ -119,7 +116,7 @@ const SubscriptionFormPage: React.FC = () => {
     }
   };
 
-  // Skeleton loading
+  // Skeleton
   if (fetching) {
     return (
       <div className="space-y-6 animate-pulse">
@@ -137,7 +134,6 @@ const SubscriptionFormPage: React.FC = () => {
     );
   }
 
-  // Render
   return (
     <div className="space-y-8">
 
@@ -161,7 +157,6 @@ const SubscriptionFormPage: React.FC = () => {
       {/* Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-        {/* ── Kiri: 2/3 ──────────────────────────────────────────────── */}
         <div className="lg:col-span-2 space-y-5">
 
           <Card title="Plan Info">
@@ -256,7 +251,6 @@ const SubscriptionFormPage: React.FC = () => {
 
         </div>
 
-        {/* ── Kanan: 1/3 ─────────────────────────────────────────────── */}
         <div className="space-y-5 lg:sticky lg:top-6">
 
           <Card title="Settings">

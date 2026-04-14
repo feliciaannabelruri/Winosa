@@ -82,7 +82,6 @@ const PortfolioFormPage: React.FC = () => {
   const set = <K extends keyof PortfolioForm>(key: K, val: PortfolioForm[K]) =>
     setForm(p => ({ ...p, [key]: val }));
 
-  // Load
   useEffect(() => {
     if (!isEdit) return;
     setFetching(true);
@@ -215,7 +214,6 @@ const PortfolioFormPage: React.FC = () => {
         <p className="text-gray-400 text-sm mt-1 italic">Kelola studi kasus dan proyek</p>
       </div>
 
-      {/* 1. Info Dasar */}
       <SectionCard title="Basic Info">
         <div>
           <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-2.5">
@@ -272,7 +270,6 @@ const PortfolioFormPage: React.FC = () => {
         />
       </SectionCard>
 
-      {/* 2. Hero */}
       <SectionCard title="Hero Section" subtitle="Full-screen image at the top of the detail page">
         <ImageUpload
           label="Hero Image"
@@ -292,7 +289,6 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* 3. Info Proyek */}
       <SectionCard title="Project Info" subtitle="Shown in the info section below hero">
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -360,7 +356,6 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* 4. Studi Kasus */}
       <SectionCard title="Case Study" subtitle="Challenge, Solution & Results">
         <div>
           <Label>Tantangan</Label>
@@ -388,7 +383,6 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      {/* 5. Metrik Utama */}
       <SectionCard title="Key Metrics" subtitle="Highlight numbers from project results (optional)">
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -433,7 +427,6 @@ const PortfolioFormPage: React.FC = () => {
         )}
       </SectionCard>
 
-      {/* 6. Galeri */}
       <SectionCard title="Project Gallery"
         subtitle="Opsional — seksi ini otomatis tersembunyi di website jika tidak diisi">
         <div className="grid grid-cols-2 gap-4">
@@ -459,7 +452,6 @@ const PortfolioFormPage: React.FC = () => {
         />
       </SectionCard>
 
-      {/* 7. URL Proyek */}
       <SectionCard title="Project URL"
         subtitle="Opsional — jika diisi, tombol 'Kunjungi Website' muncul di halaman detail">
         <div>
@@ -481,7 +473,6 @@ const PortfolioFormPage: React.FC = () => {
         )}
       </SectionCard>
 
-      {/* Aksi */}
       <div className="flex gap-3 pt-2 pb-10">
         <button onClick={() => handleSubmit(false)} disabled={loading}
           className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-2xl text-sm font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50">

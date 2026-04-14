@@ -5,8 +5,6 @@ import { useServiceForm } from './service-form/useServiceForm';
 import IconPicker from './service-form/shared/IconPicker';
 import { inputCls } from './service-form/shared/FormShared';
 
-/* ─── Shared UI ─── */
-
 const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="bg-white border border-gray-100 rounded-3xl shadow-sm p-6 space-y-5">
     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{title}</p>
@@ -30,7 +28,7 @@ const Field: React.FC<{
   </div>
 );
 
-/* ─── Skeleton ─── */
+/* Skeleton */
 const LoadingSkeleton: React.FC = () => (
   <div className="space-y-5 animate-pulse">
     <div className="w-24 h-8 bg-gray-200 rounded-full" />
@@ -41,7 +39,7 @@ const LoadingSkeleton: React.FC = () => (
   </div>
 );
 
-/* ─── Page ─── */
+/* Page */
 const ServiceFormPage: React.FC = () => {
   const navigate = useNavigate();
   const { id }   = useParams<{ id: string }>();

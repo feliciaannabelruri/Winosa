@@ -13,7 +13,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const TOKEN_KEY    = 'winosa_token';
 const USER_KEY     = 'winosa_user';
 const REMEMBER_KEY = 'winosa_remember';
-// Flag di sessionStorage — ada selama tab masih terbuka, hilang saat browser ditutup
 const SESSION_FLAG = 'winosa_session_active';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -30,8 +29,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const remember = localStorage.getItem(REMEMBER_KEY) === 'true';
 
     if (token && userStr) {
-      // Kalau remember me OFF, cek apakah tab masih aktif dari sesi yang sama.
-      // Kalau SESSION_FLAG tidak ada di sessionStorage = browser baru dibuka = hapus token.
       const sessionActive = sessionStorage.getItem(SESSION_FLAG);
       if (!remember && !sessionActive) {
         localStorage.removeItem(TOKEN_KEY);
@@ -59,11 +56,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (data.success && data.token && data.user) {
       const remember = localStorage.getItem(REMEMBER_KEY) === 'true';
 
-      // Selalu simpan ke localStorage supaya navigate/refresh tidak logout
       localStorage.setItem(TOKEN_KEY, data.token);
       localStorage.setItem(USER_KEY, JSON.stringify(data.user));
 
-      // Kalau remember me OFF, set session flag — hilang otomatis saat browser ditutup
       if (!remember) {
         sessionStorage.setItem(SESSION_FLAG, 'true');
       }
@@ -74,6 +69,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated: true,
         loading: false,
       });
+    } else {
+      throw new Error('Invalid email or password');
     }
   };
 
@@ -81,7 +78,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await authService.logout();
     } catch {
-      // ignore
     }
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);

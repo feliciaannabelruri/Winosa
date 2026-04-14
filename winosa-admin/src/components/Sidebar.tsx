@@ -27,13 +27,13 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   return (
     <aside
       style={{ top: '4rem', bottom: 0, borderTopRightRadius: '100px' }}
-      className={`fixed left-0 z-40 bg-black transition-all duration-300 ease-in-out w-20 ${
+      className={`fixed left-0 z-40 bg-black transition-all duration-300 ease-in-out w-22 ${
         collapsed ? 'lg:w-20' : 'lg:w-56'
       }`}
     >
       <nav className="py-6 px-2 lg:px-3 flex flex-col h-full">
 
-        {/* Desktop only: hamburger toggle */}
+        {/* Desktop only (hamburger toggle) */}
         <button
           onClick={onToggle}
           className="hidden lg:flex items-center justify-center w-12 h-12 mb-8 text-white hover:bg-gray-800 rounded-lg transition-colors"
@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
           <Menu className="w-6 h-6" />
         </button>
 
-        {/* Mobile only: spacer */}
+        {/* Mobile only */}
         <div className="lg:hidden h-4 mb-4" />
 
         {/* Nav items */}

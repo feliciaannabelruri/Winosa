@@ -1,6 +1,7 @@
 export const PORTFOLIO_CATEGORIES = [
+  'Company Web',
   'Web Application',
-  'Mobile App',
+  'Product/Platform',
   'UI/UX Design',
   'Enterprise Software',
 ] as const;

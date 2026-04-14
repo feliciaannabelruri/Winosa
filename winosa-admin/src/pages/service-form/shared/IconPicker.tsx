@@ -55,7 +55,6 @@ const IconPicker: React.FC<Props> = ({ value, onChange }) => {
 
   return (
     <div>
-      {/* Trigger */}
       <button
         type="button"
         onClick={() => setOpen(v => !v)}

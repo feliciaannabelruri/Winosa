@@ -8,8 +8,8 @@ export interface SiteSettings {
   // General 
   siteName:    string;
   siteTagline: string;
-  logo?:       string;   // URL after upload
-  favicon?:    string;   // URL after upload
+  logo?:       string;   
+  favicon?:    string;   
 
   // SEO 
   metaTitle:         string;
@@ -22,12 +22,12 @@ export interface SiteSettings {
   socialFacebook:  string;  
   socialLinkedin:  string;  
   socialYoutube:   string;  
-  socialWhatsapp:  string;  // digits only → wa.me/{number}
+  socialWhatsapp:  string;  
 
   // Contact 
   siteEmail:   string;
-  sitePhone:   string;  // → SectionContactForm "Call us"
-  siteAddress: string;  // → SectionContactForm "Visit us"
+  sitePhone:   string;  
+  siteAddress: string;  
 }
 
 export const settingsService = {
@@ -36,7 +36,6 @@ export const settingsService = {
     return res.data;
   },
 
-  /** Sends FormData to support logo */
   update: async (formData: FormData) => {
     const res = await api.put<ApiResponse<SiteSettings>>('/admin/settings', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },

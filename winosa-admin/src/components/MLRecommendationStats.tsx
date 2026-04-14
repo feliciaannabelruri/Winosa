@@ -1,12 +1,3 @@
-// ============================================================
-// FILE: winosaweb/components/sectionAdmin/MLRecommendationStats.tsx
-// (Taruh di halaman analytics admin)
-//
-// Cara pakai di halaman analytics:
-//   import MLRecommendationStats from '@/components/sectionAdmin/MLRecommendationStats'
-//   <MLRecommendationStats />
-// ============================================================
-
 "use client";
 
 import { useEffect, useState } from "react";

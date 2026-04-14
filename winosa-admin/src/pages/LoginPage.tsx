@@ -4,9 +4,6 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
-// Key yang dipakai AuthContext untuk baca preferensi storage
-// AuthContext cukup cek: localStorage.getItem('winosa_remember') === 'true'
-// lalu simpan token ke localStorage (remember) atau sessionStorage (no remember)
 export const REMEMBER_ME_KEY = 'winosa_remember';
 
 const LoginPage: React.FC = () => {
@@ -21,15 +18,12 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
 
     if (!email || !password) {
       setError('Email and password are required');
       return;
     }
 
-    // Simpan preferensi SEBELUM login dipanggil,
-    // sehingga AuthContext bisa baca ini saat menyimpan token.
     if (rememberMe) {
       localStorage.setItem(REMEMBER_ME_KEY, 'true');
     } else {
@@ -42,7 +36,6 @@ const LoginPage: React.FC = () => {
       toast.success('Login successful!');
       navigate('/dashboard');
     } catch (err: any) {
-      // Kalau login gagal, bersihkan flag
       localStorage.removeItem(REMEMBER_ME_KEY);
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {
@@ -63,7 +56,7 @@ const LoginPage: React.FC = () => {
         fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
       }}
     >
-      {/* LEFT - White section dengan logo */}
+      {/* LEFT White section dengan logo */}
       <section
         style={{
           flex: 1,
@@ -136,7 +129,7 @@ const LoginPage: React.FC = () => {
         </h1>
       </section>
 
-      {/* RIGHT - Black + Yellow layer */}
+      {/* RIGHT Black + Yellow layer */}
       <section
         style={{
           flex: 1,

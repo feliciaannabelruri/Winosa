@@ -7,8 +7,6 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
 
-/* ─────────────────── Types ─────────────────── */
-
 interface TeamMember {
   _id:   string;
   name:  string;
@@ -25,8 +23,7 @@ interface GlassImages {
 
 type Tab = 'team' | 'glass';
 
-/* ─────────────────── ImageUploadBox ─────────────────── */
-
+/* ImageUploadBox */
 function ImageUploadBox({
   label, value, onChange, aspect = 'portrait',
 }: {
@@ -119,7 +116,6 @@ function ImageUploadBox({
 }
 
 /* MemberModal */
-
 function MemberModal({ initial, onSave, onClose }: {
   initial?: TeamMember | null;
   onSave:   (data: Omit<TeamMember, '_id' | 'order'>) => Promise<void>;
@@ -189,7 +185,6 @@ function MemberModal({ initial, onSave, onClose }: {
 }
 
 /* Main Page */
-
 const ContentPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>('team');
 
@@ -315,7 +310,7 @@ const ContentPage: React.FC = () => {
         ))}
       </div>
 
-      {/* ══ TIM ══ */}
+      {/* Anggota*/}
       {tab === 'team' && (
         <div className="space-y-5">
           <div className="flex justify-end">
@@ -402,7 +397,6 @@ const ContentPage: React.FC = () => {
             </div>
           ) : (
             <>
-              {/* Siapa Kami */}
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-2 h-2 rounded-full bg-primary" />
@@ -417,7 +411,6 @@ const ContentPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Apa yang Kami Lakukan */}
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-2 h-2 rounded-full bg-primary" />
@@ -432,7 +425,6 @@ const ContentPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Visi */}
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-2 h-2 rounded-full bg-primary" />
@@ -445,7 +437,7 @@ const ContentPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Tombol Simpan */}
+              {/* Button Simpan */}
               <div className="flex justify-end pt-2">
                 <button
                   onClick={saveGlass}

@@ -21,7 +21,6 @@ const BlogsPage: React.FC = () => {
     loading: boolean;
   }>({ open: false, id: null, loading: false });
 
-  // Fetch
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
@@ -41,7 +40,7 @@ const BlogsPage: React.FC = () => {
     fetchBlogs();
   }, [fetchBlogs]);
 
-  // Hapus
+  // Delete
   const handleDelete = async () => {
     if (!deleteModal.id) return;
     setDeleteModal(prev => ({ ...prev, loading: true }));

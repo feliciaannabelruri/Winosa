@@ -40,7 +40,7 @@ const ProfilePage: React.FC = () => {
   const isNameDirty    = name !== savedName;
   const passwordFilled = !!(passwords.oldPassword || passwords.newPassword || passwords.confirmPassword);
 
-  /* ── Save name ── */
+  /* Save name */
   const handleSaveName = async () => {
     if (!name.trim())            { setNameError('Name is required'); return; }
     if (name.trim().length < 2)  { setNameError('Name must be at least 2 characters'); return; }
@@ -62,7 +62,7 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  /* ── Save password ── */
+  /* Save password */
   const validatePassword = (): boolean => {
     const e: Partial<PasswordForm> = {};
     if (!passwords.oldPassword) e.oldPassword = 'Current password is required';
@@ -105,7 +105,7 @@ const ProfilePage: React.FC = () => {
     if (passwordErrors[k]) setPasswordErrors(prev => { const n = { ...prev }; delete n[k]; return n; });
   };
 
-  /* ── Password strength ── */
+  /* Password strength */
   const pwStrength = (pw: string) => {
     if (!pw) return null;
     if (pw.length < 6) return { label: 'Too short', bar: 'bg-red-400',    w: '20%',  text: 'text-red-400'    };
@@ -125,7 +125,7 @@ const ProfilePage: React.FC = () => {
         <p className="text-gray-400 text-sm mt-1 italic">Manage your profile and password</p>
       </div>
 
-      {/* ── Profile Section ── */}
+      {/* Profile Section */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-5">
         <div className="pb-4 border-b border-gray-100">
           <h2 className="font-bold text-dark text-base">Profile Information</h2>
@@ -174,7 +174,6 @@ const ProfilePage: React.FC = () => {
           />
         </div>
 
-        {/* Save */}
         <div className="flex items-center justify-between pt-1">
           <p className={`text-xs font-medium ${isNameDirty ? 'text-amber-500' : 'text-gray-300'}`}>
             {isNameDirty ? '• Unsaved changes' : 'All changes saved'}
@@ -192,7 +191,7 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Change Password Section ── */}
+      {/* Change Password Section */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-5">
         <div className="pb-4 border-b border-gray-100">
           <h2 className="font-bold text-dark text-base">Change Password</h2>

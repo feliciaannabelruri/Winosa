@@ -4,7 +4,7 @@ import { ChevronDown, Plus, X } from 'lucide-react';
 export const inputCls =
   'w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors';
 
-// ─── Label ────────────────────────────────────────────────────────────────────
+// Label 
 export const Label: React.FC<{ children: React.ReactNode; hint?: string }> = ({ children, hint }) => (
   <div className="mb-2">
     <label className="block text-sm font-semibold text-dark">{children}</label>
@@ -12,7 +12,7 @@ export const Label: React.FC<{ children: React.ReactNode; hint?: string }> = ({ 
   </div>
 );
 
-// ─── Section Card (collapsible) ───────────────────────────────────────────────
+// Section Card (collapsible) 
 export const SectionCard: React.FC<{
   title: string;
   subtitle?: string;
@@ -50,7 +50,7 @@ export const SectionCard: React.FC<{
   );
 };
 
-// ─── Tag List Editor ──────────────────────────────────────────────────────────
+// Tag List Editor
 export const TagListEditor: React.FC<{
   items: string[];
   placeholder: string;
@@ -107,7 +107,7 @@ export const TagListEditor: React.FC<{
   );
 };
 
-// ─── Feature List Editor ──────────────────────────────────────────────────────
+// Feature List Editor
 export const FeatureListEditor: React.FC<{
   items: string[];
   placeholder?: string;
@@ -168,7 +168,7 @@ export const FeatureListEditor: React.FC<{
   );
 };
 
-// ─── Add More Button ──────────────────────────────────────────────────────────
+// Add More Button
 export const AddMoreButton: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => (
   <button
     type="button"
