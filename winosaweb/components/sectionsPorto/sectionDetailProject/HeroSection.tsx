@@ -18,6 +18,7 @@ interface HeroSectionProps {
     category: string;
     client: string;
     year: string;
+    projectUrl?: string;
   };
 }
 
@@ -53,11 +54,12 @@ export default function HeroSection({ project }: HeroSectionProps) {
         <div className={styles.heroSplitLight} aria-hidden="true" />
         <div className={styles.heroSplitOverlay} aria-hidden="true" />
 
-        <div className={styles.heroSplitInner}>
+        <div className={styles.heroSplitInner} style={{ marginTop: '-35px' }}>
 
           {/* LEFT — teks */}
           <motion.div
             className={styles.heroSplitLeft}
+            style={{ paddingBottom: '50px' }}
             initial="hidden"
             animate="visible"
             variants={{
@@ -84,7 +86,7 @@ export default function HeroSection({ project }: HeroSectionProps) {
               {translated.title}
             </motion.h1>
 
-            {/* Long description — semua paragraf */}
+            {/* Long description */}
             {displayText && (
               <motion.p
                 className={styles.heroSplitDesc}
@@ -93,6 +95,35 @@ export default function HeroSection({ project }: HeroSectionProps) {
               >
                 {displayText}
               </motion.p>
+            )}
+
+            {project.projectUrl && (
+              <motion.a
+                href={project.projectUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.7 }}
+                whileHover={{ scale: 1.05, backgroundColor: '#f0f0f0' }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginTop: '24px',
+                  padding: '12px 28px',
+                  background: 'white',
+                  color: '#0a0a0a',
+                  borderRadius: '999px',
+                  fontWeight: 600,
+                  fontSize: '15px',
+                  textDecoration: 'none',
+                  width: 'fit-content',
+                  cursor: 'pointer',
+                }}
+              >
+                Visit Project
+              </motion.a>
             )}
           </motion.div>
 
@@ -114,17 +145,6 @@ export default function HeroSection({ project }: HeroSectionProps) {
               />
               <div className={styles.heroSplitImageAccent} aria-hidden="true" />
             </div>
-
-            {/* Floating badge */}
-            <motion.div
-              className={styles.heroSplitBadge}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-            >
-              <span className={styles.heroSplitBadgeDot} />
-              Live Project
-            </motion.div>
           </motion.div>
 
         </div>

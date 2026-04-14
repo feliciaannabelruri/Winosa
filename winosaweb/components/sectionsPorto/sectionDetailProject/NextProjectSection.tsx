@@ -42,22 +42,6 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
       <section className={styles.nextProjectSectionA} aria-labelledby="next-project-heading">
         <div className={styles.nextProjectContainerA}>
 
-          {/* Eyebrow */}
-          <motion.div
-            className={styles.nextProjectEyebrowA}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <span className={styles.infoEyebrow}>
-              <span className={styles.infoEyebrowLine} />
-              <span id="next-project-heading">
-                {t("portfolioDetail", "nextProject")}
-              </span>
-            </span>
-          </motion.div>
-
           {/* Card */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -84,7 +68,6 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
 
               {/* Content side */}
               <div className={styles.nextProjectContentA}>
-                {/* Kanan atas: shortDesc dari project berikutnya */}
                 <div className={styles.nextProjectMeta}>
                   {translated.category && (
                     <span className={styles.nextProjectMetaLabel}>
@@ -97,7 +80,7 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
                   <h3 className={styles.nextProjectTitleA}>
                     {translated.title}
                   </h3>
-                  {/* shortDescription — bukan longDescription */}
+                  {/* shortDescription */}
                   <p className={styles.nextProjectDescA}>
                     {translated.description}
                   </p>
@@ -105,7 +88,7 @@ export default function NextProjectSection({ nextProject }: NextProjectSectionPr
 
                 <div className={styles.nextProjectFooter}>
                   <span className={styles.nextProjectCta}>
-                    View project
+                    Next Project
                   </span>
                   <span className={styles.nextProjectArrowA} aria-hidden="true">
                     →

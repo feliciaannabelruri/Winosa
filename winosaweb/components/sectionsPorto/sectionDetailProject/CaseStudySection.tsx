@@ -120,7 +120,7 @@ export default function CaseStudySection({ project }: CaseStudySectionProps) {
             ))}
           </motion.div>
 
-          {/* Metrics — opsional */}
+          {/* Metrics */}
           {translated.metrics && translated.metrics.length > 0 && (
             <motion.div
               className={styles.metricsWrapperA}

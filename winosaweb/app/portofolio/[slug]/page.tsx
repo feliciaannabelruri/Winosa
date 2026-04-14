@@ -82,20 +82,16 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     solution: data.solution || "",
     result: data.result || "",
     metrics: data.metrics || [],
-    gallery:
-      data.gallery?.length
-        ? data.gallery
-        : data.image
-        ? [data.image]
-        : ["/no-image.jpg"],
-    slug: data.slug,
+    gallery: data.gallery?.length ? data.gallery : [], 
+    projectUrl: data.projectUrl || "",
   };
 
   const nextProject = {
     slug: nextRaw?.slug || "",
     title: nextRaw?.title || "Next Project",
-    description: nextRaw?.description || "Explore this project.",
+    description: nextRaw?.shortDesc || nextRaw?.description || "Explore this project.",
     image: nextRaw?.thumbnail || nextRaw?.image || "/no-image.jpg",
+    category: nextRaw?.category || "",
   };
 
   /* ===============================

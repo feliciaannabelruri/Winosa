@@ -121,37 +121,6 @@
   pointer-events: none;
 }
 
-.heroSplitBadge {
-  position: absolute;
-  bottom: -18px;
-  left: 28px;
-  display: none;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-radius: 999px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.14);
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  border: 1.5px solid rgba(244,196,48,0.3);
-}
-
-.heroSplitBadgeDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
-  animation: heroPulse 2s infinite;
-}
-
-@keyframes heroPulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
-  50%       { box-shadow: 0 0 0 6px rgba(34,197,94,0.08); }
-}
-
 .heroSplitFade {
   position: absolute;
   bottom: 0; left: 0; right: 0;

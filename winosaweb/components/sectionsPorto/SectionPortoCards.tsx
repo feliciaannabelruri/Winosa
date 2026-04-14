@@ -162,7 +162,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
           </div>
         ) : (
           <>
-            {/* CAROUSEL */}
+          
             {/* CAROUSEL */}
             <div className={styles.carouselWrapper}>
 
