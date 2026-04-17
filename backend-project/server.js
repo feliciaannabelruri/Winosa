@@ -10,6 +10,7 @@ const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./middleware/logger');
 const { globalLimiter, authLimiter } = require('./middleware/rateLimiter');
 const mlRoutes = require("./routes/mlRoutes");
+const { triggerMLRetrainOnStartup } = require('./middleware/mlTrigger');
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
@@ -82,7 +83,6 @@ app.use((req, res, next) => {
   if (req.body && typeof req.body === 'object') {
     req.body = sanitizeObject(req.body);
   }
-
   next();
 });
 
@@ -90,7 +90,12 @@ app.use(logger);
 app.use(setLanguage);
 app.use('/api/', globalLimiter);
 
-connectDB();;
+// Connect DB, then trigger ML startup training
+connectDB().then(() => {
+  triggerMLRetrainOnStartup();
+}).catch(() => {
+  // connectDB calls process.exit(1) on failure, so this won't run
+});
 
 app.use('/api/portfolio',     require('./routes/portfolioRoutes'));
 app.use('/api/blog',          require('./routes/blogRoutes'));
@@ -134,6 +139,7 @@ app.get('/health', async (req, res) => {
     database: 'disconnected',
     email: 'unknown',
     cache: 'ok',
+    mlService: 'unknown',
   };
 
   try {
@@ -149,6 +155,22 @@ app.get('/health', async (req, res) => {
       health.email = 'ready';
     } catch {
       health.email = 'unavailable';
+    }
+
+    // Check ML service
+    try {
+      const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
+      const mlRes = await fetch(`${ML_SERVICE_URL}/health`, {
+        signal: AbortSignal.timeout(2000)
+      });
+      if (mlRes.ok) {
+        const mlData = await mlRes.json();
+        health.mlService = mlData.is_trained ? 'ready' : 'not_trained';
+      } else {
+        health.mlService = 'error';
+      }
+    } catch {
+      health.mlService = 'unavailable';
     }
 
     res.json(health);
@@ -176,6 +198,5 @@ app.listen(PORT, () => {
   console.log(`Health: http://localhost:${PORT}/health`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
-
 
 module.exports = app;
