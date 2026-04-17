@@ -4,8 +4,8 @@ const asyncHandler = require('../../middleware/asyncHandler');
 const { ErrorResponse } = require('../../middleware/errorHandler');
 const { uploadSingle, uploadToImageKit, deleteFromImageKit } = require('../../config/imagekit');
 const { cache } = require('../../utils/cache');
+const { triggerMLRetrain } = require('../../middleware/mlTrigger'); // ✅ BARU
 
-// Helper: bungkus callback multer jadi Promise (wajib untuk Express 5)
 const runUpload = (req, res) =>
   new Promise((resolve, reject) => {
     uploadSingle(req, res, (err) => {
@@ -14,7 +14,6 @@ const runUpload = (req, res) =>
     });
   });
 
-// Helper: parse JSON string array fields dari FormData
 const parseArrayField = (value) => {
   if (!value) return [];
   if (Array.isArray(value)) return value;
@@ -43,7 +42,6 @@ exports.createPortfolio = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Portfolio with this slug already exists', 400));
   }
 
-  // Image: prioritas req.file → thumbnail field → image field (backward compat)
   let imageUrl = thumbnail || req.body.image || null;
   let imageId  = null;
 
@@ -80,6 +78,9 @@ exports.createPortfolio = asyncHandler(async (req, res, next) => {
 
   cache.invalidatePrefix(CACHE_PREFIX);
 
+  // ✅ BARU: Trigger ML retrain setelah portfolio dibuat
+  triggerMLRetrain().catch(e => console.warn('ML retrain skipped:', e.message));
+
   res.status(201).json({
     success: true,
     message: 'Portfolio created successfully',
@@ -91,7 +92,6 @@ exports.createPortfolio = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/admin/portfolio/:id
 // @access  Private/Admin
 exports.updatePortfolio = asyncHandler(async (req, res, next) => {
-  // Gunakan runUpload (Promise) — wajib untuk Express 5, callback style tidak kompatibel
   await runUpload(req, res);
 
   const lang = req.language || 'en';
@@ -101,7 +101,6 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(getTranslation(lang, 'portfolioNotFound'), 404));
   }
 
-  // Cek slug duplicate kalau diubah
   if (req.body.slug && req.body.slug !== portfolio.slug) {
     const existing = await Portfolio.findOne({ slug: req.body.slug }).lean();
     if (existing) {
@@ -109,22 +108,16 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
     }
   }
 
-  // Parse JSON string array fields
   if (req.body.techStack) req.body.techStack = parseArrayField(req.body.techStack);
   if (req.body.metrics)   req.body.metrics   = parseArrayField(req.body.metrics);
   if (req.body.gallery)   req.body.gallery   = parseArrayField(req.body.gallery);
 
-  // Sinkronisasi shortDesc ↔ description (backward compat)
   if (req.body.shortDesc && !req.body.description) {
     req.body.description = req.body.shortDesc;
   } else if (req.body.description && !req.body.shortDesc) {
     req.body.shortDesc = req.body.description;
   }
 
-  // Handle image:
-  // 1. File baru di request → upload ke ImageKit, hapus yang lama
-  // 2. req.body.thumbnail ada → pakai itu (URL dari ImageUpload)
-  // 3. Tidak ada keduanya → jangan ubah image existing
   if (req.file) {
     if (portfolio.imageId) {
       try { await deleteFromImageKit(portfolio.imageId); } catch (e) {
@@ -136,16 +129,13 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
     req.body.thumbnail = uploadResult.url;
     req.body.imageId   = uploadResult.fileId;
   } else if (req.body.thumbnail) {
-    // URL dari ImageUpload component
     req.body.image = req.body.thumbnail;
   } else if (!req.body.image) {
-    // Tidak ada perubahan → hapus dari body agar tidak overwrite
     delete req.body.image;
     delete req.body.thumbnail;
     delete req.body.imageId;
   }
 
-  // Normalize isActive string → boolean
   if (typeof req.body.isActive === 'string') {
     req.body.isActive = req.body.isActive === 'true';
   }
@@ -157,6 +147,9 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
   );
 
   cache.invalidatePrefix(CACHE_PREFIX);
+
+  // ✅ BARU: Trigger ML retrain setelah portfolio diupdate
+  triggerMLRetrain().catch(e => console.warn('ML retrain skipped:', e.message));
 
   res.json({
     success: true,
@@ -184,6 +177,9 @@ exports.deletePortfolio = asyncHandler(async (req, res, next) => {
 
   await Portfolio.findByIdAndDelete(req.params.id);
   cache.invalidatePrefix(CACHE_PREFIX);
+
+  // ✅ BARU: Trigger ML retrain setelah portfolio dihapus
+  triggerMLRetrain().catch(e => console.warn('ML retrain skipped:', e.message));
 
   res.json({ success: true, message: 'Portfolio deleted successfully' });
 });
