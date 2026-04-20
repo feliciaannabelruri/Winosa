@@ -13,7 +13,7 @@ export default function Navbar() {
   const { language, setLanguage } = useLanguageStore();
   const { t } = useTranslate();
 
-  const [logo, setLogo] = useState("/logo.png");
+  const [logo, setLogo] = useState("https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png");
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`)
@@ -59,7 +59,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
 
-        <Link href="/" aria-label="Go to homepage">
+        <Link href="/about" aria-label="Go to About page">
           <Image
             src={logo}
             alt="Winosa company logo"
@@ -122,9 +122,9 @@ export default function Navbar() {
           <div className="flex items-center justify-between">
 
             <Link
-              href="/"
+              href="/about"
               onClick={() => setOpen(false)}
-              aria-label="Go to homepage"
+              aria-label="Go to About page"
             >
               <Image
                 src={logo}

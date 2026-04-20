@@ -54,7 +54,7 @@ async function getTrendingBlogs() {
 async function getBlogsData() {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/blog`,
+      `${process.env.NEXT_PUBLIC_API_URL}/blog?limit=100`,
       { cache: "no-store" }
     );
     if (!res.ok) throw new Error("Fetch blog gagal");

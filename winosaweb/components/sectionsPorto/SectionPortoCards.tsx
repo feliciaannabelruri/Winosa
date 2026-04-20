@@ -22,7 +22,7 @@ type Project = {
 type FilterType =
   | "All"
   | "Company Web"
-  | "Enterprise System"
+  | "Enterprise Software"
   | "Product/Platform"
   | "Web Application"
   | "UI/UX Design";
@@ -61,7 +61,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
   const filters: FilterType[] = [
     "All",
     "Company Web",
-    "Enterprise System",
+    "Enterprise Software",
     "Product/Platform",
     "Web Application",
     "UI/UX Design",

@@ -4,8 +4,6 @@ import SectionBridge from "@/components/sectionsPorto/SectionBrige";
 import SectionExplanation from "@/components/sectionsPorto/SectionExplanation";
 import Footer from "@/components/layout/Footer";
 
-import api from "@/lib/axios";
-
 /* ================= SEO META TAGS ================= */
 
 import { getSiteSettings } from '@/lib/getSiteSettings';
@@ -29,9 +27,17 @@ export default async function PortfolioPage() {
   let portfolios = [];
 
   try {
-    const res = await api.get("/portfolio");
-    portfolios = res.data.data;
-  } catch (error) {  }
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/portfolio?limit=100`,
+      { cache: "no-store" }
+    );
+    if (res.ok) {
+      const json = await res.json();
+      portfolios = json?.data ?? [];
+    }
+  } catch (error) {
+    console.error("Portfolio fetch error:", error);
+  }
 
   return (
     <main>

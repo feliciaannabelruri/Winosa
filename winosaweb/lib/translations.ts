@@ -2266,4 +2266,47 @@ maintenancePlans: {
       },
     },
   },
+
+  // Portfolio Filters
+  portfolioFilters: {
+    All: {
+      en: "All",
+      nl: "Alle",
+      id: "Semua",
+    },
+    "Company Web": {
+      en: "Company Web",
+      nl: "Bedrijfswebsite",
+      id: "Web Perusahaan",
+    },
+    "Enterprise Software": {
+      en: "Enterprise Software",
+      nl: "Enterprise Software",
+      id: "Software Enterprise",
+    },
+    "Product/Platform": {
+      en: "Product/Platform",
+      nl: "Product/Platform",
+      id: "Produk/Platform",
+    },
+    "Web Application": {
+      en: "Web Application",
+      nl: "Webapplicatie",
+      id: "Aplikasi Web",
+    },
+    "UI/UX Design": {
+      en: "UI/UX Design",
+      nl: "UI/UX Ontwerp",
+      id: "Desain UI/UX",
+    },
+  },
+
+  // Portfolio page section
+  portfolio: {
+    empty: {
+      en: "No projects found",
+      nl: "Geen projecten gevonden",
+      id: "Tidak ada proyek ditemukan",
+    },
+  },
 } as const;
