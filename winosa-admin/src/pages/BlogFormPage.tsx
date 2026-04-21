@@ -52,6 +52,9 @@ const BlogFormPage: React.FC = () => {
     author:   '',
     category: 'Insight',
     tags:     [] as string[],
+    metaTitle: '',
+    metaDescription: '',
+    metaKeywords: '',
   });
 
   const [imageUrl,      setImageUrl]      = useState('');
@@ -82,6 +85,9 @@ const BlogFormPage: React.FC = () => {
           author:   b.author  || '',
           category: cat       || 'Insight',
           tags:     restTags,
+          metaTitle: b.metaTitle || '',
+          metaDescription: b.metaDescription || '',
+          metaKeywords: b.metaKeywords || '',
         });
         setImageUrl(b.image    || '');
         setImagePreview(b.image || null);
@@ -166,6 +172,9 @@ const BlogFormPage: React.FC = () => {
     fd.append('author',      form.author.trim());
     fd.append('tags',        JSON.stringify(allTags));
     fd.append('isPublished', String(isPublished));
+    fd.append('metaTitle',       form.metaTitle.trim());
+    fd.append('metaDescription', form.metaDescription.trim());
+    fd.append('metaKeywords',    form.metaKeywords.trim());
     if (imageUrl) fd.append('image', imageUrl);
 
     setLoading(true);
@@ -284,6 +293,49 @@ const BlogFormPage: React.FC = () => {
                 minHeight="450px"
               />
             </Field>
+          </Card>
+
+          <Card title="SEO Settings (Search Engines)">
+            <div className="grid grid-cols-1 gap-5">
+              <Field 
+                label="Meta Title" 
+                hint="Judul yang muncul di Google. Disarankan 50-60 karakter."
+              >
+                <input
+                  type="text"
+                  placeholder="cth. 10 Cara Membangun Website Cepat | Winosa"
+                  value={form.metaTitle}
+                  onChange={e => setForm(prev => ({ ...prev, metaTitle: e.target.value }))}
+                  className={inputClass}
+                />
+              </Field>
+
+              <Field 
+                label="Meta Description" 
+                hint="Deskripsi singkat di Google. Disarankan 150-160 karakter."
+              >
+                <textarea
+                  placeholder="Pelajari cara membangun website dengan performa tinggi..."
+                  value={form.metaDescription}
+                  onChange={e => setForm(prev => ({ ...prev, metaDescription: e.target.value }))}
+                  rows={3}
+                  className={`${inputClass} resize-none`}
+                />
+              </Field>
+
+              <Field 
+                label="Meta Keywords" 
+                hint="Kata kunci dipisahkan dengan koma."
+              >
+                <input
+                  type="text"
+                  placeholder="web development, agency lampung, nextjs, react"
+                  value={form.metaKeywords}
+                  onChange={e => setForm(prev => ({ ...prev, metaKeywords: e.target.value }))}
+                  className={inputClass}
+                />
+              </Field>
+            </div>
           </Card>
 
         </div>

@@ -13,6 +13,10 @@ const blogSchema = new mongoose.Schema(
     isPublished: { type: Boolean, default: true, index: true },
     views:    { type: Number, default: 0, index: true },
     readTime: { type: Number, default: 0 }, // minutes
+    // SEO Fields
+    metaTitle:       { type: String, trim: true },
+    metaDescription: { type: String, trim: true },
+    metaKeywords:    { type: String, trim: true },
   },
   { timestamps: true }
 );

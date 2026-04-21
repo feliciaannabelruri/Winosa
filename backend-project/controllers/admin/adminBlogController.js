@@ -23,7 +23,7 @@ const CACHE_PREFIX = 'blog';
 exports.createBlog = asyncHandler(async (req, res, next) => {
   await runUpload(req, res);
 
-  const { title, slug, content, excerpt, author, tags, isPublished } = req.body;
+  const { title, slug, content, excerpt, author, tags, isPublished, metaTitle, metaDescription, metaKeywords } = req.body;
 
   const existingBlog = await Blog.findOne({ slug }).lean();
   if (existingBlog) {
@@ -46,6 +46,9 @@ exports.createBlog = asyncHandler(async (req, res, next) => {
     author,
     tags: tags ? (Array.isArray(tags) ? tags : JSON.parse(tags)) : [],
     isPublished: isPublished !== undefined ? (isPublished === 'true' || isPublished === true) : true,
+    metaTitle,
+    metaDescription,
+    metaKeywords,
   });
 
   cache.invalidatePrefix(CACHE_PREFIX);

@@ -1,0 +1,262 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import FadeUp from "@/components/animation/FadeUp";
+import { useTranslate } from "@/lib/useTranslate";
+import { useLanguageStore } from "@/store/useLanguageStore";
+import { translateHybrid } from "@/lib/translateHybrid";
+import EmptyState from "@/components/UI/EmptyState";
+
+type Blog = {
+  _id: string;
+  title: string;
+  content: string;
+  excerpt?: string;
+  image?: string;
+  author?: string;
+  tags?: string[];
+  createdAt: string;
+  slug: string;
+};
+
+interface BlogDetailClientProps {
+  initialBlog: Blog;
+  relatedBlogs: Blog[];
+}
+
+export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDetailClientProps) {
+  const { t, tApi } = useTranslate();
+  const { language } = useLanguageStore();
+
+  const [translatedBlog, setTranslatedBlog] = useState<Blog>(initialBlog);
+  const [translatedRelated, setTranslatedRelated] = useState<Blog[]>(relatedBlogs);
+
+  const [comments, setComments] = useState<{ name: string; message: string }[]>([]);
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+
+  // LOAD COMMENTS
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(`comments-${initialBlog.slug}`);
+      if (saved) setComments(JSON.parse(saved));
+    } catch {
+      setComments([]);
+    }
+  }, [initialBlog.slug]);
+
+  // SAVE COMMENTS
+  useEffect(() => {
+    if (comments.length > 0) {
+      localStorage.setItem(`comments-${initialBlog.slug}`, JSON.stringify(comments));
+    }
+  }, [comments, initialBlog.slug]);
+
+  const handlePost = () => {
+    if (!name.trim() || !message.trim()) return;
+    setComments([...comments, { name, message }]);
+    setName("");
+    setMessage("");
+  };
+
+  // TRANSLATE BLOG
+  useEffect(() => {
+    const run = async () => {
+      const translated: Blog = {
+        ...initialBlog,
+        title: await translateHybrid(initialBlog.title, language, tApi),
+        content: await translateHybrid(initialBlog.content, language, tApi),
+        excerpt: initialBlog.excerpt ? await translateHybrid(initialBlog.excerpt, language, tApi) : "",
+        tags: initialBlog.tags?.length 
+          ? await Promise.all(initialBlog.tags.map(tag => translateHybrid(tag, language, tApi))) 
+          : [],
+      };
+      setTranslatedBlog(translated);
+    };
+    run();
+  }, [initialBlog, language]);
+
+  // TRANSLATE RELATED
+  useEffect(() => {
+    const run = async () => {
+      const updated = await Promise.all(relatedBlogs.map(async post => ({
+        ...post,
+        title: await translateHybrid(post.title, language, tApi),
+        excerpt: post.excerpt ? await translateHybrid(post.excerpt, language, tApi) : "",
+      })));
+      setTranslatedRelated(updated);
+    };
+    run();
+  }, [relatedBlogs, language]);
+
+  const category = translatedBlog.tags?.[0] || t("blogDetail", "article");
+
+  return (
+    <>
+      {/* HERO */}
+      <section
+        className="relative w-full h-[75vh] flex items-end"
+        style={{
+          backgroundImage: `url(${translatedBlog.image || "/bg/bg1.jpg"})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pb-16 text-white">
+          <FadeUp>
+            <span className="inline-block px-4 py-1 rounded-full border border-white text-xs mb-4">
+              {category}
+            </span>
+            <h1 id="blog-title" className="text-3xl md:text-6xl font-display font-bold mb-4 leading-tight">
+              {translatedBlog.title}
+            </h1>
+            <div className="text-sm text-white/80 flex gap-4 font-medium">
+              <span>{t("blogDetail", "by")} {translatedBlog.author || t("blogDetail", "defaultAuthor")}</span>
+              <span aria-hidden="true">•</span>
+              <span>{new Date(translatedBlog.createdAt).toLocaleDateString()}</span>
+            </div>
+          </FadeUp>
+        </div>
+        <div className="absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-white to-transparent" />
+      </section>
+
+      {/* ARTICLE */}
+      <section className="max-w-4xl mx-auto px-6 py-24 text-black">
+        <FadeUp>
+          <article
+            className="prose prose-xl max-w-none 
+              prose-headings:font-display prose-headings:font-bold prose-headings:text-black
+              prose-p:text-black/80 prose-p:leading-relaxed prose-p:mb-8
+              prose-a:text-blue-600 prose-a:underline
+              prose-img:rounded-3xl prose-img:shadow-2xl prose-img:my-12
+              prose-ul:list-disc prose-ol:list-decimal
+              prose-blockquote:border-l-8 prose-blockquote:border-primary prose-blockquote:bg-gray-50 prose-blockquote:py-4 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:italic
+              selection:bg-primary/30
+            "
+            dangerouslySetInnerHTML={{ __html: translatedBlog.content }}
+          />
+        </FadeUp>
+      </section>
+
+      {/* RELATED */}
+      <section aria-labelledby="related-title" className="w-full py-24 bg-gray-50/50">
+        <div className="max-w-7xl mx-auto px-6 text-black">
+          <FadeUp>
+            <h2 id="related-title" className="text-3xl font-display font-bold mb-12">
+              {t("blogDetail", "related")}
+            </h2>
+          </FadeUp>
+
+          {translatedRelated.length === 0 ? (
+            <EmptyState
+              icon="folder"
+              title={t("blogDetail", "relatedEmpty")}
+              description={t("blogDetail", "relatedEmptyDesc")}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+              {translatedRelated.map((post) => (
+                <div key={post.slug} className="group relative">
+                  <div className="pointer-events-none absolute -inset-6 rounded-[40px] bg-[radial-gradient(circle,rgba(196,168,50,0.2)_0%,transparent_70%)] opacity-0 blur-[80px] transition-all duration-500 group-hover:opacity-100" />
+                  <div className="relative h-full flex flex-col bg-white rounded-[32px] border border-gray-100 p-6 transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)]">
+                    <div className="h-52 w-full rounded-[24px] overflow-hidden bg-gray-100 mb-6">
+                      {post.image && (
+                        <img
+                          src={post.image}
+                          alt={post.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      )}
+                    </div>
+                    <div className="flex flex-col flex-grow">
+                      <h3 className="font-display font-bold text-xl mb-4 line-clamp-2 group-hover:text-primary transition-colors">
+                        {post.title}
+                      </h3>
+                      <p className="text-sm text-black/60 line-clamp-3 mb-6">
+                        {post.excerpt}
+                      </p>
+                      <div className="mt-auto">
+                        <Link
+                          href={`/Blog/${post.slug}`}
+                          className="inline-flex items-center text-sm font-bold text-black border-b-2 border-primary pb-1 hover:border-black transition-colors"
+                        >
+                          {t("blogDetail", "readMore")}
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* COMMENTS */}
+      <section aria-labelledby="comments-title" className="w-full py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-6 text-black">
+          <FadeUp>
+            <h2 id="comments-title" className="text-3xl font-display font-bold mb-12">
+              {t("blogDetail", "comments")} ({comments.length})
+            </h2>
+          </FadeUp>
+
+          <div className="space-y-8 mb-16">
+            {comments.map((c, i) => (
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                key={i} 
+                className="bg-gray-50 rounded-[28px] p-8 border border-gray-100"
+              >
+                <p className="font-bold text-lg mb-2">{c.name}</p>
+                <p className="text-black/70 leading-relaxed">{c.message}</p>
+              </motion.div>
+            ))}
+            {comments.length === 0 && (
+              <p className="text-center text-gray-400 py-8 italic">No comments yet. Be the first to share your thoughts!</p>
+            )}
+          </div>
+
+          <FadeUp>
+            <div className="bg-dark rounded-[40px] p-10 text-white shadow-2xl">
+              <h3 className="text-2xl font-display font-bold mb-8">Leave a Comment</h3>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2 opacity-60">Your Name</label>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={t("blogDetail", "yourName")}
+                    className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:border-primary outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 opacity-60">Your Thoughts</label>
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder={t("blogDetail", "writeComment")}
+                    rows={4}
+                    className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-[24px] focus:border-primary outline-none transition-all resize-none"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handlePost}
+                  className="w-full py-4 bg-primary text-dark font-bold rounded-2xl hover:bg-white transition-all transform active:scale-95"
+                >
+                  {t("blogDetail", "post")}
+                </button>
+              </div>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+    </>
+  );
+}
