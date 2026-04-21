@@ -20,6 +20,7 @@ const BlogsPage: React.FC = () => {
     id: string | null;
     loading: boolean;
   }>({ open: false, id: null, loading: false });
+  const [totalStats, setTotalStats] = useState({ total: 0, published: 0, draft: 0 });
 
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
@@ -27,8 +28,13 @@ const BlogsPage: React.FC = () => {
       const params: Record<string, unknown> = {};
       if (filter === 'published') params.isPublished = true;
       if (filter === 'draft') params.isPublished = false;
-      const data = await blogService.getAll(params);
+      const data = await blogService.getAll({ ...params, limit: 100 });
       setBlogs(data.data);
+      setTotalStats({
+        total: data.total,
+        published: data.data.filter((b: any) => b.isPublished).length, // Note: This is still partial if limit < total, but better for now
+        draft: data.data.filter((b: any) => !b.isPublished).length
+      });
     } catch {
       toast.error('Gagal memuat data blog');
     } finally {
@@ -99,12 +105,11 @@ const BlogsPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: 'Total', value: blogs.length, color: 'bg-gray-100 text-gray-700' },
-          { label: 'Published', value: totalPublished, color: 'bg-green-50 text-green-700' },
-          { label: 'Draft', value: totalDraft, color: 'bg-yellow-50 text-yellow-700' },
+          { label: 'Total', value: totalStats.total, color: 'bg-gray-100 text-gray-700' },
+          { label: 'Published', value: blogs.filter(b => b.isPublished).length, color: 'bg-green-50 text-green-700' },
+          { label: 'Draft', value: blogs.filter(b => !b.isPublished).length, color: 'bg-yellow-50 text-yellow-700' },
         ].map(s => (
           <div key={s.label} className={`rounded-2xl px-5 py-4 ${s.color}`}>
             <p className="text-2xl font-bold">{s.value}</p>
