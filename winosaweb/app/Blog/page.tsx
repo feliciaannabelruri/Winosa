@@ -2,6 +2,8 @@ import Footer from "@/components/layout/Footer";
 import SectionBlogHero from "@/components/sectionBlog/SectionHero";
 import SectionBlog from "@/components/sectionBlog/SectionBlog";
 
+export const dynamic = 'force-dynamic';
+
 // ===============================
 // SEO METADATA
 // ===============================
