@@ -2270,7 +2270,7 @@ maintenancePlans: {
 
 
   // Portfolio page section
-  portfolio: {
+  portfolioPage: {
     empty: {
       en: "No projects found",
       nl: "Geen projecten gevonden",
