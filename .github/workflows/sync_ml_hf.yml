@@ -1,0 +1,24 @@
+name: Sync ML to Hugging Face
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ml/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Push to hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Masuk ke folder ml
+          git config --global user.email "deploy@github.com"
+          git config --global user.name "GitHub Action"
+          
+          # Gunakan subtree untuk push hanya isi folder ml ke root Hugging Face
+          git subtree push --prefix ml https://feliciaannabelruri:$HF_TOKEN@huggingface.co/spaces/feliciaannabelruri/winosa-ml main --force

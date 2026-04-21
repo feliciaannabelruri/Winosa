@@ -1,0 +1,23 @@
+name: Sync Backend to Hugging Face
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend-project/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Push to hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "deploy@github.com"
+          git config --global user.name "GitHub Action"
+          
+          # Gunakan subtree untuk push hanya isi folder backend-project ke root Hugging Face
+          git subtree push --prefix backend-project https://feliciaannabelruri:$HF_TOKEN@huggingface.co/spaces/feliciaannabelruri/winosa-backend main --force
