@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import "./globals.css";
-import Navbar from "../components/layout/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import { usePathname } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import Script from "next/script";
