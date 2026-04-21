@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import api from "@/lib/axios";
 
 export const revalidate = 60;
 import { getSiteSettings } from '@/lib/getSiteSettings';
@@ -44,9 +43,10 @@ export default async function HomePage() {
   // SERVICE //
 
   try {
-    const servicesRes = await api.get("/services");
+    const servicesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`, { cache: "no-store" });
+    const sData = await servicesRes.json();
 
-    services = servicesRes.data.data.map((item: any) => ({
+    services = (sData?.data || []).map((item: any) => ({
       id: item._id,
       title: item.title,
       desc: item.description,
@@ -59,14 +59,15 @@ export default async function HomePage() {
   // PORTO //
 
   try {
-    const portfolioRes = await api.get("/portfolio");
+    const portfolioRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/portfolio`, { cache: "no-store" });
+    const pData = await portfolioRes.json();
 
-    portfolios = portfolioRes.data.data.slice(0, 3).map((item: any) => ({
+    portfolios = (pData?.data || []).slice(0, 3).map((item: any) => ({
       id: item._id,
       title: item.title,
       desc: item.description,
       image: item.thumbnail || item.image,
-      slug: `/portfolio/${item.slug}`,
+      slug: `/portofolio/${item.slug}`,
     }));
   } catch (error) {
     console.error("Portfolio API error:", error);
@@ -75,14 +76,15 @@ export default async function HomePage() {
   // BLOG //
 
   try {
-    const blogRes = await api.get("/blog");
+    const blogRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, { cache: "no-store" });
+    const bData = await blogRes.json();
 
-    blogs = blogRes.data.data.slice(0, 3).map((item: any) => ({
+    blogs = (bData?.data || []).slice(0, 3).map((item: any) => ({
       id: item._id,
       title: item.title,
       desc: item.excerpt || item.description,
       image: item.image || item.thumbnail,
-      slug: `/blog/${item.slug}`,
+      slug: `/Blog/${item.slug}`,
     }));
   } catch (error) {
     console.error("Blog API error:", error);
@@ -91,8 +93,9 @@ export default async function HomePage() {
   // GLASS //
 
   try {
-    const glassRes = await api.get("/content/glass");
-    glassData = glassRes.data.data;
+    const glassRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content/glass`, { cache: "no-store" });
+    const gData = await glassRes.json();
+    glassData = gData?.data || null;
   } catch (error) {
     console.log("Glass endpoint tidak ditemukan");
   }

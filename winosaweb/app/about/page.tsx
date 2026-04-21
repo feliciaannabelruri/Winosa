@@ -156,7 +156,7 @@ export default function AboutPage() {
 
       {/* ── HERO ── */}
       <section
-        className="relative w-full min-h-[85vh] flex flex-col items-center justify-center text-center overflow-hidden px-6"
+        className="relative w-full min-h-[85vh] flex flex-col items-center justify-center text-center overflow-hidden px-6 pt-32 pb-20"
         aria-labelledby="about-hero-title"
       >
         {/* Seamless light background blending into white at the bottom */}
