@@ -28,11 +28,8 @@ jobs:
           git config --global user.email "deploy@github.com"
           git config --global user.name "GitHub Actions — Winosa ML"
 
-          # Push only the ml/ subfolder as the root of the HF Space
-          git subtree push \
-            --prefix ml \
-            https://Feliciaaaaaaaaae:$HF_TOKEN@huggingface.co/spaces/Feliciaaaaaaaaae/winosa-ml \
-            main \
-            --force
+          # Create a split commit and force push it
+          COMMIT_SHA=$(git subtree split --prefix ml HEAD)
+          git push https://Feliciaaaaaaaaae:$HF_TOKEN@huggingface.co/spaces/Feliciaaaaaaaaae/winosa-ml $COMMIT_SHA:main --force
           
           echo "✅ ML Service v2.0 deployed to Hugging Face Spaces!"
