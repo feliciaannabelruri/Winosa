@@ -19,5 +19,6 @@ jobs:
           git config --global user.email "deploy@github.com"
           git config --global user.name "GitHub Action"
           
-          # Gunakan subtree untuk push hanya isi folder backend-project ke root Hugging Face
-          git subtree push --prefix backend-project https://feliciaannabelruri:$HF_TOKEN@huggingface.co/spaces/feliciaannabelruri/winosa-backend main --force
+          # Gunakan subtree split dan force push
+          COMMIT_SHA=$(git subtree split --prefix backend-project HEAD)
+          git push https://Feliciaaaaaaaaae:$HF_TOKEN@huggingface.co/spaces/Feliciaaaaaaaaae/backendwinosa $COMMIT_SHA:main --force
