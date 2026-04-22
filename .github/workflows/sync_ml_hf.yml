@@ -1,24 +1,38 @@
 name: Sync ML to Hugging Face
+
 on:
   push:
-    branches: [updated]
+    branches: [main, updated]
     paths:
       - 'ml/**'
 
 jobs:
-  build:
+  sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Push to hub
+
+      - name: Validate ML files
+        run: |
+          echo "🔍 Checking required ML files..."
+          test -f ml/app.py          && echo "✅ app.py found"       || (echo "❌ app.py missing" && exit 1)
+          test -f ml/requirements.txt && echo "✅ requirements.txt found" || (echo "❌ requirements.txt missing" && exit 1)
+          test -f ml/Dockerfile       && echo "✅ Dockerfile found"    || (echo "❌ Dockerfile missing" && exit 1)
+
+      - name: Push ml/ folder to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Masuk ke folder ml
           git config --global user.email "deploy@github.com"
-          git config --global user.name "GitHub Action"
+          git config --global user.name "GitHub Actions — Winosa ML"
+
+          # Push only the ml/ subfolder as the root of the HF Space
+          git subtree push \
+            --prefix ml \
+            https://feliciaannabelruri:$HF_TOKEN@huggingface.co/spaces/feliciaannabelruri/winosa-ml \
+            main \
+            --force
           
-          # Gunakan subtree untuk push hanya isi folder ml ke root Hugging Face
-          git subtree push --prefix ml https://feliciaannabelruri:$HF_TOKEN@huggingface.co/spaces/feliciaannabelruri/winosa-ml main --force
+          echo "✅ ML Service v2.0 deployed to Hugging Face Spaces!"
