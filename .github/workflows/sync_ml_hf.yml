@@ -31,7 +31,7 @@ jobs:
           # Push only the ml/ subfolder as the root of the HF Space
           git subtree push \
             --prefix ml \
-            https://feliciaannabelruri:$HF_TOKEN@huggingface.co/spaces/feliciaannabelruri/winosa-ml \
+            https://Feliciaaaaaaaaae:$HF_TOKEN@huggingface.co/spaces/Feliciaaaaaaaaae/winosa-ml \
             main \
             --force
           
