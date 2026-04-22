@@ -1,23 +1,27 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-// Create transporter
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const sendEmail = async ({ to, subject, html }) => {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'info@winosa.id',
+      to,
+      subject,
+      html,
+    });
+
+    if (error) {
+      console.log('Email error:', error);
+      throw new Error(error.message);
+    }
+
+    console.log('Email sent:', data.id);
+    return { success: true, messageId: data.id };
+  } catch (error) {
+    console.log('Email configuration error:', error.message);
+    throw error;
   }
-});
+};
 
-// Verify connection
-transporter.verify((error, success) => {
-  if (error) {
-    console.log('❌ Email configuration error:', error);
-  } else {
-    console.log('✅ Email server is ready to send messages');
-  }
-});
-
-module.exports = transporter;
+module.exports = sendEmail;
