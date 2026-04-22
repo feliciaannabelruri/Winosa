@@ -191,7 +191,7 @@ app.use((req, res) => {
 app.use(sentryErrorHandler());
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.SPACE_ID ? 7860 : (process.env.PORT || 5000);
 app.listen(PORT, () => {
   console.log(`\n Server running on port ${PORT}`);
   console.log(` API: http://localhost:${PORT}`);
