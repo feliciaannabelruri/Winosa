@@ -8,7 +8,7 @@ import {
 import { analyticsService } from '../services/analyticsService';
 import { Analytics } from '../types';
 import { useAuth } from '../context/AuthContext';
-import MLRecommendationStats from '../components/MLRecommendationStats';
+
 
 interface StatCardProps {
   label: string;
@@ -110,10 +110,7 @@ const DashboardPage: React.FC = () => {
         <StatCard label="Contacts"    value={counts.contacts}    icon={<Mail size={16} />}       bg="bg-red-50"     iconColor="text-red-500"    />
       </div>
 
-      {/* ML Recommendation Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <MLRecommendationStats />
-      </div>
+
 
       {/* Recent Activities */}
       <div>

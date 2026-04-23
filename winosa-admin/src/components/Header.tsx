@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { LogOut, User, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { logout, user } = useAuth();
@@ -36,10 +36,10 @@ const Header: React.FC = () => {
     <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50 h-16">
       <div className="flex items-center justify-between h-full px-6">
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <img src="/images/logo.png" alt="Winosa" className="w-10 h-10 object-contain" />
+        <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <img src="https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png" alt="Winosa" className="w-10 h-10 object-contain" />
           <span className="text-lg font-semibold text-gray-900">Winosa Admin</span>
-        </div>
+        </Link>
 
         {/* Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>

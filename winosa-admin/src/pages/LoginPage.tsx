@@ -84,7 +84,7 @@ const LoginPage: React.FC = () => {
           }}
         >
           <img
-            src="/images/logo.png"
+            src="https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png"
             alt="Winosa Logo"
             style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             onError={(e) => {
