@@ -36,7 +36,56 @@ exports.createContact = async (req, res) => {
         html: contactFormTemplate({ name, email, subject, message })
       });
     } catch (emailError) {
-      console.error('❌ Failed to send email notification:', emailError.message);
+      console.error('❌ Failed to send admin notification:', emailError.message);
+    }
+
+    // Send confirmation email to the submitter
+    try {
+      await sendEmail({
+        to: email,
+        subject: `We've received your message | Winosa`,
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+              .container { max-width: 580px; margin: 0 auto; padding: 32px 16px; }
+              .card { background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 32px; }
+              .header { text-align: center; margin-bottom: 28px; }
+              .logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: #0a0a0a; }
+              .badge { display: inline-block; background: #f5f5f5; color: #555; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 12px; border-radius: 999px; margin-bottom: 16px; }
+              h2 { font-size: 20px; color: #0a0a0a; margin: 0 0 8px; }
+              p { font-size: 14px; color: #555; margin: 0 0 16px; }
+              .message-box { background: #f9f9f9; border-left: 3px solid #ccc; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 13px; color: #666; }
+              .footer { text-align: center; margin-top: 28px; font-size: 12px; color: #aaa; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="card">
+                <div class="header">
+                  <div class="logo">WINOSA</div>
+                </div>
+                <span class="badge">Message Received</span>
+                <h2>Hi ${name}, thank you for reaching out! 👋</h2>
+                <p>We've received your message and our team will get back to you within <strong>1–2 business days</strong>.</p>
+                <div class="message-box">
+                  <strong>Your message:</strong><br/><br/>
+                  ${message.replace(/\n/g, '<br/>')}
+                </div>
+                <p>In the meantime, feel free to explore our work at <a href="https://winosa.id" style="color:#0a0a0a">winosa.id</a>.</p>
+                <p style="color:#aaa; font-size:13px;">— The Winosa Team</p>
+              </div>
+              <div class="footer">© ${new Date().getFullYear()} Winosa Mitra Bharatajaya. All rights reserved.</div>
+            </div>
+          </body>
+          </html>
+        `
+      });
+    } catch (confirmError) {
+      console.error('❌ Failed to send confirmation email to submitter:', confirmError.message);
+      // Non-blocking — form submission still succeeds
     }
 
     res.status(201).json({

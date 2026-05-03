@@ -60,9 +60,9 @@ const NewsletterPage: React.FC = () => {
   const activeCount = subscribers.filter(s => s.isActive).length;
 
   const filterLabels: Record<'all' | 'active' | 'inactive', string> = {
-    all: 'All',
-    active: 'Active',
-    inactive: 'Inactive',
+    all: 'Semua',
+    active: 'Aktif',
+    inactive: 'Tidak Aktif',
   };
 
   return (
@@ -79,22 +79,22 @@ const NewsletterPage: React.FC = () => {
           className="flex items-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
         >
           <Download size={16} />
-          Export CSV
+          Ekspor CSV
         </button>
       </div>
 
       {/* Statistik */}
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
-          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Total Subscriber</p>
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Total Pelanggan</p>
           <p className="text-2xl sm:text-3xl font-display font-bold text-dark">{subscribers.length}</p>
         </div>
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
-          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Active</p>
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Aktif</p>
           <p className="text-2xl sm:text-3xl font-display font-bold text-green-500">{activeCount}</p>
         </div>
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
-          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Inactive</p>
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Tidak Aktif</p>
           <p className="text-2xl sm:text-3xl font-display font-bold text-gray-400">{subscribers.length - activeCount}</p>
         </div>
       </div>
@@ -137,8 +137,8 @@ const NewsletterPage: React.FC = () => {
                 <th className="text-left text-sm font-semibold text-dark py-4 px-4 pl-6 w-12">No.</th>
                 <th className="text-left text-sm font-semibold text-dark py-4 px-4">Email</th>
                 <th className="text-left text-sm font-semibold text-dark py-4 px-4">Status</th>
-                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Date Joined</th>
-                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Actions</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Tanggal Bergabung</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -180,7 +180,7 @@ const NewsletterPage: React.FC = () => {
                           ? 'bg-green-100 text-green-600'
                           : 'bg-gray-100 text-gray-500'
                       }`}>
-                        {sub.isActive ? 'Active' : 'Unsubscribed'}
+                        {sub.isActive ? 'Aktif' : 'Berhenti Langganan'}
                       </span>
                     </td>
                     <td className="py-4 px-4 text-sm text-gray-500 whitespace-nowrap">
@@ -192,7 +192,7 @@ const NewsletterPage: React.FC = () => {
                       <button
                         onClick={() => setDeleteModal({ open: true, id: sub._id, loading: false })}
                         className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
-                        title="Delete"
+                        title="Hapus"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -207,8 +207,8 @@ const NewsletterPage: React.FC = () => {
 
       <ConfirmModal
         isOpen={deleteModal.open}
-        title="Delete Subscriber"
-        message="Apakah Anda yakin ingin menghapus subscriber ini? Mereka tidak akan menerima newsletter lagi."
+        title="Hapus Pelanggan"
+        message="Apakah Anda yakin ingin menghapus pelanggan ini? Mereka tidak akan menerima newsletter lagi."
         onConfirm={handleDelete}
         onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
         loading={deleteModal.loading}

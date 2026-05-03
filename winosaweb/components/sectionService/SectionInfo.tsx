@@ -48,12 +48,12 @@ export default function SectionInfo() {
   ];
 
   return (
-    <section className="w-full bg-white py-28" aria-labelledby="process-title">
+    <section className="w-full bg-white py-16" aria-labelledby="process-title">
       <div className="max-w-7xl mx-auto px-6 text-black">
 
         {/* process title */}
         <FadeUp>
-          <div className="text-center mb-20">
+          <div className="text-center mb-12">
             <h2 id="process-title" className="text-3xl font-bold mb-4">
               {t("info", "processTitle")}
             </h2>
@@ -67,7 +67,7 @@ export default function SectionInfo() {
         {/* process steps */}
         <FadeUp>
           <div
-            className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-24"
+            className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-16"
             role="list"
           >
             {process.map((item, i) => (

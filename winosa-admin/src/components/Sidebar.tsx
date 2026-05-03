@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Briefcase, FolderOpen, FileText,
   Mail, Menu, Crown, Users, Settings,
-  Grid,
+  Grid, X,
 } from 'lucide-react';
 
 const navItems = [
@@ -21,17 +21,30 @@ const navItems = [
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  mobileOpen?: boolean;
+  onClose?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle, mobileOpen, onClose }) => {
   return (
     <aside
-      style={{ top: '4rem', bottom: 0, borderTopRightRadius: '100px' }}
-      className={`fixed left-0 z-40 bg-black transition-all duration-300 ease-in-out w-22 ${
+      style={{ top: '4rem', bottom: 0 }}
+      className={`fixed left-0 z-50 bg-black transition-all duration-300 ease-in-out ${
+        // Desktop widths
         collapsed ? 'lg:w-20' : 'lg:w-56'
+      } ${
+        // Mobile behavior: drawer
+        mobileOpen ? 'translate-x-0 w-64 rounded-r-3xl' : '-translate-x-full lg:translate-x-0 w-22 lg:rounded-tr-[100px]'
       }`}
     >
-      <nav className="py-6 px-2 lg:px-3 flex flex-col h-full">
+      <nav className="py-6 px-3 flex flex-col h-full relative">
+        {/* Close button for mobile */}
+        <button 
+          onClick={onClose}
+          className="lg:hidden absolute top-4 right-4 text-gray-500 hover:text-white"
+        >
+          <X size={20} />
+        </button>
 
         {/* Desktop only (hamburger toggle) */}
         <button
@@ -51,9 +64,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
             <li key={to}>
               <NavLink
                 to={to}
+                onClick={onClose}
                 className={({ isActive }) =>
-                  `transition-all duration-200 flex flex-col items-center justify-center py-2 rounded-xl mx-1 lg:mx-0 lg:flex-row lg:justify-start lg:gap-3 lg:px-3 lg:py-3 lg:rounded-full ${
-                    collapsed ? 'lg:flex-col lg:justify-center lg:px-0 lg:w-12 lg:h-12 lg:mx-auto' : ''
+                  `transition-all duration-200 flex items-center gap-3 px-4 py-3 rounded-2xl lg:rounded-full ${
+                    collapsed ? 'lg:justify-center lg:px-0 lg:w-12 lg:h-12 lg:mx-auto' : ''
                   } ${
                     isActive ? 'bg-white text-yellow-500 font-semibold' : 'text-white hover:bg-gray-800'
                   }`
@@ -61,8 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                 title={label}
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />
-                <span className="text-[10px] mt-1 leading-tight text-center lg:hidden">{label}</span>
-                <span className={`hidden whitespace-nowrap text-[15px] ${collapsed ? '' : 'lg:inline'}`}>
+                <span className={`text-[15px] whitespace-nowrap ${collapsed ? 'lg:hidden' : 'inline'}`}>
                   {label}
                 </span>
               </NavLink>

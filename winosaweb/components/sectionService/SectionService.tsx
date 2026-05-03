@@ -90,7 +90,7 @@ export default function SectionServices({ initialServices }: Props) {
   }, [language, initialServices]);
 
   return (
-    <section className="w-full bg-white py-32" aria-labelledby="services-title">
+    <section className="w-full bg-white py-20" aria-labelledby="services-title">
       <div className="max-w-7xl mx-auto px-6 text-black">
         <h2
         id="services-title"

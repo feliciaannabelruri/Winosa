@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { LogOut, User, ChevronDown } from 'lucide-react';
+import { LogOut, User, ChevronDown, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -34,12 +38,23 @@ const Header: React.FC = () => {
 
   return (
     <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50 h-16">
-      <div className="flex items-center justify-between h-full px-6">
-        {/* Logo */}
-        <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <img src="https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png" alt="Winosa" className="w-10 h-10 object-contain" />
-          <span className="text-lg font-semibold text-gray-900">Winosa Admin</span>
-        </Link>
+      <div className="flex items-center justify-between h-full px-4 sm:px-6">
+        <div className="flex items-center gap-3">
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
+            aria-label="Open menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+
+          {/* Logo */}
+          <Link to="/dashboard" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity">
+            <img src="https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png" alt="Winosa" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
+            <span className="text-base sm:text-lg font-semibold text-gray-900 truncate max-w-[120px] sm:max-w-none">Winosa Admin</span>
+          </Link>
+        </div>
 
         {/* Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>

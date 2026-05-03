@@ -205,7 +205,26 @@ export default function SectionServiceRecommend() {
     if (!canAnalyze || status === "thinking") return;
     setStatus("thinking");
 
-    const res = await classifyService(fullText);
+    let textToAnalyze = fullText;
+    
+    // Auto-translate to English for better ML accuracy
+    if (language !== "en") {
+      try {
+        const transRes = await fetch("/api/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: fullText, target: "en", source: language })
+        });
+        const transData = await transRes.json();
+        if (transData.success && transData.translated) {
+          textToAnalyze = transData.translated;
+        }
+      } catch (err) {
+        console.warn("Input translation failed, using original:", err);
+      }
+    }
+
+    const res = await classifyService(textToAnalyze);
     setResult(res);
     setStatus("done");
 
@@ -226,16 +245,16 @@ export default function SectionServiceRecommend() {
   }
 
   return (
-    <section className="w-full bg-white py-24 md:py-32" aria-labelledby="recommend-title">
+    <section className="w-full bg-white py-16 md:py-20" aria-labelledby="recommend-title">
       <div className="max-w-[680px] mx-auto px-6">
 
         {/* Header */}
         <div className="text-center mb-12">
           <h2 id="recommend-title" className="text-3xl md:text-4xl font-bold text-black mb-3 leading-tight">
-            {t("plansPricing", "title")}
+            {t("serviceRecommendTitles", "title")}
           </h2>
           <p className="text-black/50 text-base">
-            {t("plansPricing", "subtitle")}
+            {t("serviceRecommendTitles", "subtitle")}
           </p>
         </div>
 

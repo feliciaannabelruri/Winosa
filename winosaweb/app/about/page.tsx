@@ -184,7 +184,7 @@ export default function AboutPage() {
             transition={{ duration: 0.5 }}
             className="inline-block px-5 py-1.5 rounded-full border border-black/10 bg-white/50 backdrop-blur-sm text-black/70 text-xs font-bold tracking-widest uppercase mb-6 shadow-sm"
           >
-            About Winosa
+            {t("aboutPage", "heroLabel")}
           </motion.span>
 
           <motion.h1
@@ -194,24 +194,34 @@ export default function AboutPage() {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="text-5xl md:text-7xl font-bold text-black mb-6 leading-tight tracking-tight"
           >
-            We Build Digital
-            <br />
-            <span className="relative inline-block mt-2">
-              <span className="relative z-10">Futures</span>
-              <span className="absolute bottom-1 left-0 w-full h-4 bg-yellow-400/40 -z-10 -rotate-1" />
-            </span>
+            {t("aboutPage", "heroTitle")}
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.25 }}
-            className="text-black/60 text-lg max-w-2xl mx-auto leading-relaxed mb-10"
+            className="text-black/60 text-lg max-w-2xl mx-auto leading-relaxed mb-8"
           >
-            A team of passionate developers, designers, and strategists from
-            Bandar Lampung, Indonesia — dedicated to delivering world-class
-            digital solutions for businesses locally and globally.
+            {t("aboutPage", "heroDesc")}
           </motion.p>
+
+          {/* Scenario Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8 text-left"
+          >
+            <div className="p-5 rounded-2xl border border-black/10 bg-white/60 backdrop-blur-sm shadow-sm">
+              <p className="font-bold text-sm text-black mb-1">{t("aboutPage", "scenario1Title")}</p>
+              <p className="text-sm text-black/60 leading-relaxed">{t("aboutPage", "scenario1Desc")}</p>
+            </div>
+            <div className="p-5 rounded-2xl border border-black/10 bg-white/60 backdrop-blur-sm shadow-sm">
+              <p className="font-bold text-sm text-black mb-1">{t("aboutPage", "scenario2Title")}</p>
+              <p className="text-sm text-black/60 leading-relaxed">{t("aboutPage", "scenario2Desc")}</p>
+            </div>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -223,20 +233,20 @@ export default function AboutPage() {
               href="/Contact"
               className="px-8 py-3.5 rounded-full bg-black text-white font-semibold text-sm transition-all duration-300 hover:bg-black/80 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 active:scale-95"
             >
-              Work With Us
+              {t("aboutPage", "workWithUs")}
             </Link>
             <Link
               href="/portofolio"
               className="px-8 py-3.5 rounded-full border-2 border-black/10 bg-white text-black font-semibold text-sm transition-all duration-300 hover:border-black/30 hover:bg-black/5 hover:-translate-y-0.5 active:scale-95 shadow-sm"
             >
-              View Portfolio
+              {t("aboutPage", "viewPortfolio")}
             </Link>
           </motion.div>
         </div>
       </section>
 
       {/* ── STATS ── */}
-      <section className="w-full py-20 bg-white" aria-label="Company statistics">
+      <section className="w-full py-12 bg-white" aria-label="Company statistics">
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {STATS.map((s, i) => (
@@ -256,7 +266,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── STORY ── */}
-      <section className="w-full py-24 bg-[#f8f7f5]" aria-labelledby="story-title">
+      <section className="w-full py-16 bg-[#f8f7f5]" aria-labelledby="story-title">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* Visual */}
@@ -291,7 +301,7 @@ export default function AboutPage() {
                 </div>
                 <div className="pr-2">
                   <p className="text-2xl font-black text-black">100%</p>
-                  <p className="text-xs text-black/50 font-bold tracking-wide uppercase mt-0.5">Client Focus</p>
+                  <p className="text-xs text-black/50 font-bold tracking-wide uppercase mt-0.5">{t("aboutPage", "clientFocus")}</p>
                 </div>
               </div>
             </div>
@@ -300,40 +310,29 @@ export default function AboutPage() {
           {/* Content */}
           <FadeUp delay={0.15}>
             <span className="inline-block text-xs font-semibold text-yellow-600 tracking-widest uppercase mb-4">
-              Our Story
+              {t("aboutPage", "ourStoryLabel")}
             </span>
             <h2 id="story-title" className="text-4xl font-bold text-black mb-6 leading-snug">
-              From Lampung to
-              <br />
-              the World
+              {t("aboutPage", "ourStoryTitle")}
             </h2>
             <div className="space-y-4 text-black/70 leading-relaxed">
-              <p>
-                Winosa Mitra Bharatajaya was founded with a single purpose: to
-                bridge the gap between innovative technology and real business
-                impact. Starting from Bandar Lampung, Indonesia, we have grown
-                into a team that serves clients from across the nation and
-                beyond.
-              </p>
-              <p>
-                We specialize in custom web development, mobile applications,
-                UI/UX design, and IT consulting — crafting solutions tailored to
-                each client's unique needs, culture, and market.
-              </p>
-              <p>
-                Our multilingual approach (Indonesian, English, Dutch) reflects
-                our commitment to serving diverse clients and building bridges
-                across cultures and industries.
-              </p>
+              <p>{t("aboutPage", "ourStoryP1")}</p>
+              <p>{t("aboutPage", "ourStoryP2")}</p>
+              <p>{t("aboutPage", "ourStoryP3")}</p>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              {["Web Development", "Mobile App", "UI/UX Design", "IT Consulting"].map((tag) => (
+              {[
+                { en: "Web Development", nl: "Webontwikkeling", id: "Pengembangan Web" },
+                { en: "Mobile App", nl: "Mobiele App", id: "Aplikasi Mobile" },
+                { en: "UI/UX Design", nl: "UI/UX Ontwerp", id: "Desain UI/UX" },
+                { en: "IT Consulting", nl: "IT-advies", id: "Konsultasi IT" },
+              ].map((tag) => (
                 <span
-                  key={tag}
+                  key={tag.en}
                   className="px-4 py-1.5 rounded-full bg-black/5 border border-black/10 text-black text-sm font-medium"
                 >
-                  {tag}
+                  {tag[language as keyof typeof tag] ?? tag.en}
                 </span>
               ))}
             </div>
@@ -342,20 +341,18 @@ export default function AboutPage() {
       </section>
 
       {/* ── VALUES ── */}
-      <section className="w-full py-24 bg-white" aria-labelledby="values-title">
+      <section className="w-full py-16 bg-white" aria-labelledby="values-title">
         <div className="max-w-7xl mx-auto px-6">
           <FadeUp>
             <div className="text-center mb-16">
               <span className="text-xs font-semibold text-yellow-600 tracking-widest uppercase">
-                What Drives Us
+                {t("aboutPage", "whatDrivesUs")}
               </span>
               <h2 id="values-title" className="text-4xl font-bold text-black mt-3 mb-4">
-                Our Core Values
+                {t("aboutPage", "ourCoreValues")}
               </h2>
               <p className="text-black/50 max-w-xl mx-auto">
-                These aren't just words on a wall. These are the principles that
-                guide every decision, every line of code, and every client
-                relationship.
+                {t("aboutPage", "coreValuesDesc")}
               </p>
             </div>
           </FadeUp>
@@ -387,15 +384,15 @@ export default function AboutPage() {
       </section>
 
       {/* ── MISSION & VISION ── */}
-      <section className="w-full py-24 bg-black text-white overflow-hidden" aria-labelledby="mission-vision-title">
+      <section className="w-full py-16 bg-black text-white overflow-hidden" aria-labelledby="mission-vision-title">
         <div className="max-w-7xl mx-auto px-6">
           <FadeUp>
             <div className="text-center mb-16">
               <span className="text-xs font-semibold text-yellow-400 tracking-widest uppercase">
-                Direction
+                {t("aboutPage", "directionLabel")}
               </span>
               <h2 id="mission-vision-title" className="text-4xl font-bold mt-3">
-                Mission & Vision
+                {t("aboutPage", "missionVisionTitle")}
               </h2>
             </div>
           </FadeUp>
@@ -409,12 +406,9 @@ export default function AboutPage() {
                   <div className="w-14 h-14 rounded-2xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center mb-6">
                     <TrendingUp className="w-7 h-7 text-yellow-400" aria-hidden="true" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
+                  <h3 className="text-2xl font-bold mb-4">{t("aboutPage", "missionTitle")}</h3>
                   <p className="text-white/60 leading-relaxed">
-                    To empower businesses — from startups to enterprises — with
-                    technology-driven solutions that accelerate growth, enhance
-                    efficiency, and create meaningful digital experiences for
-                    their customers.
+                    {t("aboutPage", "missionDesc")}
                   </p>
                 </div>
               </div>
@@ -428,12 +422,9 @@ export default function AboutPage() {
                   <div className="w-14 h-14 rounded-2xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center mb-6">
                     <Award className="w-7 h-7 text-yellow-400" aria-hidden="true" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
+                  <h3 className="text-2xl font-bold mb-4">{t("aboutPage", "visionTitle")}</h3>
                   <p className="text-white/60 leading-relaxed">
-                    To become a globally recognized IT consulting and development
-                    partner from Indonesia — known for innovation, quality, and
-                    the ability to compete at both national and international
-                    levels.
+                    {t("aboutPage", "visionDesc")}
                   </p>
                 </div>
               </div>
@@ -444,17 +435,17 @@ export default function AboutPage() {
           <FadeUp delay={0.3}>
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
               {[
-                { icon: Code2, label: "Custom-built for you", desc: "No templates, no shortcuts" },
-                { icon: ShieldCheck, label: "Security-first approach", desc: "Your data is always protected" },
-                { icon: Globe, label: "Multilingual support", desc: "ID · EN · NL" },
+                { icon: Code2, labelKey: "customBuilt", descKey: "customBuiltDesc" },
+                { icon: ShieldCheck, labelKey: "securityFirst", descKey: "securityFirstDesc" },
+                { icon: Globe, labelKey: "multilingualSupport", descKey: "multilingualDesc" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="flex gap-4 p-6 rounded-2xl border border-white/10 hover:border-yellow-400/20 transition-colors duration-300">
+                  <div key={item.labelKey} className="flex gap-4 p-6 rounded-2xl border border-white/10 hover:border-yellow-400/20 transition-colors duration-300">
                     <Icon className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     <div>
-                      <p className="font-semibold text-white text-sm">{item.label}</p>
-                      <p className="text-white/40 text-xs mt-1">{item.desc}</p>
+                      <p className="font-semibold text-white text-sm">{t("aboutPage", item.labelKey as any)}</p>
+                      <p className="text-white/40 text-xs mt-1">{t("aboutPage", item.descKey as any)}</p>
                     </div>
                   </div>
                 );
@@ -466,18 +457,18 @@ export default function AboutPage() {
 
       {/* ── TEAM ── */}
       {team.length > 0 && (
-        <section className="w-full py-24 bg-white" aria-labelledby="about-team-title">
+        <section className="w-full py-16 bg-white" aria-labelledby="about-team-title">
           <div className="max-w-7xl mx-auto px-6">
             <FadeUp>
               <div className="text-center mb-16">
                 <span className="text-xs font-semibold text-yellow-600 tracking-widest uppercase">
-                  People
+                  {t("aboutPage", "peopleLabel")}
                 </span>
                 <h2 id="about-team-title" className="text-4xl font-bold text-black mt-3 mb-4">
-                  Meet the Team
+                  {t("aboutPage", "meetTheTeam")}
                 </h2>
                 <p className="text-black/50 max-w-xl mx-auto">
-                  The passionate professionals behind every project.
+                  {t("aboutPage", "meetTheTeamDesc")}
                 </p>
               </div>
             </FadeUp>
@@ -551,7 +542,7 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-6">
             <FadeUp>
               <h2 id="contact-info-title" className="text-2xl font-bold text-black mb-8 text-center">
-                Get in Touch
+                {t("aboutPage", "getInTouch")}
               </h2>
             </FadeUp>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

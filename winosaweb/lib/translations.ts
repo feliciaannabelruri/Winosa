@@ -1819,6 +1819,19 @@ plansHero: {
 
 
 //pricing plans//
+serviceRecommendTitles: {
+  title: {
+    en: "Smart Service Recommender",
+    nl: "Slimme Dienstenaanbeveling",
+    id: "Rekomendasi Layanan Pintar",
+  },
+  subtitle: {
+    en: "Tell us your needs, and our AI will suggest the best digital solution.",
+    nl: "Vertel ons uw behoeften en onze AI zal de beste digitale oplossing voorstellen.",
+    id: "Ceritakan kebutuhan Anda, dan AI kami akan menyarankan solusi digital terbaik.",
+  },
+},
+
 plansPricing: {
 
   title: {
@@ -2277,4 +2290,246 @@ maintenancePlans: {
       id: "Tidak ada proyek ditemukan",
     },
   },
+
+  // Back buttons — detail pages
+  backButton: {
+    blog: {
+      en: "Back to Blog",
+      nl: "Terug naar Blog",
+      id: "Kembali ke Blog",
+    },
+    portfolio: {
+      en: "Back to Portfolio",
+      nl: "Terug naar Portfolio",
+      id: "Kembali ke Portofolio",
+    },
+    services: {
+      en: "Back to Services",
+      nl: "Terug naar Diensten",
+      id: "Kembali ke Layanan",
+    },
+  },
+
+  // About page — hero & scenarios
+  aboutPage: {
+    heroLabel: {
+      en: "About Winosa",
+      nl: "Over Winosa",
+      id: "Tentang Winosa",
+    },
+    heroTitle: {
+      en: "We Help You Build Your Digital Future",
+      nl: "Wij Helpen U Uw Digitale Toekomst te Bouwen",
+      id: "Kami Membantu Anda Membangun Masa Depan Digital",
+    },
+    heroDesc: {
+      en: "A team of developers, designers, and strategists from Bandar Lampung, Indonesia — dedicated to world-class digital solutions for businesses locally and globally.",
+      nl: "Een team van ontwikkelaars, designers en strategen uit Bandar Lampung, Indonesië — toegewijd aan digitale oplossingen van wereldklasse voor bedrijven lokaal en wereldwijd.",
+      id: "Tim pengembang, desainer, dan strategi dari Bandar Lampung, Indonesia — berdedikasi menghadirkan solusi digital berkelas dunia untuk bisnis lokal dan global.",
+    },
+    scenario1Title: {
+      en: "No IT knowledge?",
+      nl: "Geen IT-kennis?",
+      id: "Tidak punya pengetahuan IT?",
+    },
+    scenario1Desc: {
+      en: "We build it for you — from idea to launch.",
+      nl: "Wij bouwen het voor u — van idee tot lancering.",
+      id: "Kami bangunkan untuk Anda — dari ide sampai live.",
+    },
+    scenario2Title: {
+      en: "Need extra capacity?",
+      nl: "Extra capaciteit nodig?",
+      id: "Butuh kapasitas tambahan?",
+    },
+    scenario2Desc: {
+      en: "Your own dedicated team in Indonesia, temporarily or long-term. Let us know what you need.",
+      nl: "Uw eigen team in Indonesië, tijdelijk of voor de lange termijn. Laat ons weten wat u nodig heeft.",
+      id: "Tim dedicated Anda di Indonesia, sementara atau jangka panjang. Beritahu kami kebutuhan Anda.",
+    },
+    workWithUs: {
+      en: "Work With Us",
+      nl: "Werk Met Ons",
+      id: "Bekerja Sama",
+    },
+    viewPortfolio: {
+      en: "View Portfolio",
+      nl: "Bekijk Portfolio",
+      id: "Lihat Portofolio",
+    },
+    ourStoryLabel: {
+      en: "Our Story",
+      nl: "Ons Verhaal",
+      id: "Kisah Kami",
+    },
+    ourStoryTitle: {
+      en: "From Lampung to the World",
+      nl: "Van Lampung naar de Wereld",
+      id: "Dari Lampung ke Dunia",
+    },
+    ourStoryP1: {
+      en: "Winosa Mitra Bharatajaya was founded with a single purpose: to bridge the gap between innovative technology and real business impact. Starting from Bandar Lampung, Indonesia, we have grown into a team that serves clients from across the nation and beyond.",
+      nl: "Winosa Mitra Bharatajaya is opgericht met één doel: de kloof overbruggen tussen innovatieve technologie en echte bedrijfsresultaten. Vanuit Bandar Lampung, Indonesië, zijn we uitgegroeid tot een team dat klanten over het hele land en daarbuiten bedient.",
+      id: "Winosa Mitra Bharatajaya didirikan dengan satu tujuan: menjembatani kesenjangan antara teknologi inovatif dan dampak bisnis nyata. Berawal dari Bandar Lampung, Indonesia, kami telah berkembang menjadi tim yang melayani klien dari seluruh negeri dan mancanegara.",
+    },
+    ourStoryP2: {
+      en: "We specialize in custom web development, mobile applications, UI/UX design, and IT consulting — crafting solutions tailored to each client's unique needs, culture, and market.",
+      nl: "Wij zijn gespecialiseerd in webontwikkeling op maat, mobiele applicaties, UI/UX design en IT-advies — oplossingen die zijn afgestemd op de unieke behoeften, cultuur en markt van elke klant.",
+      id: "Kami spesialisasi dalam pengembangan web kustom, aplikasi mobile, desain UI/UX, dan konsultasi IT — menciptakan solusi yang disesuaikan dengan kebutuhan, budaya, dan pasar unik setiap klien.",
+    },
+    ourStoryP3: {
+      en: "Our multilingual approach (Indonesian, English, Dutch) reflects our commitment to serving diverse clients and building bridges across cultures and industries.",
+      nl: "Onze meertalige aanpak (Indonesisch, Engels, Nederlands) weerspiegelt onze toewijding aan het bedienen van diverse klanten en het bouwen van bruggen tussen culturen en industrieën.",
+      id: "Pendekatan multibahasa kami (Indonesia, Inggris, Belanda) mencerminkan komitmen kami untuk melayani klien yang beragam dan membangun jembatan lintas budaya dan industri.",
+    },
+    whatDrivesUs: {
+      en: "What Drives Us",
+      nl: "Wat Ons Drijft",
+      id: "Yang Mendorong Kami",
+    },
+    ourCoreValues: {
+      en: "Our Core Values",
+      nl: "Onze Kernwaarden",
+      id: "Nilai-Nilai Kami",
+    },
+    coreValuesDesc: {
+      en: "These aren't just words on a wall. These are the principles that guide every decision, every line of code, and every client relationship.",
+      nl: "Dit zijn niet zomaar woorden. Dit zijn de principes die elke beslissing, elke regel code en elke klantrelatie sturen.",
+      id: "Ini bukan sekadar kata-kata. Ini adalah prinsip yang memandu setiap keputusan, setiap baris kode, dan setiap hubungan dengan klien.",
+    },
+    directionLabel: {
+      en: "Direction",
+      nl: "Richting",
+      id: "Arah",
+    },
+    missionVisionTitle: {
+      en: "Mission & Vision",
+      nl: "Missie & Visie",
+      id: "Misi & Visi",
+    },
+    missionTitle: {
+      en: "Our Mission",
+      nl: "Onze Missie",
+      id: "Misi Kami",
+    },
+    missionDesc: {
+      en: "To empower businesses — from startups to enterprises — with technology-driven solutions that accelerate growth, enhance efficiency, and create meaningful digital experiences for their customers.",
+      nl: "Bedrijven machtigen — van startups tot grote ondernemingen — met technologiegerichte oplossingen die groei versnellen, efficiëntie verbeteren en zinvolle digitale ervaringen creëren.",
+      id: "Memberdayakan bisnis — dari startup hingga perusahaan besar — dengan solusi berbasis teknologi yang mempercepat pertumbuhan, meningkatkan efisiensi, dan menciptakan pengalaman digital yang bermakna.",
+    },
+    visionTitle: {
+      en: "Our Vision",
+      nl: "Onze Visie",
+      id: "Visi Kami",
+    },
+    visionDesc: {
+      en: "To become a globally recognized IT consulting and development partner from Indonesia — known for innovation, quality, and the ability to compete at both national and international levels.",
+      nl: "Een wereldwijd erkende IT-consulting- en ontwikkelingspartner uit Indonesië worden — bekend om innovatie, kwaliteit en het vermogen om te concurreren op nationaal en internationaal niveau.",
+      id: "Menjadi mitra konsultasi dan pengembangan IT yang diakui secara global dari Indonesia — dikenal karena inovasi, kualitas, dan kemampuan bersaing di tingkat nasional dan internasional.",
+    },
+    customBuilt: {
+      en: "Custom-built for you",
+      nl: "Op maat gemaakt voor u",
+      id: "Dibuat khusus untuk Anda",
+    },
+    customBuiltDesc: {
+      en: "No templates, no shortcuts",
+      nl: "Geen sjablonen, geen shortcuts",
+      id: "Tanpa template, tanpa jalan pintas",
+    },
+    securityFirst: {
+      en: "Security-first approach",
+      nl: "Beveiliging voorop",
+      id: "Pendekatan keamanan utama",
+    },
+    securityFirstDesc: {
+      en: "Your data is always protected",
+      nl: "Uw gegevens zijn altijd beschermd",
+      id: "Data Anda selalu terlindungi",
+    },
+    multilingualSupport: {
+      en: "Multilingual support",
+      nl: "Meertalige ondersteuning",
+      id: "Dukungan multibahasa",
+    },
+    multilingualDesc: {
+      en: "ID · EN · NL",
+      nl: "ID · EN · NL",
+      id: "ID · EN · NL",
+    },
+    peopleLabel: {
+      en: "People",
+      nl: "Mensen",
+      id: "Tim",
+    },
+    meetTheTeam: {
+      en: "Meet the Team",
+      nl: "Ontmoet het Team",
+      id: "Kenali Tim Kami",
+    },
+    meetTheTeamDesc: {
+      en: "The passionate professionals behind every project.",
+      nl: "De gepassioneerde professionals achter elk project.",
+      id: "Para profesional penuh semangat di balik setiap proyek.",
+    },
+    getInTouch: {
+      en: "Get in Touch",
+      nl: "Neem Contact Op",
+      id: "Hubungi Kami",
+    },
+    clientFocus: {
+      en: "Client Focus",
+      nl: "Klantgericht",
+      id: "Fokus Klien",
+    },
+  },
+
+  // Blog comment form — fixing hardcoded EN strings
+  blogComments: {
+    noComments: {
+      en: "No comments yet. Be the first to share your thoughts!",
+      nl: "Nog geen reacties. Wees de eerste om uw mening te delen!",
+      id: "Belum ada komentar. Jadilah yang pertama berbagi pendapat!",
+    },
+    leaveComment: {
+      en: "Leave a Comment",
+      nl: "Laat een Reactie achter",
+      id: "Tinggalkan Komentar",
+    },
+    yourName: {
+      en: "Your Name",
+      nl: "Uw Naam",
+      id: "Nama Anda",
+    },
+    yourThoughts: {
+      en: "Your Thoughts",
+      nl: "Uw Gedachten",
+      id: "Pendapat Anda",
+    },
+  },
+
+  // Portfolio detail — hardcoded strings
+  portfolioDetailMisc: {
+    visitProject: {
+      en: "Visit Project",
+      nl: "Bekijk Project",
+      id: "Lihat Proyek",
+    },
+    similarProjects: {
+      en: "Similar Projects",
+      nl: "Vergelijkbare Projecten",
+      id: "Proyek Serupa",
+    },
+    untitledProject: {
+      en: "Untitled Project",
+      nl: "Naamloos Project",
+      id: "Proyek Tanpa Judul",
+    },
+    descriptionComingSoon: {
+      en: "Project description coming soon.",
+      nl: "Projectbeschrijving volgt binnenkort.",
+      id: "Deskripsi proyek segera hadir.",
+    },
+  },
+
 } as const;

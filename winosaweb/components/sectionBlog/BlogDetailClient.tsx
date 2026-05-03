@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
@@ -124,7 +125,18 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
       </section>
 
       {/* ARTICLE */}
-      <section className="max-w-4xl mx-auto px-6 py-24 text-black">
+      <section className="max-w-4xl mx-auto px-6 py-16 text-black">
+        {/* Back button */}
+        <FadeUp>
+          <Link
+            href="/Blog"
+            className="inline-flex items-center gap-2 text-sm font-medium text-black/50 hover:text-black mb-10 group transition-colors duration-200"
+          >
+            <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform duration-200" />
+            {t("backButton", "blog")}
+          </Link>
+        </FadeUp>
+
         <FadeUp>
           <article
             className="prose prose-xl max-w-none 
@@ -142,10 +154,10 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
       </section>
 
       {/* RELATED */}
-      <section aria-labelledby="related-title" className="w-full py-24 bg-gray-50/50">
+      <section aria-labelledby="related-title" className="w-full py-14 bg-gray-50/50">
         <div className="max-w-7xl mx-auto px-6 text-black">
           <FadeUp>
-            <h2 id="related-title" className="text-3xl font-display font-bold mb-12">
+            <h2 id="related-title" className="text-3xl font-display font-bold mb-8">
               {t("blogDetail", "related")}
             </h2>
           </FadeUp>
@@ -196,10 +208,10 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
       </section>
 
       {/* COMMENTS */}
-      <section aria-labelledby="comments-title" className="w-full py-24 bg-white">
+      <section aria-labelledby="comments-title" className="w-full py-14 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-black">
           <FadeUp>
-            <h2 id="comments-title" className="text-3xl font-display font-bold mb-12">
+            <h2 id="comments-title" className="text-3xl font-display font-bold mb-8">
               {t("blogDetail", "comments")} ({comments.length})
             </h2>
           </FadeUp>
@@ -218,16 +230,16 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
               </motion.div>
             ))}
             {comments.length === 0 && (
-              <p className="text-center text-gray-400 py-8 italic">No comments yet. Be the first to share your thoughts!</p>
+              <p className="text-center text-gray-400 py-8 italic">{t("blogComments", "noComments")}</p>
             )}
           </div>
 
           <FadeUp>
             <div className="bg-dark rounded-[40px] p-10 text-white shadow-2xl">
-              <h3 className="text-2xl font-display font-bold mb-8">Leave a Comment</h3>
+              <h3 className="text-2xl font-display font-bold mb-8">{t("blogComments", "leaveComment")}</h3>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2 opacity-60">Your Name</label>
+                  <label className="block text-sm font-medium mb-2 opacity-60">{t("blogComments", "yourName")}</label>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -236,7 +248,7 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2 opacity-60">Your Thoughts</label>
+                  <label className="block text-sm font-medium mb-2 opacity-60">{t("blogComments", "yourThoughts")}</label>
                   <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}

@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import styles from "@/app/portofolio/[slug]/detail.module.css";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
@@ -23,7 +25,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ project }: HeroSectionProps) {
-  const { tApi } = useTranslate();
+  const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
   const [translated, setTranslated] = useState(project);
 
@@ -67,6 +69,15 @@ export default function HeroSection({ project }: HeroSectionProps) {
               visible: { transition: { staggerChildren: 0.15 } },
             }}
           >
+          {/* Back button */}
+            <Link
+              href="/portofolio"
+              className="inline-flex items-center gap-2 text-sm font-medium text-white/60 hover:text-white mb-6 group transition-colors duration-200"
+            >
+              <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform duration-200" />
+              {t("backButton", "portfolio")}
+            </Link>
+
             {/* Kategori */}
             <motion.span
               className={styles.heroSplitCategory}
@@ -122,7 +133,7 @@ export default function HeroSection({ project }: HeroSectionProps) {
                   cursor: 'pointer',
                 }}
               >
-                Visit Project
+                {t("portfolioDetailMisc", "visitProject")}
               </motion.a>
             )}
           </motion.div>
