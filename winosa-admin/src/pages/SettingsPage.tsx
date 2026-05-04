@@ -9,7 +9,6 @@ import {
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
-/* Types */
 export interface SiteSettings {
   _id?:       string;
   updatedAt?: string;
@@ -55,7 +54,6 @@ const TAB_FIELDS: Record<TabKey, (keyof SiteSettings)[]> = {
   contact: ['siteEmail', 'sitePhone', 'siteAddress', 'socialWhatsapp'],
 };
 
-/* Style tokens */
 const inp     = 'w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors placeholder:text-gray-300';
 const inpErr  = 'w-full border border-red-300 rounded-2xl px-4 py-3 text-sm outline-none focus:border-red-400 bg-red-50/30 transition-colors placeholder:text-gray-300';
 const inpIcon = 'w-full border border-gray-200 rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors placeholder:text-gray-300';
@@ -63,7 +61,6 @@ const txt     = 'w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm out
 const cc      = (len: number, max: number) =>
   len > max ? 'text-red-500' : len > max * 0.85 ? 'text-yellow-500' : 'text-gray-400';
 
-/* Atoms */
 const FieldLabel: React.FC<{ children: React.ReactNode; hint?: string }> = ({ children, hint }) => (
   <div className="mb-2">
     <label className="block text-sm font-semibold text-dark">{children}</label>
@@ -162,7 +159,6 @@ const LoadingSkeleton: React.FC = () => (
   </div>
 );
 
-/* API Error Banner */
 const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
   <div className="flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3">
     <WifiOff size={15} className="text-orange-400 flex-shrink-0 mt-0.5" />

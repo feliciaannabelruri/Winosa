@@ -30,7 +30,7 @@ export default function InfoSection({ project }: InfoSectionProps) {
       <section className={styles.infoSectionA} aria-labelledby="project-overview-title">
         <div className={styles.infoContainerA}>
 
-          {/* Eyebrow */}
+          {/* Eyebrow (judul section*/}
           <motion.div
             className={styles.infoHeaderA}
             initial={{ opacity: 0, y: 40 }}
