@@ -61,7 +61,7 @@ export default function SectionTeam() {
 
   if (!loaded) {
     return (
-      <section className="w-full bg-white py-24 md:py-40">
+      <section className="w-full bg-white py-10 md:py-10">
         <div role="status" aria-live="polite" className="text-center">Loading...</div>
       </section>
     );
@@ -70,10 +70,10 @@ export default function SectionTeam() {
   if (team.length === 0) return null;
 
   return (
-    <section className="w-full bg-white py-24 md:py-40" aria-labelledby="team-title">
+    <section className="w-full bg-white py-16 md:py-24" aria-labelledby="team-title">
       <div className="max-w-7xl mx-auto px-6 text-black">
 
-        <div className="text-center mb-14 md:mb-16">
+        <div className="text-center mb-1 md:mb-2">
           <h2 
             id="team-title"
             className="text-3xl md:text-4xl font-bold mb-4">
@@ -85,11 +85,12 @@ export default function SectionTeam() {
           </p>
         </div>
 
-        <div className="relative h-[420px] md:h-[520px] flex items-center justify-center"
+       <div
+        className="relative flex items-center justify-center min-h-[420px] overflow-hidden"
         role="region"
-          aria-label="Team members carousel"
-          aria-live="polite"
-        >
+        aria-label="Team members carousel"
+        aria-live="polite"
+      >
 
           {team.map((member, i) => {
 
@@ -111,7 +112,7 @@ export default function SectionTeam() {
                 key={member._id}
                 className={`absolute transition-all duration-700 ease-in-out ${styles}`}
               >
-                <div className="w-[300px] h-[400px] bg-white border border-black rounded-[28px] overflow-hidden" role="article"
+                <div className="w-[300px] h-[360px] bg-white border border-black rounded-[28px] overflow-hidden"
                   aria-label={`Team member ${member.name}`}>
 
                   <img

@@ -63,7 +63,7 @@ export default function SectionHero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="text-white text-5xl md:text-6xl font-bold mb-6 tracking-tight"
+          className="text-white text-5xl md:text-6xl font-bold mb-5 tracking-tight"
           style={{ textShadow: "0 6px 24px rgba(0,0,0,0.6)" }}
         >
           {t("servicesHero", "title")}
@@ -74,11 +74,22 @@ export default function SectionHero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="text-white/90 text-lg mb-10 max-w-xl leading-relaxed"
+          className="text-white/90 text-lg mb-0 max-w-xl leading-relaxed"
           style={{ textShadow: "0 4px 16px rgba(0,0,0,0.6)" }}
         >
           {t("servicesHero", "subtitle")}
         </motion.p>
+
+        {/* description tambahan */}
+          <motion.p
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="text-white/80 text-base mb-10 max-w-xl leading-relaxed"
+            style={{ textShadow: "0 4px 16px rgba(0,0,0,0.6)" }}
+          >
+            {t("servicesHero", "description")}
+          </motion.p>
 
         {/* button */}
         <motion.div

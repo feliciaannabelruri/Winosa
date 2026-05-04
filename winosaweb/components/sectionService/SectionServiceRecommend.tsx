@@ -245,7 +245,7 @@ export default function SectionServiceRecommend() {
   }
 
   return (
-    <section className="w-full bg-white py-16 md:py-20" aria-labelledby="recommend-title">
+    <section className="w-full bg-white py-10 md:py-12 pb-6 md:pb-8" aria-labelledby="recommend-title">
       <div className="max-w-[680px] mx-auto px-6">
 
         {/* Header */}

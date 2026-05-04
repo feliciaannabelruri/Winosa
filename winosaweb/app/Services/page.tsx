@@ -70,7 +70,7 @@ export default async function ServicesPage() {
 
       <SectionServices initialServices={services} />
 
-      <SectionInfo />
+      <SectionInfo services={services} />
 
       <SectionServiceRecommend />
 

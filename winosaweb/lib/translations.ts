@@ -321,14 +321,19 @@ servicesHero: {
     id: "Layanan Kami",
   },
   subtitle: {
-    en: "Turning ideas into scalable digital solutions",
-    nl: "Ideeën omzetten in schaalbare digitale oplossingen",
-    id: "Mengubah ide menjadi solusi digital yang skalabel",
+    en: "Turning ideas into scalable digital solutions.",
+    nl: "Ideeën omzetten in schaalbare digitale oplossingen.",
+    id: "Mengubah ide menjadi solusi digital yang skalabel.",
   },
   button: {
     en: "Get in Touch",
     nl: "Neem Contact Op",
     id: "Hubungi Kami",
+  },
+  description: {
+    en: "We turn your ideas into digital products that are ready to grow with your business.",
+    nl: "Wij helpen ideeën omzetten in digitale producten die klaar zijn om mee te groeien met uw bedrijf.",
+    id: "Kami membantu mengubah ide menjadi produk digital yang siap digunakan dan bisa berkembang."
   },
 },
 
