@@ -105,7 +105,7 @@ export default function SectionContactForm() {
   return (
     <FadeUp disableInView>
       <section
-        className="w-full py-24 bg-white"
+        className="w-full pt-24 pb-2 bg-white"
         aria-labelledby="contact-title"
         style={{ transform: "translateZ(0)" }}
       >

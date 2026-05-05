@@ -22,7 +22,7 @@ export default function SectionCompanyInfo() {
   return (
     <FadeUp>
       <section
-        className="w-full py-28 bg-white"
+        className="w-full py-10 bg-white"
         aria-labelledby="faq-title"
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-16 grid lg:grid-cols-2 gap-20">

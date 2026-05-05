@@ -126,7 +126,7 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
 
   return (
     <section
-      className="w-full bg-white py-28 overflow-hidden"
+      className="w-full bg-white py-6 overflow-hidden"
       aria-labelledby="blog-section-title"
     >
       <div className="max-w-7xl mx-auto px-6 text-black">
@@ -134,8 +134,8 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
         {/* trending */}
         {translatedTrending.length > 0 && (
           <FadeUp>
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-8">
+            <div className="mb-10">
+              <h2 className="text-3xl font-bold mb-4">
                 {t("blogSection", "trending")}
               </h2>
 
@@ -205,7 +205,7 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
         {/* categories */}
         <FadeUp>
           <div
-            className="flex justify-end gap-3 mb-14 flex-wrap"
+            className="flex justify-end gap-3 mb-6 flex-wrap"
             role="group"
             aria-label="Filter blog categories"
           >

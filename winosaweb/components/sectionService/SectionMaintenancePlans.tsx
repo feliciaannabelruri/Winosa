@@ -177,7 +177,7 @@ useEffect(() => {
   }
 
   return (
-    <section className="w-full bg-white py-20 md:py-28 border-t border-black/6" aria-labelledby="maintenance-title">
+    <section className="w-full bg-white py-10 md:py-18 border-t border-black/6" aria-labelledby="maintenance-title">
       <div className="max-w-6xl mx-auto px-6">
 
         {/* Header */}

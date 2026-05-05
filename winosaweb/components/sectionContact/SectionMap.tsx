@@ -14,7 +14,7 @@ export default function SectionMap() {
   return (
     <FadeUp>
       <section
-        className="w-full bg-white py-32"
+        className="w-full bg-white py-14"
         aria-labelledby="map-title"
       >
         <div className="max-w-7xl mx-auto px-6 text-black">
