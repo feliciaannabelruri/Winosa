@@ -13,6 +13,7 @@ import PortfolioDetailPage from './pages/PortfolioDetailPage';
 import PortfolioFormPage from './pages/PortfolioFormPage';
 import ServicesPage from './pages/ServicesPage';
 import ServiceFormPage from './pages/ServiceFormPage';
+import ServiceInfoPage from './pages/ServiceInfoPage';
 import ContactsPage from './pages/ContactsPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import SubscriptionFormPage from './pages/SubscriptionFormPage';
@@ -66,6 +67,7 @@ function App() {
             <Route path="services" element={<ServicesPage />} />
             <Route path="services/add" element={<ServiceFormPage />} />
             <Route path="services/edit/:id" element={<ServiceFormPage />} />
+            <Route path="services/info-section" element={<ServiceInfoPage />} />
 
             <Route path="contacts" element={<ContactsPage />} />
 

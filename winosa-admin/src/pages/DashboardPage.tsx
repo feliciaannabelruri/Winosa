@@ -96,14 +96,14 @@ const DashboardPage: React.FC = () => {
       <div>
         <h1 className="text-3xl sm:text-4xl font-display font-bold text-dark">Dashboard</h1>
         <p className="text-gray-400 text-sm mt-1 italic">
-          Overview of Winosa website activity — Welcome back,{' '}
+          Ringkasan aktivitas — Selamat datang kembali,{' '}
           <span className="text-dark font-medium not-italic">{user?.name ?? 'Admin'}</span>
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        <StatCard label="Portfolios"  value={counts.portfolios}  icon={<FolderOpen size={16} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
+        <StatCard label="Portofolio"  value={counts.portfolios}  icon={<FolderOpen size={16} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
         <StatCard label="Blogs"       value={counts.blogs}       icon={<FileText size={16} />}   bg="bg-primary/10" iconColor="text-primary"    />
         <StatCard label="Services"    value={counts.services}    icon={<Briefcase size={16} />}  bg="bg-purple-50"  iconColor="text-purple-500" />
         <StatCard label="Subscribers" value={counts.subscribers} icon={<Users size={16} />}      bg="bg-green-50"   iconColor="text-green-500"  />
