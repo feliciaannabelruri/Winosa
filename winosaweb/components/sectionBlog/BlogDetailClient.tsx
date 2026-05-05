@@ -39,27 +39,54 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
   const [message, setMessage] = useState("");
 
   // LOAD COMMENTS
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(`comments-${initialBlog.slug}`);
-      if (saved) setComments(JSON.parse(saved));
-    } catch {
-      setComments([]);
-    }
-  }, [initialBlog.slug]);
-
+ 
   // SAVE COMMENTS
   useEffect(() => {
-    if (comments.length > 0) {
-      localStorage.setItem(`comments-${initialBlog.slug}`, JSON.stringify(comments));
+  const fetchComments = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/comments/${initialBlog._id}`
+      );
+      const data = await res.json();
+      setComments(data.data || []);
+    } catch (err) {
+      console.error("error load comments");
+      setComments([]);
     }
-  }, [comments, initialBlog.slug]);
+  };
 
-  const handlePost = () => {
+  fetchComments();
+}, [initialBlog._id]);
+
+  const handlePost = async () => {
     if (!name.trim() || !message.trim()) return;
-    setComments([...comments, { name, message }]);
-    setName("");
-    setMessage("");
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            blogId: initialBlog._id,
+            name,
+            message,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setComments([data.data, ...comments]);
+        setName("");
+        setMessage("");
+      }
+    } catch (err) {
+      console.error("error post comment");
+    }
   };
 
   // TRANSLATE BLOG
@@ -235,16 +262,16 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
           </div>
 
           <FadeUp>
-            <div className="bg-dark rounded-[40px] p-10 text-white shadow-2xl">
-              <h3 className="text-2xl font-display font-bold mb-8">{t("blogComments", "leaveComment")}</h3>
+            <div className="bg-white rounded-[40px] p-10 text-black shadow-2xl">
+              <h3 className="text-2xl font-display font-bold mb-8 text-black">{t("blogComments", "leaveComment")}</h3>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2 opacity-60">{t("blogComments", "yourName")}</label>
+                  <label className="block text-sm font-medium mb-2 text-black/60">{t("blogComments", "yourName")}</label>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder={t("blogDetail", "yourName")}
-                    className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:border-primary outline-none transition-all"
+                    className="w-full px-6 py-4 bg-white border border-black/20 rounded-2xl text-black focus:border-primary outline-none"
                   />
                 </div>
                 <div>
@@ -254,15 +281,15 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder={t("blogDetail", "writeComment")}
                     rows={4}
-                    className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-[24px] focus:border-primary outline-none transition-all resize-none"
+                    className="w-full px-6 py-4 bg-white border border-black/20 rounded-[24px] text-black focus:border-primary outline-none resize-none"
                   />
                 </div>
                 <button
-                  type="button"
-                  onClick={handlePost}
-                  className="w-full py-4 bg-primary text-dark font-bold rounded-2xl hover:bg-white transition-all transform active:scale-95"
-                >
-                  {t("blogDetail", "post")}
+                    type="button"
+                    onClick={handlePost}
+                    className="w-full py-4 border border-black text-black font-medium rounded-full hover:bg-black/10 transition-all"
+                  >
+                    {t("blogDetail", "post")}
                 </button>
               </div>
             </div>

@@ -101,6 +101,11 @@ app.use('/api/portfolio',     require('./routes/portfolioRoutes'));
 app.use('/api/blog',          require('./routes/blogRoutes'));
 app.use('/api/contact',       require('./routes/contactRoutes'));
 app.use('/api/newsletter',    require('./routes/newsletterRoutes'));
+
+const test = require('./routes/commentRoutes');
+console.log("COMMENT ROUTE:", test);
+
+app.use('/api/comments', require('./routes/commentRoutes'));
 app.use('/api/services',      require('./routes/serviceRoutes'));
 app.use('/api/subscriptions', require('./routes/subscriptionRoutes'));
 app.use('/api/content',       require('./routes/contentRoutes'));
