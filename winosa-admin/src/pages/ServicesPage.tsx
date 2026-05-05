@@ -1,17 +1,20 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Plus, Trash2, Edit2, Search, Sparkles, Globe, Smartphone, Palette } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { serviceService } from '../services/serviceService';
 import { Service } from '../types';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
 import {
+  Plus, Trash2, Edit2, Search, Sparkles, Globe, Smartphone, Palette,
+  GitBranch, Star,
   Monitor, Briefcase, CloudCog,
   Shield, Code, TrendingUp, Layers, Zap, Settings,
-  Database, Lock, BarChart, Mail, Search as SearchIcon, Star, Cpu, Layout,
+  Database, Lock, BarChart, Mail, Search as SearchIcon, Cpu, Layout,
   PenTool, Camera, Video, Music, ShoppingCart, Users, Heart,
-  MessageSquare, Map, Clock, Wifi, Terminal, Package,
+  MessageSquare, Map, Clock, Wifi, Terminal, Package, Award
 } from 'lucide-react';
+import ServiceInfoPage from './ServiceInfoPage';
+import ServiceHeroEditor from './ServiceHeroEditor';
 
 type FilterType = 'all' | 'draft' | 'published';
 
@@ -90,6 +93,8 @@ const ServicesPage: React.FC = () => {
     }
   };
 
+  const [tab, setTab] = useState<'services' | 'process' | 'reasons' | 'hero'>('services');
+
   const filtered = services.filter(s => {
     const matchSearch = s.title.toLowerCase().includes(search.toLowerCase());
     const matchStatus =
@@ -114,27 +119,58 @@ const ServicesPage: React.FC = () => {
           <h1 className="text-4xl font-display font-bold text-dark">Services</h1>
           <p className="text-gray-400 text-sm mt-1 italic">Kelola konten layanan Winosa</p>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="overflow-x-auto pb-1 -mb-1">
+        <div className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-full px-2 py-1.5 shadow-sm min-w-max">
+          {([
+            { id: 'services', label: 'Services',      icon: Briefcase },
+            { id: 'hero',     label: 'Page Hero',     icon: Layout },
+            { id: 'process',  label: 'Our Process',   icon: GitBranch },
+            { id: 'reasons',  label: 'Why Choose Us', icon: Star      },
+          ] as const).map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                tab === id
+                  ? 'bg-dark text-white shadow-sm'
+                  : 'text-gray-500 hover:text-dark'
+              }`}
+            >
+              <Icon size={14} />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {tab === 'services' && (
+<>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+      {/* Add Service — mobile: baris 1 kiri, desktop: hilang dari sini */}
         <button
           onClick={() => navigate('/services/add')}
-          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit"
+          className="flex sm:hidden items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 text-sm w-fit"
         >
           <Plus size={16} />
           Add Service
         </button>
-      </div>
 
-      {/* Search + Filter */}
-      <div className="flex flex-col sm:flex-row gap-3">
+        {/* Search */}
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
-            placeholder="Cari layanan..."
+            placeholder="Search services..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
           />
         </div>
+
+        {/* Filter */}
         <div className="flex flex-wrap gap-2">
           {(['all', 'published', 'draft'] as FilterType[]).map(f => (
             <button
@@ -150,7 +186,17 @@ const ServicesPage: React.FC = () => {
             </button>
           ))}
         </div>
-      </div>
+
+        {/* Add Service — desktop: ujung kanan, mobile: disembunyikan */}
+          <button
+            onClick={() => navigate('/services/add')}
+            className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit ml-auto"
+          >
+            <Plus size={16} />
+            Add Service
+          </button>
+
+        </div>
 
       {/* Daftar Layanan */}
       {loading ? (
@@ -234,7 +280,11 @@ const ServicesPage: React.FC = () => {
         onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
         loading={deleteModal.loading}
       />
-
+      </>
+    )}
+    {tab === 'process' && <ServiceInfoPage embedded activeSection="process" />}
+    {tab === 'reasons' && <ServiceInfoPage embedded activeSection="reasons" />}
+    {tab === 'hero' && <ServiceHeroEditor />}
     </div>
   );
 };
