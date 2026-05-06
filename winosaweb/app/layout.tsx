@@ -9,6 +9,7 @@ import Script from "next/script";
 import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { Poppins, Inter } from "next/font/google";
+import { useLanguageStore } from "@/store/useLanguageStore";
 
 // FONT //
 const inter = Inter({
@@ -35,6 +36,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+
+  const { setLanguage } = useLanguageStore();
+
+  
+  useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const savedLang = localStorage.getItem("lang");
+  if (savedLang) {
+    setLanguage(savedLang as any);
+    return;
+  }
+
+  const userLang = navigator.language.toLowerCase();
+
+  if (userLang.includes("id")) {
+    setLanguage("id" as any);
+  } else if (userLang.includes("nl")) {
+    setLanguage("nl" as any);
+  } else {
+    setLanguage("en" as any);
+  }
+}, []);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.gtag) {
@@ -64,7 +88,7 @@ export default function RootLayout({
 
         <Navbar />
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
           <PageTransition pathname={pathname}>
             {children}
           </PageTransition>

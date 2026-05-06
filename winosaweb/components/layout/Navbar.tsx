@@ -12,6 +12,7 @@ export default function Navbar() {
 
   const { language, setLanguage } = useLanguageStore();
   const { t } = useTranslate();
+  const [langOpen, setLangOpen] = useState(false);
 
   const [logo, setLogo] = useState("https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png");
 
@@ -85,13 +86,32 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
 
-          <button
-            onClick={cycleLanguage}
-            aria-label="Change language"
-            className="hidden lg:flex px-5 py-2 rounded-full border-2 border-black text-black text-sm font-medium transition-all duration-300 hover:bg-black/10 hover:scale-105 active:scale-95 focus:outline-none focus:underline"
-          >
-            {displayLang}
-          </button>
+          <div className="relative hidden lg:block">
+            <button
+              onClick={() => setLangOpen(!langOpen)}
+              className="px-4 py-2 rounded-full border border-black text-black text-sm font-medium flex items-center gap-2 hover:bg-black/10 transition-all"
+            >
+              {displayLang}
+              <span className="text-xs">▾</span>
+            </button>
+
+            {langOpen && (
+              <div className="absolute right-0 mt-2 w-28 bg-white border border-black/10 rounded-xl shadow-md overflow-hidden">
+                {["en", "nl", "id"].map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => {
+                    setLanguage(lang as any);
+                    setLangOpen(false);
+                  }}
+                    className="w-full px-4 py-2 text-left text-sm text-black hover:bg-black/10 transition"
+                  >
+                    {lang.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           <button
             onClick={() => setOpen(true)}
@@ -157,13 +177,27 @@ export default function Navbar() {
               </Link>
             ))}
 
-            <button
-              onClick={cycleLanguage}
-              aria-label="Change language"
-              className="mt-6 w-full px-6 py-4 rounded-full border-2 border-black text-black text-sm font-medium transition-all duration-300 hover:bg-black/10 active:scale-95 focus:outline-none focus:underline"
-            >
-              {displayLang}
-            </button>
+            <div className="mt-6">
+              <p className="text-xs text-black/60 mb-2">Language</p>
+              <div className="flex gap-2">
+                {["en", "nl", "id"].map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => {
+                        setLanguage(lang as any);
+                        localStorage.setItem("lang", lang);
+                      }}
+                    className={`px-4 py-2 rounded-full border text-sm ${
+                      language === lang
+                        ? "bg-black text-white border-black"
+                        : "border-black/20 text-black"
+                    }`}
+                  >
+                    {lang.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}

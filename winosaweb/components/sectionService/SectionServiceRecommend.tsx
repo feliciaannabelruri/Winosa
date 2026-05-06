@@ -210,7 +210,9 @@ export default function SectionServiceRecommend() {
     // Auto-translate to English for better ML accuracy
     if (language !== "en") {
       try {
-        const transRes = await fetch("/api/translate", {
+        const api = process.env.NEXT_PUBLIC_API_URL;
+
+          const transRes = await fetch(`${api}/translate`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: fullText, target: "en", source: language })

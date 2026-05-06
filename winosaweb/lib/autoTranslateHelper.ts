@@ -9,16 +9,18 @@ export async function autoTranslate(text: string, lang: string) {
   }
 
   try {
-    const res = await fetch("/api/translate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text,
-        target: lang,
-      }),
-    });
+    const api = process.env.NEXT_PUBLIC_API_URL;
+
+const res = await fetch(`${api}/translate`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    text,
+    target: lang,
+  }),
+});
 
     const data = await res.json();
 
