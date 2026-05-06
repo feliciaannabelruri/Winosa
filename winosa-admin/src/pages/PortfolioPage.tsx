@@ -90,7 +90,9 @@ const PortfolioPage: React.FC = () => {
     }
   };
 
+  const PORTFOLIO_SYSTEM_SLUGS = ['hero-portfolio', 'explanation-portfolio', 'bridge-portfolio'];
   const filtered = portfolios.filter(p => {
+    if (PORTFOLIO_SYSTEM_SLUGS.includes(p.slug)) return false;
     const matchSearch   = p.title.toLowerCase().includes(search.toLowerCase());
     const matchStatus   = filter === 'all' ? true : filter === 'published' ? !!p.isActive : !p.isActive;
     const matchCategory = category === 'All Categories' ? true : p.category === category;
