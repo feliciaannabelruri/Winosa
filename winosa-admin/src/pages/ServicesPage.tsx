@@ -95,7 +95,9 @@ const ServicesPage: React.FC = () => {
 
   const [tab, setTab] = useState<'services' | 'process' | 'reasons' | 'hero'>('services');
 
+  const SYSTEM_SLUGS = ['info-section', 'hero-services'];
   const filtered = services.filter(s => {
+    if (SYSTEM_SLUGS.includes(s.slug)) return false;
     const matchSearch = s.title.toLowerCase().includes(search.toLowerCase());
     const matchStatus =
       filter === 'all'       ? true :

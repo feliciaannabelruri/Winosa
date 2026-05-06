@@ -16,7 +16,10 @@ exports.getServices = async (req, res) => {
       return res.json(cached);
     }
 
-    const services = await Service.find({ isActive: true })
+    const services = await Service.find({ 
+      isActive: true,
+      slug: { $nin: ['info-section', 'hero-services'] }
+    })
       .sort({ order: 1, createdAt: -1 })
       .lean();
 
