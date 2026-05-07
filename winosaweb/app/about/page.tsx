@@ -47,53 +47,37 @@ interface Settings {
 /* ============================================================
    STATS CONFIG
 ============================================================ */
-const STATS = [
-  { label: { en: "Projects Done", id: "Proyek Selesai", nl: "Projecten Klaar" }, value: "50+" },
-  { label: { en: "Happy Clients", id: "Klien Puas", nl: "Tevreden Klanten" }, value: "30+" },
-  { label: { en: "Team Members", id: "Anggota Tim", nl: "Teamleden" }, value: "10+" },
-  { label: { en: "Years Experience", id: "Tahun Pengalaman", nl: "Jaar Ervaring" }, value: "3+" },
+const fallbackStats = [
+  { label: "Projects Done", value: "50+" },
+  { label: "Happy Clients", value: "30+" },
+  { label: "Team Members", value: "10+" },
+  { label: "Years Experience", value: "3+" },
 ];
 
-const VALUES = [
+const fallbackValues = [
   {
-    icon: Rocket,
     key: "innovation",
-    title: { en: "Innovation", id: "Inovasi", nl: "Innovatie" },
-    desc: {
-      en: "We constantly push boundaries to deliver cutting-edge digital solutions that make a real impact.",
-      id: "Kami terus mendorong batas untuk menghadirkan solusi digital terdepan yang memberikan dampak nyata.",
-      nl: "Wij verleggen voortdurend grenzen om digitale oplossingen te bieden die echte impact maken.",
-    },
+    title: "Innovation",
+    desc: "We constantly push boundaries to deliver cutting-edge digital solutions that make a real impact.",
+    icon: Rocket,
   },
   {
-    icon: ShieldCheck,
     key: "integrity",
-    title: { en: "Integrity", id: "Integritas", nl: "Integriteit" },
-    desc: {
-      en: "Every commitment we make is backed by transparency, honesty, and accountability in everything we do.",
-      id: "Setiap komitmen kami didukung oleh transparansi, kejujuran, dan akuntabilitas dalam segala yang kami lakukan.",
-      nl: "Elke toezegging die we doen, wordt ondersteund door transparantie, eerlijkheid en verantwoordelijkheid.",
-    },
+    title: "Integrity",
+    desc: "Every commitment we make is backed by transparency, honesty, and accountability.",
+    icon: ShieldCheck,
   },
   {
-    icon: Users,
     key: "partnership",
-    title: { en: "Partnership", id: "Kemitraan", nl: "Partnerschap" },
-    desc: {
-      en: "We believe in building long-term relationships with our clients, not just completing projects.",
-      id: "Kami percaya pada membangun hubungan jangka panjang dengan klien kami, bukan hanya menyelesaikan proyek.",
-      nl: "Wij geloven in het opbouwen van langdurige relaties met onze klanten, niet alleen projecten voltooien.",
-    },
+    title: "Partnership",
+    desc: "We believe in building long-term relationships with our clients.",
+    icon: Users,
   },
   {
-    icon: Target,
     key: "impact",
-    title: { en: "Impact", id: "Dampak", nl: "Impact" },
-    desc: {
-      en: "Every solution we create is measured by the real business value it delivers to our clients.",
-      id: "Setiap solusi yang kami buat diukur dari nilai bisnis nyata yang dihasilkan untuk klien kami.",
-      nl: "Elke oplossing die we maken wordt gemeten aan de echte bedrijfswaarde die het oplevert.",
-    },
+    title: "Impact",
+    desc: "Every solution we create is measured by real business value.",
+    icon: Target,
   },
 ];
 
@@ -106,6 +90,7 @@ export default function AboutPage() {
 
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [aboutContent, setAboutContent] = useState<any>(null);
   const [activeTeam, setActiveTeam] = useState(0);
 
   // Fetch team + settings
@@ -130,7 +115,13 @@ export default function AboutPage() {
 
     fetch(`${api}/settings`)
       .then((r) => r.json())
-      .then((j) => setSettings(j?.data ?? null))
+      .then((j) => {
+  setSettings(j?.data ?? null);
+
+  if (j?.data?.aboutPage) {
+    setAboutContent(j.data.aboutPage);
+  }
+})
       .catch(() => {});
   }, [language]);
 
@@ -184,7 +175,7 @@ export default function AboutPage() {
             transition={{ duration: 0.5 }}
             className="inline-block px-5 py-1.5 rounded-full border border-black/10 bg-white/50 backdrop-blur-sm text-black/70 text-xs font-bold tracking-widest uppercase mb-6 shadow-sm"
           >
-            {t("aboutPage", "heroLabel")}
+            {aboutContent?.heroLabel || t("aboutPage", "heroLabel")}
           </motion.span>
 
           <motion.h1
@@ -194,7 +185,7 @@ export default function AboutPage() {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="text-5xl md:text-7xl font-bold text-black mb-6 leading-tight tracking-tight"
           >
-            {t("aboutPage", "heroTitle")}
+            {aboutContent?.heroTitle || t("aboutPage", "heroTitle")}
           </motion.h1>
 
           <motion.p
@@ -203,7 +194,7 @@ export default function AboutPage() {
             transition={{ duration: 0.7, delay: 0.25 }}
             className="text-black/60 text-lg max-w-2xl mx-auto leading-relaxed mb-8"
           >
-            {t("aboutPage", "heroDesc")}
+            {aboutContent?.heroDesc || t("aboutPage", "heroDesc")}
           </motion.p>
 
           {/* Scenario Cards */}
@@ -214,12 +205,12 @@ export default function AboutPage() {
             className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8 text-left"
           >
             <div className="p-5 rounded-2xl border border-black/10 bg-white/60 backdrop-blur-sm shadow-sm">
-              <p className="font-bold text-sm text-black mb-1">{t("aboutPage", "scenario1Title")}</p>
-              <p className="text-sm text-black/60 leading-relaxed">{t("aboutPage", "scenario1Desc")}</p>
+              <p className="font-bold text-sm text-black mb-1">{aboutContent?.scenario1Title || t("aboutPage", "scenario1Title")}</p>
+              <p className="text-sm text-black/60 leading-relaxed">{aboutContent?.scenario1Desc || t("aboutPage", "scenario1Desc")}</p>
             </div>
             <div className="p-5 rounded-2xl border border-black/10 bg-white/60 backdrop-blur-sm shadow-sm">
-              <p className="font-bold text-sm text-black mb-1">{t("aboutPage", "scenario2Title")}</p>
-              <p className="text-sm text-black/60 leading-relaxed">{t("aboutPage", "scenario2Desc")}</p>
+              <p className="font-bold text-sm text-black mb-1">{aboutContent?.scenario2Title || t("aboutPage", "scenario2Title")}</p>
+              <p className="text-sm text-black/60 leading-relaxed">{aboutContent?.scenario2Desc || t("aboutPage", "scenario2Desc")}</p>
             </div>
           </motion.div>
 
@@ -233,13 +224,13 @@ export default function AboutPage() {
               href="/Contact"
               className="px-8 py-3.5 rounded-full bg-black text-white font-semibold text-sm transition-all duration-300 hover:bg-black/80 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 active:scale-95"
             >
-              {t("aboutPage", "workWithUs")}
+              {aboutContent?.workWithUs || t("aboutPage", "workWithUs")}
             </Link>
             <Link
               href="/portofolio"
               className="px-8 py-3.5 rounded-full border-2 border-black/10 bg-white text-black font-semibold text-sm transition-all duration-300 hover:border-black/30 hover:bg-black/5 hover:-translate-y-0.5 active:scale-95 shadow-sm"
             >
-              {t("aboutPage", "viewPortfolio")}
+              {aboutContent?.viewPortfolio || t("aboutPage", "viewPortfolio")}
             </Link>
           </motion.div>
         </div>
@@ -249,14 +240,14 @@ export default function AboutPage() {
       <section className="w-full py-12 bg-white" aria-label="Company statistics">
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {STATS.map((s, i) => (
+           {(aboutContent?.stats || fallbackStats).map((s: any, i: number) => (
               <FadeUp key={i} delay={i * 0.1}>
                 <div className="text-center group cursor-default">
                   <p className="text-5xl font-bold text-black mb-2 transition-transform duration-300 group-hover:-translate-y-1">
                     {s.value}
                   </p>
                   <p className="text-black/50 text-sm">
-                    {s.label[language as keyof typeof s.label] ?? s.label.en}
+                    {s.label}
                   </p>
                 </div>
               </FadeUp>
@@ -301,7 +292,7 @@ export default function AboutPage() {
                 </div>
                 <div className="pr-2">
                   <p className="text-2xl font-black text-black">100%</p>
-                  <p className="text-xs text-black/50 font-bold tracking-wide uppercase mt-0.5">{t("aboutPage", "clientFocus")}</p>
+                  <p className="text-xs text-black/50 font-bold tracking-wide uppercase mt-0.5">{aboutContent?.clientFocus || t("aboutPage", "clientFocus")}</p>
                 </div>
               </div>
             </div>
@@ -310,29 +301,31 @@ export default function AboutPage() {
           {/* Content */}
           <FadeUp delay={0.15}>
             <span className="inline-block text-xs font-semibold text-yellow-600 tracking-widest uppercase mb-4">
-              {t("aboutPage", "ourStoryLabel")}
+              {aboutContent?.ourStoryLabel || t("aboutPage", "ourStoryLabel")}
             </span>
             <h2 id="story-title" className="text-4xl font-bold text-black mb-6 leading-snug">
-              {t("aboutPage", "ourStoryTitle")}
+              {aboutContent?.storyTitle || t("aboutPage", "ourStoryTitle")}
             </h2>
             <div className="space-y-4 text-black/70 leading-relaxed">
-              <p>{t("aboutPage", "ourStoryP1")}</p>
-              <p>{t("aboutPage", "ourStoryP2")}</p>
-              <p>{t("aboutPage", "ourStoryP3")}</p>
+              <p>{aboutContent?.storyP1 || t("aboutPage", "ourStoryP1")}</p>
+              <p>{aboutContent?.storyP2 || t("aboutPage", "ourStoryP2")}</p>
+              <p>{aboutContent?.storyP3 || t("aboutPage", "ourStoryP3")}</p>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              {[
-                { en: "Web Development", nl: "Webontwikkeling", id: "Pengembangan Web" },
-                { en: "Mobile App", nl: "Mobiele App", id: "Aplikasi Mobile" },
-                { en: "UI/UX Design", nl: "UI/UX Ontwerp", id: "Desain UI/UX" },
-                { en: "IT Consulting", nl: "IT-advies", id: "Konsultasi IT" },
-              ].map((tag) => (
+              {(
+                aboutContent?.serviceTags || [
+                  "Web Development",
+                  "Mobile App",
+                  "UI/UX Design",
+                  "IT Consulting",
+                ]
+              ).map((tag: string) => (
                 <span
-                  key={tag.en}
+                 key={tag}
                   className="px-4 py-1.5 rounded-full bg-black/5 border border-black/10 text-black text-sm font-medium"
                 >
-                  {tag[language as keyof typeof tag] ?? tag.en}
+                  {tag}
                 </span>
               ))}
             </div>
@@ -346,19 +339,19 @@ export default function AboutPage() {
           <FadeUp>
             <div className="text-center mb-16">
               <span className="text-xs font-semibold text-yellow-600 tracking-widest uppercase">
-                {t("aboutPage", "whatDrivesUs")}
+                {aboutContent?.whatDrivesUs || t("aboutPage", "whatDrivesUs")}
               </span>
               <h2 id="values-title" className="text-4xl font-bold text-black mt-3 mb-4">
-                {t("aboutPage", "ourCoreValues")}
+                {aboutContent?.ourCoreValues || t("aboutPage", "ourCoreValues")}
               </h2>
               <p className="text-black/50 max-w-xl mx-auto">
-                {t("aboutPage", "coreValuesDesc")}
+                {aboutContent?.coreValuesDesc || t("aboutPage", "coreValuesDesc")}
               </p>
             </div>
           </FadeUp>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {VALUES.map((v, i) => {
+            {(aboutContent?.values || fallbackValues).map((v: any, i: number) => {
               const Icon = v.icon;
               return (
                 <FadeUp key={v.key} delay={i * 0.1}>
@@ -369,10 +362,10 @@ export default function AboutPage() {
                         <Icon className="w-6 h-6 text-yellow-500" aria-hidden="true" />
                       </div>
                       <h3 className="text-xl font-bold text-black mb-3">
-                        {v.title[language as keyof typeof v.title] ?? v.title.en}
+                        {v.title}
                       </h3>
                       <p className="text-black/60 text-sm leading-relaxed">
-                        {v.desc[language as keyof typeof v.desc] ?? v.desc.en}
+                        {v.desc}
                       </p>
                     </div>
                   </div>
@@ -389,10 +382,10 @@ export default function AboutPage() {
           <FadeUp>
             <div className="text-center mb-16">
               <span className="text-xs font-semibold text-yellow-400 tracking-widest uppercase">
-                {t("aboutPage", "directionLabel")}
+                {aboutContent?.directionLabel || t("aboutPage", "directionLabel")}
               </span>
               <h2 id="mission-vision-title" className="text-4xl font-bold mt-3">
-                {t("aboutPage", "missionVisionTitle")}
+                {aboutContent?.missionTitle || t("aboutPage", "missionTitle")}
               </h2>
             </div>
           </FadeUp>
@@ -408,7 +401,7 @@ export default function AboutPage() {
                   </div>
                   <h3 className="text-2xl font-bold mb-4">{t("aboutPage", "missionTitle")}</h3>
                   <p className="text-white/60 leading-relaxed">
-                    {t("aboutPage", "missionDesc")}
+                    {aboutContent?.missionDesc || t("aboutPage", "missionDesc")}
                   </p>
                 </div>
               </div>
@@ -422,9 +415,9 @@ export default function AboutPage() {
                   <div className="w-14 h-14 rounded-2xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center mb-6">
                     <Award className="w-7 h-7 text-yellow-400" aria-hidden="true" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">{t("aboutPage", "visionTitle")}</h3>
+                  <h3 className="text-2xl font-bold mb-4">{aboutContent?.visionTitle || t("aboutPage", "visionTitle")}</h3>
                   <p className="text-white/60 leading-relaxed">
-                    {t("aboutPage", "visionDesc")}
+                    {aboutContent?.visionDesc || t("aboutPage", "visionDesc")}
                   </p>
                 </div>
               </div>
@@ -434,18 +427,32 @@ export default function AboutPage() {
           {/* Why Us bullets */}
           <FadeUp delay={0.3}>
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {[
-                { icon: Code2, labelKey: "customBuilt", descKey: "customBuiltDesc" },
-                { icon: ShieldCheck, labelKey: "securityFirst", descKey: "securityFirstDesc" },
-                { icon: Globe, labelKey: "multilingualSupport", descKey: "multilingualDesc" },
-              ].map((item) => {
+              {(
+                aboutContent?.whyUs || [
+                  {
+                    label: "Custom Built",
+                    desc: "Tailored digital solutions for every business.",
+                    icon: Code2,
+                  },
+                  {
+                    label: "Security First",
+                    desc: "We prioritize security in every system.",
+                    icon: ShieldCheck,
+                  },
+                  {
+                    label: "Multilingual Support",
+                    desc: "Support for multiple languages and regions.",
+                    icon: Globe,
+                  },
+                ]
+              ).map((item: any) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.labelKey} className="flex gap-4 p-6 rounded-2xl border border-white/10 hover:border-yellow-400/20 transition-colors duration-300">
+                  <div key={item.label} className="flex gap-4 p-6 rounded-2xl border border-white/10 hover:border-yellow-400/20 transition-colors duration-300">
                     <Icon className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     <div>
-                      <p className="font-semibold text-white text-sm">{t("aboutPage", item.labelKey as any)}</p>
-                      <p className="text-white/40 text-xs mt-1">{t("aboutPage", item.descKey as any)}</p>
+                      <p className="font-semibold text-white text-sm">{item.label}</p>
+                      <p className="text-white/40 text-xs mt-1">{item.desc}</p>
                     </div>
                   </div>
                 );
@@ -462,13 +469,13 @@ export default function AboutPage() {
             <FadeUp>
               <div className="text-center mb-16">
                 <span className="text-xs font-semibold text-yellow-600 tracking-widest uppercase">
-                  {t("aboutPage", "peopleLabel")}
+                  {aboutContent?.peopleLabel || t("aboutPage", "peopleLabel")}
                 </span>
                 <h2 id="about-team-title" className="text-4xl font-bold text-black mt-3 mb-4">
-                  {t("aboutPage", "meetTheTeam")}
+                  {aboutContent?.meetTheTeam || t("aboutPage", "meetTheTeam")}
                 </h2>
                 <p className="text-black/50 max-w-xl mx-auto">
-                  {t("aboutPage", "meetTheTeamDesc")}
+                  {aboutContent?.meetTheTeamDesc || t("aboutPage", "meetTheTeamDesc")}
                 </p>
               </div>
             </FadeUp>
@@ -542,7 +549,7 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-6">
             <FadeUp>
               <h2 id="contact-info-title" className="text-2xl font-bold text-black mb-8 text-center">
-                {t("aboutPage", "getInTouch")}
+                {aboutContent?.getInTouch || t("aboutPage", "getInTouch")}
               </h2>
             </FadeUp>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

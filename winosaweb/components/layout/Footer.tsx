@@ -21,10 +21,18 @@ async function fetchSettings(): Promise<SiteSettings | null> {
 export default function Footer() {
   const { t } = useTranslate();
   const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const [footerMenus, setFooterMenus] = useState<any>(null);
 
+  
   useEffect(() => {
-    fetchSettings().then(setSettings);
-  }, []);
+  fetchSettings().then((data) => {
+    setSettings(data);
+
+    if (data?.footerMenus) {
+      setFooterMenus(data.footerMenus);
+    }
+  });
+}, []);
 
   const igUrl  = settings?.socialInstagram || "https://instagram.com";
   const liUrl  = settings?.socialLinkedin  || "https://linkedin.com";
@@ -33,145 +41,153 @@ export default function Footer() {
   const logo   = settings?.logo            || "/logo.png";
   const tagline = settings?.siteTagline    || t("footer", "tagline");
 
+  const fallbackFooterMenus = {
+  about: [
+    { name: t("footer", "company"), href: "/" },
+    { name: t("footer", "aboutUs"), href: "/about" },
+  ],
+
+  services: [
+    { name: t("footer", "services"), href: "/Services" },
+    { name: t("footer", "plans"), href: "/subscriptions" },
+    { name: t("footer", "contact"), href: "/Contact" },
+  ],
+
+  insight: [
+    { name: t("footer", "portfolio"), href: "/portofolio" },
+    { name: t("footer", "blog"), href: "/Blog" },
+  ],
+};
+
+const menus = footerMenus || fallbackFooterMenus;
+
   return (
     <footer className="bg-[#efede9] text-black px-12 py-20">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
 
-        <div className="space-y-6">
-          <h4 className="text-sm font-semibold tracking-wide">
-            {t("footer", "aboutTitle")}
-          </h4>
-          <div className="space-y-3 text-gray-700 text-sm">
-            <Link 
-              href="/" 
-              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
-            >
-              {t("footer", "company")}
-            </Link>
-            <Link 
-              href="/about" 
-              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
-            >
-              {t("footer", "aboutUs")}
-            </Link>
-          </div>
-        </div>
+  {/* ABOUT */}
+  <div className="space-y-6">
+    <h4 className="text-sm font-semibold tracking-wide">
+      {t("footer", "aboutTitle")}
+    </h4>
 
-        <div className="space-y-6">
-          <h4 className="text-sm font-semibold tracking-wide">
-            {t("footer", "servicesTitle")}
-          </h4>
-          <div className="space-y-3 text-gray-700 text-sm">
-            <Link 
-              href="/Services" 
-              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
-            >
-              {t("footer", "services")}
-            </Link>
-            <Link 
-              href="/subscriptions" 
-              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
-            >
-              {t("footer", "plans")}
-            </Link>
-            <Link 
-              href="/Contact" 
-              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
-            >
-              {t("footer", "contact")}
-            </Link>
-          </div>
-        </div>
+    <div className="space-y-3 text-gray-700 text-sm">
+      {menus.about.map((item: any) => (
+        <Link
+          key={item.name}
+          href={item.href}
+          className="block transition-all duration-300 hover:text-black hover:translate-x-1"
+        >
+          {item.name}
+        </Link>
+      ))}
+    </div>
+  </div>
 
-        <div className="space-y-6">
-          <h4 className="text-sm font-semibold tracking-wide">
-            {t("footer", "insightTitle")}
-          </h4>
-          <div className="space-y-3 text-gray-700 text-sm">
-            <Link 
-              href="/portofolio" 
-              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
-            >
-              {t("footer", "portfolio")}
-            </Link>
-            <Link 
-              href="/Blog" 
-              className="block transition-all duration-300 hover:text-black hover:translate-x-1 focus:outline-none focus:underline"
-            >
-              {t("footer", "blog")}
-            </Link>
-          </div>
-        </div>
+  {/* SERVICES */}
+  <div className="space-y-6">
+    <h4 className="text-sm font-semibold tracking-wide">
+      {t("footer", "servicesTitle")}
+    </h4>
 
-        <div className="space-y-6">
-          <div className="flex items-center gap-3">
-            <Link href="/" aria-label="Go to homepage">
-              <Image
-                src={logo}
-                alt="Winosa company logo"
-                width={56}
-                height={56}
-                className="cursor-pointer transition-transform duration-300 hover:scale-110"
-              />
-            </Link>
-            <span className="text-2xl font-bold">
-              <span className="text-3xl">W</span>inosa.
-            </span>
-          </div>
+    <div className="space-y-3 text-gray-700 text-sm">
+      {menus.services.map((item: any) => (
+        <Link
+          key={item.name}
+          href={item.href}
+          className="block transition-all duration-300 hover:text-black hover:translate-x-1"
+        >
+          {item.name}
+        </Link>
+      ))}
+    </div>
+  </div>
 
-          <p className="text-sm text-gray-700">{tagline}</p>
+  {/* INSIGHT */}
+  <div className="space-y-6">
+    <h4 className="text-sm font-semibold tracking-wide">
+      {t("footer", "insightTitle")}
+    </h4>
 
-          <div className="flex gap-5 mt-4 items-center">
+    <div className="space-y-3 text-gray-700 text-sm">
+      {menus.insight.map((item: any) => (
+        <Link
+          key={item.name}
+          href={item.href}
+          className="block transition-all duration-300 hover:text-black hover:translate-x-1"
+        >
+          {item.name}
+        </Link>
+      ))}
+    </div>
+  </div>
 
-            <a
-  href={igUrl}
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label="Visit Winosa Instagram"
-  title="Instagram"
-  className="w-14 h-14 rounded-full bg-black grid place-items-center transition-all duration-300 hover:bg-black/80 hover:scale-110 active:scale-95 focus:outline focus:outline-2 focus:outline-black"
->
-  <svg viewBox="0 0 24 24" className="w-6 h-6 translate-y-[0.5px]" fill="white">
-    <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm0 2h10c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3zm5 3a5 5 0 100 10 5 5 0 000-10zm0 2.2a2.8 2.8 0 110 5.6 2.8 2.8 0 010-5.6zm4.2-3.2a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/>
-  </svg>
-</a>
+  {/* LOGO */}
+  <div className="space-y-6">
 
-<a
-  href={liUrl}
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label="Visit Winosa LinkedIn"
-  title="LinkedIn"
-  className="w-14 h-14 rounded-full bg-black grid place-items-center transition-all duration-300 hover:bg-black/80 hover:scale-110 active:scale-95"
->
-  <svg viewBox="0 0 24 24" className="w-6 h-6 translate-y-[0.5px]" fill="white">
-    <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8h4.56v14H.22zM8.48 8h4.37v1.91h.06c.61-1.16 2.1-2.38 4.32-2.38 4.62 0 5.47 3.04 5.47 6.99V22h-4.56v-6.26c0-1.49-.03-3.41-2.08-3.41-2.08 0-2.4 1.62-2.4 3.3V22H8.48z"/>
-  </svg>
-</a>
+    <div className="flex items-center gap-3">
+      <Link href="/" aria-label="Go to homepage">
+        <Image
+          src={logo}
+          alt="Winosa company logo"
+          width={56}
+          height={56}
+          className="cursor-pointer transition-transform duration-300 hover:scale-110"
+        />
+      </Link>
 
-<a
-  href={waUrl}
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label="Contact Winosa via WhatsApp"
-  title="WhatsApp"
-  className="w-14 h-14 rounded-full bg-black grid place-items-center transition-all duration-300 hover:bg-black/80 hover:scale-110 active:scale-95"
->
-  <svg viewBox="0 0 24 24" className="w-6 h-6 translate-y-[1px]" fill="white">
-    <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1v3.49a1 1 0 01-1 1C10.07 21 3 13.93 3 5.5a1 1 0 011-1H7.5a1 1 0 011 1c0 1.25.2 2.47.57 3.56a1 1 0 01-.24 1.01l-2.21 2.22z"/>
-  </svg>
-</a>
+      <span className="text-2xl font-bold">
+        <span className="text-3xl">W</span>inosa.
+      </span>
+    </div>
 
-          </div>
-        </div>
+    <p className="text-sm text-gray-700">{tagline}</p>
 
-      </div>
+    <div className="flex gap-5 mt-4 items-center">
+
+      <a
+        href={igUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-14 h-14 rounded-full bg-black grid place-items-center"
+      >
+        <svg viewBox="0 0 24 24" className="w-6 h-6 translate-y-[0.5px]" fill="white">
+          <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm0 2h10c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3zm5 3a5 5 0 100 10 5 5 0 000-10zm0 2.2a2.8 2.8 0 110 5.6 2.8 2.8 0 010-5.6zm4.2-3.2a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/>
+        </svg>
+      </a>
+
+      <a
+        href={liUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-14 h-14 rounded-full bg-black grid place-items-center"
+      >
+        <svg viewBox="0 0 24 24" className="w-6 h-6 translate-y-[0.5px]" fill="white">
+          <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8h4.56v14H.22zM8.48 8h4.37v1.91h.06c.61-1.16 2.1-2.38 4.32-2.38 4.62 0 5.47 3.04 5.47 6.99V22h-4.56v-6.26c0-1.49-.03-3.41-2.08-3.41-2.08 0-2.4 1.62-2.4 3.3V22H8.48z"/>
+        </svg>
+      </a>
+
+      <a
+        href={waUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-14 h-14 rounded-full bg-black grid place-items-center"
+      >
+        <svg viewBox="0 0 24 24" className="w-6 h-6 translate-y-[1px]" fill="white">
+          <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1v3.49a1 1 0 01-1 1C10.07 21 3 13.93 3 5.5a1 1 0 011-1H7.5a1 1 0 011 1c0 1.25.2 2.47.57 3.56a1 1 0 01-.24 1.01l-2.21 2.22z"/>
+        </svg>
+      </a>
+
+    </div>
+  </div>
+
+</div>
 
       <div className="max-w-7xl mx-auto mt-16">
         <div className="h-px bg-black/20 mb-6" />
         <div className="flex flex-col md:flex-row justify-between text-sm text-gray-700">
-          <span>{t("footer", "location")}</span>
-          <span>{t("footer", "copyright")}</span>
+          <span>{settings?.siteLocation || t("footer", "location")}</span>
+          <span>{settings?.copyright || t("footer", "copyright")}</span>
         </div>
       </div>
     </footer>

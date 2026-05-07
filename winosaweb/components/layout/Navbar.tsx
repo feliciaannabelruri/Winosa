@@ -1,5 +1,7 @@
 "use client";
 
+let cachedSettings: any = null;
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -15,13 +17,29 @@ export default function Navbar() {
   const [langOpen, setLangOpen] = useState(false);
 
   const [logo, setLogo] = useState("https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png");
+  const [menusData, setMenusData] = useState<any[]>([]);
 
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`)
-      .then(r => r.json())
-      .then(json => { if (json?.data?.logo) setLogo(json.data.logo); })
-      .catch(() => {});
-  }, []);
+ useEffect(() => {
+  const api = process.env.NEXT_PUBLIC_API_URL;
+  if (!api) return;
+
+  if (cachedSettings) {
+    if (cachedSettings.logo) setLogo(cachedSettings.logo);
+    if (cachedSettings.navbarMenu) setMenusData(cachedSettings.navbarMenu);
+    return;
+  }
+
+  fetch(`${api}/settings`)
+    .then(r => r.json())
+    .then(json => {
+      const data = json?.data || {};
+      cachedSettings = data;
+
+      if (data.logo) setLogo(data.logo);
+      if (data.navbarMenu) setMenusData(data.navbarMenu);
+    })
+    .catch(() => {});
+}, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,13 +62,15 @@ export default function Navbar() {
 
   const displayLang = language.toUpperCase();
 
-  const menus = [
-    { name: t("navbar", "about"), href: "/about" },
-    { name: t("navbar", "services"), href: "/Services" },
-    { name: t("navbar", "portfolio"), href: "/portofolio" },
-    { name: t("navbar", "blog"), href: "/Blog" },
-    { name: t("navbar", "contact"), href: "/Contact" },
-  ];
+ const fallbackMenus = [
+  { name: t("navbar", "about"), href: "/about" },
+  { name: t("navbar", "services"), href: "/Services" },
+  { name: t("navbar", "portfolio"), href: "/portofolio" },
+  { name: t("navbar", "blog"), href: "/Blog" },
+  { name: t("navbar", "contact"), href: "/Contact" },
+];
+
+const menus = menusData.length ? menusData : fallbackMenus;
 
   return (
     <nav

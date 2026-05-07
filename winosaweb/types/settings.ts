@@ -27,4 +27,25 @@ export interface SiteSettings {
   siteEmail:   string;
   sitePhone:   string;
   siteAddress: string;
+
+  footerMenus?: {
+  about: {
+    name: string;
+    href: string;
+  }[];
+
+  services: {
+    name: string;
+    href: string;
+  }[];
+
+  insight: {
+    name: string;
+    href: string;
+  }[];
+};
+
+siteLocation?: string;
+copyright?: string;
+
 }

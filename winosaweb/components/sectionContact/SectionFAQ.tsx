@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { Plus, Minus } from "lucide-react";
@@ -11,13 +11,30 @@ const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 export default function SectionCompanyInfo() {
   const { t } = useTranslate();
   const [active, setActive] = useState<number | null>(0);
+  const [faqsData, setFaqsData] = useState<any[]>([]);
 
-  const faqs = [
-    { question: t("faq", "q1"), answer: t("faq", "a1") },
-    { question: t("faq", "q2"), answer: t("faq", "a2") },
-    { question: t("faq", "q3"), answer: t("faq", "a3") },
-    { question: t("faq", "q4"), answer: t("faq", "a4") },
-  ];
+  useEffect(() => {
+  const api = process.env.NEXT_PUBLIC_API_URL;
+  if (!api) return;
+
+  fetch(`${api}/settings`)
+    .then((res) => res.json())
+    .then((json) => {
+      if (json?.data?.faqs) {
+        setFaqsData(json.data.faqs);
+      }
+    })
+    .catch(() => {});
+}, []);
+
+  const fallbackFaqs = [
+  { question: t("faq", "q1"), answer: t("faq", "a1") },
+  { question: t("faq", "q2"), answer: t("faq", "a2") },
+  { question: t("faq", "q3"), answer: t("faq", "a3") },
+  { question: t("faq", "q4"), answer: t("faq", "a4") },
+];
+
+const faqs = faqsData.length ? faqsData : fallbackFaqs;
 
   return (
     <FadeUp>
