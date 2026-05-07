@@ -35,6 +35,35 @@ async function getServicesData() {
   }
 }
 
+async function getInfoSection() {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/services/info-section`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function getHeroSection() {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/services/hero-services`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (!json.data?.description) return null;
+    return JSON.parse(json.data.description);
+  } catch {
+    return null;
+  }
+}
+
 // SEO //
 
 import { getSiteSettings } from "@/lib/getSiteSettings";
@@ -61,16 +90,22 @@ export async function generateMetadata() {
 // PAGE //
 
 export default async function ServicesPage() {
-  const services = await getServicesData();
+  const [services, infoSection, heroData] = await Promise.all([
+    getServicesData(),
+    getInfoSection(),
+    getHeroSection(),
+  ]);
+
+  const servicesForInfo = infoSection ? [...services, infoSection] : services;
 
   return (
     <main aria-label="Winosa services page">
 
-      <SectionHero />
+      <SectionHero heroData={heroData} />
 
       <SectionServices initialServices={services} />
 
-      <SectionInfo services={services} />
+      <SectionInfo services={servicesForInfo} />
 
       <SectionServiceRecommend />
 

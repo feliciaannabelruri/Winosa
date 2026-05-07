@@ -6,8 +6,22 @@ import Button from "@/components/UI/Button";
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
 
-export default function SectionHero() {
+interface HeroData {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+}
+
+interface SectionHeroProps {
+  heroData?: HeroData | null;
+}
+
+export default function SectionHero({ heroData }: SectionHeroProps) {
   const { t } = useTranslate();
+
+  const heroTitle       = heroData?.title       || t("servicesHero", "title");
+  const heroSubtitle    = heroData?.subtitle    || t("servicesHero", "subtitle");
+  const heroDescription = heroData?.description || t("servicesHero", "description");
 
   return (
     <section
@@ -66,7 +80,7 @@ export default function SectionHero() {
           className="text-white text-5xl md:text-6xl font-bold mb-5 tracking-tight"
           style={{ textShadow: "0 6px 24px rgba(0,0,0,0.6)" }}
         >
-          {t("servicesHero", "title")}
+          {heroTitle}
         </motion.h1>
 
         {/* subtitle */}
@@ -77,7 +91,7 @@ export default function SectionHero() {
           className="text-white/90 text-lg mb-0 max-w-xl leading-relaxed"
           style={{ textShadow: "0 4px 16px rgba(0,0,0,0.6)" }}
         >
-          {t("servicesHero", "subtitle")}
+          {heroSubtitle}
         </motion.p>
 
         {/* description tambahan */}
@@ -88,7 +102,7 @@ export default function SectionHero() {
             className="text-white/80 text-base mb-10 max-w-xl leading-relaxed"
             style={{ textShadow: "0 4px 16px rgba(0,0,0,0.6)" }}
           >
-            {t("servicesHero", "description")}
+            {heroDescription}
           </motion.p>
 
         {/* button */}

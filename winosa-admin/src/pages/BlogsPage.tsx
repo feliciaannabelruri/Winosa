@@ -36,7 +36,7 @@ const BlogsPage: React.FC = () => {
         draft: data.data.filter((b: any) => !b.isPublished).length
       });
     } catch {
-      toast.error('Gagal memuat data blog');
+      toast.error('Failed to load blog data');
     } finally {
       setLoading(false);
     }
@@ -52,11 +52,11 @@ const BlogsPage: React.FC = () => {
     setDeleteModal(prev => ({ ...prev, loading: true }));
     try {
       await blogService.delete(deleteModal.id);
-      toast.success('Blog berhasil dihapus');
+      toast.success('Blog deleted successfully');
       setDeleteModal({ open: false, id: null, loading: false });
       fetchBlogs();
     } catch {
-      toast.error('Gagal menghapus blog');
+      toast.error('Failed to delete blog');
       setDeleteModal(prev => ({ ...prev, loading: false }));
     }
   };
@@ -93,7 +93,7 @@ const BlogsPage: React.FC = () => {
         <div>
           <h1 className="text-4xl font-display font-bold text-dark">Blog</h1>
           <p className="text-gray-400 text-sm mt-1 italic">
-            Kelola konten blog Winosa
+             Manage Winosa blog content
           </p>
         </div>
         <button
@@ -127,7 +127,7 @@ const BlogsPage: React.FC = () => {
           />
           <input
             type="text"
-            placeholder="Cari berdasarkan judul atau penulis..."
+            placeholder="Search by title or author..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
@@ -196,7 +196,7 @@ const BlogsPage: React.FC = () => {
                     colSpan={8}
                     className="text-center py-16 text-gray-400 text-sm"
                   >
-                    {search ? `Tidak ada blog yang cocok dengan "${search}"` : 'Belum ada blog'}
+                    {search ? `No blogs found matching "${search}"` : 'No blogs available yet'}
                   </td>
                 </tr>
               ) : (
@@ -302,7 +302,7 @@ const BlogsPage: React.FC = () => {
       <ConfirmModal
         isOpen={deleteModal.open}
         title="Delete Blog"
-        message="Apakah Anda yakin ingin menghapus postingan blog ini? Tindakan ini tidak dapat dibatalkan."
+        message="Are you sure you want to delete this blog post? This action cannot be undone."
         onConfirm={handleDelete}
         onCancel={() =>
           setDeleteModal({ open: false, id: null, loading: false })

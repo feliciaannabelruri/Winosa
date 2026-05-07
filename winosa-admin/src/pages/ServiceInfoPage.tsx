@@ -6,26 +6,10 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import IconPicker from './service-form/shared/IconPicker';
 
 interface ProcessStep { title: string; desc: string; }
 interface Reason { title: string; desc: string; icon: string; }
-
-const ICON_OPTIONS = ['shield', 'chart', 'cursor', 'thumb'];
-
-const DEFAULT_PROCESS: ProcessStep[] = [
-  { title: 'Discover', desc: 'We analyze your business needs and goals.' },
-  { title: 'Design',   desc: 'We create wireframes and design mockups.' },
-  { title: 'Build',    desc: 'We develop your solution with clean code.' },
-  { title: 'Test',     desc: 'We test thoroughly before launch.' },
-  { title: 'Deploy',   desc: 'We launch and monitor your product.' },
-];
-
-const DEFAULT_REASONS: Reason[] = [
-  { title: 'Trusted',          desc: 'We deliver quality you can rely on.',          icon: 'shield' },
-  { title: 'Scalable',         desc: 'Solutions that grow with your business.',       icon: 'chart'  },
-  { title: 'Business Focused', desc: 'We align tech with your business goals.',       icon: 'cursor' },
-  { title: 'Partnership',      desc: 'We are your long-term digital partner.',        icon: 'thumb'  },
-];
 
 const inputCls = 'w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors';
 
@@ -37,8 +21,8 @@ const inputCls = 'w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm ou
 const ServiceInfoPage: React.FC<Props> = ({ embedded = false, activeSection = 'process' }) => {
   const navigate  = useNavigate();
 
-  const [process,  setProcess]  = useState<ProcessStep[]>(DEFAULT_PROCESS);
-  const [reasons,  setReasons]  = useState<Reason[]>(DEFAULT_REASONS);
+  const [process, setProcess] = useState<ProcessStep[]>([]);
+  const [reasons, setReasons] = useState<Reason[]>([]);
   const [loading,  setLoading]  = useState(false);
   const [fetching, setFetching] = useState(true);
   const [serviceId, setServiceId] = useState<string | null>(null);
@@ -69,13 +53,19 @@ const ServiceInfoPage: React.FC<Props> = ({ embedded = false, activeSection = 'p
   // ── Process handlers ──────────────────────────────────
   const updateProcess = (i: number, key: keyof ProcessStep, val: string) =>
     setProcess(prev => prev.map((p, idx) => idx === i ? { ...p, [key]: val } : p));
-  const addProcess    = () => setProcess(prev => [...prev, { title: '', desc: '' }]);
+  const addProcess = () => {
+    if (process.length >= 5) return;
+    setProcess(prev => [...prev, { title: '', desc: '' }]);
+  };
   const removeProcess = (i: number) => setProcess(prev => prev.filter((_, idx) => idx !== i));
 
   // ── Reason handlers ───────────────────────────────────
   const updateReason = (i: number, key: keyof Reason, val: string) =>
     setReasons(prev => prev.map((r, idx) => idx === i ? { ...r, [key]: val } : r));
-  const addReason    = () => setReasons(prev => [...prev, { title: '', desc: '', icon: 'shield' }]);
+  const addReason = () => {
+    if (reasons.length >= 4) return;
+    setReasons(prev => [...prev, { title: '', desc: '', icon: 'shield' }]);
+  };
   const removeReason = (i: number) => setReasons(prev => prev.filter((_, idx) => idx !== i));
 
   // ── Save ──────────────────────────────────────────────
@@ -161,20 +151,32 @@ const ServiceInfoPage: React.FC<Props> = ({ embedded = false, activeSection = 'p
                       {i + 1}
                     </div>
                     <div className="flex-1 space-y-2">
-                      <input
-                        type="text"
-                        placeholder="Step title (e.g. Discover)"
-                        value={step.title}
-                        onChange={e => updateProcess(i, 'title', e.target.value)}
-                        className={inputCls}
-                      />
-                      <textarea
-                        placeholder="Step description..."
-                        value={step.desc}
-                        onChange={e => updateProcess(i, 'desc', e.target.value)}
-                        rows={2}
-                        className={`${inputCls} resize-none`}
-                      />
+                      <div>
+                        <input
+                          type="text"
+                          placeholder="Step title (e.g. Discover)"
+                          value={step.title}
+                          onChange={e => { if (e.target.value.length <= 30) updateProcess(i, 'title', e.target.value); }}
+                          className={inputCls}
+                          maxLength={30}
+                        />
+                        <p className={`text-xs mt-1 text-right ${step.title.length >= 30 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
+                          {step.title.length}/30
+                        </p>
+                      </div>
+                      <div>
+                        <textarea
+                          placeholder="Step description..."
+                          value={step.desc}
+                          onChange={e => { if (e.target.value.length <= 100) updateProcess(i, 'desc', e.target.value); }}
+                          rows={2}
+                          className={`${inputCls} resize-none`}
+                          maxLength={100}
+                        />
+                        <p className={`text-xs mt-1 text-right ${step.desc.length >= 100 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
+                          {step.desc.length}/100
+                        </p>
+                      </div>
                     </div>
                     {process.length > 1 && (
                       <button
@@ -190,12 +192,22 @@ const ServiceInfoPage: React.FC<Props> = ({ embedded = false, activeSection = 'p
             )
           }
           {process.length > 0 && (
-            <button
-              onClick={addProcess}
-              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 rounded-2xl text-sm font-semibold text-gray-400 hover:border-gray-400 hover:text-dark transition-colors"
-            >
-              <Plus size={14} /> Add Step
-            </button>
+            <div className="flex items-center justify-between px-1">
+              <p className="text-xs text-gray-400">
+                {process.length}/5 steps
+              </p>
+              {process.length < 5 && (
+                <button
+                  onClick={addProcess}
+                  className="flex items-center gap-2 py-2 px-4 border-2 border-dashed border-gray-200 rounded-2xl text-sm font-semibold text-gray-400 hover:border-gray-400 hover:text-dark transition-colors"
+                >
+                  <Plus size={14} /> Add Step
+                </button>
+              )}
+              {process.length >= 5 && (
+                <p className="text-xs text-amber-500 font-medium">Maximum 5 steps reached</p>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -213,31 +225,37 @@ const ServiceInfoPage: React.FC<Props> = ({ embedded = false, activeSection = 'p
                     className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-5 flex gap-4 items-start hover:border-gray-200 transition-colors"
                   >
                     <div className="flex-1 space-y-2">
-                      <input
-                        type="text"
-                        placeholder="Reason title (e.g. Trusted)"
-                        value={reason.title}
-                        onChange={e => updateReason(i, 'title', e.target.value)}
-                        className={inputCls}
-                      />
-                      <textarea
-                        placeholder="Reason description..."
-                        value={reason.desc}
-                        onChange={e => updateReason(i, 'desc', e.target.value)}
-                        rows={2}
-                        className={`${inputCls} resize-none`}
-                      />
                       <div>
-                        <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Icon</label>
-                        <select
-                          value={reason.icon}
-                          onChange={e => updateReason(i, 'icon', e.target.value)}
+                        <input
+                          type="text"
+                          placeholder="Reason title (e.g. Trusted)"
+                          value={reason.title}
+                          onChange={e => { if (e.target.value.length <= 30) updateReason(i, 'title', e.target.value); }}
                           className={inputCls}
-                        >
-                          {ICON_OPTIONS.map(icon => (
-                            <option key={icon} value={icon}>{icon}</option>
-                          ))}
-                        </select>
+                          maxLength={30}
+                        />
+                        <p className={`text-xs mt-1 text-right ${reason.title.length >= 30 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
+                          {reason.title.length}/30
+                        </p>
+                      </div>
+                      <div>
+                        <textarea
+                          placeholder="Reason description..."
+                          value={reason.desc}
+                          onChange={e => { if (e.target.value.length <= 100) updateReason(i, 'desc', e.target.value); }}
+                          rows={2}
+                          className={`${inputCls} resize-none`}
+                          maxLength={100}
+                        />
+                        <p className={`text-xs mt-1 text-right ${reason.desc.length >= 100 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
+                          {reason.desc.length}/100
+                        </p>
+                      </div>
+                      <div>
+                        <IconPicker
+                          value={reason.icon}
+                          onChange={val => updateReason(i, 'icon', val)}
+                        />
                       </div>
                     </div>
                     {reasons.length > 1 && (
@@ -254,16 +272,27 @@ const ServiceInfoPage: React.FC<Props> = ({ embedded = false, activeSection = 'p
             )
           }
           {reasons.length > 0 && (
-            <button
-              onClick={addReason}
-              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 rounded-2xl text-sm font-semibold text-gray-400 hover:border-gray-400 hover:text-dark transition-colors"
-            >
-              <Plus size={14} /> Add Reason
-            </button>
+            <div className="flex items-center justify-between px-1">
+              <p className="text-xs text-gray-400">
+                {reasons.length}/4 reasons
+              </p>
+              {reasons.length < 4 && (
+                <button
+                    type="button"
+                    onClick={addReason}
+                    className="flex items-center gap-2 py-2 px-4 border-2 border-dashed border-gray-200 rounded-2xl text-sm font-semibold text-gray-400 hover:border-gray-400 hover:text-dark transition-colors"
+                  >
+                  <Plus size={14} /> Add Reason
+                </button>
+              )}
+              {reasons.length >= 4 && (
+                <p className="text-xs text-amber-500 font-medium">Maximum 4 reasons reached</p>
+              )}
+            </div>
           )}
         </div>
       )}
-      
+
       {/* Save / Cancel */}
       <div className="flex gap-3 pb-10">
         <button

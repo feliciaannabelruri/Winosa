@@ -47,9 +47,9 @@ function ImageUploadBox({
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       onChange(res.data.data.url);
-      toast.success('Gambar berhasil diunggah');
+      toast.success('Image uploaded successfully');
     } catch {
-      toast.error('Gagal mengunggah gambar');
+      toast.error('Failed to upload image');
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ function ImageUploadBox({
                     type="button"
                     onClick={e => { e.stopPropagation(); inputRef.current?.click(); }}
                     className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
-                    title="Ganti gambar"
+                    title="Replace image"
                   >
                     <Upload size={16} className="text-dark" />
                   </button>
@@ -79,7 +79,7 @@ function ImageUploadBox({
                     type="button"
                     onClick={e => { e.stopPropagation(); onChange(''); }}
                     className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-red-50 transition-colors"
-                    title="Delete gambar"
+                    title="Delete image"
                   >
                     <Trash2 size={16} className="text-red-500" />
                   </button>
@@ -97,7 +97,7 @@ function ImageUploadBox({
               : (
                 <>
                   <Upload size={20} />
-                  <span className="text-xs">Klik untuk mengunggah</span>
+                  <span className="text-xs">Click to upload</span>
                 </>
               )
             }
@@ -126,7 +126,7 @@ function MemberModal({ initial, onSave, onClose }: {
   const set = (k: keyof typeof form) => (v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSubmit = async () => {
-    if (!form.name.trim() || !form.role.trim()) { toast.error('Nama dan jabatan wajib diisi'); return; }
+    if (!form.name.trim() || !form.role.trim()) { toast.error('Name and position are required'); return; }
     setSaving(true);
     try { await onSave(form); onClose(); } finally { setSaving(false); }
   };
@@ -135,16 +135,16 @@ function MemberModal({ initial, onSave, onClose }: {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 flex flex-col gap-5">
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-dark text-lg">{initial ? 'Edit Anggota' : 'Add Anggota'}</h3>
+          <h3 className="font-bold text-dark text-lg">{initial ? 'Edit Member' : 'Add Member'}</h3>
           <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-gray-100 transition-colors">
             <X size={18} className="text-gray-500" />
           </button>
         </div>
 
-        <ImageUploadBox label="Foto" value={form.image} onChange={set('image')} aspect="portrait" />
+        <ImageUploadBox label="Photo" value={form.image} onChange={set('image')} aspect="portrait" />
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama</label>
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</label>
           <input
             value={form.name}
             onChange={e => set('name')(e.target.value)}
@@ -154,7 +154,7 @@ function MemberModal({ initial, onSave, onClose }: {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Jabatan</label>
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Position</label>
           <input
             value={form.role}
             onChange={e => set('role')(e.target.value)}
@@ -168,7 +168,7 @@ function MemberModal({ initial, onSave, onClose }: {
             onClick={onClose}
             className="flex-1 py-2.5 rounded-full border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
           >
-            Batal
+            Cancel
           </button>
           <button
             onClick={handleSubmit}
@@ -225,11 +225,11 @@ const ContentPage: React.FC = () => {
     if (editing) {
       const res = await api.put(`/admin/content/team/${editing._id}`, form);
       setMembers(prev => prev.map(m => m._id === editing._id ? res.data.data : m));
-      toast.success('Anggota tim berhasil diperbarui');
+      toast.success('Team member updated successfully');
     } else {
       const res = await api.post('/admin/content/team', { ...form, order: members.length });
       setMembers(prev => [...prev, res.data.data]);
-      toast.success('Anggota tim berhasil ditambahkan');
+      toast.success('Team member added successfully');
     }
   };
 
@@ -239,10 +239,10 @@ const ContentPage: React.FC = () => {
     try {
       await api.delete(`/admin/content/team/${deleteModal.id}`);
       setMembers(prev => prev.filter(m => m._id !== deleteModal.id));
-      toast.success('Anggota tim berhasil dihapus');
+      toast.success('Team member deleted successfully');
       setDeleteModal({ open: false, id: null, name: '', loading: false });
     } catch {
-      toast.error('Gagal menghapus anggota tim');
+      toast.error('Failed to delete team member');
       setDeleteModal(prev => ({ ...prev, loading: false }));
     }
   };
@@ -258,7 +258,7 @@ const ContentPage: React.FC = () => {
       await api.patch('/admin/content/team/reorder', {
         orders: reordered.map(m => ({ _id: m._id, order: m.order })),
       });
-    } catch { toast.error('Gagal menyimpan urutan'); }
+    } catch { toast.error('Failed to save order'); }
   };
 
   const updateGlass = (path: string[], value: string) => {
@@ -286,14 +286,14 @@ const ContentPage: React.FC = () => {
       {/* Header */}
       <div>
         <h1 className="text-4xl font-display font-bold text-dark">Content</h1>
-        <p className="text-gray-400 text-sm mt-1 italic">Kelola anggota tim dan visual halaman utama</p>
+        <p className="text-gray-400 text-sm mt-1 italic">Manage team members and homepage visuals</p>
       </div>
 
       {/* Tabs */}
       <div className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-full px-2 py-1.5 shadow-sm">
         {([
-          { id: 'team',  label: 'Anggota Tim', icon: Users },
-          { id: 'glass', label: 'Bagian Glass',  icon: ImageIcon },
+          { id: 'team',  label: 'Team Members', icon: Users },
+          { id: 'glass', label: 'Glass Section',  icon: ImageIcon },
         ] as const).map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -318,7 +318,7 @@ const ContentPage: React.FC = () => {
               onClick={openAdd}
               className="flex items-center gap-2 bg-primary text-dark font-bold px-6 py-3 rounded-full text-sm hover:bg-yellow-400 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
             >
-              <Plus size={16} /> Add Anggota
+              <Plus size={16} /> Add Member
             </button>
           </div>
 
@@ -329,7 +329,7 @@ const ContentPage: React.FC = () => {
           ) : members.length === 0 ? (
             <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center">
               <Users size={40} className="text-gray-200 mx-auto mb-3" />
-              <p className="text-gray-400 text-sm">Belum ada anggota tim</p>
+              <p className="text-gray-400 text-sm">No team members yet</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -400,7 +400,7 @@ const ContentPage: React.FC = () => {
               <div className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-2 h-2 rounded-full bg-primary" />
-                  <h3 className="font-bold text-dark">Siapa Kami</h3>
+                  <h3 className="font-bold text-dark">Who We Are</h3>
                   <span className="text-xs text-gray-400 ml-auto">2 gambar · pasangan oval</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -461,8 +461,8 @@ const ContentPage: React.FC = () => {
 
       <ConfirmModal
         isOpen={deleteModal.open}
-        title="Delete Anggota"
-        message={`Apakah Anda yakin ingin menghapus ${deleteModal.name} dari tim? Tindakan ini tidak dapat dibatalkan.`}
+        title="Delete Member"
+        message={`Are you sure you want to remove ${deleteModal.name} from the team? This action cannot be undone.`}
         onConfirm={handleDelete}
         onCancel={() => setDeleteModal({ open: false, id: null, name: '', loading: false })}
         loading={deleteModal.loading}
