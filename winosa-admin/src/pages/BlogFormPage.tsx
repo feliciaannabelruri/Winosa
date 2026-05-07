@@ -72,7 +72,7 @@ const BlogFormPage: React.FC = () => {
       try {
         const res = await blogService.getById(id);
         const b   = res.data;
-        if (!b) throw new Error('Data tidak ditemukan');
+        if (!b) throw new Error('Data not found');
 
         const rawTags: string[] = Array.isArray(b.tags) ? b.tags : [];
         const [cat, ...restTags] = rawTags;
@@ -93,7 +93,7 @@ const BlogFormPage: React.FC = () => {
         setImagePreview(b.image || null);
         setSlugManual(true);
       } catch {
-        toast.error('Gagal memuat data blog');
+        toast.error('Failed to load blog data');
         navigate('/blogs');
       } finally {
         setFetching(false);
@@ -118,9 +118,9 @@ const BlogFormPage: React.FC = () => {
       });
       const url = res.data.data?.url;
       setImageUrl(url);
-      toast.success('Gambar berhasil diunggah');
+      toast.success('Image uploaded successfully');
     } catch {
-      toast.error('Gagal mengunggah gambar');
+      toast.error('Failed to upload image');
       setImagePreview(null);
     } finally {
       setImageUploading(false);
@@ -146,14 +146,14 @@ const BlogFormPage: React.FC = () => {
     setForm(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
 
   const validate = (isPublished: boolean): boolean => {
-    if (!form.title.trim())   { toast.error('Judul wajib diisi');   return false; }
-    if (!form.slug.trim())    { toast.error('Slug wajib diisi');    return false; }
-    if (!form.author.trim())  { toast.error('Penulis wajib diisi'); return false; }
+    if (!form.title.trim())   { toast.error('Title is required');   return false; }
+    if (!form.slug.trim())    { toast.error('Slug is required');    return false; }
+    if (!form.author.trim())  { toast.error('Author is required'); return false; }
     if (!form.content.trim() || form.content === '<p></p>' || form.content === '<p><br></p>') {
-      toast.error('Konten wajib diisi'); return false;
+      toast.error('Content is required'); return false;
     }
     if (isPublished && !imageUrl) {
-      toast.error('Gambar utama wajib diisi sebelum dipublikasi'); return false;
+      toast.error('Featured image is required before publishing'); return false;
     }
     return true;
   };
@@ -181,14 +181,14 @@ const BlogFormPage: React.FC = () => {
     try {
       if (isEdit && id) {
         await blogService.update(id, fd);
-        toast.success(isPublished ? 'Blog berhasil diperbarui & dipublikasi!' : 'Draf berhasil diperbarui!');
+        toast.success(isPublished ? 'Blog updated and published successfully!' : 'Draft updated successfully!');
       } else {
         await blogService.create(fd);
-        toast.success(isPublished ? 'Blog berhasil dipublikasi!' : 'Tersimpan sebagai draf!');
+        toast.success(isPublished ? 'Blog published successfully!' : 'Saved as draft!');
       }
       navigate('/blogs');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Gagal menyimpan blog');
+      toast.error(err.response?.data?.message || 'Failed to save blog');
     } finally {
       setLoading(false);
     }
@@ -227,15 +227,15 @@ const BlogFormPage: React.FC = () => {
           className="flex items-center gap-2 text-sm text-gray-400 hover:text-dark transition-colors group mb-4"
         >
           <ArrowLeft size={15} className="group-hover:-translate-x-0.5 transition-transform" />
-          Kembali ke Blog
+          Back to Blogs
         </button>
         <h1 className="text-4xl font-display font-bold text-dark">
           {isEdit ? 'Edit Blog' : 'Add Blog'}
         </h1>
         <p className="text-gray-400 text-sm mt-1 italic">
           {isEdit
-            ? 'Perbarui postingan blog yang sudah ada'
-            : 'Tulis dan publikasikan postingan blog baru'}
+            ? 'Update existing blog post'
+            : 'Write and publish a new blog post'}
         </p>
       </div>
 
@@ -246,12 +246,12 @@ const BlogFormPage: React.FC = () => {
 
           <Card title="Basic Info">
             <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-2.5">
-              <span className="text-xs text-amber-600 font-medium">⚠ Semua konten harus ditulis dalam bahasa Inggris.</span>
+              <span className="text-xs text-amber-600 font-medium">⚠ All content must be written in English.</span>
             </div>
             <Field label="Title" required>
               <input
                 type="text"
-                placeholder="cth. Cara Kami Membangun Winosa"
+                placeholder="e.g. How We Build Winosa"
                 value={form.title}
                 onChange={e => {
                   const title = e.target.value;
@@ -268,7 +268,7 @@ const BlogFormPage: React.FC = () => {
             <Field label="Slug" required>
               <input
                 type="text"
-                placeholder="cara-kami-membangun-winosa"
+                placeholder="how-we-build-winosa"
                 value={form.slug}
                 onChange={e => {
                   setSlugManual(true);
@@ -279,11 +279,11 @@ const BlogFormPage: React.FC = () => {
             </Field>
 
             <Field
-              label="Ringkasan"
-              hint={`${form.excerpt.length} / 200 karakter direkomendasikan`}
+              label="Excerpt"
+              hint={`${form.excerpt.length} / 200 recommended characters`}
             >
               <textarea
-                placeholder="Ringkasan singkat yang tampil di daftar blog..."
+                placeholder="Short summary displayed on the blog listing..."
                 value={form.excerpt}
                 onChange={e => setForm(prev => ({ ...prev, excerpt: e.target.value }))}
                 rows={3}
@@ -306,11 +306,11 @@ const BlogFormPage: React.FC = () => {
             <div className="grid grid-cols-1 gap-5">
               <Field 
                 label="Meta Title" 
-                hint="Judul yang muncul di Google. Disarankan 50-60 karakter."
+                hint="Title displayed on Google. Recommended 50–60 characters."
               >
                 <input
                   type="text"
-                  placeholder="cth. 10 Cara Membangun Website Cepat | Winosa"
+                  placeholder="e.g. 10 Ways to Build a Fast Website | Winosa"
                   value={form.metaTitle}
                   onChange={e => setForm(prev => ({ ...prev, metaTitle: e.target.value }))}
                   className={inputClass}
@@ -319,10 +319,10 @@ const BlogFormPage: React.FC = () => {
 
               <Field 
                 label="Meta Description" 
-                hint="Deskripsi singkat di Google. Disarankan 150-160 karakter."
+                hint="Short description displayed on Google. Recommended 150–160 characters."
               >
                 <textarea
-                  placeholder="Pelajari cara membangun website dengan performa tinggi..."
+                  placeholder="Learn how to build high-performance websites..."
                   value={form.metaDescription}
                   onChange={e => setForm(prev => ({ ...prev, metaDescription: e.target.value }))}
                   rows={3}
@@ -332,7 +332,7 @@ const BlogFormPage: React.FC = () => {
 
               <Field 
                 label="Meta Keywords" 
-                hint="Kata kunci dipisahkan dengan koma."
+                hint="Separate keywords with commas."
               >
                 <input
                   type="text"
@@ -353,7 +353,7 @@ const BlogFormPage: React.FC = () => {
             <Field label="Author" required>
               <input
                 type="text"
-                placeholder="Nama penulis"
+                placeholder="Author name"
                 value={form.author}
                 onChange={e => setForm(prev => ({ ...prev, author: e.target.value }))}
                 className={inputClass}
@@ -376,7 +376,7 @@ const BlogFormPage: React.FC = () => {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Tambah tag..."
+                  placeholder="Add tag..."
                   value={tagInput}
                   onChange={e => setTagInput(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
@@ -416,7 +416,7 @@ const BlogFormPage: React.FC = () => {
           <Card title="Thumbnail">
             <Field
               label="Thumbnail"
-              hint={imageUrl ? undefined : 'Wajib diisi sebelum dipublikasi'}
+              hint={imageUrl ? undefined : 'Required before publishing'}
             >
               {imagePreview ? (
                 <div className="relative rounded-2xl overflow-hidden border border-gray-200 group">
@@ -434,7 +434,7 @@ const BlogFormPage: React.FC = () => {
                           type="button"
                           onClick={() => fileRef.current?.click()}
                           className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
-                          title="Ganti gambar"
+                          title="Change image"
                         >
                           <Upload size={16} className="text-dark" />
                         </button>
@@ -457,7 +457,7 @@ const BlogFormPage: React.FC = () => {
                 >
                   <div className="flex flex-col items-center gap-3 text-gray-400 group-hover:text-dark transition-colors py-8 px-4">
                     <ImageIcon size={28} />
-                    <p className="text-xs italic text-center">Gambar utama untuk postingan blog</p>
+                    <p className="text-xs italic text-center">Featured image for the blog post</p>
                     <span className="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-xs flex items-center gap-1.5">
                       <Upload size={11} />
                       Upload Image
@@ -475,7 +475,7 @@ const BlogFormPage: React.FC = () => {
               {imageUrl && !imageUploading && (
                 <p className="text-xs text-green-600 mt-1.5 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                  Gambar siap digunakan
+                  Image ready to use
                 </p>
               )}
             </Field>

@@ -44,7 +44,8 @@ const ServiceHeroEditor: React.FC = () => {
       setForm(prev => ({ ...prev, [key]: e.target.value }));
 
   const handleSave = async () => {
-    if (!form.title.trim()) { toast.error('Title is required'); return; }
+    if (!form.title.trim())    { toast.error('Title is required'); return; }
+    if (!form.subtitle.trim()) { toast.error('Subtitle is required'); return; }
     setLoading(true);
     try {
       const payload = {
@@ -82,11 +83,19 @@ const ServiceHeroEditor: React.FC = () => {
           </label>
           <input
             value={form.title}
-            onChange={set('title')}
+            onChange={e => {
+                if (e.target.value.length <= 50) set('title')(e);
+            }}
             placeholder="e.g. Our Services"
             className={inputCls}
-          />
-          <p className="text-xs text-gray-400 mt-1">Judul besar di hero section</p>
+            maxLength={50}
+            />
+            <div className="flex items-center justify-between mt-1">
+            <p className="text-xs text-gray-400">Judul besar di hero section</p>
+            <p className={`text-xs ${form.title.length >= 50 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
+                {form.title.length}/50
+            </p>
+            </div>
         </div>
 
         {/* Subtitle */}
@@ -96,11 +105,19 @@ const ServiceHeroEditor: React.FC = () => {
           </label>
           <input
             value={form.subtitle}
-            onChange={set('subtitle')}
+            onChange={e => {
+                if (e.target.value.length <= 80) set('subtitle')(e);
+            }}
             placeholder="e.g. Everything you need to grow digitally."
             className={inputCls}
-          />
-          <p className="text-xs text-gray-400 mt-1">Teks di bawah judul</p>
+            maxLength={80}
+            />
+            <div className="flex items-center justify-between mt-1">
+            <p className="text-xs text-gray-400">Teks di bawah judul</p>
+            <p className={`text-xs ${form.subtitle.length >= 80 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
+                {form.subtitle.length}/80
+            </p>
+            </div>
         </div>
 
         {/* Description */}
@@ -111,12 +128,20 @@ const ServiceHeroEditor: React.FC = () => {
           </label>
           <textarea
             value={form.description}
-            onChange={set('description')}
+            onChange={e => {
+                if (e.target.value.length <= 150) set('description')(e);
+            }}
             placeholder="Additional description below subtitle..."
             rows={3}
             className={`${inputCls} resize-none`}
-          />
-          <p className="text-xs text-gray-400 mt-1">Teks tambahan, boleh dikosongkan</p>
+            maxLength={150}
+            />
+            <div className="flex items-center justify-between mt-1">
+            <p className="text-xs text-gray-400">Teks tambahan, boleh dikosongkan</p>
+            <p className={`text-xs ${form.description.length >= 150 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
+                {form.description.length}/150
+            </p>
+            </div>
         </div>
 
         {/* Info note */}
@@ -131,9 +156,9 @@ const ServiceHeroEditor: React.FC = () => {
       {/* Save */}
       <button
         onClick={handleSave}
-        disabled={loading}
+        disabled={loading || !form.title.trim() || !form.subtitle.trim()}
         className="w-full flex items-center justify-center gap-2 py-3 bg-dark text-white rounded-2xl text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
-      >
+        >
         {loading
           ? <><Loader2 size={14} className="animate-spin" /> Saving...</>
           : <><Save size={14} /> Save Changes</>

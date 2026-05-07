@@ -4,7 +4,7 @@ import {
   TrendingUp, Globe, Layers, Zap, Settings, Database, Lock, BarChart,
   Mail, Search, Star, Cpu, Layout, PenTool, Camera, Video, Music,
   ShoppingCart, Users, Heart, MessageSquare, Map, Clock, Wifi, Terminal,
-  Package, X,
+  Package, X, MousePointer, ThumbsUp, BarChart2,
 } from 'lucide-react';
 
 export const ICON_OPTIONS: { key: string; label: string; Icon: React.FC<any> }[] = [
@@ -42,6 +42,10 @@ export const ICON_OPTIONS: { key: string; label: string; Icon: React.FC<any> }[]
   { key: 'terminal',       label: 'Terminal',     Icon: Terminal },
   { key: 'package',        label: 'Package',      Icon: Package },
   { key: 'mobile',         label: 'Mobile',       Icon: Smartphone },
+  { key: 'chart',          label: 'Chart',        Icon: BarChart2 },
+  { key: 'cursor',         label: 'Cursor',       Icon: MousePointer },
+  { key: 'thumb',          label: 'Thumb Up',     Icon: ThumbsUp },
+  { key: 'monitor',        label: 'Monitor',      Icon: Monitor },
 ];
 
 interface Props {

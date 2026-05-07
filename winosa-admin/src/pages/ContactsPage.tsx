@@ -93,7 +93,7 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
             {isAdmin && sentTo && (
               <p className="text-[10px] text-gray-400 mt-4 flex items-center gap-1">
                 <CheckCheck size={11} className="text-green-400" />
-                Terkirim ke {sentTo}
+                Sent to {sentTo}
               </p>
             )}
           </div>
@@ -121,7 +121,7 @@ const ContactsPage: React.FC = () => {
         const data = await contactService.getAll();
         setContacts(data.data);
       } catch {
-        toast.error('Gagal memuat pesan masuk');
+        toast.error('Failed to load messages');
       } finally {
         setLoading(false);
       }
@@ -140,7 +140,7 @@ const ContactsPage: React.FC = () => {
     } catch {
       setContacts(prev => prev.map(c => c._id === contactId ? { ...c, isRead: !newIsRead } : c));
       if (selected?._id === contactId) setSelected(prev => prev ? { ...prev, isRead: !newIsRead } : null);
-      toast.error('Gagal memperbarui status');
+      toast.error('Failed to update status');
     }
   };
 
@@ -175,9 +175,9 @@ const ContactsPage: React.FC = () => {
       await api.delete(`/contact/${selected._id}`);
       setContacts(prev => prev.filter(c => c._id !== selected._id));
       setSelected(null);
-      toast.success('Pesan berhasil dihapus');
+      toast.success('Message deleted successfully');
     } catch {
-      toast.error('Gagal menghapus pesan');
+      toast.error('Failed to delete message');
     } finally {
       setDeleting(false);
     }
@@ -202,9 +202,9 @@ const ContactsPage: React.FC = () => {
       ));
 
       setReplyText('');
-      toast.success(`Balasan terkirim ke ${selected.email}`);
+      toast.success(`Reply sent to ${selected.email}`);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Gagal mengirim balasan');
+      toast.error(err?.response?.data?.message || 'Failed to send reply');
     } finally {
       setReplying(false);
     }
@@ -213,7 +213,7 @@ const ContactsPage: React.FC = () => {
   const handleExport = () => {
     if (!contacts.length) return;
     contactService.exportFromData(contacts);
-    toast.success(`${contacts.length} kontak berhasil diekspor ke CSV`);
+    toast.success(`${contacts.length} contacts exported to CSV`);
   };
 
   const filtered = contacts.filter(c => {
@@ -251,7 +251,7 @@ const ContactsPage: React.FC = () => {
               </span>
             )}
           </h1>
-          <p className="text-gray-400 text-sm mt-1 italic">Lihat dan balas pesan dari pengunjung website</p>
+          <p className="text-gray-400 text-sm mt-1 italic">View and reply to messages from website visitors</p>
         </div>
         <button
           onClick={handleExport}
@@ -299,7 +299,7 @@ const ContactsPage: React.FC = () => {
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center">
           <Inbox size={40} className="text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-400 text-sm">Tidak ada pesan yang ditemukan</p>
+          <p className="text-gray-400 text-sm">No messages found</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -407,7 +407,7 @@ const ContactsPage: React.FC = () => {
 
                   {totalReplies > 0 && (
                     <p className="text-xs text-gray-400 mt-3">
-                      {totalReplies + 1} pesan dalam percakapan ini
+                      {totalReplies + 1} messages in this conversation
                     </p>
                   )}
                 </div>
@@ -448,10 +448,10 @@ const ContactsPage: React.FC = () => {
                 {/* Formulir balasan */}
                 <div className="px-6 pb-6 pt-4 border-t border-gray-100 space-y-3 flex-shrink-0">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Balas ke {selected.name}
+                    Reply to {selected.name}
                   </p>
                   <textarea
-                    placeholder={`Tulis balasan untuk ${selected.email}…`}
+                    placeholder={`Write a reply to ${selected.email}…`}
                     value={replyText}
                     onChange={e => setReplyText(e.target.value)}
                     rows={3}
@@ -462,7 +462,7 @@ const ContactsPage: React.FC = () => {
                       href={`mailto:${selected.email}`}
                       className="text-xs text-gray-400 hover:text-primary transition-colors"
                     >
-                      Atau buka di aplikasi email →
+                       Or open in email app →
                     </a>
                     <button
                       onClick={handleReply}
@@ -470,7 +470,7 @@ const ContactsPage: React.FC = () => {
                       className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark text-sm font-bold px-6 py-2.5 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                     >
                       {replying
-                        ? <><div className="w-3.5 h-3.5 border-2 border-dark border-t-transparent rounded-full animate-spin" />Mengirim...</>
+                        ? <><div className="w-3.5 h-3.5 border-2 border-dark border-t-transparent rounded-full animate-spin" />Sending...</>
                         : <><Send size={14} />Reply</>
                       }
                     </button>
@@ -482,7 +482,7 @@ const ContactsPage: React.FC = () => {
               <div className="h-64 lg:h-full bg-white rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center">
                 <div className="text-center">
                   <Mail size={32} className="text-gray-200 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm">Pilih pesan untuk melihat detailnya</p>
+                  <p className="text-gray-400 text-sm">Select a message to view details</p>
                 </div>
               </div>
             )}
@@ -493,7 +493,7 @@ const ContactsPage: React.FC = () => {
       <ConfirmModal
       isOpen={deleteModal}
       title="Delete Message"
-      message={`Hapus pesan dari ${selected?.name}? Tindakan ini tidak dapat dibatalkan.`}
+      message={`Delete message from ${selected?.name}? This action cannot be undone.`}
       onConfirm={() => { setDeleteModal(false); handleDelete(); }}
       onCancel={() => setDeleteModal(false)}
       loading={deleting}

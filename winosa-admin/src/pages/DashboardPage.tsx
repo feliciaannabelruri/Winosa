@@ -33,9 +33,9 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon, bg, iconColor }
 // Badge color per activity type
 const typeConfig: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
   Blog:       { bg: 'bg-primary/10',  text: 'text-primary',    icon: <FileText size={12} /> },
-  Service:    { bg: 'bg-purple-50',   text: 'text-purple-500', icon: <Wrench size={12} /> },
-  Subscriber: { bg: 'bg-green-50',    text: 'text-green-500',  icon: <UserPlus size={12} /> },
-  Contact:    { bg: 'bg-red-50',      text: 'text-red-500',    icon: <MessageSquare size={12} /> },
+  Services:    { bg: 'bg-purple-50',   text: 'text-purple-500', icon: <Wrench size={12} /> },
+  Subscribers: { bg: 'bg-green-50',    text: 'text-green-500',  icon: <UserPlus size={12} /> },
+  Contacts:    { bg: 'bg-red-50',      text: 'text-red-500',    icon: <MessageSquare size={12} /> },
 };
 
 const statusConfig: Record<string, string> = {
@@ -96,14 +96,14 @@ const DashboardPage: React.FC = () => {
       <div>
         <h1 className="text-3xl sm:text-4xl font-display font-bold text-dark">Dashboard</h1>
         <p className="text-gray-400 text-sm mt-1 italic">
-          Ringkasan aktivitas — Selamat datang kembali,{' '}
+          Activity overview — Welcome back,{' '}
           <span className="text-dark font-medium not-italic">{user?.name ?? 'Admin'}</span>
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        <StatCard label="Portofolio"  value={counts.portfolios}  icon={<FolderOpen size={16} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
+        <StatCard label="Portfolio"   value={counts.portfolios}  icon={<FolderOpen size={16} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
         <StatCard label="Blogs"       value={counts.blogs}       icon={<FileText size={16} />}   bg="bg-primary/10" iconColor="text-primary"    />
         <StatCard label="Services"    value={counts.services}    icon={<Briefcase size={16} />}  bg="bg-purple-50"  iconColor="text-purple-500" />
         <StatCard label="Subscribers" value={counts.subscribers} icon={<Users size={16} />}      bg="bg-green-50"   iconColor="text-green-500"  />
