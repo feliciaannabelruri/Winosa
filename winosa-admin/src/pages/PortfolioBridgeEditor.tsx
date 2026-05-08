@@ -93,7 +93,7 @@ const PortfolioBridgeEditor: React.FC = () => {
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
         <div>
           <h2 className="text-base font-bold text-dark mb-0.5">Our Belief</h2>
-          <p className="text-xs text-gray-400 mb-4">Kutipan/quote di bagian kiri section</p>
+          <p className="text-xs text-gray-400 mb-4">Quote displayed on the left side of the section</p>
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
             Quote <span className="text-red-400">*</span>
           </label>
@@ -111,7 +111,7 @@ const PortfolioBridgeEditor: React.FC = () => {
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
         <div>
           <h2 className="text-base font-bold text-dark mb-0.5">Stats</h2>
-          <p className="text-xs text-gray-400 mb-4">3 kartu statistik di bagian kanan section</p>
+          <p className="text-xs text-gray-400 mb-4">Three statistic cards displayed on the right side of the section</p>
         </div>
 
         <div className="space-y-3">

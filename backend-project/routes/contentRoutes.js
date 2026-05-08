@@ -4,5 +4,6 @@ const ctrl    = require('../controllers/admin/adminContentController');
 
 router.get('/team',  ctrl.getTeam);
 router.get('/glass', ctrl.getGlass);
+router.get('/about', ctrl.getAbout); 
 
 module.exports = router;

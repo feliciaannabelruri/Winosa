@@ -3,11 +3,11 @@ import styles from "./detail.module.css";
 import Footer from "@/components/layout/Footer";
 
 import HeroSection from "@/components/sectionsPorto/sectionDetailProject/HeroSection";
-import InfoSection from "@/components/sectionsPorto/sectionDetailProject/InfoSection";
 import CaseStudySection from "@/components/sectionsPorto/sectionDetailProject/CaseStudySection";
 import GallerySection from "@/components/sectionsPorto/sectionDetailProject/GallerySection";
 import NextProjectSection from "@/components/sectionsPorto/sectionDetailProject/NextProjectSection";
 import SimilarProjectsSection from "@/components/sectionsPorto/SimilarProjectsSection";
+import AboutProjectSection from "@/components/sectionsPorto/sectionDetailProject/AboutProjectSection";
 
 interface PageProps {
   params: Promise<{
@@ -115,7 +115,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   return (
     <main className={styles.detailPage}>
       <HeroSection project={project} />
-      <InfoSection project={project} />
+      <AboutProjectSection longDescription={project.longDescription} />
       <CaseStudySection project={project} />
       <GallerySection project={project} />
 

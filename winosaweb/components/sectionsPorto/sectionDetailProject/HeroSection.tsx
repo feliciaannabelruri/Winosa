@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import styles from "@/app/portofolio/[slug]/detail.module.css";
@@ -13,13 +12,15 @@ import { useEffect, useState } from "react";
 
 interface HeroSectionProps {
   project: {
-    heroImage: string;
     title: string;
     description: string;
     longDescription?: string;
     category: string;
     client: string;
     year: string;
+    duration?: string;
+    role?: string;
+    technologies: string[];
     projectUrl?: string;
   };
 }
@@ -36,131 +37,115 @@ export default function HeroSection({ project }: HeroSectionProps) {
         translateHybrid(project.title, language, tApi),
         translateHybrid(project.category, language, tApi),
       ]);
-      setTranslated((prev) => ({ ...prev, title, category }));
-      if (project.longDescription) {
-        const longDescription = await translateHybrid(project.longDescription, language, tApi);
-        setTranslated((prev) => ({ ...prev, longDescription }));
-      }
+      setTranslated(prev => ({ ...prev, title, category }));
     };
     run();
   }, [project, language]);
 
-  const displayText = translated.longDescription?.trim() || translated.description;
+  const infoPills = [
+    { label: 'Client',   value: project.client   },
+    { label: 'Year',     value: project.year      },
+    { label: 'Duration', value: project.duration  },
+    { label: 'Role',     value: project.role      },
+  ].filter(p => p.value && p.value !== '-');
 
   return (
     <FadeUp disableInView>
-      <section className={styles.heroSplit} aria-labelledby="project-hero-title">
+      <section className={styles.heroNew} aria-labelledby="project-hero-title">
 
-        {/* Background — matching halaman porto */}
-        <div className={styles.heroSplitGrid} aria-hidden="true" />
-        <div className={styles.heroSplitLight} aria-hidden="true" />
-        <div className={styles.heroSplitOverlay} aria-hidden="true" />
+        <div className={styles.heroNewGrid} aria-hidden="true" />
+        <div className={styles.heroNewGlow} aria-hidden="true" />
 
-        <div className={styles.heroSplitInner} style={{ marginTop: '-35px' }}>
+        {/* Back button — stay left */}
+        <div className={styles.heroNewBackWrapper}>
+          <Link href="/portofolio" className={styles.heroNewBack}>
+            <ArrowLeft size={14} />
+            {t("backButton", "portfolio")}
+          </Link>
+        </div>
 
-          {/* LEFT — teks */}
-          <motion.div
-            className={styles.heroSplitLeft}
-            style={{ paddingBottom: '50px' }}
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: {},
-              visible: { transition: { staggerChildren: 0.15 } },
-            }}
+        {/* Center content */}
+        <div className={styles.heroNewInner}>
+
+          <motion.span
+            className={styles.heroNewCategory}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-          {/* Back button */}
-            <Link
-              href="/portofolio"
-              className="inline-flex items-center gap-2 text-sm font-medium text-white/60 hover:text-white mb-6 group transition-colors duration-200"
-            >
-              <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform duration-200" />
-              {t("backButton", "portfolio")}
-            </Link>
+            {translated.category}
+          </motion.span>
 
-            {/* Kategori */}
-            <motion.span
-              className={styles.heroSplitCategory}
-              variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.6 }}
-            >
-              {translated.category}
-            </motion.span>
-
-            {/* Judul */}
-            <motion.h1
-              id="project-hero-title"
-              className={styles.heroSplitTitle}
-              variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.7 }}
-            >
-              {translated.title}
-            </motion.h1>
-
-            {/* Long description */}
-            {displayText && (
-              <motion.p
-                className={styles.heroSplitDesc}
-                variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}
-                transition={{ duration: 0.7 }}
-              >
-                {displayText}
-              </motion.p>
-            )}
-
-            {project.projectUrl && (
-              <motion.a
-                href={project.projectUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}
-                transition={{ duration: 0.7 }}
-                whileHover={{ scale: 1.05, backgroundColor: '#f0f0f0' }}
-                whileTap={{ scale: 0.97 }}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  marginTop: '24px',
-                  padding: '12px 28px',
-                  background: 'white',
-                  color: '#0a0a0a',
-                  borderRadius: '999px',
-                  fontWeight: 600,
-                  fontSize: '15px',
-                  textDecoration: 'none',
-                  width: 'fit-content',
-                  cursor: 'pointer',
-                }}
-              >
-                {t("portfolioDetailMisc", "visitProject")}
-              </motion.a>
-            )}
-          </motion.div>
-
-          {/* RIGHT — gambar */}
-          <motion.div
-            className={styles.heroSplitRight}
-            initial={{ opacity: 0, x: 60, rotate: 1 }}
-            animate={{ opacity: 1, x: 0, rotate: 0 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          <motion.h1
+            id="project-hero-title"
+            className={styles.heroNewTitle}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
           >
-            <div className={styles.heroSplitImageCard}>
-              <Image
-                src={project.heroImage}
-                alt={translated.title}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                style={{ objectFit: "cover" }}
-              />
-              <div className={styles.heroSplitImageAccent} aria-hidden="true" />
-            </div>
-          </motion.div>
+            {translated.title}
+          </motion.h1>
+
+          <motion.p
+            className={styles.heroNewDesc}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            {translated.description}
+          </motion.p>
+
+          {/* Info Pills — Client, Year, Duration, Role */}
+          {infoPills.length > 0 && (
+            <motion.div
+              className={styles.heroNewPills}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              {infoPills.map((pill, i) => (
+                <span key={i} className={styles.heroNewPill}>
+                  <span className={styles.heroNewPillLabel}>{pill.label}</span>
+                  {pill.value}
+                </span>
+              ))}
+            </motion.div>
+          )}
+
+          {/* Tech Stack Pills */}
+          {project.technologies?.length > 0 && (
+            <motion.div
+              className={styles.heroNewTechRow}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.38 }}
+            >
+              {project.technologies.map((tech, i) => (
+                <span key={i} className={styles.heroNewTechTag}>
+                  {tech}
+                </span>
+              ))}
+            </motion.div>
+          )}
+
+          {/* Visit Button */}
+          {project.projectUrl && (
+            <motion.a
+              href={project.projectUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.heroNewBtn}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+            >
+              {t("portfolioDetailMisc", "visitProject")}
+            </motion.a>
+          )}
 
         </div>
 
-        <div className={styles.heroSplitFade} aria-hidden="true" />
+        <div className={styles.heroNewFade} aria-hidden="true" />
       </section>
     </FadeUp>
   );

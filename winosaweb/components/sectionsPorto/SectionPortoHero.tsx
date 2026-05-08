@@ -4,9 +4,18 @@ import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
 import styles from "@/app/portofolio/portfolio.module.css";
 
-export default function SectionPortoHero() {
+interface HeroData {
+  title?: string;
+  subtitle?: string;
+}
+
+export default function SectionPortoHero({ heroData }: { heroData?: HeroData | null }) {
   const { t } = useTranslate();
-  const title = t("portfolioHero", "title").split(" ");
+
+  const heroTitle    = heroData?.title    || t("portfolioHero", "title");
+  const heroSubtitle = heroData?.subtitle || t("portfolioHero", "subtitle");
+
+  const title = heroTitle.split(" ");
 
   return (
     <section
@@ -36,7 +45,7 @@ export default function SectionPortoHero() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className={styles.subtitle}
         >
-          {t("portfolioHero", "subtitle")}
+          {heroSubtitle}
         </motion.p>
 
         <motion.div

@@ -5,14 +5,27 @@ import FadeUp from "@/components/animation/FadeUp";
 import styles from "@/app/portofolio/portfolio.module.css";
 import { useTranslate } from "@/lib/useTranslate";
 
-const stats = [
-  { icon: "◉", value: "24+", labelKey: "team" },
-  { icon: "◉", value: "15+", labelKey: "projects" },
-  { icon: "◉", value: "100%", labelKey: "quality" },
+interface StatItem {
+  value: string;
+  label: string;
+}
+
+interface BridgeData {
+  quote?: string;
+  stats?: StatItem[];
+}
+
+const DEFAULT_STATS: StatItem[] = [
+  { value: "24+", label: "Team Members" },
+  { value: "15+", label: "Projects Done" },
+  { value: "100%", label: "Quality Guaranteed" },
 ];
 
-export default function SectionBridge() {
+export default function SectionBridge({ bridgeData }: { bridgeData?: BridgeData | null }) {
   const { t } = useTranslate();
+
+  const quote = bridgeData?.quote || t("portfolioBridge", "title");
+  const stats = bridgeData?.stats || DEFAULT_STATS;
 
   return (
     <FadeUp>
@@ -39,7 +52,7 @@ export default function SectionBridge() {
               id="portfolio-bridge-title"
               className={styles.bridgeQuote}
             >
-              {t("portfolioBridge", "title")}
+              {quote}
             </h2>
           </motion.div>
 
@@ -53,7 +66,7 @@ export default function SectionBridge() {
           >
             {stats.map((stat, i) => (
               <motion.div
-                key={stat.labelKey}
+                key={i}
                 className={styles.bridgeStatCard}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -61,18 +74,17 @@ export default function SectionBridge() {
                 viewport={{ once: true }}
               >
                 <div className={styles.bridgeStatIcon} aria-hidden="true">
-                  {stat.icon}
+                  ◉
                 </div>
                 <div>
                   <div className={styles.bridgeStatLabel}>
-                    {t("portfolioExplanation.stats", stat.labelKey)}
+                    {stat.label}
                   </div>
                   <div className={styles.bridgeStatValue}>{stat.value}</div>
                 </div>
               </motion.div>
             ))}
           </motion.div>
-
         </div>
       </section>
     </FadeUp>
