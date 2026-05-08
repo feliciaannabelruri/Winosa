@@ -113,6 +113,8 @@ app.use('/api/settings',      require('./routes/settingsRoutes'));
 app.use('/api/auth',          authLimiter, require('./routes/authRoutes'));
 app.use('/api/search',        require('./routes/searchRoutes'));
 app.use('/api/ml',            require('./routes/mlRoutes'));
+app.use('/api/project-inquiry', require('./routes/projectInquiryRoutes'));
+app.use('/api/translate', require('./routes/translateRoutes'));
 
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/email',  require('./routes/emailTestRoutes'));

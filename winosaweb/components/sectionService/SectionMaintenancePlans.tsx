@@ -376,33 +376,40 @@ useEffect(() => {
                     )}
 
                     {/* CTA */}
-                    <button
-                      type="button"
-                      onClick={() => waContact(plan.name, price)}
-                     className="w-full py-3 rounded-full text-sm font-medium transition-all mt-auto"
-                      style={{
-                        fontFamily: "inherit",
-                        background: plan.featured ? "black" : "transparent",
-                        color: plan.featured ? "white" : "black",
-                        border: plan.featured ? "2px solid black" : "1.5px solid rgba(0,0,0,0.2)",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!plan.featured) {
-                          e.currentTarget.style.background = "black";
-                          e.currentTarget.style.color = "white";
-                          e.currentTarget.style.borderColor = "black";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!plan.featured) {
-                          e.currentTarget.style.background = "transparent";
-                          e.currentTarget.style.color = "black";
-                          e.currentTarget.style.borderColor = "rgba(0,0,0,0.2)";
-                        }
-                      }}
-                    >
-                      {th("Get started with")} {plan.name}
-                    </button>
+                      <Link
+                        href={`/rfp?plan=${plan.id}`}
+                        className="mt-auto block"
+                      >
+                        <button
+                          type="button"
+                          className="w-full py-3 rounded-full text-sm font-medium transition-all"
+                          style={{
+                            fontFamily: "inherit",
+                            background: plan.featured ? "black" : "transparent",
+                            color: plan.featured ? "white" : "black",
+                            border: plan.featured
+                              ? "2px solid black"
+                              : "1.5px solid rgba(0,0,0,0.2)",
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!plan.featured) {
+                              e.currentTarget.style.background = "black";
+                              e.currentTarget.style.color = "white";
+                              e.currentTarget.style.borderColor = "black";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!plan.featured) {
+                              e.currentTarget.style.background = "transparent";
+                              e.currentTarget.style.color = "black";
+                              e.currentTarget.style.borderColor =
+                                "rgba(0,0,0,0.2)";
+                            }
+                          }}
+                        >
+                          {th("Get started with")} {plan.name}
+                        </button>
+                      </Link>
                   </div>
                 </div>
               </FadeUp>

@@ -24,6 +24,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@iamtraction/google-translate": "^2.0.1",
     "@sentry/node": "^8.0.0",
     "aws4": "^1.13.2",
     "axios": "^1.15.0",
