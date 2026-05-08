@@ -15,4 +15,7 @@ router.delete('/team/:id',     ctrl.deleteMember);
 router.get('/glass',  ctrl.getGlass);
 router.put('/glass',  ctrl.updateGlass);
 
+router.get('/about',  ctrl.getAbout);   
+router.put('/about',  ctrl.updateAbout); 
+
 module.exports = router;

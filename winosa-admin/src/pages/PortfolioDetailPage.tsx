@@ -56,7 +56,7 @@ const PortfolioDetailPage: React.FC = () => {
         className="flex items-center gap-2 text-sm text-gray-400 hover:text-dark transition-colors group"
       >
         <ArrowLeft size={15} className="group-hover:-translate-x-0.5 transition-transform" />
-        Kembali ke Portfolio
+        Back to Portfolio
       </button>
 
       {/* Hero Image */}

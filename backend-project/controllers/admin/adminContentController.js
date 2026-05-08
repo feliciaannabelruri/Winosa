@@ -2,6 +2,7 @@ const TeamMember   = require('../../models/TeamMember');
 const GlassContent = require('../../models/GlassContent');
 const asyncHandler = require('../../middleware/asyncHandler');
 const { ErrorResponse } = require('../../middleware/errorHandler');
+const AboutContent = require('../../models/AboutContent');
 
 // ── TEAM ──
 exports.getTeam = asyncHandler(async (req, res) => {
@@ -40,9 +41,25 @@ exports.getGlass = asyncHandler(async (req, res) => {
 });
 
 exports.updateGlass = asyncHandler(async (req, res) => {
-  let glass = await GlassContent.findOne();
-  if (!glass) glass = new GlassContent();
-  Object.assign(glass, req.body);
-  await glass.save();
+  const glass = await GlassContent.findOneAndUpdate(
+    {},
+    { $set: req.body },
+    { new: true, upsert: true }
+  );
   res.json({ success: true, data: glass });
+});
+
+exports.getAbout = asyncHandler(async (req, res) => {
+  let about = await AboutContent.findOne();
+  if (!about) about = await AboutContent.create({});
+  res.json({ success: true, data: about });
+});
+
+exports.updateAbout = asyncHandler(async (req, res) => {
+  const about = await AboutContent.findOneAndUpdate(
+    {},
+    { $set: req.body },
+    { new: true, upsert: true }
+  );
+  res.json({ success: true, data: about });
 });

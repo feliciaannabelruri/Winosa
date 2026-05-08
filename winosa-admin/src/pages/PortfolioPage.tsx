@@ -275,15 +275,6 @@ const PortfolioPage: React.FC = () => {
       {tab === 'hero'        && <PortfolioHeroEditor />}
       {tab === 'explanation' && <PortfolioExplanationEditor />}
       {tab === 'bridge'      && <PortfolioBridgeEditor />}
-
-      <ConfirmModal
-        isOpen={deleteModal.open}
-        title="Delete Portfolio"
-        message="Apakah Anda yakin ingin menghapus portfolio ini? Tindakan ini tidak dapat dibatalkan."
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
-        loading={deleteModal.loading}
-      />
     </div>
   );
 };

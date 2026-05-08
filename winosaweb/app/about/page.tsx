@@ -81,6 +81,15 @@ const fallbackValues = [
   },
 ];
 
+const VALUE_ICONS: Record<string, any> = {
+  innovation:  Rocket,
+  integrity:   ShieldCheck,
+  partnership: Users,
+  impact:      Target,
+};
+
+const WHY_US_ICONS = [Code2, ShieldCheck, Globe];
+
 /* ============================================================
    PAGE COMPONENT
 ============================================================ */
@@ -92,8 +101,9 @@ export default function AboutPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [aboutContent, setAboutContent] = useState<any>(null);
   const [activeTeam, setActiveTeam] = useState(0);
+  const [glassImages, setGlassImages] = useState<any>(null);
 
-  // Fetch team + settings
+ // Fetch team + settings
   useEffect(() => {
     const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -102,7 +112,6 @@ export default function AboutPage() {
       .then(async (data) => {
         let members: TeamMember[] = data?.data ?? [];
         members = members.sort((a, b) => a.order - b.order);
-
         const translated = await Promise.all(
           members.map(async (m) => ({
             ...m,
@@ -113,16 +122,23 @@ export default function AboutPage() {
       })
       .catch(() => {});
 
+    fetch(`${api}/content/about`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.data) setAboutContent(data.data);
+      })
+      .catch(() => {});
+
     fetch(`${api}/settings`)
       .then((r) => r.json())
-      .then((j) => {
-  setSettings(j?.data ?? null);
-
-  if (j?.data?.aboutPage) {
-    setAboutContent(j.data.aboutPage);
-  }
-})
+      .then((j) => setSettings(j?.data ?? null))
       .catch(() => {});
+
+    fetch(`${api}/content/glass`)
+      .then((r) => r.json())
+      .then((data) => { if (data?.data) setGlassImages(data.data); })
+      .catch(() => {});
+
   }, [language]);
 
   // Auto-cycle team carousel
@@ -266,7 +282,7 @@ export default function AboutPage() {
               {/* Main Image */}
               <div className="absolute inset-0 rounded-[32px] overflow-hidden border border-black/10 bg-gray-200 shadow-xl">
                 <Image 
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop" 
+                  src={glassImages?.whoWeAre?.image1 || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop"}
                   alt="Winosa Team Collaboration" 
                   fill
                   unoptimized
@@ -277,7 +293,7 @@ export default function AboutPage() {
               {/* Overlapping smaller image */}
               <div className="absolute -bottom-10 -right-8 w-2/3 aspect-[4/3] rounded-[24px] overflow-hidden border-8 border-[#f8f7f5] shadow-2xl bg-gray-200 hidden md:block">
                 <Image 
-                  src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop" 
+                  src={glassImages?.whoWeAre?.image2 || "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop"}
                   alt="Winosa Tech Setup" 
                   fill
                   unoptimized
@@ -352,7 +368,7 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {(aboutContent?.values || fallbackValues).map((v: any, i: number) => {
-              const Icon = v.icon;
+              const Icon = v.icon ?? VALUE_ICONS[v.key] ?? Target;
               return (
                 <FadeUp key={v.key} delay={i * 0.1}>
                   <div className="group relative p-8 rounded-[28px] border border-black/10 bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] hover:border-black/20 overflow-hidden">
@@ -445,8 +461,8 @@ export default function AboutPage() {
                     icon: Globe,
                   },
                 ]
-              ).map((item: any) => {
-                const Icon = item.icon;
+              ).map((item: any, i: number) => {
+                const Icon = item.icon ?? WHY_US_ICONS[i] ?? Code2;
                 return (
                   <div key={item.label} className="flex gap-4 p-6 rounded-2xl border border-white/10 hover:border-yellow-400/20 transition-colors duration-300">
                     <Icon className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
