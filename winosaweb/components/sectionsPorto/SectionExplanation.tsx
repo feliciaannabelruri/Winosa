@@ -5,8 +5,20 @@ import FadeUp from "@/components/animation/FadeUp";
 import styles from "@/app/portofolio/portfolio.module.css";
 import { useTranslate } from "@/lib/useTranslate";
 
-export default function SectionExplanation() {
+interface ExplanationData {
+  badge?: string;
+  title1?: string;
+  title2?: string;
+  description?: string;
+}
+
+export default function SectionExplanation({ explanationData }: { explanationData?: ExplanationData | null }) {
   const { t } = useTranslate();
+
+  const badge       = explanationData?.badge       || t("portfolioExplanation", "badge");
+  const title1      = explanationData?.title1      || t("portfolioExplanation", "title1");
+  const title2      = explanationData?.title2      || t("portfolioExplanation", "title2");
+  const description = explanationData?.description || t("portfolioExplanation", "description");
 
   return (
     <FadeUp>
@@ -37,7 +49,7 @@ export default function SectionExplanation() {
               }}
               transition={{ duration: 0.8 }}
             >
-              {t("portfolioExplanation", "badge")}
+              {badge}
             </motion.span>
 
             <motion.h2
@@ -49,9 +61,9 @@ export default function SectionExplanation() {
               }}
               transition={{ duration: 0.8 }}
             >
-              {t("portfolioExplanation", "title1")}{" "}
+              {title1}{" "}
               <span>
-                {t("portfolioExplanation", "title2")}
+                {title2}
               </span>
             </motion.h2>
 
@@ -63,7 +75,7 @@ export default function SectionExplanation() {
               }}
               transition={{ duration: 0.8 }}
             >
-              {t("portfolioExplanation", "description")}
+              {description}
             </motion.p>
           </motion.div>
         </div>

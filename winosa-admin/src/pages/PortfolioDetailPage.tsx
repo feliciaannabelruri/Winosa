@@ -59,18 +59,14 @@ const PortfolioDetailPage: React.FC = () => {
         Back to Portfolio
       </button>
 
-      {/* Hero Image */}
-      {portfolio.heroImage ? (
-        <div className="w-full h-72 rounded-3xl overflow-hidden border-2 border-gray-100 max-w-full">
-          <img src={portfolio.heroImage} alt={portfolio.title} className="w-full h-full object-cover" />
-        </div>
-      ) : portfolio.thumbnail || portfolio.image ? (
-        <div className="w-full h-72 rounded-3xl overflow-hidden border-2 border-gray-100">
+      {/* thumbnail */}
+      {(portfolio.thumbnail || portfolio.image) ? (
+        <div className="w-full h-56 rounded-3xl overflow-hidden border-2 border-gray-100">
           <img src={portfolio.thumbnail || portfolio.image} alt={portfolio.title} className="w-full h-full object-cover" />
         </div>
       ) : (
-        <div className="w-full h-72 rounded-3xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center">
-          <p className="text-gray-300 text-sm italic">No hero image</p>
+        <div className="w-full h-56 rounded-3xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center">
+          <p className="text-gray-300 text-sm italic">No thumbnail</p>
         </div>
       )}
 
@@ -91,8 +87,8 @@ const PortfolioDetailPage: React.FC = () => {
           )}
           <h1 className="text-3xl font-display font-bold text-dark mt-2">{portfolio.title}</h1>
           {(portfolio.shortDesc || portfolio.description) && (
-            <p className="text-gray-500 text-sm mt-1">
-              {portfolio.shortDesc || portfolio.description}
+            <p className="text-gray-500 text-sm mt-1 italic">
+              Short desc: {portfolio.shortDesc || portfolio.description}
             </p>
           )}
         </div>
@@ -105,7 +101,7 @@ const PortfolioDetailPage: React.FC = () => {
 
       {/* Long Description */}
       {portfolio.longDesc && (
-        <SectionCard title="Description">
+        <SectionCard title="Long Description">
           <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{portfolio.longDesc}</p>
         </SectionCard>
       )}

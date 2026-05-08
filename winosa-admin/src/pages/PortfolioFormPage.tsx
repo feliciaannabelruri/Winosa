@@ -45,7 +45,6 @@ interface PortfolioForm {
   role:       string;
   projectUrl: string;
   thumbnail:  string;
-  heroImage:  string;
   techStack:  string[];
   challenge:  string;
   solution:   string;
@@ -59,7 +58,7 @@ const DEFAULT_FORM: PortfolioForm = {
   title: '', slug: '', shortDesc: '', longDesc: '',
   category: '', client: '', year: new Date().getFullYear().toString(),
   duration: '', role: '', projectUrl: '',
-  thumbnail: '', heroImage: '',
+  thumbnail: '',
   techStack: [],
   challenge: '', solution: '', result: '',
   metrics: [],
@@ -100,7 +99,6 @@ const PortfolioFormPage: React.FC = () => {
           role:       p.role        ?? '',
           projectUrl: p.projectUrl  ?? '',
           thumbnail:  p.thumbnail   ?? p.image ?? '',
-          heroImage:  p.heroImage   ?? '',
           techStack:  Array.isArray(p.techStack) ? p.techStack : [],
           challenge:  p.challenge   ?? '',
           solution:   p.solution    ?? '',
@@ -116,11 +114,12 @@ const PortfolioFormPage: React.FC = () => {
 
   // Submit
   const handleSubmit = async (isActive: boolean) => {
-    if (!form.title.trim() || !form.slug.trim()) {
-      toast.error('Title and slug are required');
-      return;
-    }
-    setLoading(true);
+    if (!form.title.trim())     { toast.error('Title is required'); return; }
+    if (!form.slug.trim())      { toast.error('Slug is required'); return; }
+    if (!form.category)         { toast.error('Category is required'); return; }
+    if (!form.shortDesc.trim()) { toast.error('Short Description is required'); return; }
+    if (!form.thumbnail)        { toast.error('Thumbnail is required'); return; }
+  setLoading(true);
     try {
       const fd = new FormData();
       fd.append('title',       form.title.trim());
@@ -136,7 +135,6 @@ const PortfolioFormPage: React.FC = () => {
       fd.append('projectUrl',  form.projectUrl);
       fd.append('thumbnail',   form.thumbnail);
       fd.append('image',       form.thumbnail);
-      fd.append('heroImage',   form.heroImage);
       fd.append('challenge',   form.challenge);
       fd.append('solution',    form.solution);
       fd.append('result',      form.result);
@@ -252,7 +250,9 @@ const PortfolioFormPage: React.FC = () => {
         </div>
 
         <div>
-          <Label hint="Displayed on the portfolio carousel card">Short Description</Label>
+          <Label hint="Shown on the portfolio card AND as the hero description on the detail page">
+            Short Description
+          </Label>
           <textarea rows={2} placeholder="Brief project summary..."
             value={form.shortDesc}
             onChange={e => set('shortDesc', e.target.value)}
@@ -270,18 +270,12 @@ const PortfolioFormPage: React.FC = () => {
         />
       </SectionCard>
 
-      <SectionCard title="Hero Section" subtitle="Full-screen image at the top of the detail page">
-        <ImageUpload
-          label="Hero Image"
-          hint="Different from thumbnail — usually a landscape/wide image"
-          value={form.heroImage}
-          onChange={val => set('heroImage', val)}
-          aspectRatio="16/9"
-          folder="portfolio"
-        />
+      <SectionCard title="Detail Page" subtitle="Full description shown in the About This Project section">
         <div>
-          <Label hint="Displayed on the detail page as a full description">Detailed Description</Label>
-          <textarea rows={4} placeholder="Detailed project description..."
+          <Label hint="Full description shown in the 'About This Project' section on the detail page">
+            Long Description
+          </Label>
+          <textarea rows={6} placeholder="Full project description..."
             value={form.longDesc}
             onChange={e => set('longDesc', e.target.value)}
             className={textareaCls}
@@ -289,7 +283,7 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      <SectionCard title="Project Info" subtitle="Shown in the info section below hero">
+      <SectionCard title="Project Info" subtitle="Shown as pills in the detail page hero">
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Client</Label>
