@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
 import { useState, useEffect } from "react";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useLanguageStore } from "@/store/useLanguageStore";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -11,7 +13,48 @@ export default function SectionMap() {
   const [loadMap, setLoadMap] = useState(false);
   const { t } = useTranslate();
 
+  const { language } = useLanguageStore();
+
+  const [translated, setTranslated] = useState<any>(null);
+
+
   const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+  if (!settings) return;
+
+  const run = async () => {
+    setTranslated({
+      title: await translateHybrid(
+        settings?.mapTitle || t("map", "title"),
+        language
+      ),
+
+      subtitle: await translateHybrid(
+        settings?.mapSubtitle || t("map", "subtitle"),
+        language
+      ),
+
+      address: await translateHybrid(
+        settings?.siteAddress || "Bandar Lampung, Indonesia",
+        language
+      ),
+
+      loadMap: await translateHybrid(
+        "Load Map",
+        language
+      ),
+
+      clickLoad: await translateHybrid(
+        "Click to load map",
+        language
+      ),
+    });
+  };
+
+  run();
+
+}, [settings, language]);
 
   useEffect(() => {
     const api = process.env.NEXT_PUBLIC_API_URL;
@@ -25,7 +68,9 @@ export default function SectionMap() {
 
   // ambil address dari admin (fallback aman)
   const address =
-    settings?.siteAddress || "Bandar Lampung, Indonesia";
+  translated?.address ||
+  settings?.siteAddress ||
+  "Bandar Lampung, Indonesia";
 
   return (
     <FadeUp>
@@ -41,11 +86,16 @@ export default function SectionMap() {
             className="mb-12 text-center"
           >
             <h2 className="text-4xl font-bold mb-4">
-              {t("map", "title")}
-            </h2>
+              {
+                translated?.title ||
+                t("map", "title")
+              }            </h2>
 
             <p className="text-black/70">
-              {t("map", "subtitle")}
+              {
+                  translated?.subtitle ||
+                  t("map", "subtitle")
+                }
             </p>
           </motion.div>
 
@@ -61,14 +111,20 @@ export default function SectionMap() {
               <div className="flex flex-col items-center justify-center h-[450px] bg-gray-100 gap-4">
 
                 <p className="text-black/60">
-                  Click to load map
+                  {
+                    translated?.clickLoad ||
+                    "Click to load map"
+                  }
                 </p>
 
                 <button
                   onClick={() => setLoadMap(true)}
                   className="px-6 py-3 bg-black text-white rounded-full"
                 >
-                  Load Map
+                  {
+                      translated?.loadMap ||
+                      "Load Map"
+                    }
                 </button>
 
               </div>

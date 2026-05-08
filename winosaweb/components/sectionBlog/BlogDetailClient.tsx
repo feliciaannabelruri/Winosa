@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
-import { autoTranslate } from "@/lib/autoTranslate";
+import { translateHybrid } from "@/lib/translateHybrid";
 import EmptyState from "@/components/UI/EmptyState";
 
 type Blog = {
@@ -37,127 +37,10 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
   const [comments, setComments] = useState<{ name: string; message: string }[]>([]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+  const [uiText, setUiText] = useState<any>(null);
 
-  const [uiText, setUiText] = useState({
-  estimation: "Need a More Accurate Estimation?",
-  estimationDesc:
-    "Tell us about your project requirements and our team will help provide a more suitable recommendation based on your goals and budget.",
-  submitInquiry: "Submit Project Inquiry",
-
-  related: "Related Articles",
-
-  
-  comments: "Comments",
-  noComments: "No comments yet.",
-
-  leaveComment: "Leave a Comment",
-  yourName: "Your Name",
-  yourThoughts: "Your Thoughts",
-  writeComment: "Write your comment...",
-  post: "Post Comment",
-  readMore: "Read More",
-});
-
-// TRANSLATE RELATED
-useEffect(() => {
-  if (!language) return;
-
-  const run = async () => {
-    const [
-      estimation,
-      estimationDesc,
-      submitInquiry,
-      related,
-      comments,
-      noComments,
-      leaveComment,
-      yourName,
-      yourThoughts,
-      writeComment,
-      post,
-      readMore,
-    ] = await Promise.all([
-      autoTranslate(
-        "Need a More Accurate Estimation?",
-        language
-      ),
-
-      autoTranslate(
-        "Tell us about your project requirements and our team will help provide a more suitable recommendation based on your goals and budget.",
-        language
-      ),
-
-      autoTranslate(
-        "Submit Project Inquiry",
-        language
-      ),
-
-      autoTranslate(
-        "Related Articles",
-        language
-      ),
-
-      autoTranslate(
-        "Comments",
-        language
-      ),
-
-      autoTranslate(
-        "No comments yet.",
-        language
-      ),
-
-      autoTranslate(
-        "Leave a Comment",
-        language
-      ),
-
-      autoTranslate(
-        "Your Name",
-        language
-      ),
-
-      autoTranslate(
-        "Your Thoughts",
-        language
-      ),
-
-      autoTranslate(
-        "Write your comment...",
-        language
-      ),
-
-      autoTranslate(
-        "Post Comment",
-        language
-      ),
-      autoTranslate(
-        "Read More",
-        language
-),
-
-    ]);
-
-    setUiText({
-      estimation,
-      estimationDesc,
-      submitInquiry,
-      related,
-      comments,
-      noComments,
-      leaveComment,
-      yourName,
-      yourThoughts,
-      writeComment,
-      post,
-      readMore,
-    });
-  };
-
-  run();
-}, [language]);
-
-  
+  // LOAD COMMENTS
+ 
   // SAVE COMMENTS
   useEffect(() => {
   const fetchComments = async () => {
@@ -211,14 +94,36 @@ useEffect(() => {
   useEffect(() => {
     const run = async () => {
       const translated: Blog = {
-        ...initialBlog,
-        title: await autoTranslate(initialBlog.title, language),
-        content: await autoTranslate(initialBlog.content, language),
-        excerpt: initialBlog.excerpt ? await autoTranslate(initialBlog.excerpt, language) : "",
-        tags: initialBlog.tags?.length 
-          ? await Promise.all(initialBlog.tags.map(tag => autoTranslate(tag, language))) 
-          : [],
-      };
+  ...initialBlog,
+
+  title: await translateHybrid(
+    initialBlog.title,
+    language,
+    tApi
+  ),
+
+  content: initialBlog.content,
+
+  excerpt: initialBlog.excerpt
+    ? await translateHybrid(
+        initialBlog.excerpt,
+        language,
+        tApi
+      )
+    : "",
+
+  tags: initialBlog.tags?.length
+    ? await Promise.all(
+        initialBlog.tags.map((tag) =>
+          translateHybrid(
+            tag,
+            language,
+            tApi
+          )
+        )
+      )
+    : [],
+};
       setTranslatedBlog(translated);
     };
     run();
@@ -229,13 +134,47 @@ useEffect(() => {
     const run = async () => {
       const updated = await Promise.all(relatedBlogs.map(async post => ({
         ...post,
-        title: await autoTranslate(post.title, language),
-        excerpt: post.excerpt ? await autoTranslate(post.excerpt, language) : "",
+        title: await translateHybrid(post.title, language, tApi),
+        excerpt: post.excerpt ? await translateHybrid(post.excerpt, language, tApi) : "",
       })));
       setTranslatedRelated(updated);
     };
     run();
   }, [relatedBlogs, language]);
+
+  useEffect(() => {
+
+  const run = async () => {
+
+    setUiText({
+      estimation:
+        await translateHybrid(
+          "Need project estimation?",
+          language,
+          tApi
+        ),
+
+      estimationDesc:
+        await translateHybrid(
+          "Tell us about your project and get a tailored solution recommendation from our team.",
+          language,
+          tApi
+        ),
+
+      submitInquiry:
+        await translateHybrid(
+          "Submit Inquiry",
+          language,
+          tApi
+        ),
+    });
+
+  };
+
+  run();
+
+}, [language]);
+
 
   const category = translatedBlog.tags?.[0] || t("blogDetail", "article");
 
@@ -298,17 +237,22 @@ useEffect(() => {
         </FadeUp>
       </section>
 
-      {/* CTA RFP */}
       <section className="max-w-4xl mx-auto px-6 pb-16">
         <FadeUp>
           <div className="rounded-[36px] border border-black/10 bg-[#f8f7f5] p-10 md:p-14 text-center">
             
             <h2 className="text-3xl md:text-4xl font-display font-bold text-black mb-4">
-              {uiText.estimation}
+             {
+              uiText?.estimation ||
+              "Need project estimation?"
+            }
             </h2>
 
             <p className="text-black/60 leading-relaxed max-w-2xl mx-auto mb-8">
-              {uiText.estimationDesc}
+              {
+                uiText?.estimationDesc ||
+                "Tell us about your project and get a tailored solution recommendation from our team."
+              }
             </p>
 
             <Link href="/rfp">
@@ -316,7 +260,10 @@ useEffect(() => {
                 type="button"
                 className="px-8 py-3 rounded-full border border-black text-black hover:bg-black hover:text-white transition-all duration-300"
               >
-               {uiText.submitInquiry}
+               {
+                uiText?.submitInquiry ||
+                "Submit Inquiry"
+              }
               </button>
             </Link>
 
@@ -329,7 +276,7 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-6 text-black">
           <FadeUp>
             <h2 id="related-title" className="text-3xl font-display font-bold mb-8">
-              {uiText.related}
+              {t("blogDetail", "related")}
             </h2>
           </FadeUp>
 
@@ -366,7 +313,7 @@ useEffect(() => {
                           href={`/Blog/${post.slug}`}
                           className="inline-flex items-center text-sm font-bold text-black border-b-2 border-primary pb-1 hover:border-black transition-colors"
                         >
-                          {uiText.readMore}
+                          {t("blogDetail", "readMore")}
                         </Link>
                       </div>
                     </div>
@@ -383,7 +330,7 @@ useEffect(() => {
         <div className="max-w-4xl mx-auto px-6 text-black">
           <FadeUp>
             <h2 id="comments-title" className="text-3xl font-display font-bold mb-8">
-           {uiText.comments} ({comments.length})
+              {t("blogDetail", "comments")} ({comments.length})
             </h2>
           </FadeUp>
 
@@ -401,16 +348,16 @@ useEffect(() => {
               </motion.div>
             ))}
             {comments.length === 0 && (
-              <p className="text-center text-gray-400 py-8 italic">{uiText.noComments}</p>
+              <p className="text-center text-gray-400 py-8 italic">{t("blogComments", "noComments")}</p>
             )}
           </div>
 
           <FadeUp>
             <div className="bg-white rounded-[40px] p-10 text-black shadow-2xl">
-              <h3 className="text-2xl font-display font-bold mb-8 text-black">{uiText.leaveComment}</h3>
+              <h3 className="text-2xl font-display font-bold mb-8 text-black">{t("blogComments", "leaveComment")}</h3>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-black/60">{uiText.yourName}</label>
+                  <label className="block text-sm font-medium mb-2 text-black/60">{t("blogComments", "yourName")}</label>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -419,11 +366,11 @@ useEffect(() => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2 opacity-60">{uiText.yourThoughts}</label>
+                  <label className="block text-sm font-medium mb-2 opacity-60">{t("blogComments", "yourThoughts")}</label>
                   <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder={uiText.writeComment}
+                    placeholder={t("blogDetail", "writeComment")}
                     rows={4}
                     className="w-full px-6 py-4 bg-white border border-black/20 rounded-[24px] text-black focus:border-primary outline-none resize-none"
                   />
@@ -433,7 +380,7 @@ useEffect(() => {
                     onClick={handlePost}
                     className="w-full py-4 border border-black text-black font-medium rounded-full hover:bg-black/10 transition-all"
                   >
-                    {uiText.post}
+                    {t("blogDetail", "post")}
                 </button>
               </div>
             </div>

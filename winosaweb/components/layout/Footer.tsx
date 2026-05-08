@@ -5,6 +5,9 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useTranslate } from "@/lib/useTranslate";
 import { SiteSettings } from "@/types/settings";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useLanguageStore } from "@/store/useLanguageStore";
+
 
 async function fetchSettings(): Promise<SiteSettings | null> {
   try {
@@ -23,6 +26,13 @@ export default function Footer() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [footerMenus, setFooterMenus] = useState<any>(null);
 
+  const { language } = useLanguageStore();
+
+  const [translatedMenus, setTranslatedMenus] =
+    useState<any>(null);
+
+  const [translatedInfo, setTranslatedInfo] =
+    useState<any>(null);
   
   useEffect(() => {
   fetchSettings().then((data) => {
@@ -34,12 +44,94 @@ export default function Footer() {
   });
 }, []);
 
+useEffect(() => {
+  if (!footerMenus) return;
+
+  const run = async () => {
+    const translated: any = {
+      about: [],
+      services: [],
+      insight: [],
+    };
+
+    for (const item of footerMenus.about || []) {
+      translated.about.push({
+        ...item,
+        name: await translateHybrid(
+          item.name,
+          language
+        ),
+      });
+    }
+
+    for (const item of footerMenus.services || []) {
+      translated.services.push({
+        ...item,
+        name: await translateHybrid(
+          item.name,
+          language
+        ),
+      });
+    }
+
+    for (const item of footerMenus.insight || []) {
+      translated.insight.push({
+        ...item,
+        name: await translateHybrid(
+          item.name,
+          language
+        ),
+      });
+    }
+
+    setTranslatedMenus(translated);
+  };
+
+  run();
+
+}, [footerMenus, language]);
+
+useEffect(() => {
+  if (!settings) return;
+
+  const run = async () => {
+    setTranslatedInfo({
+      tagline: await translateHybrid(
+        settings?.siteTagline ||
+        t("footer", "tagline"),
+        language
+      ),
+
+      location: await translateHybrid(
+        settings?.siteLocation ||
+        t("footer", "location"),
+        language
+      ),
+
+      copyright: await translateHybrid(
+        settings?.copyright ||
+        t("footer", "copyright"),
+        language
+      ),
+    });
+  };
+
+  run();
+
+}, [settings, language]);
+
+
+
+
   const igUrl  = settings?.socialInstagram || "https://instagram.com";
   const liUrl  = settings?.socialLinkedin  || "https://linkedin.com";
   const waNum  = settings?.socialWhatsapp  || "628000000000";
   const waUrl  = `https://wa.me/${waNum}`;
   const logo   = settings?.logo            || "/logo.png";
-  const tagline = settings?.siteTagline    || t("footer", "tagline");
+  const tagline =
+  translatedInfo?.tagline ||
+  settings?.siteTagline ||
+  t("footer", "tagline");
 
   const fallbackFooterMenus = {
   about: [
@@ -59,7 +151,10 @@ export default function Footer() {
   ],
 };
 
-const menus = footerMenus || fallbackFooterMenus;
+const menus =
+  translatedMenus ||
+  footerMenus ||
+  fallbackFooterMenus;
 
   return (
     <footer className="bg-[#efede9] text-black px-12 py-20">
@@ -186,8 +281,16 @@ const menus = footerMenus || fallbackFooterMenus;
       <div className="max-w-7xl mx-auto mt-16">
         <div className="h-px bg-black/20 mb-6" />
         <div className="flex flex-col md:flex-row justify-between text-sm text-gray-700">
-          <span>{settings?.siteLocation || t("footer", "location")}</span>
-          <span>{settings?.copyright || t("footer", "copyright")}</span>
+          <span>{
+            translatedInfo?.location ||
+            settings?.siteLocation ||
+            t("footer", "location")
+          }</span>
+          <span>{
+            translatedInfo?.copyright ||
+            settings?.copyright ||
+            t("footer", "copyright")
+          }</span>
         </div>
       </div>
     </footer>

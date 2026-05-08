@@ -5,6 +5,9 @@ import Image from "next/image";
 import Button from "@/components/UI/Button";
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
+import { useEffect, useState } from "react";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useLanguageStore } from "@/store/useLanguageStore";
 
 interface HeroData {
   title?: string;
@@ -16,12 +19,66 @@ interface SectionHeroProps {
   heroData?: HeroData | null;
 }
 
-export default function SectionHero({ heroData }: SectionHeroProps) {
+export default function SectionHero({
+  heroData,
+}: SectionHeroProps) {
+
   const { t } = useTranslate();
 
-  const heroTitle       = heroData?.title       || t("servicesHero", "title");
-  const heroSubtitle    = heroData?.subtitle    || t("servicesHero", "subtitle");
-  const heroDescription = heroData?.description || t("servicesHero", "description");
+  const { language } =
+    useLanguageStore();
+
+  const [translatedHero, setTranslatedHero] =
+    useState<any>(null);
+
+  const heroTitle =
+    heroData?.title ||
+    t("servicesHero", "title");
+
+  const heroSubtitle =
+    heroData?.subtitle ||
+    t("servicesHero", "subtitle");
+
+  const heroDescription =
+    heroData?.description ||
+    t("servicesHero", "description");
+
+  useEffect(() => {
+
+    const run = async () => {
+
+      setTranslatedHero({
+        title: await translateHybrid(
+          heroTitle,
+          language
+        ),
+
+        subtitle: await translateHybrid(
+          heroSubtitle,
+          language
+        ),
+
+        description: await translateHybrid(
+          heroDescription,
+          language
+        ),
+
+        button: await translateHybrid(
+          t("servicesHero", "button"),
+          language
+        ),
+      });
+
+    };
+
+    run();
+
+  }, [
+    heroTitle,
+    heroSubtitle,
+    heroDescription,
+    language,
+  ]);
 
   return (
     <section
@@ -32,7 +89,10 @@ export default function SectionHero({ heroData }: SectionHeroProps) {
       <motion.div
         initial={{ scale: 1 }}
         animate={{ scale: 1.05 }}
-        transition={{ duration: 12, ease: "easeOut" }}
+        transition={{
+          duration: 12,
+          ease: "easeOut",
+        }}
         className="absolute inset-0 z-0"
       >
         <Image
@@ -78,42 +138,75 @@ export default function SectionHero({ heroData }: SectionHeroProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           className="text-white text-5xl md:text-6xl font-bold mb-5 tracking-tight"
-          style={{ textShadow: "0 6px 24px rgba(0,0,0,0.6)" }}
+          style={{
+            textShadow:
+              "0 6px 24px rgba(0,0,0,0.6)",
+          }}
         >
-          {heroTitle}
+          {
+            translatedHero?.title ||
+            heroTitle
+          }
         </motion.h1>
 
         {/* subtitle */}
         <motion.p
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
+          transition={{
+            duration: 0.7,
+            delay: 0.2,
+          }}
           className="text-white/90 text-lg mb-0 max-w-xl leading-relaxed"
-          style={{ textShadow: "0 4px 16px rgba(0,0,0,0.6)" }}
+          style={{
+            textShadow:
+              "0 4px 16px rgba(0,0,0,0.6)",
+          }}
         >
-          {heroSubtitle}
+          {
+            translatedHero?.subtitle ||
+            heroSubtitle
+          }
         </motion.p>
 
-        {/* description tambahan */}
-          <motion.p
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="text-white/80 text-base mb-10 max-w-xl leading-relaxed"
-            style={{ textShadow: "0 4px 16px rgba(0,0,0,0.6)" }}
-          >
-            {heroDescription}
-          </motion.p>
+        {/* description */}
+        <motion.p
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.7,
+            delay: 0.3,
+          }}
+          className="text-white/80 text-base mb-10 max-w-xl leading-relaxed"
+          style={{
+            textShadow:
+              "0 4px 16px rgba(0,0,0,0.6)",
+          }}
+        >
+          {
+            translatedHero?.description ||
+            heroDescription
+          }
+        </motion.p>
 
         {/* button */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
+          transition={{
+            duration: 0.7,
+            delay: 0.4,
+          }}
         >
-          <Link href="/Contact" aria-label="Go to contact page">
+          <Link
+            href="/Contact"
+            aria-label="Go to contact page"
+          >
             <Button
-              text={t("servicesHero", "button")}
+              text={
+                translatedHero?.button ||
+                t("servicesHero", "button")
+              }
               className="border-white text-white hover:bg-white/20"
             />
           </Link>
@@ -121,7 +214,7 @@ export default function SectionHero({ heroData }: SectionHeroProps) {
 
       </div>
 
-      {/* bottom gradient*/}
+      {/* bottom gradient */}
       <div
         className="absolute bottom-0 left-0 w-full h-[40%] z-10 pointer-events-none"
         style={{

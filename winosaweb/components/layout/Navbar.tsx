@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { useTranslate } from "@/lib/useTranslate";
+import { translateHybrid } from "@/lib/translateHybrid";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -18,6 +19,9 @@ export default function Navbar() {
 
   const [logo, setLogo] = useState("https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png");
   const [menusData, setMenusData] = useState<any[]>([]);
+
+  const [translatedMenus, setTranslatedMenus] =
+  useState<any[]>([]);
 
  useEffect(() => {
   const api = process.env.NEXT_PUBLIC_API_URL;
@@ -40,6 +44,30 @@ export default function Navbar() {
     })
     .catch(() => {});
 }, []);
+
+  useEffect(() => {
+  if (!menusData.length) return;
+
+  const run = async () => {
+    const translated = [];
+
+    for (const menu of menusData) {
+      translated.push({
+        ...menu,
+
+        name: await translateHybrid(
+          menu.name,
+          language
+        ),
+      });
+    }
+
+    setTranslatedMenus(translated);
+  };
+
+  run();
+
+}, [menusData, language]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,8 +98,13 @@ export default function Navbar() {
   { name: t("navbar", "contact"), href: "/Contact" },
 ];
 
-const menus = menusData.length ? menusData : fallbackMenus;
-
+const menus =
+  translatedMenus.length
+    ? translatedMenus
+    : menusData.length
+    ? menusData
+    : fallbackMenus;
+    
   return (
     <nav
       className="fixed top-0 left-0 w-full z-50 bg-white transition-all duration-300"

@@ -1,40 +1,110 @@
-import { autoTranslate } from "@/lib/autoTranslateHelper";
+import { autoTranslate }
+from "@/lib/autoTranslate";
 
-const cache = new Map<string, string>();
+const cache =
+  new Map<string, string>();
+
+let lastRequest = 0;
 
 export async function translateHybrid(
   text: string,
   lang: string,
-  tApi: (val: string) => string
+  tApi?: (val: string) => string
 ) {
+
   if (!text) return "";
 
-  //  jangan translate kalau bahasa default
-  if (lang === "en") return text;
-
-  const cacheKey = `${lang}:${text}`;
-
-  //  ambil dari cache
-  if (cache.has(cacheKey)) {
-    return cache.get(cacheKey)!;
+  // skip default language
+  if (
+    lang === "id" ||
+    lang === "id-ID"
+  ) {
+    return text;
   }
 
-  const manual = tApi(text);
+  // skip long text
+  if (text.length > 500) {
+    return text;
+  }
 
-  if (manual && manual !== text) {
-    cache.set(cacheKey, manual);
-    return manual;
+  const cacheKey =
+    `${lang}:${text}`;
+
+  // cache
+  if (cache.has(cacheKey)) {
+
+    return cache.get(
+      cacheKey
+    )!;
+
+  }
+
+  // manual
+  if (tApi) {
+
+    const manual =
+      tApi(text);
+
+    if (
+      manual &&
+      manual !== text
+    ) {
+
+      cache.set(
+        cacheKey,
+        manual
+      );
+
+      return manual;
+
+    }
+
   }
 
   try {
-    const result = await autoTranslate(text, lang);
 
-    // simpan ke cache biar gak spam API
-    cache.set(cacheKey, result);
+    // HARD RATE LIMIT
+    const now = Date.now();
+
+    const diff =
+      now - lastRequest;
+
+    if (diff < 1000) {
+
+      await new Promise(
+        (resolve) =>
+          setTimeout(
+            resolve,
+            1000 - diff
+          )
+      );
+
+    }
+
+    lastRequest = Date.now();
+
+    const result =
+      await autoTranslate(
+        text,
+        lang
+      );
+
+    cache.set(
+      cacheKey,
+      result
+    );
 
     return result;
+
   } catch (err) {
-    console.error("translate error:", err);
-    return text; // fallback aman
+
+    console.error(
+      "translate error:",
+      err
+    );
+
+    return text;
+
   }
+
 }

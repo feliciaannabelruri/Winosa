@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { Phone, MapPin, MessageCircle } from "lucide-react";
 import { useTranslate } from "@/lib/useTranslate";
 import { SiteSettings } from "@/types/settings";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useLanguageStore } from "@/store/useLanguageStore";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -26,6 +28,11 @@ export default function SectionContactForm() {
 
   const [settings, setSettings] = useState<SiteSettings | null>(null);
 
+  const { language } = useLanguageStore();
+
+  const [translatedInfo, setTranslatedInfo] =
+  useState<any>(null);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -42,8 +49,38 @@ export default function SectionContactForm() {
     fetchSettings().then(setSettings);
   }, []);
 
-  const phone = settings?.sitePhone || "(235) 325-1351";
-  const address = settings?.siteAddress || "Bandar Lampung, Indonesia";
+  useEffect(() => {
+  if (!settings) return;
+
+  const run = async () => {
+    setTranslatedInfo({
+      phone: await translateHybrid(
+        settings?.sitePhone || "(235) 325-1351",
+        language
+      ),
+
+      address: await translateHybrid(
+        settings?.siteAddress ||
+        "Bandar Lampung, Indonesia",
+        language
+      ),
+    });
+  };
+
+  run();
+
+}, [settings, language]);
+
+  const phone =
+  translatedInfo?.phone ||
+  settings?.sitePhone ||
+  "(235) 325-1351";
+
+const address =
+  translatedInfo?.address ||
+  settings?.siteAddress ||
+  "Bandar Lampung, Indonesia";
+  
   const waNum = settings?.socialWhatsapp || "";
   const waUrl = waNum ? `https://wa.me/${waNum}` : "#";
 

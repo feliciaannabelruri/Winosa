@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { Plus, Minus } from "lucide-react";
 import { useTranslate } from "@/lib/useTranslate";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useLanguageStore } from "@/store/useLanguageStore";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -12,6 +14,11 @@ export default function SectionCompanyInfo() {
   const { t } = useTranslate();
   const [active, setActive] = useState<number | null>(0);
   const [faqsData, setFaqsData] = useState<any[]>([]);
+
+  const { language } = useLanguageStore();
+
+  const [translatedFaqs, setTranslatedFaqs] =
+  useState<any[]>([]);
 
   useEffect(() => {
   const api = process.env.NEXT_PUBLIC_API_URL;
@@ -27,6 +34,33 @@ export default function SectionCompanyInfo() {
     .catch(() => {});
 }, []);
 
+useEffect(() => {
+  if (!faqsData.length) return;
+
+  const run = async () => {
+    const translated = [];
+
+    for (const faq of faqsData) {
+      translated.push({
+        question: await translateHybrid(
+          faq.question,
+          language
+        ),
+
+        answer: await translateHybrid(
+          faq.answer,
+          language
+        ),
+      });
+    }
+
+    setTranslatedFaqs(translated);
+  };
+
+  run();
+
+}, [faqsData, language]);
+
   const fallbackFaqs = [
   { question: t("faq", "q1"), answer: t("faq", "a1") },
   { question: t("faq", "q2"), answer: t("faq", "a2") },
@@ -34,8 +68,13 @@ export default function SectionCompanyInfo() {
   { question: t("faq", "q4"), answer: t("faq", "a4") },
 ];
 
-const faqs = faqsData.length ? faqsData : fallbackFaqs;
-
+const faqs =
+  translatedFaqs.length
+    ? translatedFaqs
+    : faqsData.length
+    ? faqsData
+    : fallbackFaqs;
+    
   return (
     <FadeUp>
       <section

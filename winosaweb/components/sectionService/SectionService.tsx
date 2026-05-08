@@ -40,120 +40,202 @@ type Props = {
   initialServices?: Service[];
 };
 
-export default function SectionServices({ initialServices }: Props) {
-  const { language } = useLanguageStore();
-  const { t, tApi } = useTranslate();
+export default function SectionServices({
+  initialServices,
+}: Props) {
 
-  const [services, setServices] = useState<Service[]>(
-    Array.isArray(initialServices) ? initialServices : []
-  );
+  const { language } =
+    useLanguageStore();
 
+  const { t, tApi } =
+    useTranslate();
+
+  // DATA ASLI ADMIN
+  const [services, setServices] =
+    useState<Service[]>(
+      Array.isArray(initialServices)
+        ? initialServices
+        : []
+    );
+
+  // DATA HASIL TRANSLATE
+  const [
+    translatedServices,
+    setTranslatedServices,
+  ] = useState<Service[]>([]);
+
+  // UPDATE DATA ASLI
   useEffect(() => {
-    if (!initialServices || initialServices.length === 0) return;
 
-    if (language === "en") {
-      setServices(initialServices);
+    setServices(
+      Array.isArray(initialServices)
+        ? initialServices
+        : []
+    );
+
+  }, [initialServices]);
+
+  // TRANSLATE
+  useEffect(() => {
+
+    if (
+      !services ||
+      services.length === 0
+    ) {
       return;
     }
 
-    const translateAll = async () => {
-      try {
-        const updated = await Promise.all(
-          initialServices.map(async (item) => {
-            const translatedTitle = await translateHybrid(
-              item.title,
-              language,
-              tApi
-            );
-            const translatedDesc = await translateHybrid(
-              item.description,
-              language,
-              tApi
-            );
+    const run = async () => {
 
-            return {
-              ...item,
-              title: translatedTitle,
-              description: translatedDesc,
-            };
-          })
+      try {
+
+        const translated = [];
+
+        for (const item of services) {
+
+          translated.push({
+            ...item,
+
+            title:
+              await translateHybrid(
+                item.title,
+                language,
+                tApi
+              ),
+
+            description:
+              await translateHybrid(
+                item.description,
+                language,
+                tApi
+              ),
+          });
+
+        }
+
+        setTranslatedServices(
+          translated
         );
 
-        setServices(updated);
       } catch (err) {
-        console.error("Translate error:", err);
-        setServices(initialServices); // fallback
+
+        console.error(
+          "Translate error:",
+          err
+        );
+
       }
+
     };
 
-    translateAll();
-  }, [language, initialServices]);
+    run();
+
+  }, [services, language]);
+
+  // YANG DITAMPILKAN
+  const displayedServices =
+    translatedServices.length
+      ? translatedServices
+      : services;
 
   return (
-    <section className="w-full bg-white py-12 md:py-16" aria-labelledby="services-title">
+    <section
+      className="w-full bg-white py-12 md:py-16"
+      aria-labelledby="services-title"
+    >
+
       <div className="max-w-7xl mx-auto px-6 text-black">
+
         <h2
-        id="services-title"
-        className="sr-only"
-        ></h2>
+          id="services-title"
+          className="sr-only"
+        />
 
-       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
 
-          {services.length === 0 ? (
+          {displayedServices.length === 0 ? (
+
             <p
-            className="text-center col-span-2"
-            role="status"
-            aria-live="polite"
-          >
-            {t("services", "noServices")}
-          </p>
-          ) : (
-            services.map((item, index) => {
-              const IconComponent =
-                iconMap[item.icon?.toLowerCase() || ""] || Monitor;
+              className="text-center col-span-2"
+              role="status"
+              aria-live="polite"
+            >
+              {t("services", "noServices")}
+            </p>
 
-              return (
-                <motion.div
-                  key={item._id}
-                  initial={{ opacity: 0, y: 80 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: index * 0.15,
-                  }}
-                  viewport={{ once: true }}
-                >
+          ) : (
+
+            displayedServices.map(
+              (item, index) => {
+
+                const IconComponent =
+                  iconMap[
+                    item.icon?.toLowerCase() || ""
+                  ] || Monitor;
+
+                return (
                   <motion.div
-                    whileHover={{ y: -8 }}
-                    className="group relative h-full"
+                    key={item._id}
+                    initial={{
+                      opacity: 0,
+                      y: 80,
+                    }}
+                    whileInView={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.6,
+                      delay: index * 0.15,
+                    }}
+                    viewport={{
+                      once: true,
+                    }}
                   >
-                    <div className="relative h-full flex flex-col bg-white rounded-[28px] p-6 md:p-8 shadow-[0_12px_30px_rgba(0,0,0,0.15)]"
-                    role="article"
-                      aria-labelledby={`service-title-${item._id}`}
+                    <motion.div
+                      whileHover={{
+                        y: -8,
+                      }}
+                      className="group relative h-full"
+                    >
+                      <div
+                        className="relative h-full flex flex-col bg-white rounded-[28px] p-6 md:p-8 shadow-[0_12px_30px_rgba(0,0,0,0.15)]"
+                        role="article"
+                        aria-labelledby={`service-title-${item._id}`}
                       >
 
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="w-16 h-16 flex items-center justify-center rounded-full border border-black flex-shrink-0">
-                          <IconComponent size={28} strokeWidth={1.5}  aria-hidden="true"/>
+                        <div className="flex items-start gap-4 mb-4">
+
+                          <div className="w-16 h-16 flex items-center justify-center rounded-full border border-black flex-shrink-0">
+
+                            <IconComponent
+                              size={28}
+                              strokeWidth={1.5}
+                              aria-hidden="true"
+                            />
+
+                          </div>
+
+                          <h3
+                            id={`service-title-${item._id}`}
+                            className="text-xl font-semibold leading-tight pt-3"
+                          >
+                            {item.title}
+                          </h3>
 
                         </div>
 
-                        <h3 
-                        id={`service-title-${item._id}`}
-                        className="text-xl font-semibold leading-tight pt-3">
-                          {item.title}
-                        </h3>
+                        <p className="text-gray-600 leading-relaxed">
+                          {item.description}
+                        </p>
+
                       </div>
-
-                      <p className="text-gray-600 leading-relaxed">
-                        {item.description}
-                      </p>
-
-                    </div>
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              );
-            })
+                );
+              }
+            )
+
           )}
 
         </div>

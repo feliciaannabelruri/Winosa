@@ -1,4 +1,3 @@
-const cache = new Map<string, string>();
 
 export async function autoTranslate(
   text: string,
@@ -8,10 +7,7 @@ export async function autoTranslate(
 
   const key = `${lang}-${text}`;
 
-  if (cache.has(key)) {
-    return cache.get(key)!;
-  }
-
+  
   try {
     const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -39,7 +35,6 @@ export async function autoTranslate(
     const translated =
       data.translatedText || text;
 
-    cache.set(key, translated);
 
     return translated;
 

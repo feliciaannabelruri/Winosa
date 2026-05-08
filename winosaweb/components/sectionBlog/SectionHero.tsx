@@ -5,14 +5,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
 import { useEffect, useState } from "react";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useLanguageStore } from "@/store/useLanguageStore";
 
 export default function SectionBlogHero() {
   const { t } = useTranslate();
 
   const [hero, setHero] = useState<any>(null);
   const [loaded, setLoaded] = useState(false); // penting
+  const { language } = useLanguageStore();
+const [translatedHero, setTranslatedHero] = useState<any>(null);
 
   useEffect(() => {
+    
     const api = process.env.NEXT_PUBLIC_API_URL;
 
     if (!api) {
@@ -35,15 +40,61 @@ export default function SectionBlogHero() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+  if (!hero) return;
+
+  const run = async () => {
+    setTranslatedHero({
+      badge: await translateHybrid(
+        hero.badge,
+        language
+      ),
+
+      title: await translateHybrid(
+        hero.title,
+        language
+      ),
+
+      description: await translateHybrid(
+        hero.description,
+        language
+      ),
+
+      cta: await translateHybrid(
+        hero.cta,
+        language
+      ),
+    });
+  };
+
+  run();
+
+}, [hero, language]);
+
   // fallback langsung kalau belum load
   if (!loaded) {
     return null;
   }
 
-  const badge = hero?.badge || t("blogHero", "badge");
-  const title = hero?.title || t("blogHero", "title");
-  const description = hero?.description || t("blogHero", "description");
-  const cta = hero?.cta || t("blogHero", "cta");
+  const badge =
+  translatedHero?.badge ||
+  hero?.badge ||
+  t("blogHero", "badge");
+
+const title =
+  translatedHero?.title ||
+  hero?.title ||
+  t("blogHero", "title");
+
+const description =
+  translatedHero?.description ||
+  hero?.description ||
+  t("blogHero", "description");
+
+const cta =
+  translatedHero?.cta ||
+  hero?.cta ||
+  t("blogHero", "cta");
   const bg = hero?.background || "/bg/bg9.jpg";
 
   return (

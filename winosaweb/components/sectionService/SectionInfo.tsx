@@ -10,6 +10,8 @@ import {
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
+import { translateHybrid } from "@/lib/translateHybrid";
+import { useLanguageStore } from "@/store/useLanguageStore";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -31,19 +33,49 @@ const iconMap: Record<string, any> = {
   thumb: HandThumbUpIcon,
 };
 
-export default function SectionInfo({ services = [] }: { services?: any[] }) {
+export default function SectionInfo({
+  services = [],
+}: {
+  services?: any[];
+}) {
+
   const { t } = useTranslate();
 
-  const [process, setProcess] = useState<Process[]>([]);
-  const [reasons, setReasons] = useState<Reason[]>([]);
+  const { language } =
+    useLanguageStore();
+
+  const [process, setProcess] =
+    useState<Process[]>([]);
+
+  const [reasons, setReasons] =
+    useState<Reason[]>([]);
+
+  const [translatedTitles, setTranslatedTitles] =
+    useState<any>(null);
 
   useEffect(() => {
+
     const defaultProcess: Process[] = [
-      { title: t("info", "discover"), desc: t("info", "discoverDesc") },
-      { title: t("info", "design"), desc: t("info", "designDesc") },
-      { title: t("info", "build"), desc: t("info", "buildDesc") },
-      { title: t("info", "test"), desc: t("info", "testDesc") },
-      { title: t("info", "deploy"), desc: t("info", "deployDesc") },
+      {
+        title: t("info", "discover"),
+        desc: t("info", "discoverDesc"),
+      },
+      {
+        title: t("info", "design"),
+        desc: t("info", "designDesc"),
+      },
+      {
+        title: t("info", "build"),
+        desc: t("info", "buildDesc"),
+      },
+      {
+        title: t("info", "test"),
+        desc: t("info", "testDesc"),
+      },
+      {
+        title: t("info", "deploy"),
+        desc: t("info", "deployDesc"),
+      },
     ];
 
     const defaultReasons: Reason[] = [
@@ -80,63 +112,188 @@ export default function SectionInfo({ services = [] }: { services?: any[] }) {
     }
 
     try {
-      const parsed = JSON.parse(infoService.description);
+
+      const parsed = JSON.parse(
+        infoService.description
+      );
 
       const nextProcess =
-        Array.isArray(parsed.process) && parsed.process.length > 0
+        Array.isArray(parsed.process) &&
+        parsed.process.length > 0
           ? parsed.process
           : defaultProcess;
 
       const nextReasons =
-        Array.isArray(parsed.reasons) && parsed.reasons.length > 0
+        Array.isArray(parsed.reasons) &&
+        parsed.reasons.length > 0
           ? parsed.reasons.map((item: any) => {
+
               const Icon =
-                iconMap[item.icon?.toLowerCase?.() || ""] ||
-                ShieldCheckIcon;
+                iconMap[
+                  item.icon?.toLowerCase?.() || ""
+                ] || ShieldCheckIcon;
 
               return {
                 title: item.title,
                 desc: item.desc,
                 icon: Icon,
               };
+
             })
           : defaultReasons;
 
       setProcess(nextProcess);
       setReasons(nextReasons);
+
     } catch {
+
       setProcess(defaultProcess);
       setReasons(defaultReasons);
+
     }
+
   }, [services]);
 
+  useEffect(() => {
+
+    const run = async () => {
+
+      setTranslatedTitles({
+
+        processTitle:
+          await translateHybrid(
+            t("info", "processTitle"),
+            language
+          ),
+
+        processSubtitle:
+          await translateHybrid(
+            t("info", "processSubtitle"),
+            language
+          ),
+
+        whyTitle:
+          await translateHybrid(
+            t("info", "whyTitle"),
+            language
+          ),
+
+        whySubtitle:
+          await translateHybrid(
+            t("info", "whySubtitle"),
+            language
+          ),
+
+      });
+
+      const translatedProcess = [];
+
+      for (const item of process) {
+
+        translatedProcess.push({
+          ...item,
+
+          title: await translateHybrid(
+            item.title,
+            language
+          ),
+
+          desc: await translateHybrid(
+            item.desc,
+            language
+          ),
+        });
+
+      }
+
+      setProcess(translatedProcess);
+
+      const translatedReasons = [];
+
+      for (const item of reasons) {
+
+        translatedReasons.push({
+          ...item,
+
+          title: await translateHybrid(
+            item.title,
+            language
+          ),
+
+          desc: await translateHybrid(
+            item.desc,
+            language
+          ),
+        });
+
+      }
+
+      setReasons(translatedReasons);
+
+    };
+
+    run();
+
+  }, [language]);
+
   return (
-    <section className="w-full bg-white py-8" aria-labelledby="process-title">
+    <section
+      className="w-full bg-white py-8"
+      aria-labelledby="process-title"
+    >
+
       <div className="max-w-7xl mx-auto px-6 text-black">
 
         <FadeUp>
           <div className="text-center mb-12">
-            <h2 id="process-title" className="text-3xl font-bold mb-4">
-              {t("info", "processTitle")}
+
+            <h2
+              id="process-title"
+              className="text-3xl font-bold mb-4"
+            >
+              {
+                translatedTitles?.processTitle ||
+                t("info", "processTitle")
+              }
             </h2>
+
             <p className="text-black/60">
-              {t("info", "processSubtitle")}
+              {
+                translatedTitles?.processSubtitle ||
+                t("info", "processSubtitle")
+              }
             </p>
+
           </div>
         </FadeUp>
 
         <FadeUp>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-16" role="list">
+          <div
+            className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-16"
+            role="list"
+          >
+
             {process.map((item, i) => (
+
               <motion.div
                 key={i}
                 role="listitem"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
+                initial={{
+                  opacity: 0,
+                  y: 30,
+                }}
+                whileInView={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration: 0.5,
+                  delay: i * 0.1,
+                }}
                 viewport={{ once: true }}
                 className="flex flex-col items-center text-center"
               >
+
                 <div className="px-6 py-2 border border-black/20 rounded-full font-medium bg-white text-sm">
                   {item.title}
                 </div>
@@ -148,19 +305,34 @@ export default function SectionInfo({ services = [] }: { services?: any[] }) {
                 <p className="text-black/60 text-sm leading-relaxed">
                   {item.desc}
                 </p>
+
               </motion.div>
+
             ))}
+
           </div>
         </FadeUp>
 
         <FadeUp>
           <div className="text-center mb-14">
-            <h2 id="why-title" className="text-3xl font-bold mb-4">
-              {t("info", "whyTitle")}
+
+            <h2
+              id="why-title"
+              className="text-3xl font-bold mb-4"
+            >
+              {
+                translatedTitles?.whyTitle ||
+                t("info", "whyTitle")
+              }
             </h2>
+
             <p className="text-black/60">
-              {t("info", "whySubtitle")}
+              {
+                translatedTitles?.whySubtitle ||
+                t("info", "whySubtitle")
+              }
             </p>
+
           </div>
         </FadeUp>
 
@@ -170,22 +342,36 @@ export default function SectionInfo({ services = [] }: { services?: any[] }) {
             role="list"
             aria-labelledby="why-title"
           >
+
             {reasons.map((item, i) => (
+
               <motion.div
                 key={i}
                 role="listitem"
-                initial={{ opacity: 0, x: 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.12 }}
+                initial={{
+                  opacity: 0,
+                  x: 40,
+                }}
+                whileInView={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                transition={{
+                  duration: 0.5,
+                  delay: i * 0.12,
+                }}
                 viewport={{ once: true }}
               >
                 <ReasonCard {...item} />
               </motion.div>
+
             ))}
+
           </div>
         </FadeUp>
 
       </div>
+
     </section>
   );
 }
@@ -199,18 +385,30 @@ function ReasonCard({
   desc: string;
   icon?: any;
 }) {
-  const Icon = icon || ShieldCheckIcon;
+
+  const Icon =
+    icon || ShieldCheckIcon;
 
   return (
     <div className="flex gap-5 items-start transition-transform duration-300 hover:-translate-y-1">
+
       <div className="w-12 h-12 flex items-center justify-center border border-black/10 rounded-full">
-        {Icon && <Icon className="w-6 h-6 text-black" />}
+        {Icon && (
+          <Icon className="w-6 h-6 text-black" />
+        )}
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-2">{title}</h3>
-        <p className="text-black/60 leading-relaxed text-sm">{desc}</p>
+        <h3 className="text-lg font-semibold mb-2">
+          {title}
+        </h3>
+
+        <p className="text-black/60 leading-relaxed text-sm">
+          {desc}
+        </p>
       </div>
+
     </div>
   );
 }
+
