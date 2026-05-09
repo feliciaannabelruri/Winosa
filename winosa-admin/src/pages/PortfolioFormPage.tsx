@@ -5,6 +5,7 @@ import { portfolioService } from '../services/portfolioService';
 import toast from 'react-hot-toast';
 import { PORTFOLIO_CATEGORIES } from '../constants';
 import ImageUpload from './service-form/shared/ImageUpload';
+import type { Testimony } from '../types';
 
 const generateSlug = (t: string) =>
   t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -51,6 +52,7 @@ interface PortfolioForm {
   result:     string;
   metrics:    Metric[];
   gallery:    string[];
+  testimonials: Testimony[];
   isActive:   boolean;
 }
 
@@ -63,6 +65,7 @@ const DEFAULT_FORM: PortfolioForm = {
   challenge: '', solution: '', result: '',
   metrics: [],
   gallery: [],
+  testimonials: [],
   isActive: true,
 };
 
@@ -77,6 +80,10 @@ const PortfolioFormPage: React.FC = () => {
 
   const [techInput,   setTechInput]   = useState('');
   const [metricInput, setMetricInput] = useState({ value: '', label: '' });
+
+  const [testimonyInput, setTestimonyInput] = useState<Testimony>({
+      name: '', role: '', content: '', rating: 5,
+  });
 
   const set = <K extends keyof PortfolioForm>(key: K, val: PortfolioForm[K]) =>
     setForm(p => ({ ...p, [key]: val }));
@@ -105,6 +112,7 @@ const PortfolioFormPage: React.FC = () => {
           result:     p.result      ?? '',
           metrics:    Array.isArray(p.metrics) ? p.metrics : [],
           gallery:    Array.isArray(p.gallery) ? p.gallery : [],
+          testimonials: Array.isArray(p.testimonials) ? p.testimonials : [],
           isActive:   p.isActive    ?? true,
         });
       })
@@ -142,6 +150,7 @@ const PortfolioFormPage: React.FC = () => {
       fd.append('techStack', JSON.stringify(form.techStack));
       fd.append('metrics',   JSON.stringify(form.metrics));
       fd.append('gallery',   JSON.stringify(form.gallery));
+      fd.append('testimonials', JSON.stringify(form.testimonials));
 
       if (isEdit) {
         await portfolioService.update(id!, fd);
@@ -182,6 +191,27 @@ const PortfolioFormPage: React.FC = () => {
     set('gallery', [...form.gallery, url]);
   const removeGalleryImage = (idx: number) =>
     set('gallery', form.gallery.filter((_, i) => i !== idx));
+
+ //Testimony handlers
+  const addTestimony = () => {
+    if (!testimonyInput.name.trim() || !testimonyInput.content.trim()) return;
+    set('testimonials', [...form.testimonials, { ...testimonyInput }]);
+    setTestimonyInput({ name: '', role: '', content: '', rating: 5 });
+  };
+  const removeTestimony = (idx: number) =>
+    set('testimonials', form.testimonials.filter((_, i) => i !== idx));
+ 
+  if (fetching) {
+    return (
+      <div className="space-y-5 animate-pulse">
+        <div className="w-24 h-8 bg-gray-200 rounded-full" />
+        <div className="w-1/2 h-10 bg-gray-200 rounded-full" />
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="w-full h-14 bg-gray-100 rounded-2xl" />
+        ))}
+      </div>
+    );
+  }
 
   // Skeleton
   if (fetching) {
@@ -413,6 +443,88 @@ const PortfolioFormPage: React.FC = () => {
                 </div>
                 <button type="button" onClick={() => removeMetric(idx)}
                   className="text-gray-300 hover:text-red-400 transition-colors">
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </SectionCard>
+
+      <SectionCard
+        title="Client Testimonials"
+        subtitle="Optional — this section will be hidden automatically if left empty">
+ 
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label>Client Name</Label>
+            <input type="text" placeholder="e.g. Andi Pratama"
+              value={testimonyInput.name}
+              onChange={e => setTestimonyInput(p => ({ ...p, name: e.target.value }))}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <Label>Role / Position</Label>
+            <input type="text" placeholder="e.g. CEO of Prowerty"
+              value={testimonyInput.role}
+              onChange={e => setTestimonyInput(p => ({ ...p, role: e.target.value }))}
+              className={inputCls}
+            />
+          </div>
+        </div>
+ 
+        <div>
+          <Label>Testimony Content</Label>
+          <textarea rows={3} placeholder="What did they say about the project?"
+            value={testimonyInput.content}
+            onChange={e => setTestimonyInput(p => ({ ...p, content: e.target.value }))}
+            className={textareaCls}
+          />
+        </div>
+ 
+        <div>
+          <Label>Rating</Label>
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5].map(star => (
+              <button key={star} type="button"
+                onClick={() => setTestimonyInput(p => ({ ...p, rating: star }))}
+                className={`text-2xl transition-colors ${
+                  star <= testimonyInput.rating ? 'text-amber-400' : 'text-gray-200'
+                }`}>
+                ★
+              </button>
+            ))}
+          </div>
+        </div>
+ 
+        <button type="button" onClick={addTestimony}
+          className="flex items-center gap-2 px-4 py-2 bg-dark text-white text-sm font-semibold rounded-2xl hover:bg-gray-800 transition-colors">
+          <Plus size={13} />
+          Add Testimony
+        </button>
+ 
+        {form.testimonials.length > 0 && (
+          <div className="space-y-3 mt-2">
+            {form.testimonials.map((t, idx) => (
+              <div key={idx} className="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-semibold text-dark">{t.name}</p>
+                    {t.role && (
+                      <>
+                        <span className="text-gray-300 text-xs">·</span>
+                        <p className="text-xs text-gray-400">{t.role}</p>
+                      </>
+                    )}
+                  </div>
+                  <p className="text-amber-400 text-sm mb-1">
+                    {'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}
+                  </p>
+                  <p className="text-xs text-gray-500 line-clamp-2">"{t.content}"</p>
+                </div>
+                <button type="button" onClick={() => removeTestimony(idx)}
+                  className="text-gray-300 hover:text-red-400 transition-colors flex-shrink-0 mt-0.5">
                   <X size={14} />
                 </button>
               </div>

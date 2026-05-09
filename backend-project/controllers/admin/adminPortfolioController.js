@@ -73,12 +73,12 @@ exports.createPortfolio = asyncHandler(async (req, res, next) => {
     techStack:   parseArrayField(req.body.techStack),
     metrics:     parseArrayField(req.body.metrics),
     gallery:     parseArrayField(req.body.gallery),
+    testimonials: parseArrayField(req.body.testimonials),
     isActive:    isActive !== undefined ? (isActive === 'true' || isActive === true) : true,
   });
 
   cache.invalidatePrefix(CACHE_PREFIX);
 
-  // ✅ BARU: Trigger ML retrain setelah portfolio dibuat
   triggerMLRetrain().catch(e => console.warn('ML retrain skipped:', e.message));
 
   res.status(201).json({
@@ -111,7 +111,7 @@ exports.updatePortfolio = asyncHandler(async (req, res, next) => {
   if (req.body.techStack) req.body.techStack = parseArrayField(req.body.techStack);
   if (req.body.metrics)   req.body.metrics   = parseArrayField(req.body.metrics);
   if (req.body.gallery)   req.body.gallery   = parseArrayField(req.body.gallery);
-
+  if (req.body.testimonials) req.body.testimonials = parseArrayField(req.body.testimonials);
   if (req.body.shortDesc && !req.body.description) {
     req.body.description = req.body.shortDesc;
   } else if (req.body.description && !req.body.shortDesc) {

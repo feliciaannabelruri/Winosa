@@ -23,6 +23,13 @@ const settingsSchema = new mongoose.Schema({
   metaDescription:    { type: String, default: '' },
   metaKeywords:       { type: String, default: '' },
   googleAnalyticsId:  { type: String, default: '' },
+ 
+  // Blog Page Hero
+  blogHero: {
+    badge:       { type: String, default: 'Our Blog' },
+    title:       { type: String, default: 'Insights & Digital Ideas' },
+    description: { type: String, default: 'Explore articles, insights, and updates from our team.' },
+  },
 }, {
   timestamps: true
 });

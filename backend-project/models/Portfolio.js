@@ -41,6 +41,13 @@ const portfolioSchema = new mongoose.Schema(
     // Gallery
     gallery:    { type: [String], default: [] },
 
+    testimonials: [{
+      name:    { type: String, trim: true },
+      role:    { type: String, trim: true },
+      content: { type: String, trim: true },
+      rating:  { type: Number, min: 1, max: 5 },
+    }],
+
     isActive:   { type: Boolean, default: true, index: true },
   },
   { timestamps: true }

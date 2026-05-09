@@ -21,6 +21,7 @@ import NewsletterPage from './pages/NewsletterPage';
 import SettingsPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
 import ContentPage from './pages/ContentPage';
+import BlogCommentsPage from './pages/BlogCommentsPage';
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
             <Route path="blogs" element={<BlogsPage />} />
             <Route path="blogs/new" element={<BlogFormPage />} />
             <Route path="blogs/edit/:id" element={<BlogFormPage />} />
+            <Route path="/blogs/:id/comments"element={<BlogCommentsPage />}/>
 
             {/* Portfolio */}
             <Route path="portfolio" element={<PortfolioPage />} />

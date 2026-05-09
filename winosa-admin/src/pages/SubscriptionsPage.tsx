@@ -27,7 +27,7 @@ const SubscriptionsPage: React.FC = () => {
       const data = await subscriptionService.getAll();
       setSubscriptions(data.data);
     } catch {
-      toast.error('Gagal memuat data langganan');
+      toast.error('Failed to load subscription data');
     } finally {
       setLoading(false);
     }
@@ -40,11 +40,11 @@ const SubscriptionsPage: React.FC = () => {
     setDeleteModal(prev => ({ ...prev, loading: true }));
     try {
       await subscriptionService.delete(deleteModal.id);
-      toast.success('Paket langganan berhasil dihapus');
+      toast.success('Subscription plan deleted successfully');
       setDeleteModal({ open: false, id: null, loading: false });
       fetchSubscriptions();
     } catch {
-      toast.error('Gagal menghapus paket langganan');
+      toast.error('Failed to delete subscription pla');
       setDeleteModal(prev => ({ ...prev, loading: false }));
     }
   };
@@ -70,7 +70,7 @@ const SubscriptionsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-4xl font-display font-bold text-dark">Subscriptions</h1>
-          <p className="text-gray-400 text-sm mt-1 italic">Kelola paket dan harga langganan</p>
+          <p className="text-gray-400 text-sm mt-1 italic">Manage subscription plans and pricing</p>
         </div>
         <button
           onClick={() => navigate('/subscriptions/add')}
@@ -87,7 +87,7 @@ const SubscriptionsPage: React.FC = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
-            placeholder="Cari paket langganan..."
+            placeholder="Search plans..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
@@ -116,7 +116,7 @@ const SubscriptionsPage: React.FC = () => {
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400 text-sm">Tidak ada paket langganan yang ditemukan</div>
+        <div className="text-center py-16 text-gray-400 text-sm">No subscription plans found</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map(sub => (
@@ -156,7 +156,7 @@ const SubscriptionsPage: React.FC = () => {
                 {/* Harga */}
                 <div>
                   <p className="text-2xl font-bold text-dark">{formatUSD(sub.price)}</p>
-                  <p className="text-xs text-gray-400">per {sub.duration === 'monthly' ? 'bulan' : 'tahun'}</p>
+                  <p className="text-xs text-gray-400">per {sub.duration === 'monthly' ? 'month' : 'year'}</p>
                 </div>
 
                 {sub.description && (
@@ -179,7 +179,7 @@ const SubscriptionsPage: React.FC = () => {
               {/* Actions */}
               <div className="border-t-2 border-gray-50 px-5 py-4 flex items-center justify-between">
                 <p className="text-xs text-gray-400">
-                  {new Date(sub.createdAt).toLocaleDateString('id-ID', {
+                  {new Date(sub.createdAt).toLocaleDateString('en-GB', {
                     day: '2-digit', month: 'short', year: 'numeric',
                   })}
                 </p>
@@ -208,7 +208,7 @@ const SubscriptionsPage: React.FC = () => {
       <ConfirmModal
         isOpen={deleteModal.open}
         title="Delete Plan"
-        message="Apakah Anda yakin ingin menghapus paket langganan ini? Tindakan ini tidak dapat dibatalkan."
+        message="Are you sure you want to delete this plan? This action cannot be undone."
         onConfirm={handleDelete}
         onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
         loading={deleteModal.loading}

@@ -1,6 +1,26 @@
 const Subscription = require('../../models/Subscription');
+const Newsletter = require('../../models/Newsletter');        
+const sendEmail = require('../../utils/sendEmail'); 
 const asyncHandler = require('../../middleware/asyncHandler');
 const { ErrorResponse } = require('../../middleware/errorHandler');
+
+exports.sendNewsletterEmail = asyncHandler(async (req, res, next) => {
+  const { subject, body } = req.body;
+
+  const subscriber = await Newsletter.findById(req.params.id);
+
+  if (!subscriber) {
+    return next(new ErrorResponse('Subscriber not found', 404));
+  }
+
+  await sendEmail({
+    to: subscriber.email,
+    subject,
+    html: `<div style="font-family:sans-serif;white-space:pre-line">${body}</div>`,
+  });
+
+  res.json({ success: true, message: 'Email sent successfully' });
+});
 
 // @desc    Get all subscriptions (admin - includes inactive)
 // @route   GET /api/admin/subscriptions

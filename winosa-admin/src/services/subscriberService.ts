@@ -16,6 +16,11 @@ export const subscriberService = {
     return response.data;
   },
 
+  sendEmail: async (id: string, payload: { subject: string; body: string }) => {
+    const response = await api.post<ApiResponse<null>>(`/admin/newsletter/${id}/send-email`, payload);
+    return response.data;
+  },
+
   exportFromData: (subscribers: Subscriber[]) => {
     exportToCSV(subscribers, [
       { label: 'Email', key: 'email' },

@@ -1,23 +1,41 @@
 const { z } = require('zod');
 
-exports.createPortfolioSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters'),
-  slug: z.string().min(3, 'Slug must be at least 3 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters').optional(),
-  image: z.string().url('Image must be a valid URL').optional(),
-  category: z.string().optional(),
-  client: z.string().optional(),
-  projectUrl: z.string().url('Project URL must be a valid URL').optional(),
-  isActive: z.boolean().optional()
+const testimonySchema = z.object({
+  name:    z.string(),
+  role:    z.string().optional(),
+  content: z.string(),
+  rating:  z.number().min(1).max(5),
 });
 
-exports.updatePortfolioSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters').optional(),
-  slug: z.string().min(3, 'Slug must be at least 3 characters').optional(),
-  description: z.string().min(10, 'Description must be at least 10 characters').optional(),
-  image: z.string().url('Image must be a valid URL').optional(),
-  category: z.string().optional(),
-  client: z.string().optional(),
-  projectUrl: z.string().url('Project URL must be a valid URL').optional(),
-  isActive: z.boolean().optional()
-});
+const baseSchema = {
+  title:        z.string().min(3, 'Title must be at least 3 characters').optional(),
+  slug:         z.string().min(3, 'Slug must be at least 3 characters').optional(),
+  description:  z.string().optional(),
+  shortDesc:    z.string().optional(),
+  longDesc:     z.string().optional(),
+  image:        z.string().optional(),
+  thumbnail:    z.string().optional(),
+  heroImage:    z.string().optional(),
+  category:     z.string().optional(),
+  client:       z.string().optional(),
+  year:         z.string().optional(),
+  duration:     z.string().optional(),
+  role:         z.string().optional(),
+  projectUrl:   z.string().optional(),
+  challenge:    z.string().optional(),
+  solution:     z.string().optional(),
+  result:       z.string().optional(),
+  techStack:    z.array(z.string()).optional(),
+  metrics:      z.array(z.object({ value: z.string(), label: z.string() })).optional(),
+  gallery:      z.array(z.string()).optional(),
+  testimonials: z.array(testimonySchema).optional(),
+  isActive:     z.union([z.boolean(), z.string()]).optional(),
+};
+
+exports.createPortfolioSchema = z.object({
+  ...baseSchema,
+  title: z.string().min(3, 'Title must be at least 3 characters'),
+  slug:  z.string().min(3, 'Slug must be at least 3 characters'),
+}).passthrough();
+
+exports.updatePortfolioSchema = z.object(baseSchema).passthrough();

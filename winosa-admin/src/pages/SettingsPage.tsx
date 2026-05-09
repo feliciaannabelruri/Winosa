@@ -108,7 +108,7 @@ const LogoSlot: React.FC<{
   };
   return (
     <div>
-      <FieldLabel hint="PNG, SVG, atau WebP — latar transparan — maks. 2 MB">Logo</FieldLabel>
+      <FieldLabel hint="PNG, SVG, or WebP — transparent background — max 2 MB">Logo</FieldLabel>
       <div className="flex items-center gap-4">
         <div
           onClick={() => ref.current?.click()}
@@ -118,7 +118,7 @@ const LogoSlot: React.FC<{
             ? <img src={preview} alt="logo" className="w-full h-full object-contain p-2" />
             : <div className="flex flex-col items-center gap-1">
                 <Image size={18} className="text-gray-300 group-hover:text-dark transition-colors" />
-                <p className="text-[10px] text-gray-300">Belum ada logo</p>
+                <p className="text-[10px] text-gray-300">No logo yet</p>
               </div>
           }
         </div>
@@ -136,7 +136,7 @@ const LogoSlot: React.FC<{
               onClick={onRemove}
               className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-500 transition-colors border border-red-100 rounded-xl px-3 py-2 hover:bg-red-50"
             >
-              <X size={12} /> Hapus
+              <X size={12} /> Remove
             </button>
           )}
         </div>
@@ -163,16 +163,16 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
   <div className="flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3">
     <WifiOff size={15} className="text-orange-400 flex-shrink-0 mt-0.5" />
     <div className="flex-1">
-      <p className="text-sm font-semibold text-orange-700">Backend tidak terhubung</p>
-      <p className="text-xs text-orange-500 mt-0.5">Perubahan tidak akan tersimpan sampai server aktif.</p>
+      <p className="text-sm font-semibold text-orange-700">Backend not connected</p>
+      <p className="text-xs text-orange-500 mt-0.5">Changes won't be saved until the server is active.</p>
     </div>
     <button onClick={onRetry} className="flex items-center gap-1 text-xs font-semibold text-orange-600 hover:text-orange-700 transition-colors flex-shrink-0">
-      <RefreshCw size={12} /> Coba lagi
+      <RefreshCw size={12} /> Try again
     </button>
   </div>
 );
 
-const SettingsPage: React.FC = () => {
+  const SettingsPage: React.FC = () => {
   const [form, setForm]         = useState<SiteSettings>(DEFAULT);
   const [saved, setSaved]       = useState<SiteSettings>(DEFAULT);
   const [loading, setLoading]   = useState(true);
@@ -211,16 +211,16 @@ const SettingsPage: React.FC = () => {
 
   const validate = (): boolean => {
     const e: typeof errors = {};
-    if (form.metaTitle.length > 70)        e.metaTitle       = 'Maksimal 70 karakter';
-    if (form.metaDescription.length > 160) e.metaDescription = 'Maksimal 160 karakter';
+    if (form.metaTitle.length > 70)        e.metaTitle       = 'Maximum 70 characters';
+    if (form.metaDescription.length > 160) e.metaDescription = 'Maximum 160 characters';
     if (form.siteEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.siteEmail))
-                                           e.siteEmail       = 'Format email tidak valid';
+                                           e.siteEmail       = 'Invalid email format';
     if (form.socialWhatsapp && !/^\d{8,15}$/.test(form.socialWhatsapp.replace(/\s/g,'')))
-                                           e.socialWhatsapp  = 'Hanya angka, 8–15 digit';
+                                           e.socialWhatsapp  = 'Numbers only, 8–15 digits';
     (['socialInstagram','socialFacebook','socialLinkedin','socialYoutube'] as (keyof SiteSettings)[])
       .forEach(k => {
         const v = form[k] as string;
-        if (v && !/^https?:\/\//.test(v)) e[k] = 'Harus diawali https://';
+        if (v && !/^https?:\/\//.test(v)) e[k] = 'Must start with https://';
       });
     setErrors(e);
     if (Object.keys(e).length) {
@@ -231,7 +231,7 @@ const SettingsPage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!validate()) { toast.error('Perbaiki error sebelum menyimpan'); return; }
+    if (!validate()) { toast.error('Please fix errors before saving'); return; }
     setSaving(true);
     try {
       const fd = new FormData();
@@ -251,14 +251,14 @@ const SettingsPage: React.FC = () => {
         setLogoFile(null); setLogoRemoved(false);
         if (d.logo) setLogoPreview(d.logo);
         setApiError(false);
-        toast.success('Pengaturan berhasil disimpan!');
-      } else toast.error(res.data?.message || 'Gagal menyimpan');
+        toast.success('Settings saved successfully!');
+      } else toast.error(res.data?.message || 'Failed to save');
     } catch (err: any) {
       const s = err?.response?.status;
       const m = err?.response?.data?.message;
-      if (s === 413)                   toast.error('File terlalu besar — maks. 2 MB');
-      else if (s === 400 || s === 422) toast.error(m || 'Error validasi');
-      else                             toast.error(m || 'Gagal menyimpan pengaturan');
+      if (s === 413)                   toast.error('File too large — max 2 MB');
+      else if (s === 400 || s === 422) toast.error(m || 'Validation error');
+      else                             toast.error(m || 'Failed to save settings');
     } finally { setSaving(false); }
   };
 
@@ -269,33 +269,36 @@ const SettingsPage: React.FC = () => {
 
       <div>
         <h1 className="text-4xl font-display font-bold text-dark">Settings</h1>
-        <p className="text-gray-400 text-sm mt-1 italic">Konfigurasikan situs web Winosa Anda</p>
+        <p className="text-gray-400 text-sm mt-1 italic">Configure your Winosa website</p>
       </div>
 
       {apiError && <ApiBanner onRetry={fetchSettings} />}
 
       {/* Tabs */}
-      <div className="flex gap-1.5 bg-white border border-gray-100 rounded-2xl p-1.5 shadow-sm overflow-x-auto w-full sm:w-fit">
-        {TABS.map(t => {
-          const hasErr = TAB_FIELDS[t.key].some(k => !!errors[k]);
-          return (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-                tab === t.key ? 'bg-dark text-white shadow-sm' : 'text-gray-500 hover:text-dark hover:bg-gray-50'
-              }`}
-            >
-              {t.icon}{t.label}
-              {hasErr && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />}
-            </button>
-          );
-        })}
+      <div className="overflow-x-auto pb-1 -mb-1">
+        <div className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-full px-2 py-1.5 shadow-sm min-w-max">
+          {TABS.map(t => {
+            const hasErr = TAB_FIELDS[t.key].some(k => !!errors[k]);
+            return (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                  tab === t.key ? 'bg-dark text-white shadow-sm' : 'text-gray-500 hover:text-dark'
+                }`}
+              >
+                {t.icon}
+                {t.label}
+                {hasErr && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* GENERAL */}
       {tab === 'general' && (
-        <Card icon={<Globe size={16} className="text-primary" />} iconBg="bg-primary/10" title="General Settings" subtitle="Identitas brand yang tampil di navbar dan footer">
+        <Card icon={<Globe size={16} className="text-primary" />} iconBg="bg-primary/10" title="General Settings" subtitle="Brand identity displayed in the navbar and footer">
           <LogoSlot
             preview={logoPreview}
             onUpload={f => { setLogoFile(f); setLogoPreview(URL.createObjectURL(f)); setLogoRemoved(false); }}
@@ -303,7 +306,7 @@ const SettingsPage: React.FC = () => {
           />
           <div className="border-t border-gray-100 pt-5 space-y-5">
             <div>
-              <FieldLabel hint="Nama resmi perusahaan, ditampilkan di berbagai bagian situs">Site name</FieldLabel>
+              <FieldLabel hint="Official company name, displayed across the site">Site name</FieldLabel>
               <input type="text" placeholder="e.g. PT. Winosa Mitra Bharatadjaya" value={form.siteName} onChange={set('siteName')} maxLength={100} className={errors.siteName ? inpErr : inp} />
               {errors.siteName
                 ? <ErrMsg msg={errors.siteName} />
@@ -311,9 +314,9 @@ const SettingsPage: React.FC = () => {
               }
             </div>
             <div>
-              <FieldLabel hint="Ditampilkan di footer dan digunakan sebagai deskripsi SEO cadangan">Tagline</FieldLabel>
+              <FieldLabel hint="Displayed in the footer and used as a fallback SEO description">Tagline</FieldLabel>
               <div className="relative">
-                <textarea placeholder="Deskripsi singkat bisnis Anda..." value={form.siteTagline} onChange={set('siteTagline')} rows={3} maxLength={200} className={txt} />
+                <textarea placeholder="Short description of your business..." value={form.siteTagline} onChange={set('siteTagline')} rows={3} maxLength={200} className={txt} />
                 <span className={`absolute bottom-3 right-3 text-[11px] ${cc(form.siteTagline.length, 200)}`}>{form.siteTagline.length}/200</span>
               </div>
             </div>
@@ -324,19 +327,19 @@ const SettingsPage: React.FC = () => {
       {/* SEO */}
       {tab === 'seo' && (
         <div className="space-y-4">
-          <Card icon={<Search size={16} className="text-blue-500" />} iconBg="bg-blue-50" title="SEO Settings" subtitle="Mengatur tampilan Winosa di hasil pencarian Google">
+          <Card icon={<Search size={16} className="text-blue-500" />} iconBg="bg-blue-50" title="SEO Settings" subtitle="Control how Winosa appears in Google search results">
 
             {/* Google Preview */}
             <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 space-y-0.5">
-              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-3">Pratinjau Google</p>
+              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-3">Google Preview</p>
               <p className="text-xs text-gray-400">winosa.com</p>
-              <p className="text-[15px] text-blue-600 font-medium leading-snug truncate">{form.metaTitle || form.siteName || 'Judul halaman Anda'}</p>
-              <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{form.metaDescription || form.siteTagline || 'Deskripsi meta akan muncul di sini.'}</p>
+              <p className="text-[15px] text-blue-600 font-medium leading-snug truncate">{form.metaTitle || form.siteName || 'Your page title'}</p>
+              <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{form.metaDescription || form.siteTagline || 'Meta description will appear here.'}</p>
             </div>
 
             <div>
-              <FieldLabel hint="Ideal 50–60 karakter. Muncul sebagai judul biru di Google.">Meta Title</FieldLabel>
-              <input type="text" placeholder="e.g. Winosa — Solusi Digital & Konsultasi IT" value={form.metaTitle} onChange={set('metaTitle')} maxLength={70} className={errors.metaTitle ? inpErr : inp} />
+              <FieldLabel hint="Ideal 50–60 characters. Appears as the blue title in Google.">Meta Title</FieldLabel>
+              <input type="text" placeholder="e.g. Winosa — Digital Solutions & IT Consulting" value={form.metaTitle} onChange={set('metaTitle')} maxLength={70} className={errors.metaTitle ? inpErr : inp} />
               <div className="flex items-center justify-between mt-1">
                 {errors.metaTitle ? <ErrMsg msg={errors.metaTitle} /> : <span />}
                 <span className={`text-[11px] ${cc(form.metaTitle.length, 60)}`}>{form.metaTitle.length}/60</span>
@@ -344,9 +347,9 @@ const SettingsPage: React.FC = () => {
             </div>
 
             <div>
-              <FieldLabel hint="Ideal 120–160 karakter. Teks abu-abu di bawah judul di Google.">Meta Description</FieldLabel>
+              <FieldLabel hint="Ideal 120–160 characters. Gray text below the title in Google.">Meta Description</FieldLabel>
               <div className="relative">
-                <textarea placeholder="Deskripsikan website Anda dalam 1–2 kalimat yang menarik..." value={form.metaDescription} onChange={set('metaDescription')} rows={3} maxLength={200} className={errors.metaDescription ? `${inpErr} resize-none` : txt} />
+                <textarea placeholder="Describe your website in 1–2 compelling sentences..." value={form.metaDescription} onChange={set('metaDescription')} rows={3} maxLength={200} className={errors.metaDescription ? `${inpErr} resize-none` : txt} />
                 <span className={`absolute bottom-3 right-3 text-[11px] ${cc(form.metaDescription.length, 160)}`}>{form.metaDescription.length}/160</span>
               </div>
               {errors.metaDescription && <ErrMsg msg={errors.metaDescription} />}
@@ -358,11 +361,11 @@ const SettingsPage: React.FC = () => {
             <div className="flex items-start gap-3">
               <CheckCircle size={15} className="text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-dark">Di mana ini muncul?</p>
+                <p className="text-sm font-semibold text-dark">Where does this appear?</p>
                 <ul className="space-y-1 text-xs text-gray-500">
-                  <li>• <strong>Meta Title</strong> → judul biru yang bisa diklik di hasil Google</li>
-                  <li>• <strong>Meta Description</strong> → teks ringkasan abu-abu di bawah judul</li>
-                  <li>• Keduanya <strong>tidak muncul di halaman website</strong>, hanya di hasil pencarian Google</li>
+                  <li>• <strong>Meta Title</strong> → the clickable blue title in Google results</li>
+                  <li>• <strong>Meta Description</strong> → the gray summary text below the title</li>
+                  <li>• Neither appears <strong>on the website itself</strong> — only in Google search results</li>
                 </ul>
               </div>
             </div>
@@ -372,7 +375,7 @@ const SettingsPage: React.FC = () => {
 
       {/* SOCIAL */}
       {tab === 'social' && (
-        <Card icon={<Share2 size={16} className="text-purple-500" />} iconBg="bg-purple-50" title="Media Sosial" subtitle="Link yang tampil di ikon sosial pada footer">
+        <Card icon={<Share2 size={16} className="text-purple-500" />} iconBg="bg-purple-50" title="Social Media" subtitle="Links shown on social icons in the footer">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             {([
               { icon: <Instagram size={14}/>, label: 'Instagram', key: 'socialInstagram' as const, ph: 'https://instagram.com/winosa' },
@@ -392,7 +395,7 @@ const SettingsPage: React.FC = () => {
             ))}
           </div>
           <div className="border-t border-gray-100 pt-5">
-            <FieldLabel hint="Hanya angka dengan kode negara — digunakan untuk link wa.me di footer dan halaman kontak">Nomor WhatsApp</FieldLabel>
+            <FieldLabel hint="Numbers only with country code — used for wa.me links in footer and contact page">WhatsApp Number</FieldLabel>
             <div className="relative max-w-xs">
               <MessageCircle size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="tel" placeholder="6281234567890" value={form.socialWhatsapp}
@@ -403,7 +406,7 @@ const SettingsPage: React.FC = () => {
             {errors.socialWhatsapp && <ErrMsg msg={errors.socialWhatsapp} />}
             {form.socialWhatsapp && !errors.socialWhatsapp && (
               <p className="text-[11px] text-gray-400 mt-1.5">
-                Pratinjau link: <span className="text-dark font-medium">wa.me/{form.socialWhatsapp}</span>
+                Link preview: <span className="text-dark font-medium">wa.me/{form.socialWhatsapp}</span>
               </p>
             )}
           </div>
@@ -412,10 +415,10 @@ const SettingsPage: React.FC = () => {
 
       {/* CONTACT */}
       {tab === 'contact' && (
-        <Card icon={<Phone size={16} className="text-green-500" />} iconBg="bg-green-50" title="Contact Information" subtitle="Ditampilkan di halaman Kontak dan footer">
+        <Card icon={<Phone size={16} className="text-green-500" />} iconBg="bg-green-50" title="Contact Information" subtitle="Displayed on the Contact page and footer">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <FieldLabel hint='Digunakan untuk kontak di halaman Contact'>Alamat Email</FieldLabel>
+              <FieldLabel hint='Used for contact on the Contact page'>Email Address</FieldLabel>
               <div className="relative">
                 <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="email" placeholder="hello@winosa.com" value={form.siteEmail} onChange={set('siteEmail')} className={errors.siteEmail ? `${inpErr} pl-11` : inpIcon} />
@@ -423,7 +426,7 @@ const SettingsPage: React.FC = () => {
               {errors.siteEmail && <ErrMsg msg={errors.siteEmail} />}
             </div>
             <div>
-              <FieldLabel hint='Muncul sebagai "Hubungi kami" di halaman Kontak'>Nomor Telepon</FieldLabel>
+              <FieldLabel hint='Shown as "Contact us" on the Contact page'>Phone Number</FieldLabel>
               <div className="relative">
                 <Phone size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="tel" placeholder="+62 21 xxxx xxxx" value={form.sitePhone} onChange={set('sitePhone')} className={inpIcon} />
@@ -431,32 +434,47 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
           <div>
-            <FieldLabel hint='Muncul sebagai "Kunjungi kami" di halaman Kontak'>Alamat Kantor</FieldLabel>
+            <FieldLabel hint='Shown as "Visit us" on the Contact page'>Office Address</FieldLabel>
             <div className="relative">
               <MapPin size={14} className="absolute left-4 top-[14px] text-gray-400" />
-              <textarea placeholder="Jl. Raya No. 1, Bandar Lampung, Indonesia" value={form.siteAddress} onChange={set('siteAddress')} rows={3} className="w-full border border-gray-200 rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors resize-none placeholder:text-gray-300" />
+              <textarea placeholder="123 Main St, Your City, Country" value={form.siteAddress} onChange={set('siteAddress')} rows={3} className="w-full border border-gray-200 rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors resize-none placeholder:text-gray-300" />
             </div>
+            {form.siteAddress && (
+              <div className="rounded-2xl overflow-hidden border border-gray-200 h-52">
+                <iframe
+                  title="Maps Preview"
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                    form.siteAddress
+                  )}&output=embed`}
+                  width="100%"
+                  height="100%"
+                  loading="lazy"
+                  className="w-full h-full"
+                />
+              </div>
+            )}
           </div>
           <div className="bg-green-50 border border-green-100 rounded-2xl px-4 py-3 flex items-start gap-3">
             <CheckCircle size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-green-700 leading-relaxed">
-              Nomor <strong>WhatsApp</strong> diatur di tab <strong>Sosial</strong> —
-              digunakan untuk ikon WhatsApp di footer dan link "Live Chat" di halaman Kontak.
+              The <strong>WhatsApp</strong> number is set in the <strong>Social</strong> tab — used for the WhatsApp icon in the footer and 'Live Chat' link on the Contact page.
             </p>
           </div>
         </Card>
       )}
 
       {/* Save bar */}
-      <div className="flex justify-end items-center gap-3 pt-2 pb-4">
-        {isDirty && !saving && <span className="text-xs text-amber-500 font-medium">• Ada perubahan yang belum disimpan</span>}
+      <div className="flex flex-col sm:flex-row sm:justify-end items-stretch sm:items-center gap-3 pt-2 pb-4">
+        {isDirty && !saving && (
+          <span className="text-xs text-amber-500 font-medium text-center sm:text-left">• You have unsaved changes</span>
+        )}
         <button
           onClick={handleSave}
           disabled={saving || !isDirty}
-          className="flex items-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center justify-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-fit"
         >
           {saving
-            ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Menyimpan...</>
+            ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Saving...</>
             : <><Save size={14} />Save Changes</>
           }
         </button>
