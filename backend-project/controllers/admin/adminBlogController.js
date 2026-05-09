@@ -4,6 +4,7 @@ const asyncHandler = require('../../middleware/asyncHandler');
 const { ErrorResponse } = require('../../middleware/errorHandler');
 const { uploadSingle, uploadToImageKit, deleteFromImageKit } = require('../../config/imagekit');
 const { cache } = require('../../utils/cache');
+const Comment = require('../../models/Comment');
 const { triggerMLRetrain } = require('../../middleware/mlTrigger');
 
 // Helper: bungkus callback multer jadi Promise (wajib untuk Express 5)
@@ -171,14 +172,25 @@ exports.getAllBlogs = asyncHandler(async (req, res, next) => {
       .skip(skip).limit(limit).lean(),
   ]);
 
+  const blogIds = blogs.map(b => b._id.toString());
+  const commentAgg = await Comment.aggregate([
+    { $match: { blogId: { $in: blogIds } } },
+    { $group: { _id: '$blogId', count: { $sum: 1 } } },
+  ]);
+  const countMap = Object.fromEntries(commentAgg.map(c => [c._id, c.count]));
+  const data = blogs.map(b => ({
+    ...b,
+    commentsCount: countMap[b._id.toString()] || 0,
+  }));
+
   res.json({
     success: true,
-    count: blogs.length,
+    count: data.length,
     total, page,
     pages:       Math.ceil(total / limit),
     hasNextPage: page < Math.ceil(total / limit),
     hasPrevPage: page > 1,
-    data: blogs,
+    data,
   });
 });
 
@@ -194,4 +206,44 @@ exports.getBlogById = asyncHandler(async (req, res, next) => {
   }
 
   res.json({ success: true, data: blog });
+});
+
+// BLOG PAGE CONTENT
+const Settings = require('../../models/Settings'); // sesuaikan path model Settings kamu
+
+// @desc    Get blog hero content
+// @route   GET /api/admin/blog/page-content
+// @access  Private/Admin
+exports.getBlogPageContent = asyncHandler(async (req, res) => {
+  const settings = await Settings.findOne().lean();
+  const hero = settings?.blogHero || {};
+  res.json({
+    success: true,
+    data: {
+      heroLabel:       hero.badge       || 'Our Blog',
+      heroTitle:       hero.title       || 'Insights & Digital Ideas',
+      heroDescription: hero.description || 'Explore articles, insights, and updates from our team.',
+    },
+  });
+});
+
+// @desc    Update blog hero content
+// @route   PUT /api/admin/blog/page-content
+// @access  Private/Admin
+exports.updateBlogPageContent = asyncHandler(async (req, res) => {
+  const { heroLabel, heroTitle, heroDescription } = req.body;
+
+  await Settings.findOneAndUpdate(
+    {},
+    {
+      $set: {
+        'blogHero.badge':       heroLabel,
+        'blogHero.title':       heroTitle,
+        'blogHero.description': heroDescription,
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  res.json({ success: true, message: 'Blog hero updated successfully' });
 });

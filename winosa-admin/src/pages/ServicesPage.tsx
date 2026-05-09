@@ -71,7 +71,7 @@ const ServicesPage: React.FC = () => {
       const data = await serviceService.getAll();
       setServices(data.data);
     } catch {
-      toast.error('Gagal memuat data layanan');
+      toast.error('Failed to load service data');
     } finally {
       setLoading(false);
     }
@@ -84,11 +84,11 @@ const ServicesPage: React.FC = () => {
     setDeleteModal(prev => ({ ...prev, loading: true }));
     try {
       await serviceService.delete(deleteModal.id);
-      toast.success('Layanan berhasil dihapus');
+      toast.success('Service deleted successfully');
       setDeleteModal({ open: false, id: null, loading: false });
       fetchServices();
     } catch {
-      toast.error('Gagal menghapus layanan');
+      toast.error('Failed to delete service');
       setDeleteModal(prev => ({ ...prev, loading: false }));
     }
   };
@@ -119,7 +119,7 @@ const ServicesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-4xl font-display font-bold text-dark">Services</h1>
-          <p className="text-gray-400 text-sm mt-1 italic">Kelola konten layanan Winosa</p>
+          <p className="text-gray-400 text-sm mt-1 italic">Manage Winosa service content</p>
         </div>
       </div>
 
@@ -149,144 +149,130 @@ const ServicesPage: React.FC = () => {
       </div>
 
       {tab === 'services' && (
-<>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-      {/* Add Service — mobile: baris 1 kiri, desktop: hilang dari sini */}
-        <button
-          onClick={() => navigate('/services/add')}
-          className="flex sm:hidden items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 text-sm w-fit"
-        >
-          <Plus size={16} />
-          Add Service
-        </button>
-
-        {/* Search */}
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-          <input
-            type="text"
-            placeholder="Search services..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
-          />
-        </div>
-
-        {/* Filter */}
-        <div className="flex flex-wrap gap-2">
-          {(['all', 'published', 'draft'] as FilterType[]).map(f => (
+        <>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 ${
-                filter === f
-                  ? 'bg-dark border-dark text-white shadow-sm'
-                  : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
-              }`}
+              onClick={() => navigate('/services/add')}
+              className="flex sm:hidden items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 text-sm w-fit"
             >
-              {filterLabels[f]}
+              <Plus size={16} />
+              Add Service
             </button>
-          ))}
-        </div>
 
-        {/* Add Service — desktop: ujung kanan, mobile: disembunyikan */}
-          <button
-            onClick={() => navigate('/services/add')}
-            className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit ml-auto"
-          >
-            <Plus size={16} />
-            Add Service
-          </button>
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input
+                type="text"
+                placeholder="Search services..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
+              />
+            </div>
 
-        </div>
+            <div className="flex flex-wrap gap-2">
+              {(['all', 'published', 'draft'] as FilterType[]).map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 ${
+                    filter === f
+                      ? 'bg-dark border-dark text-white shadow-sm'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
+                  }`}
+                >
+                  {filterLabels[f]}
+                </button>
+              ))}
+            </div>
 
-      {/* Daftar Layanan */}
-      {loading ? (
-        <div className="flex items-center justify-center h-48">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400 text-sm">
-          Tidak ada layanan yang ditemukan
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filtered.map(service => {
-            const IconComponent = iconMap[service.icon?.toLowerCase() || ''] || null;
+            <button
+              onClick={() => navigate('/services/add')}
+              className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit ml-auto"
+            >
+              <Plus size={16} />
+              Add Service
+            </button>
+          </div>
 
-            return (
-              <div
-                key={service._id}
-                className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200"
-              >
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-center">
-
-                  {/* Ikon */}
-                  <div className="w-14 h-14 flex-shrink-0 rounded-full border border-black flex items-center justify-center bg-white">
-                    {IconComponent ? (
-                      <IconComponent size={22} strokeWidth={1.5} className="text-dark" />
-                    ) : service.icon ? (
-                      <span className="text-2xl">{service.icon}</span>
-                    ) : (
-                      <Sparkles size={18} className="text-gray-300" />
-                    )}
-                  </div>
-
-                  {/* Title + Description */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h3 className="text-base font-bold text-dark leading-tight">{service.title}</h3>
-                      <span className={`px-3 py-0.5 rounded-full text-xs font-medium border flex-shrink-0 ${
-                        service.isActive
-                          ? 'bg-green-50 text-green-600 border-green-200'
-                          : 'bg-gray-100 text-gray-500 border-gray-200'
-                      }`}>
-                        {service.isActive ? 'Published' : 'Draft'}
-                      </span>
+          {loading ? (
+            <div className="flex items-center justify-center h-48">
+              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-16 text-gray-400 text-sm">
+              No services found
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filtered.map(service => {
+                const IconComponent = iconMap[service.icon?.toLowerCase() || ''] || null;
+                return (
+                  <div
+                    key={service._id}
+                    className="bg-white rounded-3xl border-2 border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200"
+                  >
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-center">
+                      <div className="w-14 h-14 flex-shrink-0 rounded-full border border-black flex items-center justify-center bg-white">
+                        {IconComponent ? (
+                          <IconComponent size={22} strokeWidth={1.5} className="text-dark" />
+                        ) : service.icon ? (
+                          <span className="text-2xl">{service.icon}</span>
+                        ) : (
+                          <Sparkles size={18} className="text-gray-300" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <h3 className="text-base font-bold text-dark leading-tight">{service.title}</h3>
+                          <span className={`px-3 py-0.5 rounded-full text-xs font-medium border flex-shrink-0 ${
+                            service.isActive
+                              ? 'bg-green-50 text-green-600 border-green-200'
+                              : 'bg-gray-100 text-gray-500 border-gray-200'
+                          }`}>
+                            {service.isActive ? 'Published' : 'Draft'}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1 leading-relaxed line-clamp-2">
+                          {service.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => setDeleteModal({ open: true, id: service._id, loading: false })}
+                          className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => navigate(`/services/edit/${service._id}`)}
+                          className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
+                          title="Edit"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1 leading-relaxed line-clamp-2">
-                      {service.description}
-                    </p>
                   </div>
+                );
+              })}
+            </div>
+          )}
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <button
-                      onClick={() => setDeleteModal({ open: true, id: service._id, loading: false })}
-                      className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                    <button
-                      onClick={() => navigate(`/services/edit/${service._id}`)}
-                      className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
-                      title="Edit"
-                    >
-                      <Edit2 size={14} />
-                    </button>
-                  </div>
-
-                </div>
-              </div>
-            );
-          })}
-        </div>
+          <ConfirmModal
+            isOpen={deleteModal.open}
+            title="Delete Service"
+            message="Are you sure you want to delete this service? This action cannot be undone."
+            onConfirm={handleDelete}
+            onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
+            loading={deleteModal.loading}
+          />
+        </>
       )}
-
-      <ConfirmModal
-        isOpen={deleteModal.open}
-        title="Delete Service"
-        message="Apakah Anda yakin ingin menghapus layanan ini? Tindakan ini tidak dapat dibatalkan."
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
-        loading={deleteModal.loading}
-      />
-      </>
-    )}
-    {tab === 'process' && <ServiceInfoPage embedded activeSection="process" />}
-    {tab === 'reasons' && <ServiceInfoPage embedded activeSection="reasons" />}
-    {tab === 'hero' && <ServiceHeroEditor />}
+      {tab === 'process' && <ServiceInfoPage embedded activeSection="process" />}
+      {tab === 'reasons' && <ServiceInfoPage embedded activeSection="reasons" />}
+      {tab === 'hero' && <ServiceHeroEditor />}
     </div>
   );
 };

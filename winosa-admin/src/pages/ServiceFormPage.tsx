@@ -67,7 +67,7 @@ const ServiceFormPage: React.FC = () => {
           {isEdit ? 'Edit Service' : 'Add Service'}
         </h1>
         <p className="text-gray-400 text-sm mt-1 italic">
-          {isEdit ? 'Update konten layanan yang sudah ada' : 'Tambah layanan baru'}
+          {isEdit ? 'Update an existing service' : 'Add a new service'}
         </p>
       </div>
 
@@ -75,7 +75,7 @@ const ServiceFormPage: React.FC = () => {
       <Card title="Service Info">
 
         <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-2.5">
-          <span className="text-xs text-amber-600 font-medium">⚠ Semua konten harus ditulis dalam bahasa Inggris.</span>
+          <span className="text-xs text-amber-600 font-medium">⚠ All content must be written in English.</span>
         </div>
 
         {/* Icon */}
@@ -97,10 +97,10 @@ const ServiceFormPage: React.FC = () => {
         {/* Description */}
         <Field
           label="Description"
-          hint={`${form.description.length} / 300 karakter`}
+          hint={`${form.description.length} / 300 characters`}
         >
           <textarea
-            placeholder="Deskripsi singkat layanan yang ditampilkan di halaman Services..."
+            placeholder="Short service description displayed on the Services page..."
             value={form.description}
             onChange={e => set('description', e.target.value)}
             rows={4}

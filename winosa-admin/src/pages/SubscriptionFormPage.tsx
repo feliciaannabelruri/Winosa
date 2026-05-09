@@ -63,7 +63,7 @@ const SubscriptionFormPage: React.FC = () => {
         });
         setFeatures(s.features && s.features.length > 0 ? s.features : ['']);
       } catch {
-        toast.error('Gagal memuat data paket');
+        toast.error('Failed to load plan data');
         navigate('/subscriptions');
       } finally {
         setFetching(false);
@@ -150,7 +150,7 @@ const SubscriptionFormPage: React.FC = () => {
           {isEdit ? 'Edit Plan' : 'Add Plan'}
         </h1>
         <p className="text-gray-400 text-sm mt-1 italic">
-          {isEdit ? 'Update paket dan harga langganan yang sudah ada' : 'Buat paket dan harga langganan baru'}
+          {isEdit ? 'Update an existing subscription plan and pricing' : 'Create a new subscription plan and pricing'}
         </p>
       </div>
 

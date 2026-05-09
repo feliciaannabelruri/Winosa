@@ -91,7 +91,7 @@ const ServiceHeroEditor: React.FC = () => {
             maxLength={50}
             />
             <div className="flex items-center justify-between mt-1">
-            <p className="text-xs text-gray-400">Judul besar di hero section</p>
+            <p className="text-xs text-gray-400">Large title displayed in the hero section</p>
             <p className={`text-xs ${form.title.length >= 50 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
                 {form.title.length}/50
             </p>
@@ -113,7 +113,7 @@ const ServiceHeroEditor: React.FC = () => {
             maxLength={80}
             />
             <div className="flex items-center justify-between mt-1">
-            <p className="text-xs text-gray-400">Teks di bawah judul</p>
+            <p className="text-xs text-gray-400">Text displayed below the title</p>
             <p className={`text-xs ${form.subtitle.length >= 80 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
                 {form.subtitle.length}/80
             </p>
@@ -137,7 +137,7 @@ const ServiceHeroEditor: React.FC = () => {
             maxLength={150}
             />
             <div className="flex items-center justify-between mt-1">
-            <p className="text-xs text-gray-400">Teks tambahan, boleh dikosongkan</p>
+            <p className="text-xs text-gray-400">Optional additional text, can be left empty</p>
             <p className={`text-xs ${form.description.length >= 150 ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
                 {form.description.length}/150
             </p>
@@ -147,7 +147,7 @@ const ServiceHeroEditor: React.FC = () => {
         {/* Info note */}
         <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3">
           <p className="text-xs text-gray-500">
-            ℹ️ Tombol <strong>"Get in Touch"</strong> tidak bisa diedit — selalu mengarah ke halaman Contact.
+            ℹ️ Tombol <strong>"Get in Touch"</strong> button cannot be edited — it always links to the Contact page.
           </p>
         </div>
 

@@ -8,6 +8,7 @@ import GallerySection from "@/components/sectionsPorto/sectionDetailProject/Gall
 import NextProjectSection from "@/components/sectionsPorto/sectionDetailProject/NextProjectSection";
 import SimilarProjectsSection from "@/components/sectionsPorto/SimilarProjectsSection";
 import AboutProjectSection from "@/components/sectionsPorto/sectionDetailProject/AboutProjectSection";
+import TestimonialsSection from '@/components/sectionsPorto/sectionDetailProject/Testimonialssection';
 
 interface PageProps {
   params: Promise<{
@@ -99,6 +100,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     metrics: data.metrics || [],
     gallery: data.gallery?.length ? data.gallery : [],
     projectUrl: data.projectUrl || "",
+    testimonials: Array.isArray(data.testimonials) ? data.testimonials : [],
   };
 
   const nextProject = {
@@ -117,6 +119,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       <HeroSection project={project} />
       <AboutProjectSection longDescription={project.longDescription} />
       <CaseStudySection project={project} />
+      <TestimonialsSection testimonials={project.testimonials ?? []} />
       <GallerySection project={project} />
 
       {relatedProjects.length > 0 && (

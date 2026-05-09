@@ -29,6 +29,7 @@ export interface Blog {
   readTime: number;
   createdAt: string;
   updatedAt: string;
+  commentsCount?: number;
 }
 
 export interface BlogFormData {
@@ -69,6 +70,14 @@ export interface Portfolio {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  testimonials?: Testimony[]; 
+}
+
+export interface Testimony {
+  name:    string;
+  role:    string;
+  content: string;
+  rating:  number;
 }
 
 export interface PortfolioFormData {
