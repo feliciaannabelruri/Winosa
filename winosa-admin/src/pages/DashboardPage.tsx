@@ -8,7 +8,7 @@ import {
 import { analyticsService } from '../services/analyticsService';
 import { Analytics } from '../types';
 import { useAuth } from '../context/AuthContext';
-
+import { useTranslation } from 'react-i18next';  
 
 interface StatCardProps {
   label: string;
@@ -30,9 +30,8 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon, bg, iconColor }
   </div>
 );
 
-// Badge color per activity type
 const typeConfig: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
-  Blog:       { bg: 'bg-primary/10',  text: 'text-primary',    icon: <FileText size={12} /> },
+  Blog:        { bg: 'bg-primary/10',  text: 'text-primary',    icon: <FileText size={12} /> },
   Services:    { bg: 'bg-purple-50',   text: 'text-purple-500', icon: <Wrench size={12} /> },
   Subscribers: { bg: 'bg-green-50',    text: 'text-green-500',  icon: <UserPlus size={12} /> },
   Contacts:    { bg: 'bg-red-50',      text: 'text-red-500',    icon: <MessageSquare size={12} /> },
@@ -60,6 +59,7 @@ const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation(); 
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -94,27 +94,30 @@ const DashboardPage: React.FC = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-3xl sm:text-4xl font-display font-bold text-dark">Dashboard</h1>
+        {/* GANTI: "Dashboard" → t('dashboard') */}
+        <h1 className="text-3xl sm:text-4xl font-display font-bold text-dark">{t('dashboard')}</h1>
+        {/* GANTI: teks hardcode → t('dashboard_welcome') */}
         <p className="text-gray-400 text-sm mt-1 italic">
-          Activity overview — Welcome back,{' '}
+          {t('dashboard_overview')} —{' '}
+          {t('dashboard_welcome')},{' '}
           <span className="text-dark font-medium not-italic">{user?.name ?? 'Admin'}</span>
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        <StatCard label="Portfolio"   value={counts.portfolios}  icon={<FolderOpen size={16} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
-        <StatCard label="Blogs"       value={counts.blogs}       icon={<FileText size={16} />}   bg="bg-primary/10" iconColor="text-primary"    />
-        <StatCard label="Services"    value={counts.services}    icon={<Briefcase size={16} />}  bg="bg-purple-50"  iconColor="text-purple-500" />
-        <StatCard label="Subscribers" value={counts.subscribers} icon={<Users size={16} />}      bg="bg-green-50"   iconColor="text-green-500"  />
-        <StatCard label="Contacts"    value={counts.contacts}    icon={<Mail size={16} />}       bg="bg-red-50"     iconColor="text-red-500"    />
+        {/* GANTI: label string → t('...') */}
+        <StatCard label={t('portfolio')}    value={counts.portfolios}  icon={<FolderOpen size={16} />} bg="bg-blue-50"    iconColor="text-blue-500"   />
+        <StatCard label={t('blog')}         value={counts.blogs}       icon={<FileText size={16} />}   bg="bg-primary/10" iconColor="text-primary"    />
+        <StatCard label={t('services')}     value={counts.services}    icon={<Briefcase size={16} />}  bg="bg-purple-50"  iconColor="text-purple-500" />
+        <StatCard label={t('subscriptions')}value={counts.subscribers} icon={<Users size={16} />}      bg="bg-green-50"   iconColor="text-green-500"  />
+        <StatCard label={t('contacts')}     value={counts.contacts}    icon={<Mail size={16} />}       bg="bg-red-50"     iconColor="text-red-500"    />
       </div>
-
-
 
       {/* Recent Activities */}
       <div>
-        <h2 className="text-xl sm:text-2xl font-display font-bold text-dark mb-4 sm:mb-5">Recent Activities</h2>
+        {/* GANTI: "Recent Activities" → t('dashboard_recent_activities') */}
+        <h2 className="text-xl sm:text-2xl font-display font-bold text-dark mb-4 sm:mb-5">{t('dashboard_recent_activities')}</h2>
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[520px] table-fixed">
@@ -126,7 +129,8 @@ const DashboardPage: React.FC = () => {
               </colgroup>
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100">
-                  {['Type', 'Title / Name', 'Date', 'Status'].map(h => (
+                  {/* GANTI: array string → array t('...') */}
+                  {[t('type'), t('title_name'), t('date'), t('status')].map(h => (
                     <th key={h} className="text-left text-sm font-semibold text-primary py-4 px-4 first:pl-6">
                       {h}
                     </th>
@@ -145,29 +149,23 @@ const DashboardPage: React.FC = () => {
                           i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
                         }`}
                       >
-                        {/* Type badge */}
                         <td className="py-3 px-4 pl-6">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.bg} ${cfg.text}`}>
                             {cfg.icon}
                             {activity.type}
                           </span>
                         </td>
-
                         <td className="py-3 px-4 overflow-hidden">
                           <p className="text-sm text-dark font-medium truncate">{activity.title}</p>
                           {activity.subtitle && (
                             <p className="text-xs text-gray-400 truncate mt-0.5">{activity.subtitle}</p>
                           )}
                         </td>
-
-                        {/* Date */}
                         <td className="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">
                           {new Date(activity.createdAt).toLocaleDateString('id-ID', {
                             day: '2-digit', month: 'short', year: '2-digit'
                           })}
                         </td>
-
-                        {/* Status */}
                         <td className="py-3 px-4">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusCls}`}>
                             {activity.status}
@@ -179,7 +177,8 @@ const DashboardPage: React.FC = () => {
                 ) : (
                   <tr>
                     <td colSpan={4} className="px-6 py-12 text-center text-gray-400 text-sm">
-                      No recent activities yet
+                      {/* GANTI: "No recent activities yet" → t('dashboard_no_activities') */}
+                      {t('dashboard_no_activities')}
                     </td>
                   </tr>
                 )}
@@ -199,7 +198,8 @@ const DashboardPage: React.FC = () => {
           >
             <div className="flex items-center gap-2 min-w-0">
               <Clock size={16} className="text-gray-400 flex-shrink-0" />
-              <h3 className="font-semibold text-dark text-sm truncate">Recent Blogs</h3>
+              {/* GANTI: "Recent Blogs" → t('dashboard_recent_blogs') */}
+              <h3 className="font-semibold text-dark text-sm truncate">{t('dashboard_recent_blogs')}</h3>
             </div>
             <ArrowRight size={14} className="text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
           </button>
@@ -215,7 +215,7 @@ const DashboardPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No blogs yet</p>
+            <p className="text-sm text-gray-400">{t('dashboard_no_blogs')}</p>
           )}
         </div>
 
@@ -227,7 +227,8 @@ const DashboardPage: React.FC = () => {
           >
             <div className="flex items-center gap-2 min-w-0">
               <TrendingUp size={16} className="text-primary flex-shrink-0" />
-              <h3 className="font-semibold text-dark text-sm truncate">Popular Blogs</h3>
+              {/* GANTI: "Popular Blogs" → t('dashboard_popular_blogs') */}
+              <h3 className="font-semibold text-dark text-sm truncate">{t('dashboard_popular_blogs')}</h3>
             </div>
             <ArrowRight size={14} className="text-gray-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
           </button>
@@ -247,7 +248,7 @@ const DashboardPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No data yet</p>
+            <p className="text-sm text-gray-400">{t('dashboard_no_data')}</p>
           )}
         </div>
       </div>

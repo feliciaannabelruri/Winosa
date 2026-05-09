@@ -1,51 +1,31 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  Globe, Search, Share2, Phone,
-  Upload, Save, AlertCircle,
-  Instagram, Linkedin,
-  Mail, MapPin, MessageCircle,
+  Globe, Search, Share2, Phone, Upload, Save, AlertCircle,
+  Instagram, Linkedin, Mail, MapPin, MessageCircle,
   X, RefreshCw, WifiOff, CheckCircle, Image,
 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next'; // ← TAMBAH
 
 export interface SiteSettings {
-  _id?:       string;
-  updatedAt?: string;
-  // General
-  siteName:    string;
-  siteTagline: string;
-  logo?:       string;
-  // SEO
-  metaTitle:       string;
-  metaDescription: string;
-  // Social
-  socialInstagram: string;
-  socialFacebook:  string;
-  socialLinkedin:  string;
-  socialYoutube:   string;
-  socialWhatsapp:  string;
-  // Contact
-  siteEmail:   string;
-  sitePhone:   string;
-  siteAddress: string;
+  _id?: string; updatedAt?: string;
+  siteName: string; siteTagline: string; logo?: string;
+  metaTitle: string; metaDescription: string;
+  socialInstagram: string; socialFacebook: string; socialLinkedin: string;
+  socialYoutube: string; socialWhatsapp: string;
+  siteEmail: string; sitePhone: string; siteAddress: string;
 }
 
 const DEFAULT: SiteSettings = {
   siteName: '', siteTagline: '', logo: '',
   metaTitle: '', metaDescription: '',
-  socialInstagram: '', socialFacebook: '', socialLinkedin: '', socialYoutube: '', socialWhatsapp: '',
+  socialInstagram: '', socialFacebook: '', socialLinkedin: '',
+  socialYoutube: '', socialWhatsapp: '',
   siteEmail: '', sitePhone: '', siteAddress: '',
 };
 
 type TabKey = 'general' | 'seo' | 'social' | 'contact';
-
-const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
-  { key: 'general', label: 'General',  icon: <Globe  size={14} /> },
-  { key: 'seo',     label: 'SEO',      icon: <Search size={14} /> },
-  { key: 'social',  label: 'Social',   icon: <Share2 size={14} /> },
-  { key: 'contact', label: 'Contact',  icon: <Phone  size={14} /> },
-];
 
 const TAB_FIELDS: Record<TabKey, (keyof SiteSettings)[]> = {
   general: ['siteName', 'siteTagline'],
@@ -72,11 +52,7 @@ const ErrMsg: React.FC<{ msg: string }> = ({ msg }) => (
   <p className="flex items-center gap-1 mt-1.5 text-xs text-red-500"><AlertCircle size={11} />{msg}</p>
 );
 
-const Card: React.FC<{
-  icon: React.ReactNode; iconBg: string;
-  title: string; subtitle: string;
-  children: React.ReactNode;
-}> = ({ icon, iconBg, title, subtitle, children }) => (
+const Card: React.FC<{ icon: React.ReactNode; iconBg: string; title: string; subtitle: string; children: React.ReactNode }> = ({ icon, iconBg, title, subtitle, children }) => (
   <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-5">
     <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
       <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>{icon}</div>
@@ -89,54 +65,42 @@ const Card: React.FC<{
   </div>
 );
 
-/* Logo upload */
-const LogoSlot: React.FC<{
-  preview: string | null;
-  onUpload: (f: File) => void;
-  onRemove: () => void;
-}> = ({ preview, onUpload, onRemove }) => {
+const LogoSlot: React.FC<{ preview: string | null; onUpload: (f: File) => void; onRemove: () => void }> = ({ preview, onUpload, onRemove }) => {
+  const { t } = useTranslation();
   const ref = useRef<HTMLInputElement>(null);
   const handle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
     if (!['image/png','image/jpeg','image/jpg','image/svg+xml','image/webp'].includes(f.type)) {
-      toast.error('Harus berformat PNG, JPG, SVG, atau WebP'); return;
+      toast.error(t('settings_logo_format_error')); return; // ← GANTI
     }
-    if (f.size > 2 * 1024 * 1024) { toast.error('Ukuran maksimal 2 MB'); return; }
+    if (f.size > 2 * 1024 * 1024) { toast.error(t('settings_logo_size_error')); return; } // ← GANTI
     onUpload(f);
     e.target.value = '';
   };
   return (
     <div>
-      <FieldLabel hint="PNG, SVG, or WebP — transparent background — max 2 MB">Logo</FieldLabel>
+      <FieldLabel hint={t('settings_logo_hint')}>Logo</FieldLabel> {/* ← GANTI */}
       <div className="flex items-center gap-4">
-        <div
-          onClick={() => ref.current?.click()}
-          className="w-24 h-16 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center flex-shrink-0 cursor-pointer hover:border-dark transition-colors overflow-hidden group"
-        >
+        <div onClick={() => ref.current?.click()}
+          className="w-24 h-16 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center flex-shrink-0 cursor-pointer hover:border-dark transition-colors overflow-hidden group">
           {preview
             ? <img src={preview} alt="logo" className="w-full h-full object-contain p-2" />
             : <div className="flex flex-col items-center gap-1">
                 <Image size={18} className="text-gray-300 group-hover:text-dark transition-colors" />
-                <p className="text-[10px] text-gray-300">No logo yet</p>
+                <p className="text-[10px] text-gray-300">{t('settings_no_logo')}</p> {/* ← GANTI */}
               </div>
           }
         </div>
         <div className="flex flex-col gap-2">
-          <button
-            type="button"
-            onClick={() => ref.current?.click()}
-            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-dark transition-colors border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 hover:bg-gray-100"
-          >
-            <Upload size={12} /> Upload file
+          <button type="button" onClick={() => ref.current?.click()}
+            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-dark transition-colors border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 hover:bg-gray-100">
+            <Upload size={12} /> {t('settings_upload_file')} {/* ← GANTI */}
           </button>
           {preview && (
-            <button
-              type="button"
-              onClick={onRemove}
-              className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-500 transition-colors border border-red-100 rounded-xl px-3 py-2 hover:bg-red-50"
-            >
-              <X size={12} /> Remove
+            <button type="button" onClick={onRemove}
+              className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-500 transition-colors border border-red-100 rounded-xl px-3 py-2 hover:bg-red-50">
+              <X size={12} /> {t('settings_remove')} {/* ← GANTI */}
             </button>
           )}
         </div>
@@ -146,7 +110,6 @@ const LogoSlot: React.FC<{
   );
 };
 
-/* Skeleton */
 const LoadingSkeleton: React.FC = () => (
   <div className="space-y-6 w-full animate-pulse">
     <div className="w-32 h-9 bg-gray-200 rounded-full" />
@@ -159,20 +122,25 @@ const LoadingSkeleton: React.FC = () => (
   </div>
 );
 
-const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
-  <div className="flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3">
-    <WifiOff size={15} className="text-orange-400 flex-shrink-0 mt-0.5" />
-    <div className="flex-1">
-      <p className="text-sm font-semibold text-orange-700">Backend not connected</p>
-      <p className="text-xs text-orange-500 mt-0.5">Changes won't be saved until the server is active.</p>
+const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3">
+      <WifiOff size={15} className="text-orange-400 flex-shrink-0 mt-0.5" />
+      <div className="flex-1">
+        <p className="text-sm font-semibold text-orange-700">{t('settings_backend_error')}</p>         {/* ← GANTI */}
+        <p className="text-xs text-orange-500 mt-0.5">{t('settings_backend_error_hint')}</p>           {/* ← GANTI */}
+      </div>
+      <button onClick={onRetry} className="flex items-center gap-1 text-xs font-semibold text-orange-600 hover:text-orange-700 transition-colors flex-shrink-0">
+        <RefreshCw size={12} /> {t('settings_retry')} {/* ← GANTI */}
+      </button>
     </div>
-    <button onClick={onRetry} className="flex items-center gap-1 text-xs font-semibold text-orange-600 hover:text-orange-700 transition-colors flex-shrink-0">
-      <RefreshCw size={12} /> Try again
-    </button>
-  </div>
-);
+  );
+};
 
-  const SettingsPage: React.FC = () => {
+const SettingsPage: React.FC = () => {
+  const { t } = useTranslation(); // ← TAMBAH
+
   const [form, setForm]         = useState<SiteSettings>(DEFAULT);
   const [saved, setSaved]       = useState<SiteSettings>(DEFAULT);
   const [loading, setLoading]   = useState(true);
@@ -185,6 +153,14 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
   const [logoRemoved, setLogoRemoved] = useState(false);
 
   const isDirty = JSON.stringify(form) !== JSON.stringify(saved) || !!logoFile || logoRemoved;
+
+  // ← GANTI TABS pakai t()
+  const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
+    { key: 'general', label: t('settings_tab_general'), icon: <Globe  size={14} /> },
+    { key: 'seo',     label: t('settings_tab_seo'),     icon: <Search size={14} /> },
+    { key: 'social',  label: t('settings_tab_social'),  icon: <Share2 size={14} /> },
+    { key: 'contact', label: t('settings_tab_contact'), icon: <Phone  size={14} /> },
+  ];
 
   const fetchSettings = useCallback(async () => {
     setLoading(true); setApiError(false);
@@ -211,16 +187,16 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
 
   const validate = (): boolean => {
     const e: typeof errors = {};
-    if (form.metaTitle.length > 70)        e.metaTitle       = 'Maximum 70 characters';
-    if (form.metaDescription.length > 160) e.metaDescription = 'Maximum 160 characters';
+    if (form.metaTitle.length > 70)        e.metaTitle       = t('settings_meta_title_max');       // ← GANTI
+    if (form.metaDescription.length > 160) e.metaDescription = t('settings_meta_desc_max');        // ← GANTI
     if (form.siteEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.siteEmail))
-                                           e.siteEmail       = 'Invalid email format';
+                                           e.siteEmail       = t('settings_email_invalid');        // ← GANTI
     if (form.socialWhatsapp && !/^\d{8,15}$/.test(form.socialWhatsapp.replace(/\s/g,'')))
-                                           e.socialWhatsapp  = 'Numbers only, 8–15 digits';
+                                           e.socialWhatsapp  = t('settings_whatsapp_invalid');     // ← GANTI
     (['socialInstagram','socialFacebook','socialLinkedin','socialYoutube'] as (keyof SiteSettings)[])
       .forEach(k => {
         const v = form[k] as string;
-        if (v && !/^https?:\/\//.test(v)) e[k] = 'Must start with https://';
+        if (v && !/^https?:\/\//.test(v)) e[k] = t('settings_url_invalid');                       // ← GANTI
       });
     setErrors(e);
     if (Object.keys(e).length) {
@@ -231,7 +207,7 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
   };
 
   const handleSave = async () => {
-    if (!validate()) { toast.error('Please fix errors before saving'); return; }
+    if (!validate()) { toast.error(t('settings_fix_errors')); return; } // ← GANTI
     setSaving(true);
     try {
       const fd = new FormData();
@@ -241,24 +217,20 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
       });
       if (logoFile)         fd.append('image', logoFile);
       else if (logoRemoved) fd.append('removeLogo', 'true');
-
-      const res = await api.put('/admin/settings', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res = await api.put('/admin/settings', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       if (res.data?.success) {
         const d = res.data.data as SiteSettings;
-        setSaved({ ...form });
-        setLogoFile(null); setLogoRemoved(false);
+        setSaved({ ...form }); setLogoFile(null); setLogoRemoved(false);
         if (d.logo) setLogoPreview(d.logo);
         setApiError(false);
-        toast.success('Settings saved successfully!');
-      } else toast.error(res.data?.message || 'Failed to save');
+        toast.success(t('settings_saved')); // ← GANTI
+      } else toast.error(res.data?.message || t('settings_save_error')); // ← GANTI
     } catch (err: any) {
       const s = err?.response?.status;
       const m = err?.response?.data?.message;
-      if (s === 413)                   toast.error('File too large — max 2 MB');
-      else if (s === 400 || s === 422) toast.error(m || 'Validation error');
-      else                             toast.error(m || 'Failed to save settings');
+      if (s === 413)                   toast.error(t('settings_file_too_large')); // ← GANTI
+      else if (s === 400 || s === 422) toast.error(m || t('settings_validation_error')); // ← GANTI
+      else                             toast.error(m || t('settings_save_error')); // ← GANTI
     } finally { setSaving(false); }
   };
 
@@ -268,8 +240,8 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
     <div className="space-y-6 w-full">
 
       <div>
-        <h1 className="text-4xl font-display font-bold text-dark">Settings</h1>
-        <p className="text-gray-400 text-sm mt-1 italic">Configure your Winosa website</p>
+        <h1 className="text-4xl font-display font-bold text-dark">{t('settings')}</h1>           {/* ← GANTI */}
+        <p className="text-gray-400 text-sm mt-1 italic">{t('settings_subtitle')}</p>            {/* ← GANTI */}
       </div>
 
       {apiError && <ApiBanner onRetry={fetchSettings} />}
@@ -280,15 +252,11 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
           {TABS.map(t => {
             const hasErr = TAB_FIELDS[t.key].some(k => !!errors[k]);
             return (
-              <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
+              <button key={t.key} onClick={() => setTab(t.key)}
                 className={`relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                   tab === t.key ? 'bg-dark text-white shadow-sm' : 'text-gray-500 hover:text-dark'
-                }`}
-              >
-                {t.icon}
-                {t.label}
+                }`}>
+                {t.icon}{t.label}
                 {hasErr && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />}
               </button>
             );
@@ -298,7 +266,8 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
 
       {/* GENERAL */}
       {tab === 'general' && (
-        <Card icon={<Globe size={16} className="text-primary" />} iconBg="bg-primary/10" title="General Settings" subtitle="Brand identity displayed in the navbar and footer">
+        <Card icon={<Globe size={16} className="text-primary" />} iconBg="bg-primary/10"
+          title={t('settings_general_title')} subtitle={t('settings_general_subtitle')}> {/* ← GANTI */}
           <LogoSlot
             preview={logoPreview}
             onUpload={f => { setLogoFile(f); setLogoPreview(URL.createObjectURL(f)); setLogoRemoved(false); }}
@@ -306,17 +275,19 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
           />
           <div className="border-t border-gray-100 pt-5 space-y-5">
             <div>
-              <FieldLabel hint="Official company name, displayed across the site">Site name</FieldLabel>
-              <input type="text" placeholder="e.g. PT. Winosa Mitra Bharatadjaya" value={form.siteName} onChange={set('siteName')} maxLength={100} className={errors.siteName ? inpErr : inp} />
+              <FieldLabel hint={t('settings_sitename_hint')}>{t('settings_sitename')}</FieldLabel> {/* ← GANTI */}
+              <input type="text" placeholder="e.g. PT. Winosa Mitra Bharatadjaya" value={form.siteName}
+                onChange={set('siteName')} maxLength={100} className={errors.siteName ? inpErr : inp} />
               {errors.siteName
                 ? <ErrMsg msg={errors.siteName} />
                 : <p className={`text-[11px] mt-1 text-right ${cc(form.siteName.length, 80)}`}>{form.siteName.length}/100</p>
               }
             </div>
             <div>
-              <FieldLabel hint="Displayed in the footer and used as a fallback SEO description">Tagline</FieldLabel>
+              <FieldLabel hint={t('settings_tagline_hint')}>{t('settings_tagline')}</FieldLabel> {/* ← GANTI */}
               <div className="relative">
-                <textarea placeholder="Short description of your business..." value={form.siteTagline} onChange={set('siteTagline')} rows={3} maxLength={200} className={txt} />
+                <textarea placeholder={t('settings_tagline_placeholder')} value={form.siteTagline} // ← GANTI
+                  onChange={set('siteTagline')} rows={3} maxLength={200} className={txt} />
                 <span className={`absolute bottom-3 right-3 text-[11px] ${cc(form.siteTagline.length, 200)}`}>{form.siteTagline.length}/200</span>
               </div>
             </div>
@@ -327,45 +298,43 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
       {/* SEO */}
       {tab === 'seo' && (
         <div className="space-y-4">
-          <Card icon={<Search size={16} className="text-blue-500" />} iconBg="bg-blue-50" title="SEO Settings" subtitle="Control how Winosa appears in Google search results">
-
-            {/* Google Preview */}
+          <Card icon={<Search size={16} className="text-blue-500" />} iconBg="bg-blue-50"
+            title={t('settings_seo_title')} subtitle={t('settings_seo_subtitle')}> {/* ← GANTI */}
             <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 space-y-0.5">
-              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-3">Google Preview</p>
+              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-3">{t('settings_google_preview')}</p> {/* ← GANTI */}
               <p className="text-xs text-gray-400">winosa.com</p>
-              <p className="text-[15px] text-blue-600 font-medium leading-snug truncate">{form.metaTitle || form.siteName || 'Your page title'}</p>
-              <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{form.metaDescription || form.siteTagline || 'Meta description will appear here.'}</p>
+              <p className="text-[15px] text-blue-600 font-medium leading-snug truncate">{form.metaTitle || form.siteName || t('settings_page_title_placeholder')}</p> {/* ← GANTI */}
+              <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{form.metaDescription || form.siteTagline || t('settings_meta_desc_placeholder')}</p> {/* ← GANTI */}
             </div>
-
             <div>
-              <FieldLabel hint="Ideal 50–60 characters. Appears as the blue title in Google.">Meta Title</FieldLabel>
-              <input type="text" placeholder="e.g. Winosa — Digital Solutions & IT Consulting" value={form.metaTitle} onChange={set('metaTitle')} maxLength={70} className={errors.metaTitle ? inpErr : inp} />
+              <FieldLabel hint={t('settings_meta_title_hint')}>{t('blog_meta_title')}</FieldLabel> {/* ← GANTI (reuse) */}
+              <input type="text" placeholder="e.g. Winosa — Digital Solutions & IT Consulting"
+                value={form.metaTitle} onChange={set('metaTitle')} maxLength={70} className={errors.metaTitle ? inpErr : inp} />
               <div className="flex items-center justify-between mt-1">
                 {errors.metaTitle ? <ErrMsg msg={errors.metaTitle} /> : <span />}
                 <span className={`text-[11px] ${cc(form.metaTitle.length, 60)}`}>{form.metaTitle.length}/60</span>
               </div>
             </div>
-
             <div>
-              <FieldLabel hint="Ideal 120–160 characters. Gray text below the title in Google.">Meta Description</FieldLabel>
+              <FieldLabel hint={t('settings_meta_desc_hint')}>{t('blog_meta_description')}</FieldLabel> {/* ← GANTI (reuse) */}
               <div className="relative">
-                <textarea placeholder="Describe your website in 1–2 compelling sentences..." value={form.metaDescription} onChange={set('metaDescription')} rows={3} maxLength={200} className={errors.metaDescription ? `${inpErr} resize-none` : txt} />
+                <textarea placeholder={t('settings_meta_desc_input_placeholder')} // ← GANTI
+                  value={form.metaDescription} onChange={set('metaDescription')} rows={3} maxLength={200}
+                  className={errors.metaDescription ? `${inpErr} resize-none` : txt} />
                 <span className={`absolute bottom-3 right-3 text-[11px] ${cc(form.metaDescription.length, 160)}`}>{form.metaDescription.length}/160</span>
               </div>
               {errors.metaDescription && <ErrMsg msg={errors.metaDescription} />}
             </div>
-
           </Card>
-
           <div className="bg-blue-50/60 border border-blue-100 rounded-2xl p-4">
             <div className="flex items-start gap-3">
               <CheckCircle size={15} className="text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-dark">Where does this appear?</p>
+                <p className="text-sm font-semibold text-dark">{t('settings_seo_info_title')}</p> {/* ← GANTI */}
                 <ul className="space-y-1 text-xs text-gray-500">
-                  <li>• <strong>Meta Title</strong> → the clickable blue title in Google results</li>
-                  <li>• <strong>Meta Description</strong> → the gray summary text below the title</li>
-                  <li>• Neither appears <strong>on the website itself</strong> — only in Google search results</li>
+                  <li>• <strong>Meta Title</strong> → {t('settings_seo_info_1')}</li>   {/* ← GANTI */}
+                  <li>• <strong>Meta Description</strong> → {t('settings_seo_info_2')}</li> {/* ← GANTI */}
+                  <li>• {t('settings_seo_info_3')}</li>                                      {/* ← GANTI */}
                 </ul>
               </div>
             </div>
@@ -375,7 +344,8 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
 
       {/* SOCIAL */}
       {tab === 'social' && (
-        <Card icon={<Share2 size={16} className="text-purple-500" />} iconBg="bg-purple-50" title="Social Media" subtitle="Links shown on social icons in the footer">
+        <Card icon={<Share2 size={16} className="text-purple-500" />} iconBg="bg-purple-50"
+          title={t('settings_social_title')} subtitle={t('settings_social_subtitle')}> {/* ← GANTI */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             {([
               { icon: <Instagram size={14}/>, label: 'Instagram', key: 'socialInstagram' as const, ph: 'https://instagram.com/winosa' },
@@ -387,26 +357,24 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">{icon}</span>
                   <input type="url" placeholder={ph} value={form[key]}
                     onChange={e => { setForm(p => ({ ...p, [key]: e.target.value })); if (errors[key]) setErrors(p => { const n={...p}; delete n[key]; return n; }); }}
-                    className={errors[key] ? `${inpErr} pl-11` : inpIcon}
-                  />
+                    className={errors[key] ? `${inpErr} pl-11` : inpIcon} />
                 </div>
                 {errors[key] && <ErrMsg msg={errors[key]!} />}
               </div>
             ))}
           </div>
           <div className="border-t border-gray-100 pt-5">
-            <FieldLabel hint="Numbers only with country code — used for wa.me links in footer and contact page">WhatsApp Number</FieldLabel>
+            <FieldLabel hint={t('settings_whatsapp_hint')}>{t('settings_whatsapp')}</FieldLabel> {/* ← GANTI */}
             <div className="relative max-w-xs">
               <MessageCircle size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="tel" placeholder="6281234567890" value={form.socialWhatsapp}
                 onChange={e => { const c=e.target.value.replace(/[^\d]/g,''); setForm(p=>({...p,socialWhatsapp:c})); if(errors.socialWhatsapp) setErrors(p=>{const n={...p};delete n.socialWhatsapp;return n;}); }}
-                className={errors.socialWhatsapp ? `${inpErr} pl-11` : inpIcon}
-              />
+                className={errors.socialWhatsapp ? `${inpErr} pl-11` : inpIcon} />
             </div>
             {errors.socialWhatsapp && <ErrMsg msg={errors.socialWhatsapp} />}
             {form.socialWhatsapp && !errors.socialWhatsapp && (
               <p className="text-[11px] text-gray-400 mt-1.5">
-                Link preview: <span className="text-dark font-medium">wa.me/{form.socialWhatsapp}</span>
+                {t('settings_whatsapp_preview')}: <span className="text-dark font-medium">wa.me/{form.socialWhatsapp}</span> {/* ← GANTI */}
               </p>
             )}
           </div>
@@ -415,10 +383,11 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
 
       {/* CONTACT */}
       {tab === 'contact' && (
-        <Card icon={<Phone size={16} className="text-green-500" />} iconBg="bg-green-50" title="Contact Information" subtitle="Displayed on the Contact page and footer">
+        <Card icon={<Phone size={16} className="text-green-500" />} iconBg="bg-green-50"
+          title={t('settings_contact_title')} subtitle={t('settings_contact_subtitle')}> {/* ← GANTI */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <FieldLabel hint='Used for contact on the Contact page'>Email Address</FieldLabel>
+              <FieldLabel hint={t('settings_email_hint')}>{t('settings_email')}</FieldLabel> {/* ← GANTI */}
               <div className="relative">
                 <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="email" placeholder="hello@winosa.com" value={form.siteEmail} onChange={set('siteEmail')} className={errors.siteEmail ? `${inpErr} pl-11` : inpIcon} />
@@ -426,7 +395,7 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
               {errors.siteEmail && <ErrMsg msg={errors.siteEmail} />}
             </div>
             <div>
-              <FieldLabel hint='Shown as "Contact us" on the Contact page'>Phone Number</FieldLabel>
+              <FieldLabel hint={t('settings_phone_hint')}>{t('settings_phone')}</FieldLabel> {/* ← GANTI */}
               <div className="relative">
                 <Phone size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="tel" placeholder="+62 21 xxxx xxxx" value={form.sitePhone} onChange={set('sitePhone')} className={inpIcon} />
@@ -434,31 +403,22 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
             </div>
           </div>
           <div>
-            <FieldLabel hint='Shown as "Visit us" on the Contact page'>Office Address</FieldLabel>
+            <FieldLabel hint={t('settings_address_hint')}>{t('settings_address')}</FieldLabel> {/* ← GANTI */}
             <div className="relative">
               <MapPin size={14} className="absolute left-4 top-[14px] text-gray-400" />
-              <textarea placeholder="123 Main St, Your City, Country" value={form.siteAddress} onChange={set('siteAddress')} rows={3} className="w-full border border-gray-200 rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors resize-none placeholder:text-gray-300" />
+              <textarea placeholder="123 Main St, Your City, Country" value={form.siteAddress} onChange={set('siteAddress')} rows={3}
+                className="w-full border border-gray-200 rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors resize-none placeholder:text-gray-300" />
             </div>
             {form.siteAddress && (
               <div className="rounded-2xl overflow-hidden border border-gray-200 h-52">
-                <iframe
-                  title="Maps Preview"
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(
-                    form.siteAddress
-                  )}&output=embed`}
-                  width="100%"
-                  height="100%"
-                  loading="lazy"
-                  className="w-full h-full"
-                />
+                <iframe title="Maps Preview" src={`https://maps.google.com/maps?q=${encodeURIComponent(form.siteAddress)}&output=embed`}
+                  width="100%" height="100%" loading="lazy" className="w-full h-full" />
               </div>
             )}
           </div>
           <div className="bg-green-50 border border-green-100 rounded-2xl px-4 py-3 flex items-start gap-3">
             <CheckCircle size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-green-700 leading-relaxed">
-              The <strong>WhatsApp</strong> number is set in the <strong>Social</strong> tab — used for the WhatsApp icon in the footer and 'Live Chat' link on the Contact page.
-            </p>
+            <p className="text-xs text-green-700 leading-relaxed">{t('settings_contact_info')}</p> {/* ← GANTI */}
           </div>
         </Card>
       )}
@@ -466,20 +426,16 @@ const ApiBanner: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
       {/* Save bar */}
       <div className="flex flex-col sm:flex-row sm:justify-end items-stretch sm:items-center gap-3 pt-2 pb-4">
         {isDirty && !saving && (
-          <span className="text-xs text-amber-500 font-medium text-center sm:text-left">• You have unsaved changes</span>
+          <span className="text-xs text-amber-500 font-medium text-center sm:text-left">{t('profile_unsaved_changes')}</span> // ← GANTI (reuse)
         )}
-        <button
-          onClick={handleSave}
-          disabled={saving || !isDirty}
-          className="flex items-center justify-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-fit"
-        >
+        <button onClick={handleSave} disabled={saving || !isDirty}
+          className="flex items-center justify-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-fit">
           {saving
-            ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Saving...</>
-            : <><Save size={14} />Save Changes</>
+            ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{t('saving')}</> // ← GANTI
+            : <><Save size={14} />{t('blog_save_changes')}</>                                                                     // ← GANTI (reuse)
           }
         </button>
       </div>
-
     </div>
   );
 };

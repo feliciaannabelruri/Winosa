@@ -3,6 +3,7 @@ import { Search, Trash2, Download, Mail, Send, X, ChevronDown } from 'lucide-rea
 import { subscriberService } from '../services/subscriberService';
 import { Subscriber } from '../types';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import ConfirmModal from '../components/ConfirmModal';
 
 // ─── Templates ───────────────────────────────────────────────────────────────
@@ -26,7 +27,7 @@ const TEMPLATES = [
   },
 ];
 
-// ─── Email Compose Modal (Popup) ─────────────────────────────────────────────
+// ─── Email Compose Modal ─────────────────────────────────────────────────────
 
 interface ModalProps {
   isOpen: boolean;
@@ -35,6 +36,8 @@ interface ModalProps {
 }
 
 const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }) => {
+  const { t } = useTranslation();
+
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState(0);
@@ -63,17 +66,27 @@ const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }
   };
 
   const handleSend = async () => {
-    if (!subject.trim()) { toast.error('Subject is required'); return; }
-    if (!body.trim()) { toast.error('Message body is required'); return; }
+    if (!subject.trim()) {
+      toast.error(t('email_subject_required'));
+      return;
+    }
+
+    if (!body.trim()) {
+      toast.error(t('email_body_required'));
+      return;
+    }
+
     if (!subscriber) return;
 
     setSending(true);
+
     try {
       await subscriberService.sendEmail(subscriber._id, { subject, body });
-      toast.success(`Email sent to ${subscriber.email}`);
+
+      toast.success(t('email_send_success'));
       onClose();
     } catch {
-      toast.error('Failed to send email');
+      toast.error(t('email_send_error'));
     } finally {
       setSending(false);
     }
@@ -83,6 +96,7 @@ const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -91,14 +105,22 @@ const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }
 
       {/* Modal */}
       <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+
         {/* Header */}
         <div className="flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex-shrink-0">
           <div className="min-w-0 flex-1 pr-3">
-            <h2 className="text-base sm:text-lg font-display font-bold text-dark">Compose Email</h2>
+            <h2 className="text-base sm:text-lg font-display font-bold text-dark">
+              {t('compose_email')}
+            </h2>
+
             <p className="text-xs text-gray-400 mt-0.5 truncate">
-              To: <span className="text-primary font-medium">{subscriber?.email}</span>
+              {t('to')}:{' '}
+              <span className="text-primary font-medium">
+                {subscriber?.email}
+              </span>
             </p>
           </div>
+
           <button
             onClick={onClose}
             className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors flex-shrink-0"
@@ -109,32 +131,40 @@ const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-4 sm:py-5 space-y-4">
-          {/* Template picker */}
+
+          {/* Template */}
           <div className="relative">
             <label className="block text-[10px] sm:text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-              Template
+              {t('template')}
             </label>
+
             <button
               onClick={() => setShowTemplates(v => !v)}
               className="w-full flex items-center justify-between px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-dark bg-white hover:border-gray-300 transition-colors"
             >
               <span>{TEMPLATES[selectedTemplate].label}</span>
+
               <ChevronDown
                 size={14}
-                className={`text-gray-400 transition-transform flex-shrink-0 ${showTemplates ? 'rotate-180' : ''}`}
+                className={`text-gray-400 transition-transform flex-shrink-0 ${
+                  showTemplates ? 'rotate-180' : ''
+                }`}
               />
             </button>
+
             {showTemplates && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg z-10 overflow-hidden">
-                {TEMPLATES.map((t, i) => (
+                {TEMPLATES.map((template, i) => (
                   <button
                     key={i}
                     onClick={() => applyTemplate(i)}
                     className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 ${
-                      selectedTemplate === i ? 'text-primary font-medium bg-primary/5' : 'text-dark'
+                      selectedTemplate === i
+                        ? 'text-primary font-medium bg-primary/5'
+                        : 'text-dark'
                     }`}
                   >
-                    {t.label}
+                    {template.label}
                   </button>
                 ))}
               </div>
@@ -144,11 +174,12 @@ const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }
           {/* Subject */}
           <div>
             <label className="block text-[10px] sm:text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-              Subject
+              {t('subject')}
             </label>
+
             <input
               type="text"
-              placeholder="Enter email subject..."
+              placeholder={t('email_subject_placeholder')}
               value={subject}
               onChange={e => setSubject(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-primary bg-white transition-colors"
@@ -158,10 +189,11 @@ const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }
           {/* Message */}
           <div>
             <label className="block text-[10px] sm:text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-              Message
+              {t('message')}
             </label>
+
             <textarea
-              placeholder="Write your message here..."
+              placeholder={t('email_message_placeholder')}
               value={body}
               onChange={e => setBody(e.target.value)}
               rows={8}
@@ -176,8 +208,9 @@ const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }
             onClick={onClose}
             className="px-4 sm:px-5 py-2.5 rounded-full text-sm font-medium border border-gray-200 text-gray-600 hover:border-gray-400 transition-all"
           >
-            Discard
+            {t('discard')}
           </button>
+
           <button
             onClick={handleSend}
             disabled={sending}
@@ -186,12 +219,12 @@ const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }
             {sending ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span className="hidden sm:inline">Sending...</span>
+                <span className="hidden sm:inline">{t('sending')}</span>
               </>
             ) : (
               <>
                 <Send size={14} />
-                <span>Send Email</span>
+                <span>{t('send_email')}</span>
               </>
             )}
           </button>
@@ -204,114 +237,183 @@ const EmailComposeModal: React.FC<ModalProps> = ({ isOpen, subscriber, onClose }
 // ─── Newsletter Page ──────────────────────────────────────────────────────────
 
 const NewsletterPage: React.FC = () => {
+  const { t } = useTranslation();
+
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null; loading: boolean }>({
-    open: false, id: null, loading: false,
+
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    id: string | null;
+    loading: boolean;
+  }>({
+    open: false,
+    id: null,
+    loading: false,
   });
-  const [composeModal, setComposeModal] = useState<{ open: boolean; subscriber: Subscriber | null }>({
-    open: false, subscriber: null,
+
+  const [composeModal, setComposeModal] = useState<{
+    open: boolean;
+    subscriber: Subscriber | null;
+  }>({
+    open: false,
+    subscriber: null,
   });
 
   const fetchSubscribers = async () => {
     setLoading(true);
+
     try {
       const data = await subscriberService.getAll();
       setSubscribers(data.data);
     } catch {
-      toast.error('Failed to load subscriber data');
+      toast.error(t('newsletter_load_error'));
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchSubscribers(); }, []);
+  useEffect(() => {
+    fetchSubscribers();
+  }, []);
 
   const handleDelete = async () => {
     if (!deleteModal.id) return;
+
     setDeleteModal(prev => ({ ...prev, loading: true }));
+
     try {
       await subscriberService.delete(deleteModal.id);
-      toast.success('Subscriber deleted successfully');
-      setDeleteModal({ open: false, id: null, loading: false });
+
+      toast.success(t('newsletter_delete_success'));
+
+      setDeleteModal({
+        open: false,
+        id: null,
+        loading: false,
+      });
+
       fetchSubscribers();
     } catch {
-      toast.error('Failed to delete subscriber');
-      setDeleteModal(prev => ({ ...prev, loading: false }));
+      toast.error(t('newsletter_delete_error'));
+
+      setDeleteModal(prev => ({
+        ...prev,
+        loading: false,
+      }));
     }
   };
 
   const handleExport = () => {
     if (!subscribers.length) return;
+
     subscriberService.exportFromData(subscribers);
-    toast.success(`${subscribers.length} subscribers exported to CSV successfully`);
+
+    toast.success(t('newsletter_export_success'));
   };
 
   const filtered = subscribers.filter(s => {
-    const matchSearch = s.email.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = s.email
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
     const matchFilter =
-      filter === 'all'    ? true :
-      filter === 'active' ? s.isActive :
-      !s.isActive;
+      filter === 'all'
+        ? true
+        : filter === 'active'
+          ? s.isActive
+          : !s.isActive;
+
     return matchSearch && matchFilter;
   });
 
   const activeCount = subscribers.filter(s => s.isActive).length;
 
   const filterLabels: Record<'all' | 'active' | 'inactive', string> = {
-    all: 'All',
-    active: 'Active',
-    inactive: 'Inactive',
+    all: t('all'),
+    active: t('active'),
+    inactive: t('inactive'),
   };
 
   return (
     <div className="space-y-6">
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-display font-bold text-dark">Newsletter</h1>
-          <p className="text-gray-400 text-sm mt-1 italic">Manage email subscriber list</p>
+          <h1 className="text-4xl font-display font-bold text-dark">
+            {t('newsletter_title')}
+          </h1>
+
+          <p className="text-gray-400 text-sm mt-1 italic">
+            {t('newsletter_subtitle')}
+          </p>
         </div>
+
         <button
           onClick={handleExport}
           disabled={subscribers.length === 0}
           className="flex items-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
         >
           <Download size={16} />
-          Export CSV
+          {t('export_csv')}
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
+
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
-          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Total Subscribers</p>
-          <p className="text-2xl sm:text-3xl font-display font-bold text-dark">{subscribers.length}</p>
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">
+            {t('total_subscribers')}
+          </p>
+
+          <p className="text-2xl sm:text-3xl font-display font-bold text-dark">
+            {subscribers.length}
+          </p>
         </div>
+
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
-          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Active</p>
-          <p className="text-2xl sm:text-3xl font-display font-bold text-green-500">{activeCount}</p>
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">
+            {t('active')}
+          </p>
+
+          <p className="text-2xl sm:text-3xl font-display font-bold text-green-500">
+            {activeCount}
+          </p>
         </div>
+
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-gray-100 p-3 sm:p-5 shadow-sm">
-          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">Inactive</p>
-          <p className="text-2xl sm:text-3xl font-display font-bold text-gray-400">{subscribers.length - activeCount}</p>
+          <p className="text-[10px] sm:text-sm text-gray-400 mb-1 sm:mb-2 leading-tight">
+            {t('inactive')}
+          </p>
+
+          <p className="text-2xl sm:text-3xl font-display font-bold text-gray-400">
+            {subscribers.length - activeCount}
+          </p>
         </div>
       </div>
 
       {/* Search + Filter */}
       <div className="flex flex-col sm:flex-row gap-3">
+
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+            size={16}
+          />
+
           <input
             type="text"
-            placeholder="Search by email..."
+            placeholder={t('newsletter_search_placeholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
           />
         </div>
+
         <div className="flex flex-wrap gap-2">
           {(['all', 'active', 'inactive'] as const).map(f => (
             <button
@@ -328,107 +430,6 @@ const NewsletterPage: React.FC = () => {
           ))}
         </div>
       </div>
-
-      {/* Table */}
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[520px]">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="text-left text-sm font-semibold text-dark py-4 px-4 pl-6 w-12">No.</th>
-                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Email</th>
-                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Status</th>
-                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Join Date</th>
-                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={5} className="text-center py-16">
-                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                  </td>
-                </tr>
-              ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-16 text-center">
-                    <Mail size={32} className="text-gray-200 mx-auto mb-3" />
-                    <p className="text-gray-400 text-sm">No subscribers found</p>
-                  </td>
-                </tr>
-              ) : (
-                filtered.map((sub, idx) => (
-                  <tr
-                    key={sub._id}
-                    className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
-                      idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
-                    }`}
-                  >
-                    <td className="py-4 px-4 pl-6 text-sm text-gray-500">{idx + 1}.</td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                          <Mail size={13} className="text-primary" />
-                        </div>
-                        <span className="text-sm text-dark font-medium truncate max-w-[180px] sm:max-w-none">
-                          {sub.email}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className={`text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap ${
-                        sub.isActive
-                          ? 'bg-green-100 text-green-600'
-                          : 'bg-gray-100 text-gray-500'
-                      }`}>
-                        {sub.isActive ? 'Active' : 'Unsubscribed'}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 text-sm text-gray-500 whitespace-nowrap">
-                      {new Date(sub.createdAt).toLocaleDateString('en-GB', {
-                        day: '2-digit', month: 'short', year: 'numeric',
-                      })}
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setComposeModal({ open: true, subscriber: sub })}
-                          className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-blue-400 hover:bg-blue-50 hover:border-blue-200 transition-colors"
-                          title="Compose Email"
-                        >
-                          <Send size={14} />
-                        </button>
-                        <button
-                          onClick={() => setDeleteModal({ open: true, id: sub._id, loading: false })}
-                          className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <EmailComposeModal
-        isOpen={composeModal.open}
-        subscriber={composeModal.subscriber}
-        onClose={() => setComposeModal({ open: false, subscriber: null })}
-      />
-
-      <ConfirmModal
-        isOpen={deleteModal.open}
-        title="Delete Subscriber"
-        message="Are you sure you want to delete this subscriber? They will no longer receive newsletters."
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
-        loading={deleteModal.loading}
-      />
     </div>
   );
 };

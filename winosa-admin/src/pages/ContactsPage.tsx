@@ -4,6 +4,7 @@ import {
   CheckCheck, Circle, Download, Send, ChevronLeft,
   Trash2, ChevronDown, ChevronUp,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { contactService } from '../services/analyticsService';
 import api from '../services/api';
 import { Contact } from '../types';
@@ -50,6 +51,7 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
   avatarLabel, avatarBg, senderName, date, body,
   isAdmin = false, defaultOpen = false, sentTo,
 }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(defaultOpen);
 
   return (
@@ -67,7 +69,7 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
             <span className="text-sm font-semibold text-dark">{senderName}</span>
             {isAdmin && (
               <span className="text-[10px] bg-dark text-white px-1.5 py-0.5 rounded-full font-medium leading-none">
-                Admin
+                {t('contact_admin_label')}
               </span>
             )}
           </div>
@@ -93,7 +95,7 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
             {isAdmin && sentTo && (
               <p className="text-[10px] text-gray-400 mt-4 flex items-center gap-1">
                 <CheckCheck size={11} className="text-green-400" />
-                Sent to {sentTo}
+                {t('contact_sent_to')} {sentTo}
               </p>
             )}
           </div>
@@ -104,16 +106,18 @@ const ThreadItem: React.FC<ThreadItemProps> = ({
 };
 
 const ContactsPage: React.FC = () => {
-  const [contacts, setContacts]         = useState<ContactWithReplies[]>([]);
-  const [loading, setLoading]           = useState(true);
-  const [selected, setSelected]         = useState<ContactWithReplies | null>(null);
-  const [search, setSearch]             = useState('');
-  const [filterRead, setFilterRead]     = useState<'all' | 'read' | 'unread'>('all');
-  const [replyText, setReplyText]       = useState('');
-  const [replying, setReplying]         = useState(false);
+  const { t } = useTranslation();
+
+  const [contacts, setContacts]           = useState<ContactWithReplies[]>([]);
+  const [loading, setLoading]             = useState(true);
+  const [selected, setSelected]           = useState<ContactWithReplies | null>(null);
+  const [search, setSearch]               = useState('');
+  const [filterRead, setFilterRead]       = useState<'all' | 'read' | 'unread'>('all');
+  const [replyText, setReplyText]         = useState('');
+  const [replying, setReplying]           = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
-  const [deleting, setDeleting]         = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
+  const [deleting, setDeleting]           = useState(false);
+  const [deleteModal, setDeleteModal]     = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -121,7 +125,7 @@ const ContactsPage: React.FC = () => {
         const data = await contactService.getAll();
         setContacts(data.data);
       } catch {
-        toast.error('Failed to load messages');
+        toast.error(t('contact_load_error'));
       } finally {
         setLoading(false);
       }
@@ -140,7 +144,7 @@ const ContactsPage: React.FC = () => {
     } catch {
       setContacts(prev => prev.map(c => c._id === contactId ? { ...c, isRead: !newIsRead } : c));
       if (selected?._id === contactId) setSelected(prev => prev ? { ...prev, isRead: !newIsRead } : null);
-      toast.error('Failed to update status');
+      toast.error(t('contact_status_error'));
     }
   };
 
@@ -175,9 +179,9 @@ const ContactsPage: React.FC = () => {
       await api.delete(`/contact/${selected._id}`);
       setContacts(prev => prev.filter(c => c._id !== selected._id));
       setSelected(null);
-      toast.success('Message deleted successfully');
+      toast.success(t('contact_delete_success'));
     } catch {
-      toast.error('Failed to delete message');
+      toast.error(t('contact_delete_error'));
     } finally {
       setDeleting(false);
     }
@@ -202,9 +206,9 @@ const ContactsPage: React.FC = () => {
       ));
 
       setReplyText('');
-      toast.success(`Reply sent to ${selected.email}`);
+      toast.success(`${t('contact_reply_success')} ${selected.email}`);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to send reply');
+      toast.error(err?.response?.data?.message || t('contact_reply_error'));
     } finally {
       setReplying(false);
     }
@@ -213,7 +217,7 @@ const ContactsPage: React.FC = () => {
   const handleExport = () => {
     if (!contacts.length) return;
     contactService.exportFromData(contacts);
-    toast.success(`${contacts.length} contacts exported to CSV`);
+    toast.success(`${contacts.length} ${t('contact_export_success')}`);
   };
 
   const filtered = contacts.filter(c => {
@@ -232,9 +236,9 @@ const ContactsPage: React.FC = () => {
   const totalReplies = selected?.replies?.length ?? 0;
 
   const filterLabels: Record<'all' | 'read' | 'unread', string> = {
-    all: 'All',
-    unread: 'Unread',
-    read: 'Read',
+    all:    t('contact_filter_all'),
+    unread: t('contact_filter_unread'),
+    read:   t('contact_filter_read'),
   };
 
   return (
@@ -244,21 +248,21 @@ const ContactsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-4xl font-display font-bold text-dark">
-            Contact
+            {t('contacts')}
             {unreadCount > 0 && (
               <span className="ml-3 text-base font-semibold bg-primary text-dark px-3 py-1 rounded-full align-middle">
-                {unreadCount} Unread
+                {unreadCount} {t('contact_unread_label')}
               </span>
             )}
           </h1>
-          <p className="text-gray-400 text-sm mt-1 italic">View and reply to messages from website visitors</p>
+          <p className="text-gray-400 text-sm mt-1 italic">{t('contact_subtitle')}</p>
         </div>
         <button
           onClick={handleExport}
           disabled={contacts.length === 0}
           className="flex items-center gap-2 bg-dark text-white font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Download size={16} /> Export CSV
+          <Download size={16} /> {t('contact_export_csv')}
         </button>
       </div>
 
@@ -268,7 +272,7 @@ const ContactsPage: React.FC = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
-            placeholder="Search by name, email, or subject..."
+            placeholder={t('contact_search_placeholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
@@ -299,7 +303,7 @@ const ContactsPage: React.FC = () => {
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center">
           <Inbox size={40} className="text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-400 text-sm">No messages found</p>
+          <p className="text-gray-400 text-sm">{t('contact_empty')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -331,7 +335,7 @@ const ContactsPage: React.FC = () => {
                     <button
                       onClick={e => { e.stopPropagation(); toggleRead(contact._id); }}
                       className="text-gray-300 hover:text-primary transition-colors"
-                      title={contact.isRead ? 'Mark as unread' : 'Mark as read'}
+                      title={contact.isRead ? t('contact_mark_unread') : t('contact_mark_read')}
                     >
                       {contact.isRead
                         ? <CheckCheck size={14} className="text-green-400" />
@@ -357,7 +361,7 @@ const ContactsPage: React.FC = () => {
                     onClick={() => setSelected(null)}
                     className="lg:hidden flex items-center gap-1.5 text-sm text-gray-500 hover:text-dark transition-colors w-fit mb-4"
                   >
-                    <ChevronLeft size={16} /> Back
+                    <ChevronLeft size={16} /> {t('back')}
                   </button>
 
                   <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -389,7 +393,7 @@ const ContactsPage: React.FC = () => {
                         }`}
                       >
                         <CheckCheck size={11} />
-                        {selected.isRead ? 'Mark Unread' : 'Mark as Read'}
+                        {selected.isRead ? t('contact_mark_unread') : t('contact_mark_read')}
                       </button>
                       <button
                         onClick={() => setDeleteModal(true)}
@@ -400,14 +404,14 @@ const ContactsPage: React.FC = () => {
                           ? <div className="w-3 h-3 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
                           : <Trash2 size={11} />
                         }
-                        Delete
+                        {t('delete')}
                       </button>
                     </div>
                   </div>
 
                   {totalReplies > 0 && (
                     <p className="text-xs text-gray-400 mt-3">
-                      {totalReplies + 1} messages in this conversation
+                      {totalReplies + 1} {t('contact_messages_in_thread')}
                     </p>
                   )}
                 </div>
@@ -435,7 +439,7 @@ const ContactsPage: React.FC = () => {
                       key={reply._id}
                       avatarLabel="A"
                       avatarBg="bg-dark text-white"
-                      senderName={reply.sentBy || 'Admin'}
+                      senderName={reply.sentBy || t('contact_admin_label')}
                       date={fmtDate(reply.sentAt)}
                       body={reply.message}
                       isAdmin={true}
@@ -448,10 +452,10 @@ const ContactsPage: React.FC = () => {
                 {/* Formulir balasan */}
                 <div className="px-6 pb-6 pt-4 border-t border-gray-100 space-y-3 flex-shrink-0">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Reply to {selected.name}
+                    {t('contact_reply_to')} {selected.name}
                   </p>
                   <textarea
-                    placeholder={`Write a reply to ${selected.email}…`}
+                    placeholder={`${t('contact_reply_placeholder')} ${selected.email}…`}
                     value={replyText}
                     onChange={e => setReplyText(e.target.value)}
                     rows={3}
@@ -462,7 +466,7 @@ const ContactsPage: React.FC = () => {
                       href={`mailto:${selected.email}`}
                       className="text-xs text-gray-400 hover:text-primary transition-colors"
                     >
-                       Or open in email app →
+                      {t('contact_open_email_app')}
                     </a>
                     <button
                       onClick={handleReply}
@@ -470,8 +474,8 @@ const ContactsPage: React.FC = () => {
                       className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark text-sm font-bold px-6 py-2.5 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                     >
                       {replying
-                        ? <><div className="w-3.5 h-3.5 border-2 border-dark border-t-transparent rounded-full animate-spin" />Sending...</>
-                        : <><Send size={14} />Reply</>
+                        ? <><div className="w-3.5 h-3.5 border-2 border-dark border-t-transparent rounded-full animate-spin" />{t('contact_sending')}</>
+                        : <><Send size={14} />{t('contact_reply_btn')}</>
                       }
                     </button>
                   </div>
@@ -482,7 +486,7 @@ const ContactsPage: React.FC = () => {
               <div className="h-64 lg:h-full bg-white rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center">
                 <div className="text-center">
                   <Mail size={32} className="text-gray-200 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm">Select a message to view details</p>
+                  <p className="text-gray-400 text-sm">{t('contact_select_message')}</p>
                 </div>
               </div>
             )}
@@ -490,14 +494,15 @@ const ContactsPage: React.FC = () => {
 
         </div>
       )}
+
       <ConfirmModal
-      isOpen={deleteModal}
-      title="Delete Message"
-      message={`Delete message from ${selected?.name}? This action cannot be undone.`}
-      onConfirm={() => { setDeleteModal(false); handleDelete(); }}
-      onCancel={() => setDeleteModal(false)}
-      loading={deleting}
-/>
+        isOpen={deleteModal}
+        title={t('contact_delete_title')}
+        message={`${t('contact_delete_message')} ${selected?.name}? ${t('contact_delete_undone')}`}
+        onConfirm={() => { setDeleteModal(false); handleDelete(); }}
+        onCancel={() => setDeleteModal(false)}
+        loading={deleting}
+      />
     </div>
   );
 };

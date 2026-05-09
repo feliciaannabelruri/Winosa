@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, X, Plus, Trash2 } from 'lucide-react';
 import { portfolioService } from '../services/portfolioService';
@@ -70,6 +71,7 @@ const DEFAULT_FORM: PortfolioForm = {
 };
 
 const PortfolioFormPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate  = useNavigate();
   const { id }    = useParams<{ id: string }>();
   const isEdit    = !!id;
@@ -116,17 +118,17 @@ const PortfolioFormPage: React.FC = () => {
           isActive:   p.isActive    ?? true,
         });
       })
-      .catch(() => { toast.error('Failed to load portfolio data'); navigate('/portfolio'); })
+      .catch(() => { toast.error(t('portfolio.failedLoad')); navigate('/portfolio'); })
       .finally(() => setFetching(false));
   }, [id, isEdit, navigate]);
 
   // Submit
   const handleSubmit = async (isActive: boolean) => {
-    if (!form.title.trim())     { toast.error('Title is required'); return; }
-    if (!form.slug.trim())      { toast.error('Slug is required'); return; }
-    if (!form.category)         { toast.error('Category is required'); return; }
-    if (!form.shortDesc.trim()) { toast.error('Short Description is required'); return; }
-    if (!form.thumbnail)        { toast.error('Thumbnail is required'); return; }
+    if (!form.title.trim())     { toast.error(t('portfolio.validation.title')); return; }
+    if (!form.slug.trim())      { toast.error(t('portfolio.validation.slug')); return; }
+    if (!form.category)         { toast.error(t('portfolio.validation.category')); return; }
+    if (!form.shortDesc.trim()) { toast.error(t('portfolio.validation.shortDesc')); return; }
+    if (!form.thumbnail)        { toast.error(t('portfolio.validation.thumbnail')); return; }
   setLoading(true);
     try {
       const fd = new FormData();
@@ -154,14 +156,17 @@ const PortfolioFormPage: React.FC = () => {
 
       if (isEdit) {
         await portfolioService.update(id!, fd);
-        toast.success('Portfolio updated successfully!');
+        toast.success(t('portfolio.successUpdate'));
       } else {
         await portfolioService.create(fd);
-        toast.success('Portfolio created successfully!');
+        toast.success(t('portfolio.successCreate'));
       }
       navigate('/portfolio');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Operation failed');
+      toast.error(
+        err.response?.data?.message ||
+        t('portfolio.failedOperation')
+      );
     } finally {
       setLoading(false);
     }
@@ -234,21 +239,21 @@ const PortfolioFormPage: React.FC = () => {
         <button onClick={() => navigate('/portfolio')}
           className="flex items-center gap-2 text-sm text-gray-400 hover:text-dark transition-colors group mb-4">
           <ArrowLeft size={15} className="group-hover:-translate-x-0.5 transition-transform" />
-          Back to Portfolio
+          {t('portfolio.back')}
         </button>
         <h1 className="text-4xl font-display font-bold text-dark">
-          {isEdit ? 'Edit Portfolio' : 'Add Portfolio'}
+          {isEdit ? t('portfolio.editTitle'): t('portfolio.addTitle')}
         </h1>
-        <p className="text-gray-400 text-sm mt-1 italic">Manage portfolio projects and case studies</p>
+        <p className="text-gray-400 text-sm mt-1 italic">{t('portfolio.subtitle')}</p>
       </div>
 
-      <SectionCard title="Basic Info">
+      <SectionCard title={t('portfolio.basicInfo')}>
         <div>
           <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-2.5">
-            <span className="text-xs text-amber-600 font-medium">⚠ All portfolio content must be written in English.</span>
+            <span className="text-xs text-amber-600 font-medium">⚠ {t('portfolio.englishWarning')}</span>
           </div>
-          <Label>Project Title</Label>
-          <input type="text" placeholder="e.g. Prowerty"
+          <Label>{t('portfolio.projectTitle')}</Label>
+          <input type="text" placeholder={t('portfolio.placeholder.projectTitle')}
             value={form.title}
             onChange={e => setForm(p => ({
               ...p, title: e.target.value,
@@ -259,8 +264,8 @@ const PortfolioFormPage: React.FC = () => {
         </div>
 
         <div>
-          <Label hint="Used as URL: /portfolio/[slug]">Slug</Label>
-          <input type="text" placeholder="slug-proyek"
+          <Label hint={t('portfolio.slugHint')}>{t('portfolio.slug')}</Label>
+          <input type="text" placeholder={t('portfolio.placeholder.slug')}
             value={form.slug}
             onChange={e => set('slug', e.target.value)}
             className={inputCls}
@@ -268,11 +273,11 @@ const PortfolioFormPage: React.FC = () => {
         </div>
 
         <div>
-          <Label>Category</Label>
+          <Label>{t('portfolio.category')}</Label>
           <select value={form.category}
             onChange={e => set('category', e.target.value)}
             className={inputCls}>
-            <option value="">Select Category</option>
+            <option value="">{t('portfolio.selectCategory')}</option>
             {PORTFOLIO_CATEGORIES.map(cat => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
@@ -280,10 +285,8 @@ const PortfolioFormPage: React.FC = () => {
         </div>
 
         <div>
-          <Label hint="Shown on the portfolio card AND as the hero description on the detail page">
-            Short Description
-          </Label>
-          <textarea rows={2} placeholder="Brief project summary..."
+          <Label hint={t('portfolio.shortDescHint')}>{t('portfolio.shortDesc')}</Label>
+          <textarea rows={2} placeholder={t('portfolio.placeholder.shortDesc')}
             value={form.shortDesc}
             onChange={e => set('shortDesc', e.target.value)}
             className={textareaCls}
@@ -291,8 +294,8 @@ const PortfolioFormPage: React.FC = () => {
         </div>
 
         <ImageUpload
-          label="Thumbnail"
-          hint="Image displayed on the portfolio carousel card"
+          label={t('portfolio.thumbnail')}
+          hint={t('portfolio.thumbnailHint')}
           value={form.thumbnail}
           onChange={val => set('thumbnail', val)}
           aspectRatio="4/3"
@@ -300,12 +303,12 @@ const PortfolioFormPage: React.FC = () => {
         />
       </SectionCard>
 
-      <SectionCard title="Detail Page" subtitle="Full description shown in the About This Project section">
+      <SectionCard title={t('portfolio.detailPage')} subtitle={t('portfolio.detailSubtitle')}>
         <div>
-          <Label hint="Full description shown in the 'About This Project' section on the detail page">
-            Long Description
+          <Label hint={t('portfolio.longDescHint')}>
+            {t('portfolio.longDesc')}
           </Label>
-          <textarea rows={6} placeholder="Full project description..."
+          <textarea rows={6} placeholder={t('portfolio.placeholder.longDesc')}
             value={form.longDesc}
             onChange={e => set('longDesc', e.target.value)}
             className={textareaCls}
@@ -313,18 +316,18 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      <SectionCard title="Project Info" subtitle="Shown as pills in the detail page hero">
+      <SectionCard title={t('portfolio.projectInfo')} subtitle={t('portfolio.projectInfoSubtitle')}>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>Client</Label>
-            <input type="text" placeholder="Client name"
+            <Label>{t('portfolio.client')}</Label>
+            <input type="text" placeholder={t('portfolio.placeholder.client')}
               value={form.client}
               onChange={e => set('client', e.target.value)}
               className={inputCls}
             />
           </div>
           <div>
-            <Label>Year</Label>
+            <Label>{t('portfolio.year')}</Label>
             <input type="text" placeholder="2024"
               value={form.year}
               onChange={e => set('year', e.target.value)}
@@ -332,16 +335,16 @@ const PortfolioFormPage: React.FC = () => {
             />
           </div>
           <div>
-            <Label>Duration</Label>
-            <input type="text" placeholder="e.g. 3 months"
+            <Label>{t('portfolio.duration')}</Label>
+            <input type="text" placeholder={t('portfolio.placeholder.duration')}
               value={form.duration}
               onChange={e => set('duration', e.target.value)}
               className={inputCls}
             />
           </div>
           <div>
-            <Label>Role</Label>
-            <input type="text" placeholder="e.g. Full-stack Developer"
+            <Label>{t('portfolio.role')}</Label>
+            <input type="text" placeholder={t('portfolio.placeholder.role')}
               value={form.role}
               onChange={e => set('role', e.target.value)}
               className={inputCls}
@@ -350,9 +353,9 @@ const PortfolioFormPage: React.FC = () => {
         </div>
 
         <div>
-          <Label>Tech Stack</Label>
+          <Label>{t('portfolio.techStack')}</Label>
           <div className="flex gap-2">
-            <input type="text" placeholder="e.g. React"
+            <input type="text" placeholder={t('portfolio.placeholder.tech')}
               value={techInput}
               onChange={e => setTechInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTech(); } }}
@@ -360,7 +363,7 @@ const PortfolioFormPage: React.FC = () => {
             />
             <button type="button" onClick={addTech}
               className="px-4 py-2 bg-dark text-white text-sm font-semibold rounded-2xl hover:bg-gray-800 transition-colors whitespace-nowrap">
-              Add
+              {t('common.add')}
             </button>
           </div>
           {form.techStack.length > 0 && (
@@ -380,9 +383,9 @@ const PortfolioFormPage: React.FC = () => {
         </div>
       </SectionCard>
 
-      <SectionCard title="Case Study" subtitle="Challenge, Solution & Results">
+      <SectionCard title={t('portfolio.caseStudy')} subtitle={t('portfolio.caseStudySubtitle')}>
         <div>
-          <Label>Challenge</Label>
+          <Label>{t('portfolio.challenge')}</Label>
           <textarea rows={4} placeholder="What challenges or problems did the client face?"
             value={form.challenge}
             onChange={e => set('challenge', e.target.value)}
@@ -390,7 +393,7 @@ const PortfolioFormPage: React.FC = () => {
           />
         </div>
         <div>
-          <Label>Solution</Label>
+          <Label>{t('portfolio.solution')}</Label>
           <textarea rows={4} placeholder="What solution was provided?"
             value={form.solution}
             onChange={e => set('solution', e.target.value)}
@@ -398,7 +401,7 @@ const PortfolioFormPage: React.FC = () => {
           />
         </div>
         <div>
-          <Label>Result</Label>
+          <Label>{t('portfolio.result')}</Label>
           <textarea rows={4} placeholder="What results were achieved after project completion?"
             value={form.result}
             onChange={e => set('result', e.target.value)}
@@ -582,11 +585,13 @@ const PortfolioFormPage: React.FC = () => {
       <div className="flex gap-3 pt-2 pb-10">
         <button onClick={() => handleSubmit(false)} disabled={loading}
           className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-2xl text-sm font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50">
-          Save as Draft
+          {t('portfolio.saveDraft')}
         </button>
         <button onClick={() => handleSubmit(true)} disabled={loading}
           className="flex-1 py-3 bg-dark text-white rounded-2xl text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50">
-          {loading ? 'Saving...' : 'Publish'}
+          {loading
+            ? t('common.saving')
+            : t('portfolio.publish')}
         </button>
       </div>
 

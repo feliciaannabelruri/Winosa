@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Save, Loader2 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface StatItem {
   value: string;
@@ -22,45 +23,80 @@ const DEFAULT: BridgeData = {
   ],
 };
 
-const inputCls = 'w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors';
+const inputCls =
+  'w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-dark bg-gray-50 transition-colors';
 
 const PortfolioBridgeEditor: React.FC = () => {
-  const [form, setForm]         = useState<BridgeData>(DEFAULT);
-  const [loading, setLoading]   = useState(false);
+  const { t } = useTranslation();
+
+  const [form, setForm] = useState<BridgeData>(DEFAULT);
+  const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
-  const [docId, setDocId]       = useState<string | null>(null);
+  const [docId, setDocId] = useState<string | null>(null);
 
   useEffect(() => {
-    api.get('/admin/portfolio')
+    api
+      .get('/admin/portfolio')
       .then(res => {
-        const found = (res.data?.data || []).find((s: any) => s.slug === 'bridge-portfolio');
+        const found = (res.data?.data || []).find(
+          (s: any) => s.slug === 'bridge-portfolio'
+        );
+
         if (found) {
           setDocId(found._id);
+
           try {
             const parsed = JSON.parse(found.description);
-            setForm({ ...DEFAULT, ...parsed });
+
+            setForm({
+              ...DEFAULT,
+              ...parsed,
+            });
           } catch {}
         }
       })
-      .catch(() => toast.error('Failed to load data'))
+      .catch(() => toast.error(t('portfolio_bridge_load_error')))
       .finally(() => setFetching(false));
   }, []);
 
-  const setQuote = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-    setForm(prev => ({ ...prev, quote: e.target.value }));
-
-  const setStat = (i: number, key: keyof StatItem, val: string) =>
+  const setQuote = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setForm(prev => ({
       ...prev,
-      stats: prev.stats.map((s, idx) => idx === i ? { ...s, [key]: val } : s),
+      quote: e.target.value,
+    }));
+  };
+
+  const setStat = (
+    i: number,
+    key: keyof StatItem,
+    val: string
+  ) =>
+    setForm(prev => ({
+      ...prev,
+      stats: prev.stats.map((s, idx) =>
+        idx === i ? { ...s, [key]: val } : s
+      ),
     }));
 
   const handleSave = async () => {
-    if (!form.quote.trim()) { toast.error('Quote is required'); return; }
-    const emptyStats = form.stats.some(s => !s.value.trim() || !s.label.trim());
-    if (emptyStats) { toast.error('All stat fields are required'); return; }
+    if (!form.quote.trim()) {
+      toast.error(t('portfolio_bridge_quote_required'));
+      return;
+    }
+
+    const emptyStats = form.stats.some(
+      s => !s.value.trim() || !s.label.trim()
+    );
+
+    if (emptyStats) {
+      toast.error(t('portfolio_bridge_stats_required'));
+      return;
+    }
 
     setLoading(true);
+
     try {
       const payload = {
         title: 'Bridge Portfolio',
@@ -68,23 +104,33 @@ const PortfolioBridgeEditor: React.FC = () => {
         description: JSON.stringify(form),
         isActive: true,
       };
-      if (docId) await api.put(`/admin/portfolio/${docId}`, payload);
-      else       await api.post('/admin/portfolio', payload);
-      toast.success('Saved!');
+
+      if (docId) {
+        await api.put(`/admin/portfolio/${docId}`, payload);
+      } else {
+        await api.post('/admin/portfolio', payload);
+      }
+
+      toast.success(t('portfolio_bridge_saved'));
     } catch {
-      toast.error('Failed to save');
+      toast.error(t('portfolio_bridge_save_error'));
     } finally {
       setLoading(false);
     }
   };
 
-  if (fetching) return (
-    <div className="space-y-4 animate-pulse">
-      {[...Array(3)].map((_, i) => (
-        <div key={i} className="h-14 bg-gray-100 rounded-2xl" />
-      ))}
-    </div>
-  );
+  if (fetching) {
+    return (
+      <div className="space-y-4 animate-pulse">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className="h-14 bg-gray-100 rounded-2xl"
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -92,15 +138,22 @@ const PortfolioBridgeEditor: React.FC = () => {
       {/* Quote */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
         <div>
-          <h2 className="text-base font-bold text-dark mb-0.5">Our Belief</h2>
-          <p className="text-xs text-gray-400 mb-4">Quote displayed on the left side of the section</p>
+          <h2 className="text-base font-bold text-dark mb-0.5">
+            {t('portfolio_bridge_belief')}
+          </h2>
+
+          <p className="text-xs text-gray-400 mb-4">
+            {t('portfolio_bridge_quote_desc')}
+          </p>
+
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
-            Quote <span className="text-red-400">*</span>
+            {t('quote')} <span className="text-red-400">*</span>
           </label>
+
           <textarea
             value={form.quote}
             onChange={setQuote}
-            placeholder="e.g. Great design is not just what it looks like..."
+            placeholder={t('portfolio_bridge_quote_placeholder')}
             rows={3}
             className={`${inputCls} resize-none`}
           />
@@ -110,8 +163,13 @@ const PortfolioBridgeEditor: React.FC = () => {
       {/* Stats */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
         <div>
-          <h2 className="text-base font-bold text-dark mb-0.5">Stats</h2>
-          <p className="text-xs text-gray-400 mb-4">Three statistic cards displayed on the right side of the section</p>
+          <h2 className="text-base font-bold text-dark mb-0.5">
+            {t('stats')}
+          </h2>
+
+          <p className="text-xs text-gray-400 mb-4">
+            {t('portfolio_bridge_stats_desc')}
+          </p>
         </div>
 
         <div className="space-y-3">
@@ -123,29 +181,39 @@ const PortfolioBridgeEditor: React.FC = () => {
               <div className="w-7 h-7 rounded-full bg-dark text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
                 {i + 1}
               </div>
+
               <div className="flex-1 grid grid-cols-2 gap-3">
+
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                    Value
+                    {t('value')}
                   </label>
+
                   <input
                     value={stat.value}
-                    onChange={e => setStat(i, 'value', e.target.value)}
-                    placeholder="e.g. 24+"
+                    onChange={e =>
+                      setStat(i, 'value', e.target.value)
+                    }
+                    placeholder={t('portfolio_bridge_value_placeholder')}
                     className={inputCls}
                   />
                 </div>
+
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                    Label
+                    {t('label')}
                   </label>
+
                   <input
                     value={stat.label}
-                    onChange={e => setStat(i, 'label', e.target.value)}
-                    placeholder="e.g. Team Members"
+                    onChange={e =>
+                      setStat(i, 'label', e.target.value)
+                    }
+                    placeholder={t('portfolio_bridge_label_placeholder')}
                     className={inputCls}
                   />
                 </div>
+
               </div>
             </div>
           ))}
@@ -157,10 +225,20 @@ const PortfolioBridgeEditor: React.FC = () => {
         disabled={loading}
         className="w-full flex items-center justify-center gap-2 py-3 bg-dark text-white rounded-2xl text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
       >
-        {loading
-          ? <><Loader2 size={14} className="animate-spin" /> Saving...</>
-          : <><Save size={14} /> Save Changes</>
-        }
+        {loading ? (
+          <>
+            <Loader2
+              size={14}
+              className="animate-spin"
+            />
+            {t('saving')}
+          </>
+        ) : (
+          <>
+            <Save size={14} />
+            {t('save_changes')}
+          </>
+        )}
       </button>
     </div>
   );

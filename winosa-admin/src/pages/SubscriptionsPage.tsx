@@ -5,6 +5,7 @@ import { subscriptionService } from '../services/subscriptionService';
 import { Subscription } from '../types';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
+import { useTranslation } from 'react-i18next'; // ← TAMBAH
 
 type FilterType = 'all' | 'active' | 'inactive';
 
@@ -13,13 +14,15 @@ const formatUSD = (price: number) =>
 
 const SubscriptionsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t }    = useTranslation(); // ← TAMBAH
+
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<FilterType>('all');
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string | null; loading: boolean }>({
-    open: false, id: null, loading: false,
-  });
+  const [loading, setLoading]             = useState(true);
+  const [search, setSearch]               = useState('');
+  const [filter, setFilter]               = useState<FilterType>('all');
+  const [deleteModal, setDeleteModal]     = useState<{ open: boolean; id: string | null; loading: boolean }>(
+    { open: false, id: null, loading: false }
+  );
 
   const fetchSubscriptions = useCallback(async () => {
     setLoading(true);
@@ -27,7 +30,7 @@ const SubscriptionsPage: React.FC = () => {
       const data = await subscriptionService.getAll();
       setSubscriptions(data.data);
     } catch {
-      toast.error('Failed to load subscription data');
+      toast.error(t('sub_list_load_error')); // ← GANTI
     } finally {
       setLoading(false);
     }
@@ -40,44 +43,40 @@ const SubscriptionsPage: React.FC = () => {
     setDeleteModal(prev => ({ ...prev, loading: true }));
     try {
       await subscriptionService.delete(deleteModal.id);
-      toast.success('Subscription plan deleted successfully');
+      toast.success(t('sub_delete_success')); // ← GANTI
       setDeleteModal({ open: false, id: null, loading: false });
       fetchSubscriptions();
     } catch {
-      toast.error('Failed to delete subscription pla');
+      toast.error(t('sub_delete_error')); // ← GANTI
       setDeleteModal(prev => ({ ...prev, loading: false }));
     }
   };
 
   const filtered = subscriptions.filter(s => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase());
-    const matchStatus =
-      filter === 'all'    ? true :
-      filter === 'active' ? s.isActive :
-      !s.isActive;
+    const matchStatus = filter === 'all' ? true : filter === 'active' ? s.isActive : !s.isActive;
     return matchSearch && matchStatus;
   });
 
+  // ← GANTI filterLabels pakai t()
   const filterLabels: Record<FilterType, string> = {
-    all: 'All',
-    active: 'Active',
-    inactive: 'Inactive',
+    all:      t('blog_filter_all'),
+    active:   t('sub_filter_active'),
+    inactive: t('sub_filter_inactive'),
   };
 
   return (
     <div className="space-y-6">
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-display font-bold text-dark">Subscriptions</h1>
-          <p className="text-gray-400 text-sm mt-1 italic">Manage subscription plans and pricing</p>
+          <h1 className="text-4xl font-display font-bold text-dark">{t('subscriptions')}</h1>       {/* ← GANTI */}
+          <p className="text-gray-400 text-sm mt-1 italic">{t('sub_page_subtitle')}</p>             {/* ← GANTI */}
         </div>
-        <button
-          onClick={() => navigate('/subscriptions/add')}
-          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit"
-        >
-          <Plus size={16} />
-          Add Plan
+        <button onClick={() => navigate('/subscriptions/add')}
+          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-dark font-semibold px-6 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-sm w-fit">
+          <Plus size={16} />{t('sub_add_plan')} {/* ← GANTI */}
         </button>
       </div>
 
@@ -85,25 +84,16 @@ const SubscriptionsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-          <input
-            type="text"
-            placeholder="Search plans..."
-            value={search}
+          <input type="text" placeholder={t('sub_search_placeholder')} value={search} // ← GANTI
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors"
-          />
+            className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm outline-none focus:border-primary bg-white transition-colors" />
         </div>
         <div className="flex flex-wrap gap-2">
           {(['all', 'active', 'inactive'] as FilterType[]).map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
+            <button key={f} onClick={() => setFilter(f)}
               className={`px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 ${
-                filter === f
-                  ? 'bg-dark border-dark text-white shadow-sm'
-                  : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
-              }`}
-            >
+                filter === f ? 'bg-dark border-dark text-white shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
+              }`}>
               {filterLabels[f]}
             </button>
           ))}
@@ -116,54 +106,33 @@ const SubscriptionsPage: React.FC = () => {
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400 text-sm">No subscription plans found</div>
+        <div className="text-center py-16 text-gray-400 text-sm">{t('sub_empty')}</div> // ← GANTI
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map(sub => (
-            <div
-              key={sub._id}
-              className={`relative bg-white rounded-3xl border-2 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 flex flex-col ${
-                sub.isPopular ? 'border-primary' : 'border-gray-100'
-              }`}
-            >
+            <div key={sub._id} className={`relative bg-white rounded-3xl border-2 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 flex flex-col ${sub.isPopular ? 'border-primary' : 'border-gray-100'}`}>
               {sub.isPopular && (
                 <div className="absolute top-4 right-4 flex items-center gap-1 bg-primary text-dark text-xs font-bold px-3 py-1 rounded-full">
-                  <Star size={10} fill="currentColor" />
-                  Populer
+                  <Star size={10} fill="currentColor" />{t('sub_popular')} {/* ← GANTI */}
                 </div>
               )}
-
               <div className="p-5 space-y-4 flex-1">
-                {/* Ikon + Nama */}
                 <div className="flex items-center gap-3 pr-16">
-                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                    sub.isPopular ? 'bg-primary/10' : 'bg-gray-100'
-                  }`}>
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${sub.isPopular ? 'bg-primary/10' : 'bg-gray-100'}`}>
                     <Crown size={18} className={sub.isPopular ? 'text-primary' : 'text-gray-400'} />
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-bold text-dark text-base leading-tight truncate">{sub.name}</h3>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      sub.isActive
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-gray-100 text-gray-500'
-                    }`}>
-                      {sub.isActive ? 'Active' : 'Inactive'}
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${sub.isActive ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
+                      {sub.isActive ? t('sub_filter_active') : t('sub_filter_inactive')} {/* ← GANTI */}
                     </span>
                   </div>
                 </div>
-
-                {/* Harga */}
                 <div>
                   <p className="text-2xl font-bold text-dark">{formatUSD(sub.price)}</p>
-                  <p className="text-xs text-gray-400">per {sub.duration === 'monthly' ? 'month' : 'year'}</p>
+                  <p className="text-xs text-gray-400">{t('sub_per')} {sub.duration === 'monthly' ? t('sub_month') : t('sub_year')}</p> {/* ← GANTI */}
                 </div>
-
-                {sub.description && (
-                  <p className="text-sm text-gray-500 leading-relaxed">{sub.description}</p>
-                )}
-
-                {/* Fitur */}
+                {sub.description && <p className="text-sm text-gray-500 leading-relaxed">{sub.description}</p>}
                 {sub.features && sub.features.length > 0 && (
                   <ul className="space-y-1.5">
                     {sub.features.map((feat, i) => (
@@ -175,27 +144,17 @@ const SubscriptionsPage: React.FC = () => {
                   </ul>
                 )}
               </div>
-
-              {/* Actions */}
               <div className="border-t-2 border-gray-50 px-5 py-4 flex items-center justify-between">
                 <p className="text-xs text-gray-400">
-                  {new Date(sub.createdAt).toLocaleDateString('en-GB', {
-                    day: '2-digit', month: 'short', year: 'numeric',
-                  })}
+                  {new Date(sub.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </p>
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => setDeleteModal({ open: true, id: sub._id, loading: false })}
-                    className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
-                    title="Delete"
-                  >
+                  <button onClick={() => setDeleteModal({ open: true, id: sub._id, loading: false })}
+                    className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors" title={t('delete')}> {/* ← GANTI */}
                     <Trash2 size={14} />
                   </button>
-                  <button
-                    onClick={() => navigate(`/subscriptions/edit/${sub._id}`)}
-                    className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors"
-                    title="Edit"
-                  >
+                  <button onClick={() => navigate(`/subscriptions/edit/${sub._id}`)}
+                    className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-primary hover:bg-primary/10 hover:border-primary/30 transition-colors" title={t('edit')}> {/* ← GANTI */}
                     <Edit2 size={14} />
                   </button>
                 </div>
@@ -207,8 +166,8 @@ const SubscriptionsPage: React.FC = () => {
 
       <ConfirmModal
         isOpen={deleteModal.open}
-        title="Delete Plan"
-        message="Are you sure you want to delete this plan? This action cannot be undone."
+        title={t('sub_delete_title')}     // ← GANTI
+        message={t('sub_delete_message')} // ← GANTI
         onConfirm={handleDelete}
         onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
         loading={deleteModal.loading}

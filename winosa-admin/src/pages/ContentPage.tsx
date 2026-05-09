@@ -7,6 +7,7 @@ import {
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
+import { useTranslation } from 'react-i18next';
 
 /* ─────────────────────────────────────────
    TYPES
@@ -281,6 +282,7 @@ function MemberModal({ initial, onSave, onClose }: {
   onSave:   (data: Omit<TeamMember, '_id' | 'order'>) => Promise<void>;
   onClose:  () => void;
 }) {
+  const { t } = useTranslation();
   const [form, setForm]     = useState({ name: initial?.name ?? '', role: initial?.role ?? '', image: initial?.image ?? '' });
   const [saving, setSaving] = useState(false);
   const set = (k: keyof typeof form) => (v: string) => setForm(f => ({ ...f, [k]: v }));
@@ -295,26 +297,26 @@ function MemberModal({ initial, onSave, onClose }: {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 flex flex-col gap-5">
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-dark text-lg">{initial ? 'Edit Member' : 'Add Member'}</h3>
+          <h3 className="font-bold text-dark text-lg">{initial ? t('content_edit_member') : t('content_add_member')}</h3>
           <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-gray-100 transition-colors">
             <X size={18} className="text-gray-500" />
           </button>
         </div>
-        <ImageUploadBox label="Photo" value={form.image} onChange={set('image')} aspect="portrait" />
+        <ImageUploadBox label={t('image')} value={form.image} onChange={set('image')} aspect="portrait" />
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</label>
-          <input value={form.name} onChange={e => set('name')(e.target.value)} placeholder="e.g. Michael Anderson"
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('name')}</label>
+          <input value={form.name} onChange={e => set('name')(e.target.value)} placeholder={t('content_member_name_placeholder')}
             className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary transition-colors" />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Position</label>
-          <input value={form.role} onChange={e => set('role')(e.target.value)} placeholder="e.g. CEO & Founder"
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('content_position')}</label>
+          <input value={form.role} onChange={e => set('role')(e.target.value)} placeholder={t('content_position_placeholder')}
             className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary transition-colors" />
         </div>
         <div className="flex gap-3 pt-1">
           <button onClick={onClose}
             className="flex-1 py-2.5 rounded-full border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
-            Cancel
+            {t('cancel')}
           </button>
           <button onClick={handleSubmit} disabled={saving}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full bg-dark text-white hover:bg-gray-800 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0">
@@ -336,6 +338,7 @@ function AboutTab({ glass, updateGlass, saveGlass, savingGlass }: {
   saveGlass: () => Promise<void>;
   savingGlass: boolean;
 }) {
+  const { t } = useTranslation();
   const [about, setAbout]     = useState<AboutContent>(DEFAULT_ABOUT);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving]   = useState(false);
@@ -676,6 +679,7 @@ const ContentPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>('team');
 
   /* ── Team state ── */
+  const { t } = useTranslation();
   const [members, setMembers]         = useState<TeamMember[]>([]);
   const [loadingTeam, setLoadingTeam] = useState(true);
   const [modalOpen, setModalOpen]     = useState(false);
@@ -696,14 +700,14 @@ const ContentPage: React.FC = () => {
   useEffect(() => {
     api.get('/admin/content/team')
       .then(r => setMembers(r.data.data ?? []))
-      .catch(() => toast.error('Failed to load team data'))
+      .catch(() => toast.error(t('content_team_load_error')))
       .finally(() => setLoadingTeam(false));
   }, []);
 
   useEffect(() => {
     api.get('/admin/content/glass')
       .then(r => setGlass(r.data.data ?? glass))
-      .catch(() => toast.error('Failed to load story images'))
+      .catch(() => toast.error(t('content_story_load_error')))
       .finally(() => setLoadingGlass(false));
   }, []);
 
@@ -714,11 +718,11 @@ const ContentPage: React.FC = () => {
     if (editing) {
       const res = await api.put(`/admin/content/team/${editing._id}`, form);
       setMembers(prev => prev.map(m => m._id === editing._id ? res.data.data : m));
-      toast.success('Team member updated successfully');
+      toast.success(t('content_member_updated'));
     } else {
       const res = await api.post('/admin/content/team', { ...form, order: members.length });
       setMembers(prev => [...prev, res.data.data]);
-      toast.success('Team member added successfully');
+      toast.success(t('content_member_added'));
     }
   };
 
@@ -728,10 +732,10 @@ const ContentPage: React.FC = () => {
     try {
       await api.delete(`/admin/content/team/${deleteModal.id}`);
       setMembers(prev => prev.filter(m => m._id !== deleteModal.id));
-      toast.success('Team member deleted successfully');
+      toast.success(t('content_member_deleted'));
       setDeleteModal({ open: false, id: null, name: '', loading: false });
     } catch {
-      toast.error('Failed to delete team member');
+      toast.error(t('content_member_delete_error'));
       setDeleteModal(prev => ({ ...prev, loading: false }));
     }
   };
@@ -747,7 +751,7 @@ const ContentPage: React.FC = () => {
       await api.patch('/admin/content/team/reorder', {
         orders: reordered.map(m => ({ _id: m._id, order: m.order })),
       });
-    } catch { toast.error('Failed to save order'); }
+    } catch { toast.error(t('content_order_error')); }
   };
 
   const updateGlass = (path: string[], value: string) => {
@@ -764,25 +768,28 @@ const ContentPage: React.FC = () => {
     setSavingGlass(true);
     try {
       await api.put('/admin/content/glass', glass);
-      toast.success('Story images saved successfully');
+      toast.success(t('content_story_saved'));
     } catch { toast.error('Failed to save story images'); }
     finally { setSavingGlass(false); }
   };
 
   /* ── Tab definitions ── */
   const TABS = [
-    { id: 'team'  as const, label: 'Team Members', icon: Users },
-    { id: 'about' as const, label: 'About Page',   icon: FileText },
+    { id: 'team' as const, label: t('content_team_members'), icon: Users },
+    { id: 'about' as const, label: t('content_about_page'), icon: FileText },
   ];
 
   return (
     <div className="space-y-6">
 
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-display font-bold text-dark">Content</h1>
-        <p className="text-gray-400 text-sm mt-1 italic">Manage team members, homepage visuals, and about page</p>
-      </div>
+      <h1 className="text-4xl font-display font-bold text-dark">
+        {t('content')}
+      </h1>
+
+      <p className="text-gray-400 text-sm mt-1 italic">
+        {t('content_subtitle')}
+      </p>
 
       {/* Tabs */}
       <div className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-full px-2 py-1.5 shadow-sm">
@@ -806,7 +813,7 @@ const ContentPage: React.FC = () => {
           <div className="flex justify-end">
             <button onClick={openAdd}
               className="flex items-center gap-2 bg-primary text-dark font-bold px-6 py-3 rounded-full text-sm hover:bg-yellow-400 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
-              <Plus size={16} /> Add Member
+              <Plus size={16} /> {t('content_add_member')}
             </button>
           </div>
           {loadingTeam ? (
@@ -816,7 +823,9 @@ const ContentPage: React.FC = () => {
           ) : members.length === 0 ? (
             <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center">
               <Users size={40} className="text-gray-200 mx-auto mb-3" />
-              <p className="text-gray-400 text-sm">No team members yet</p>
+              <p className="text-gray-400 text-sm">
+                {t('content_no_team')}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -848,11 +857,11 @@ const ContentPage: React.FC = () => {
                     <div className="flex gap-2 mt-4">
                       <button onClick={() => openEdit(m)}
                         className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full border border-gray-200 text-xs font-semibold text-gray-600 hover:border-gray-400 transition-colors">
-                        <Pencil size={12} /> Edit
+                        <Pencil size={12} /> {t('edit')}
                       </button>
                       <button onClick={() => setDeleteModal({ open: true, id: m._id, name: m.name, loading: false })}
                         className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full border border-red-100 text-xs font-semibold text-red-400 hover:bg-red-50 transition-colors">
-                        <Trash2 size={12} /> Delete
+                        <Trash2 size={12} /> {t('delete')}
                       </button>
                     </div>
                   </div>
@@ -879,8 +888,8 @@ const ContentPage: React.FC = () => {
       )}
       <ConfirmModal
         isOpen={deleteModal.open}
-        title="Delete Member"
-        message={`Are you sure you want to remove ${deleteModal.name} from the team? This action cannot be undone.`}
+        title={t('content_delete_member')}
+        message={`${t('content_delete_member_message')} ${deleteModal.name}? ${t('contact_delete_undone')}`}
         onConfirm={handleDelete}
         onCancel={() => setDeleteModal({ open: false, id: null, name: '', loading: false })}
         loading={deleteModal.loading}

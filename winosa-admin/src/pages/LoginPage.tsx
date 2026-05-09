@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export const REMEMBER_ME_KEY = 'winosa_remember';
 
@@ -15,12 +16,13 @@ const LoginPage: React.FC = () => {
   const [error, setError]               = useState('');
   const { login } = useAuth();
   const navigate  = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email || !password) {
-      setError('Email and password are required');
+      setError(t('login_required'));
       return;
     }
 
@@ -33,11 +35,11 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     try {
       await login(email, password);
-      toast.success('Login successful!');
+      toast.success(t('login_success'));
       navigate('/dashboard');
     } catch (err: any) {
       localStorage.removeItem(REMEMBER_ME_KEY);
-      setError(err.response?.data?.message || 'Invalid email or password');
+      setError(err.response?.data?.message || t('login_invalid'));
     } finally {
       setLoading(false);
     }
@@ -185,7 +187,7 @@ const LoginPage: React.FC = () => {
               letterSpacing: '-1px',
             }}
           >
-            Welcome Back!
+            {t('login_welcome')}
           </h2>
           <p
             style={{
@@ -196,7 +198,7 @@ const LoginPage: React.FC = () => {
               opacity: 0.8,
             }}
           >
-            Sign in to access Winosa admin dashboard
+            {t('login_subtitle')}
           </p>
 
           <form onSubmit={handleSubmit} noValidate>
@@ -216,7 +218,7 @@ const LoginPage: React.FC = () => {
               >
                 <input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('login_email_placeholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
@@ -248,7 +250,7 @@ const LoginPage: React.FC = () => {
               >
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter password"
+                  placeholder={t('login_password_placeholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
@@ -349,7 +351,7 @@ const LoginPage: React.FC = () => {
                     fontWeight: 500,
                   }}
                 >
-                  Remember me
+                  {t('login_remember')}
                 </span>
               </div>
             </div>
@@ -375,7 +377,7 @@ const LoginPage: React.FC = () => {
                 fontFamily: 'inherit',
               }}
             >
-              {loading ? 'Loading...' : 'Login'}
+              {loading ? t('loading') : t('login')}
             </button>
 
             <p
@@ -388,7 +390,7 @@ const LoginPage: React.FC = () => {
                 marginBottom: '3vh',
               }}
             >
-              "This page is restricted to authorized administrators"
+              {t('login_restricted')}
             </p>
 
             <p

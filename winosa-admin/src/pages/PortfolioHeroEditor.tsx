@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Save, Loader2 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface HeroData {
   title: string;
@@ -20,6 +21,7 @@ const PortfolioHeroEditor: React.FC = () => {
   const [loading, setLoading]   = useState(false);
   const [fetching, setFetching] = useState(true);
   const [heroId, setHeroId]     = useState<string | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     api.get('/admin/portfolio')
@@ -33,7 +35,7 @@ const PortfolioHeroEditor: React.FC = () => {
           } catch {}
         }
       })
-      .catch(() => toast.error('Failed to load hero data'))
+      .catch(() => toast.error(t('portfolio_hero_load_error')))
       .finally(() => setFetching(false));
   }, []);
 
@@ -42,7 +44,7 @@ const PortfolioHeroEditor: React.FC = () => {
       setForm(prev => ({ ...prev, [key]: e.target.value }));
 
   const handleSave = async () => {
-    if (!form.title.trim()) { toast.error('Title is required'); return; }
+    if (!form.title.trim()) { toast.error(t('validation_title')); return; }
     setLoading(true);
     try {
       const payload = {
@@ -53,9 +55,9 @@ const PortfolioHeroEditor: React.FC = () => {
       };
       if (heroId) await api.put(`/admin/portfolio/${heroId}`, payload);
       else        await api.post('/admin/portfolio', payload);
-      toast.success('Hero saved!');
+      toast.success(t('portfolio_hero_saved'));
     } catch {
-      toast.error('Failed to save');
+      toast.error(t('portfolio_hero_save_error'));
     } finally {
       setLoading(false);
     }
@@ -75,7 +77,7 @@ const PortfolioHeroEditor: React.FC = () => {
 
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
-            Title <span className="text-red-400">*</span>
+            {t('title')} <span className="text-red-400">*</span>
           </label>
           <input
             value={form.title}
@@ -83,12 +85,12 @@ const PortfolioHeroEditor: React.FC = () => {
             placeholder="e.g. Our Portfolio"
             className={inputCls}
           />
-          <p className="text-xs text-gray-400 mt-1">Judul besar di hero section</p>
+          <p className="text-xs text-gray-400 mt-1">{t('portfolio_hero_title_hint')}</p>
         </div>
 
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
-            Subtitle
+            {t('portfolio_hero_subtitle_label')}
           </label>
           <input
             value={form.subtitle}
@@ -96,12 +98,12 @@ const PortfolioHeroEditor: React.FC = () => {
             placeholder="e.g. Explore our work..."
             className={inputCls}
           />
-          <p className="text-xs text-gray-400 mt-1">Teks di bawah judul</p>
+          <p className="text-xs text-gray-400 mt-1">{t('portfolio_hero_subtitle_hint')}</p>
         </div>
 
         <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3">
           <p className="text-xs text-gray-500">
-            ℹ️ Tombol <strong>"Explore Projects"</strong> tidak bisa diedit — scroll ke section portfolio.
+            ℹ️ {t('portfolio_hero_info')}
           </p>
         </div>
 
@@ -113,8 +115,8 @@ const PortfolioHeroEditor: React.FC = () => {
         className="w-full flex items-center justify-center gap-2 py-3 bg-dark text-white rounded-2xl text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
       >
         {loading
-          ? <><Loader2 size={14} className="animate-spin" /> Saving...</>
-          : <><Save size={14} /> Save Changes</>
+          ? <><Loader2 size={14} className="animate-spin" /> {t('saving')}</>
+          : <><Save size={14} /> {t('blog_save_changes')}</>
         }
       </button>
     </div>
