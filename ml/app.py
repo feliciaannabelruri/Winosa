@@ -483,13 +483,13 @@ class ServiceClassifier:
         feat_str = f" dengan {', '.join(features)}" if features else ""
 
         if top_label == "web":
-            idea = f"Platform web '{topic}'{feat_str} yang dirancang scalable dan siap dipakai pengguna nyata."
+            idea = f"Membangun ekosistem web '{topic}' yang mencakup sistem manajemen terintegrasi{feat_str}. Fokus pada performa dan skalabilitas tinggi."
         elif top_label == "mobile":
-            idea = f"Aplikasi mobile '{topic}'{feat_str} yang ringan, cepat, dan enak dipakai sehari-hari."
+            idea = f"Pengembangan aplikasi mobile '{topic}' native dengan fokus pada retensi pengguna dan UX yang sangat halus{feat_str}."
         elif top_label == "uiux":
-            idea = f"Desain ulang '{topic}' dengan pendekatan yang lebih intuitif dan tampilan yang jauh lebih segar."
+            idea = f"Transformasi total desain '{topic}' dengan riset kompetitor mendalam untuk menciptakan interface yang unik dan high-converting."
         else:
-            idea = f"Sesi diskusi mendalam soal '{topic}' untuk tentukan arah teknologi yang paling sesuai kebutuhanmu."
+            idea = f"Audit strategis untuk proyek '{topic}' kamu. Kita akan petakan teknologi terbaik dan timeline yang paling efisien."
 
         cta = "Mau lanjut bahas ini? Yuk ngobrol langsung bareng tim kami. Build with us!"
 

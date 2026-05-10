@@ -223,7 +223,12 @@ export default function SectionServiceRecommend() {
       }
     }
 
-    const res = await classifyService(textToAnalyze);
+    // Artificial delay to make it feel like "Deep-down Analysis"
+    const [res] = await Promise.all([
+      classifyService(textToAnalyze),
+      new Promise(resolve => setTimeout(resolve, 2200)) 
+    ]);
+
     setResult(res);
     setStatus("done");
 
