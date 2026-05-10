@@ -1,5 +1,5 @@
 {
-  "outputDirectory": "winosa-admin/dist",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",

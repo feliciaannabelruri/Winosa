@@ -2,7 +2,7 @@
   "name": "winosa-root",
   "private": true,
   "scripts": {
-    "build": "cd winosa-admin && npm install && npm run build",
+    "build": "cd winosa-admin && npm install && npm run build && cd .. && rm -rf dist && cp -r winosa-admin/dist ./dist",
     "install": "cd winosa-admin && npm install"
   }
 }
