@@ -510,30 +510,38 @@ class ServiceClassifier:
         if any(w in text.lower() for w in ["seo", "pencarian", "google", "zoekmachine"]): features.append("SEO")
 
         topic = " ".join(keywords[:3]).title() if keywords else "Digital System"
-        feat_str = f" dengan {', '.join(features)}" if features else ""
         
-        # Localized templates
+        # Localized strings
+        feat_prefix = {
+            "id": " dengan fitur ",
+            "en": " featuring ",
+            "nl": " met functies zoals "
+        }.get(lang if lang in ["id", "en", "nl"] else "en")
+
+        feat_str = f"{feat_prefix}{', '.join(features)}" if features else ""
+        
+        # Localized templates (Enhanced with "Why" and "What for")
         templates = {
             "id": {
-                "web": f"Ekosistem web '{topic}' dengan sistem manajemen terintegrasi{feat_str}.",
-                "mobile": f"Aplikasi mobile '{topic}' native dengan fokus pada UX halus{feat_str}.",
-                "uiux": f"Transformasi desain '{topic}' dengan riset kompetitor untuk interface unik.",
-                "consulting": f"Audit strategis untuk proyek '{topic}'. Kita petakan teknologi terbaik.",
-                "cta": "Mau lanjut bahas ini? Yuk ngobrol langsung bareng tim kami. Build with us!"
+                "web": f"Membangun ekosistem web '{topic}' yang terintegrasi{feat_str}. Solusi ini dirancang untuk mengotomatisasi operasional bisnis Anda dan memperluas jangkauan pasar secara digital dengan performa tinggi.",
+                "mobile": f"Pengembangan aplikasi mobile '{topic}' native{feat_str}. Fokus utama adalah memberikan pengalaman pengguna yang sangat lancar (seamless) untuk meningkatkan loyalitas pelanggan langsung dari smartphone mereka.",
+                "uiux": f"Transformasi total interface '{topic}' dengan pendekatan User-Centric. Kami akan menciptakan desain yang tidak hanya cantik, tapi juga fungsional untuk meningkatkan angka konversi dan kepuasan pengguna.",
+                "consulting": f"Audit strategis dan teknis untuk proyek '{topic}'. Kami akan memetakan arsitektur teknologi yang paling efisien agar investasi digital Anda memberikan ROI maksimal dalam jangka panjang.",
+                "cta": "Mau eksplorasi lebih dalam? Yuk konsultasi langsung bareng tim ahli kami. Build with us!"
             },
             "en": {
-                "web": f"Scalable '{topic}' web ecosystem with integrated management{feat_str}.",
-                "mobile": f"Native '{topic}' mobile app focused on high retention and smooth UX{feat_str}.",
-                "uiux": f"Complete '{topic}' design transformation with deep competitor research.",
-                "consulting": f"Strategic audit for your '{topic}' project. Let's map the tech roadmap.",
-                "cta": "Interested? Let's discuss this further with our team. Build with us!"
+                "web": f"Build a robust '{topic}' web ecosystem{feat_str}. This solution is engineered to automate your business workflows and scale your digital presence with high-performance infrastructure.",
+                "mobile": f"Developing a native '{topic}' mobile application{feat_str}. Our focus is on creating a seamless user journey that drives customer engagement and loyalty directly on their mobile devices.",
+                "uiux": f"Complete UI/UX overhaul for '{topic}' using a data-driven design approach. We'll create a unique interface that blends aesthetics with high conversion rates to delight your users.",
+                "consulting": f"A strategic tech audit for your '{topic}' project. We will map out the most efficient roadmap to ensure your digital investment scales effectively with maximum long-term value.",
+                "cta": "Want to dive deeper into this? Let's chat directly with our expert team. Build with us!"
             },
             "nl": {
-                "web": f"Schaalbaar '{topic}' webeccosysteem met geïntegreerd beheer{feat_str}.",
-                "mobile": f"Native mobiele app '{topic}' gericht op hoge retentie en soepele UX{feat_str}.",
-                "uiux": f"Volledige designtransformatie voor '{topic}' met diepgaand concurrentieonderzoek.",
-                "consulting": f"Strategische audit voor uw project '{topic}'. Laten we de roadmap bepalen.",
-                "cta": "Geïnteresseerd? Laten we dit verder bespreken met ons team. Build with us!"
+                "web": f"Bouw een robuust '{topic}' webeccosysteem{feat_str}. Deze oplossing is ontworpen om uw bedrijfsprocessen te automatiseren en uw digitale aanwezigheid te schalen met hoogwaardige technologie.",
+                "mobile": f"Ontwikkeling van een native mobiele app '{topic}'{feat_str}. Onze focus ligt op het creëren van een naadloze gebruikerservaring die klantbetrokkenheid en loyaliteit rechtstreeks op hun smartphone stimuleert.",
+                "uiux": f"Volledige UI/UX-vernieuwing voor '{topic}' met een User-Centric benadering. We creëren een unieke interface die esthetiek combineert met hoge conversieratio's om uw gebruikers te verrassen.",
+                "consulting": f"Een strategische technische audit voor uw project '{topic}'. We stippelen de meest efficiënte roadmap uit om ervoor te zorgen dat uw digitale investering effectief schaalt.",
+                "cta": "Wilt u hier dieper op ingaan? Laten we direct praten met ons expertteam. Build with us!"
             }
         }
         
