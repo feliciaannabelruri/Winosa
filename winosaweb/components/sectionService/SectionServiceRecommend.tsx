@@ -53,7 +53,7 @@ function keywordFallback(text: string): ServiceResult {
   return map[topKey] || map.web;
 }
 
-async function classifyService(text: string): Promise<ServiceResult> {
+async function classifyService(text: string, lang: string = "en"): Promise<ServiceResult> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
@@ -61,7 +61,7 @@ async function classifyService(text: string): Promise<ServiceResult> {
     const res = await fetch(`${ML_SERVICE_URL}/classify/service`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, lang }),
       signal: controller.signal,
     });
 
@@ -225,7 +225,7 @@ export default function SectionServiceRecommend() {
 
     // Artificial delay to make it feel like "Deep-down Analysis"
     const [res] = await Promise.all([
-      classifyService(textToAnalyze),
+      classifyService(textToAnalyze, language),
       new Promise(resolve => setTimeout(resolve, 2200)) 
     ]);
 

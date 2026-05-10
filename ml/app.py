@@ -77,6 +77,13 @@ TRAINING_DATA = {
         "online course platform with quiz and certificate",
         "web admin panel untuk manage konten aplikasi",
         "website toko buku dengan rekomendasi AI",
+        "ik heb een website nodig voor mijn bedrijf",
+        "bouw een e-commerce winkel met winkelmandje",
+        "maak een webplatform voor mijn startup",
+        "online winkel met productcatalogus",
+        "bedrijfswebsite met blogsectie",
+        "webdashboard voor analyse dan rapportage",
+        "boekingswebsite voor restaurant",
     ],
     "mobile": [
         "butuh aplikasi android untuk delivery makanan",
@@ -105,6 +112,14 @@ TRAINING_DATA = {
         "build an ios and android app for dating",
         "aplikasi kasir POS mobile bluetooth printer",
         "app logistik untuk tracking pengiriman paket",
+        "mobile app for loyalty program and coupons",
+        "mobiele app voor eten bezorgen",
+        "maak een fitness-tracker app voor ios",
+        "mobiele app voor e-commerce winkel",
+        "app voor online eten bestellen",
+        "mobiele app met GPS-trackingfunctie",
+        "kassa-app voor de detailhandel",
+        "eenvoudige app voor mobiel bankieren",
         "mobile app presensi guru dan siswa",
         "aplikasi mobile untuk petani mencatat panen",
         "build a meditation and mental health mobile app",
@@ -170,6 +185,14 @@ TRAINING_DATA = {
         "UI audit and component library creation",
         "user journey mapping dan persona research",
         "desain dashboard admin yang clean dan informatif",
+        "high conversion landing page visual design",
+        "ontwerp van gebruikersinterface UI UX",
+        "modern webdesign voor mijn merk",
+        "verbeter het ontwerp van mijn mobiele app",
+        "ontwerp van gebruikerservaring voor SaaS",
+        "visueel ontwerp voor e-commerce platform",
+        "prototyping en wireframing voor nieuwe app",
+        "redesign van bestaande website interface",
         "buat design guideline untuk tim developer",
         "mau redesign logo dan visual identity bisnis",
         "create UI kit for design team collaboration",
@@ -182,7 +205,6 @@ TRAINING_DATA = {
         "butuh desain banner iklan digital yang keren",
         "create a professional email template design",
         "redesign halaman profil dan setting aplikasi",
-        "desain UI landing page SaaS product",
         "buat style guide tipografi dan warna brand",
         "UI design for smartwatch companion app",
         "accessibility improvement untuk pengguna difabel",
@@ -246,6 +268,14 @@ TRAINING_DATA = {
         "butuh pendampingan teknis untuk tim non-IT",
         "mau evaluasi apakah perlu rebuild atau refactor",
         "konsultasi arsitektur API untuk integrasi pihak ketiga",
+        "technical feasibility study for new venture",
+        "IT-advies nodig voor mijn bedrijf",
+        "strategische sessie voor technologie",
+        "consultancy voor digitale transformatie",
+        "roadmap voor softwareontwikkeling",
+        "technisch advies voor schaalbaarheid",
+        "beveiligingsaudit voor webapplicaties",
+        "cloud-migratie strategie advies",
         "need a feasibility study for digital product",
         "ingin tahu best practice deployment CI CD",
         "apakah perlu buat PWA atau native app",
@@ -456,9 +486,9 @@ class ServiceClassifier:
         self.accuracy = round(correct / len(y_te), 4)
         self.is_trained = True
 
-    def classify(self, text):
-        if not self.is_trained:
-            return None, None, []
+    def classify(self, text, lang="en"):
+        if not self.pipeline:
+            return None, None, [], "", ""
 
         classes = self.pipeline.classes_
         proba = self.pipeline.predict_proba([text])[0]
@@ -468,30 +498,48 @@ class ServiceClassifier:
         confidence = round(float(top_prob) * 100, 1)
         others = [c for c, _ in sorted_pairs[1:3]]
 
-        ignore = {"saya", "butuh", "untuk", "bikin", "buat", "ingin", "mau", "aplikasi", "website", "web", "app", "mobile", "yang", "dan", "di", "ke", "dari", "ini", "itu", "seperti", "sebuah", "dengan", "akan", "ada", "karena", "i", "need", "a", "an", "the", "for", "to", "make", "build", "create", "my", "business"}
+        ignore = {"saya", "butuh", "untuk", "bikin", "buat", "ingin", "mau", "aplikasi", "website", "web", "app", "mobile", "yang", "dan", "di", "ke", "dari", "ini", "itu", "seperti", "sebuah", "dengan", "akan", "ada", "karena", "i", "need", "a", "an", "the", "for", "to", "make", "build", "create", "my", "business", "ik", "heb", "een", "nodig", "voor", "mijn", "maken"}
         words = re.findall(r'\b[a-zA-Z]{3,}\b', text.lower())
         keywords = [w for w in words if w not in ignore]
 
         features = []
-        if any(w in text.lower() for w in ["payment", "bayar", "transaksi", "checkout"]): features.append("Payment Gateway")
-        if any(w in text.lower() for w in ["admin", "dashboard", "manajemen", "stok", "management"]): features.append("Admin Dashboard")
-        if any(w in text.lower() for w in ["chat", "notifikasi", "pesan"]): features.append("Notifikasi Real-time")
-        if any(w in text.lower() for w in ["map", "lokasi", "gps", "tracking"]): features.append("GPS & Lokasi")
-        if any(w in text.lower() for w in ["seo", "pencarian", "google"]): features.append("SEO")
+        if any(w in text.lower() for w in ["payment", "bayar", "transaksi", "checkout", "betaling"]): features.append("Payment Gateway")
+        if any(w in text.lower() for w in ["admin", "dashboard", "manajemen", "stok", "management", "beheer"]): features.append("Admin Dashboard")
+        if any(w in text.lower() for w in ["chat", "notifikasi", "pesan", "bericht"]): features.append("Notifikasi Real-time")
+        if any(w in text.lower() for w in ["map", "lokasi", "gps", "tracking", "locatie"]): features.append("GPS & Lokasi")
+        if any(w in text.lower() for w in ["seo", "pencarian", "google", "zoekmachine"]): features.append("SEO")
 
-        topic = " ".join(keywords[:3]).title() if keywords else "Sistem Digital"
+        topic = " ".join(keywords[:3]).title() if keywords else "Digital System"
         feat_str = f" dengan {', '.join(features)}" if features else ""
-
-        if top_label == "web":
-            idea = f"Membangun ekosistem web '{topic}' yang mencakup sistem manajemen terintegrasi{feat_str}. Fokus pada performa dan skalabilitas tinggi."
-        elif top_label == "mobile":
-            idea = f"Pengembangan aplikasi mobile '{topic}' native dengan fokus pada retensi pengguna dan UX yang sangat halus{feat_str}."
-        elif top_label == "uiux":
-            idea = f"Transformasi total desain '{topic}' dengan riset kompetitor mendalam untuk menciptakan interface yang unik dan high-converting."
-        else:
-            idea = f"Audit strategis untuk proyek '{topic}' kamu. Kita akan petakan teknologi terbaik dan timeline yang paling efisien."
-
-        cta = "Mau lanjut bahas ini? Yuk ngobrol langsung bareng tim kami. Build with us!"
+        
+        # Localized templates
+        templates = {
+            "id": {
+                "web": f"Ekosistem web '{topic}' dengan sistem manajemen terintegrasi{feat_str}.",
+                "mobile": f"Aplikasi mobile '{topic}' native dengan fokus pada UX halus{feat_str}.",
+                "uiux": f"Transformasi desain '{topic}' dengan riset kompetitor untuk interface unik.",
+                "consulting": f"Audit strategis untuk proyek '{topic}'. Kita petakan teknologi terbaik.",
+                "cta": "Mau lanjut bahas ini? Yuk ngobrol langsung bareng tim kami. Build with us!"
+            },
+            "en": {
+                "web": f"Scalable '{topic}' web ecosystem with integrated management{feat_str}.",
+                "mobile": f"Native '{topic}' mobile app focused on high retention and smooth UX{feat_str}.",
+                "uiux": f"Complete '{topic}' design transformation with deep competitor research.",
+                "consulting": f"Strategic audit for your '{topic}' project. Let's map the tech roadmap.",
+                "cta": "Interested? Let's discuss this further with our team. Build with us!"
+            },
+            "nl": {
+                "web": f"Schaalbaar '{topic}' webeccosysteem met geïntegreerd beheer{feat_str}.",
+                "mobile": f"Native mobiele app '{topic}' gericht op hoge retentie en soepele UX{feat_str}.",
+                "uiux": f"Volledige designtransformatie voor '{topic}' met diepgaand concurrentieonderzoek.",
+                "consulting": f"Strategische audit voor uw project '{topic}'. Laten we de roadmap bepalen.",
+                "cta": "Geïnteresseerd? Laten we dit verder bespreken met ons team. Build with us!"
+            }
+        }
+        
+        lang_key = lang if lang in templates else "en"
+        idea = templates[lang_key].get(top_label, templates[lang_key]["consulting"])
+        cta = templates[lang_key]["cta"]
 
         return top_label, confidence, others, idea, cta
 
@@ -591,10 +639,12 @@ def trending():
 def classify_service():
     data = request.get_json(silent=True) or {}
     text = data.get("text", "")
+    lang = data.get("lang", "en") # Default to EN for production stability
+
     if not text:
         return jsonify({"success": False, "error": "No text provided"}), 400
 
-    label, confidence, others, idea, cta = classifier.classify(text)
+    label, confidence, others, idea, cta = classifier.classify(text, lang=lang)
     if label is None:
         return jsonify({"success": False, "error": "Classifier not ready"}), 500
 
@@ -602,13 +652,13 @@ def classify_service():
     other_names = [classifier.LABEL_NAMES.get(o, o) for o in others]
 
     return jsonify({
-        "success":            True,
+        "success": True,
         **result,
-        "others":             other_names,
-        "confidence":         confidence,
-        "idea":               idea,
-        "cta":                cta,
-        "algorithm":          "TF-IDF + Logistic Regression (Multinomial)",
+        "others": other_names,
+        "confidence": confidence,
+        "idea": idea,
+        "cta": cta,
+        "algorithm": "LinearSVC + CalibratedClassifierCV",
         "classifier_accuracy": classifier.accuracy,
     })
 
@@ -618,46 +668,24 @@ def generate_idea():
     data = request.get_json(silent=True) or {}
     business = data.get("business", "bisnis Anda")
     description = data.get("description", "")
+    lang = data.get("lang", "en")
     
     if not description:
         return jsonify({"success": False, "error": "Description required"}), 400
         
-    label, confidence, _ = classifier.classify(description)
+    label, confidence, others, idea, cta = classifier.classify(description, lang=lang)
     if label is None:
-        label = "consulting"
-        
-    ideas = {
-        "web": [
-            f"Website custom untuk {business} dengan dashboard admin, payment gateway, dan fitur SEO lengkap.",
-            f"Toko online {business} yang interaktif dengan fitur member dan manajemen stok otomatis."
-        ],
-        "mobile": [
-            f"Aplikasi mobile {business} (iOS/Android) dengan fitur push notification dan tracking real-time.",
-            f"Aplikasi loyalty buat {business} agar pelanggan gampang pesan dan ngumpulin poin."
-        ],
-        "uiux": [
-            f"Desain UI/UX baru untuk {business} yang jauh lebih modern, bersih, dan enak dilihat.",
-            f"Prototype interaktif {business} yang rapi dan siap didemokan ke tim atau investor."
-        ],
-        "consulting": [
-            f"Roadmap digital buat {business}, mulai dari audit sistem lama sampai rencana tech stack baru.",
-            f"Saran arsitektur IT untuk {business} supaya aplikasinya bisa dipakai jangka panjang tanpa lemot."
-        ]
-    }
-    
-    selected_idea = random.choice(ideas.get(label, ideas["consulting"]))
+        return jsonify({"success": False, "error": "Classification failed"}), 500
     
     return jsonify({
         "success": True,
         "business": business,
         "category": classifier.SERVICE_MAP.get(label, classifier.SERVICE_MAP["consulting"])["primary"],
         "confidence": confidence,
-        "idea": selected_idea,
-        "cta": "Tertarik dengan ide ini? Yuk wujudkan bareng ahlinya. Build with us! 🚀"
+        "idea": idea,
+        "cta": cta
     })
 
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001, debug=True)
-
-
