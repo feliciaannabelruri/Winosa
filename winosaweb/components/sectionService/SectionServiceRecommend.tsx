@@ -7,71 +7,62 @@ import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
 
-// ─── ML Service URL ──────────────────────────────────────────────────────────
-// Ganti HF API (facebook/bart-large-mnli) yang lambat & sering timeout
-// dengan ML service Flask kita sendiri yang response <5ms
 const ML_SERVICE_URL = process.env.NEXT_PUBLIC_ML_URL || "http://localhost:5001";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
 type ServiceResult = {
-  primary:     string;
+  primary: string;
   primarySlug: string;
-  others:      string[];
-  reasoning:   string;
-  confidence:  number;
-  algorithm:   string;
+  others: string[];
+  reasoning: string;
+  confidence: number;
+  algorithm: string;
+  idea?: string;
+  cta?: string;
 };
 
-// ─── Chips ───────────────────────────────────────────────────────────────────
-
 const CHIPS_EN = [
-  { label: "New Startup",      text: "new startup beginning limited budget mvp simple product" },
-  { label: "Online Store",     text: "online store ecommerce shop payment gateway inventory" },
+  { label: "New Startup", text: "new startup beginning limited budget mvp simple product" },
+  { label: "Online Store", text: "online store ecommerce shop payment gateway inventory" },
   { label: "Growing Business", text: "growing business scale analytics dashboard team collaboration" },
-  { label: "Mobile App",       text: "mobile application android ios push notification user account" },
-  { label: "Enterprise System",text: "enterprise system large scale custom integration thousands users" },
-  { label: "Still Confused",   text: "not sure what I need want guidance consultation first" },
+  { label: "Mobile App", text: "mobile application android ios push notification user account" },
+  { label: "Enterprise System", text: "enterprise system large scale custom integration thousands users" },
+  { label: "Still Confused", text: "not sure what I need want guidance consultation first" },
 ];
-
-// ─── Keyword fallback (jika ML service tidak bisa dijangkau) ─────────────────
 
 function keywordFallback(text: string): ServiceResult {
   const t = text.toLowerCase();
 
   const scores = {
-    web:        (t.includes("website") ? 3 : 0) + (t.includes("web") ? 2 : 0) + (t.includes("ecommerce") ? 3 : 0) + (t.includes("landing page") ? 3 : 0) + (t.includes("toko") ? 2 : 0),
-    mobile:     (t.includes("mobile") ? 3 : 0) + (t.includes("aplikasi") ? 3 : 0) + (t.includes("android") ? 3 : 0) + (t.includes("ios") ? 3 : 0) + (t.includes("app") ? 2 : 0),
-    uiux:       (t.includes("desain") ? 3 : 0) + (t.includes("design") ? 3 : 0) + (t.includes("ui") ? 3 : 0) + (t.includes("figma") ? 3 : 0) + (t.includes("prototype") ? 3 : 0),
+    web: (t.includes("website") ? 3 : 0) + (t.includes("web") ? 2 : 0) + (t.includes("ecommerce") ? 3 : 0) + (t.includes("landing page") ? 3 : 0) + (t.includes("toko") ? 2 : 0),
+    mobile: (t.includes("mobile") ? 3 : 0) + (t.includes("aplikasi") ? 3 : 0) + (t.includes("android") ? 3 : 0) + (t.includes("ios") ? 3 : 0) + (t.includes("app") ? 2 : 0),
+    uiux: (t.includes("desain") ? 3 : 0) + (t.includes("design") ? 3 : 0) + (t.includes("ui") ? 3 : 0) + (t.includes("figma") ? 3 : 0) + (t.includes("prototype") ? 3 : 0),
     consulting: (t.includes("konsultan") ? 3 : 0) + (t.includes("bingung") ? 3 : 0) + (t.includes("confused") ? 3 : 0) + (t.includes("strategi") ? 2 : 0),
   };
 
   const topKey = (Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0]) as keyof typeof scores;
-  const total  = Object.values(scores).reduce((a, b) => a + b, 0);
-  const conf   = Math.min(85, Math.max(65, 65 + Math.min(total * 2, 20)));
+  const total = Object.values(scores).reduce((a, b) => a + b, 0);
+  const conf = Math.min(85, Math.max(65, 65 + Math.min(total * 2, 20)));
 
   const map: Record<string, ServiceResult> = {
-    web:  { primary: "Web Development",      primarySlug: "/Services/web-development",       others: ["UI/UX Design"],              reasoning: "Based on your needs, building a professional website is the most strategic step.", confidence: conf, algorithm: "keyword_fallback" },
-    mobile:{ primary: "Mobile App Development",primarySlug: "/Services/mobile-app-development",others: ["UI/UX Design"],             reasoning: "Your needs indicate a focus on mobile application development.",                                    confidence: conf, algorithm: "keyword_fallback" },
-    uiux: { primary: "UI/UX Design",           primarySlug: "/Services/ui-ux-design",           others: ["Web Development"],           reasoning: "A well-crafted design is the key to a successful digital product.",                                  confidence: conf, algorithm: "keyword_fallback" },
-    consulting:{ primary: "IT Consulting",      primarySlug: "/Contact",                         others: ["Web Development", "Mobile App Development"], reasoning: "Starting with a consultation is the best step to move forward.", confidence: conf, algorithm: "keyword_fallback" },
+    web: { primary: "Web Development", primarySlug: "/Services/web-development", others: ["UI/UX Design"], reasoning: "Based on your needs, a website is the most strategic starting point.", confidence: conf, algorithm: "keyword_fallback", idea: "Website custom yang terintegrasi penuh dengan proses bisnis kamu.", cta: "Yuk diskusi soal ini bareng tim kami!" },
+    mobile: { primary: "Mobile App Development", primarySlug: "/Services/mobile-app-development", others: ["UI/UX Design"], reasoning: "Your description points strongly toward mobile app development.", confidence: conf, algorithm: "keyword_fallback", idea: "Aplikasi mobile yang enak dipakai dan sesuai kebutuhan penggunamu.", cta: "Wujudkan app-mu bareng kami!" },
+    uiux: { primary: "UI/UX Design", primarySlug: "/Services/ui-ux-design", others: ["Web Development"], reasoning: "Good design is what separates a product people use from one they ignore.", confidence: conf, algorithm: "keyword_fallback", idea: "Desain yang bersih, modern, dan bikin pengguna betah.", cta: "Upgrade tampilan produkmu bareng kami!" },
+    consulting: { primary: "IT Consulting", primarySlug: "/Contact", others: ["Web Development", "Mobile App Development"], reasoning: "Starting with a strategy session is the right move before building anything.", confidence: conf, algorithm: "keyword_fallback", idea: "Sesi diskusi untuk petakan kebutuhan dan rencana teknologi yang pas.", cta: "Ngobrol dulu bareng tim kami, gratis!" },
   };
 
   return map[topKey] || map.web;
 }
 
-// ─── Classifier — panggil ML service dulu, fallback ke keyword ───────────────
-
 async function classifyService(text: string): Promise<ServiceResult> {
   try {
     const controller = new AbortController();
-    const timeout    = setTimeout(() => controller.abort(), 5000); // 5s timeout
+    const timeout = setTimeout(() => controller.abort(), 5000);
 
     const res = await fetch(`${ML_SERVICE_URL}/classify/service`, {
-      method:  "POST",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ text }),
-      signal:  controller.signal,
+      body: JSON.stringify({ text }),
+      signal: controller.signal,
     });
 
     clearTimeout(timeout);
@@ -82,12 +73,14 @@ async function classifyService(text: string): Promise<ServiceResult> {
     if (!data.success) throw new Error(data.error || "Classification failed");
 
     return {
-      primary:     data.primary,
+      primary: data.primary,
       primarySlug: data.primarySlug,
-      others:      data.others || [],
-      reasoning:   data.reasoning,
-      confidence:  data.confidence,
-      algorithm:   data.algorithm,
+      others: data.others || [],
+      reasoning: data.reasoning,
+      confidence: data.confidence,
+      algorithm: data.algorithm,
+      idea: data.idea,
+      cta: data.cta,
     };
   } catch (err) {
     console.warn("ML service unavailable, using keyword fallback:", err);
@@ -155,12 +148,16 @@ export default function SectionServiceRecommend() {
     );
 
     const reasoning = await translateHybrid(result.reasoning, language, tApi);
+    const idea = result.idea ? await translateHybrid(result.idea, language, tApi) : undefined;
+    const cta = result.cta ? await translateHybrid(result.cta, language, tApi) : undefined;
 
     setTranslatedResult({
       ...result,
       primary,
       others,
       reasoning,
+      idea,
+      cta,
     });
   };
 
@@ -426,12 +423,31 @@ export default function SectionServiceRecommend() {
                 ))}
               </div>
 
+              {/* Product Idea Highlight */}
+              {translatedResult?.idea && (
+                <div className="px-5 py-4 bg-black/5 border-b border-black/8">
+                  <p className="text-sm font-semibold text-black mb-1">💡 Product Idea:</p>
+                  <p className="text-sm text-black/75 leading-relaxed italic">
+                    "{translatedResult.idea}"
+                  </p>
+                </div>
+              )}
+
               {/* Reasoning */}
               <div className="px-5 py-4 bg-white border-b border-black/8">
                 <p className="text-sm text-black/65 leading-relaxed">
-                {result.others.map((s) => th(s)).join(", ")}
-              </p>
+                  {translatedResult?.reasoning}
+                </p>
               </div>
+
+              {/* CTA Custom */}
+              {translatedResult?.cta && (
+                <div className="px-5 pt-4 bg-white">
+                  <p className="text-center text-sm font-medium text-black">
+                    {translatedResult.cta}
+                  </p>
+                </div>
+              )}
 
               {/* CTA */}
               <div className="px-5 py-4 bg-white flex gap-3 flex-wrap">
