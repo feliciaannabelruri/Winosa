@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import ServiceInfoPage from './ServiceInfoPage';
 import ServiceHeroEditor from './ServiceHeroEditor';
-import { useTranslation } from 'react-i18next'; // ← TAMBAH
+import { useTranslation } from 'react-i18next'; 
 
 type FilterType = 'all' | 'draft' | 'published';
 
@@ -32,7 +32,7 @@ const iconMap: Record<string, React.FC<any>> = {
 
 const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
-  const { t }    = useTranslation(); // ← TAMBAH
+  const { t }    = useTranslation(); 
 
   const [services,    setServices]    = useState<Service[]>([]);
   const [loading,     setLoading]     = useState(true);

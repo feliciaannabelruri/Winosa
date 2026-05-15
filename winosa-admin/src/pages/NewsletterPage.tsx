@@ -430,6 +430,106 @@ const NewsletterPage: React.FC = () => {
           ))}
         </div>
       </div>
+       {/* Table */}
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[520px]">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4 pl-6 w-12">No.</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Email</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Status</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Join Date</th>
+                <th className="text-left text-sm font-semibold text-dark py-4 px-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-16">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-16 text-center">
+                    <Mail size={32} className="text-gray-200 mx-auto mb-3" />
+                    <p className="text-gray-400 text-sm">No subscribers found</p>
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((sub, idx) => (
+                  <tr
+                    key={sub._id}
+                    className={`border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors ${
+                      idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                    }`}
+                  >
+                    <td className="py-4 px-4 pl-6 text-sm text-gray-500">{idx + 1}.</td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Mail size={13} className="text-primary" />
+                        </div>
+                        <span className="text-sm text-dark font-medium truncate max-w-[180px] sm:max-w-none">
+                          {sub.email}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <span className={`text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap ${
+                        sub.isActive
+                          ? 'bg-green-100 text-green-600'
+                          : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        {sub.isActive ? 'Active' : 'Unsubscribed'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 text-sm text-gray-500 whitespace-nowrap">
+                      {new Date(sub.createdAt).toLocaleDateString('en-GB', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                      })}
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setComposeModal({ open: true, subscriber: sub })}
+                          className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-blue-400 hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                          title="Compose Email"
+                        >
+                          <Send size={14} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteModal({ open: true, id: sub._id, loading: false })}
+                          className="w-9 h-9 border border-gray-200 rounded-xl flex items-center justify-center text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <EmailComposeModal
+        isOpen={composeModal.open}
+        subscriber={composeModal.subscriber}
+        onClose={() => setComposeModal({ open: false, subscriber: null })}
+      />
+
+      <ConfirmModal
+        isOpen={deleteModal.open}
+        title="Delete Subscriber"
+        message="Are you sure you want to delete this subscriber? They will no longer receive newsletters."
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteModal({ open: false, id: null, loading: false })}
+        loading={deleteModal.loading}
+      />
     </div>
   );
 };
