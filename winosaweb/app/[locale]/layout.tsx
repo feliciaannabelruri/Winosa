@@ -7,7 +7,6 @@ import { AnimatePresence } from "framer-motion";
 import Script from "next/script";
 import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
-import { useLanguageStore } from "@/store/useLanguageStore";
 
 // ANIMATION //
 const PageTransition = dynamic(
@@ -21,12 +20,6 @@ export default function LocaleLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { syncFromUrl } = useLanguageStore();
-
-  // Every time the route changes, re-sync the language from the URL
-  useEffect(() => {
-    syncFromUrl();
-  }, [pathname, syncFromUrl]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.gtag) {

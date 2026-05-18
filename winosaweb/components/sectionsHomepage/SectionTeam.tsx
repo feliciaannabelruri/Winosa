@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import { translateHybrid } from "@/lib/translateHybrid";
 import Image from "next/image";
 
@@ -16,7 +16,7 @@ interface TeamMember {
 
 export default function SectionTeam() {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [active, setActive] = useState(0);

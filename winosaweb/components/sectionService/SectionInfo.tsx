@@ -11,7 +11,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -41,8 +41,7 @@ export default function SectionInfo({
 
   const { t } = useTranslate();
 
-  const { language } =
-    useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 
   const [process, setProcess] =
     useState<Process[]>([]);

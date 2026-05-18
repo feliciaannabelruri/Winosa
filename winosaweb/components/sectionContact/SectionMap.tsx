@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useTranslate } from "@/lib/useTranslate";
 import { useState, useEffect } from "react";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -13,7 +13,7 @@ export default function SectionMap() {
   const [loadMap, setLoadMap] = useState(false);
   const { t } = useTranslate();
 
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 
   const [translated, setTranslated] = useState<any>(null);
 

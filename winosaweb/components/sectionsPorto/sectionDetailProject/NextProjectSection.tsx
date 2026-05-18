@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "@/app/[locale]/portofolio/[slug]/detail.module.css";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import { translateHybrid } from "@/lib/translateHybrid";
 import { useEffect, useState } from "react";
 
@@ -22,7 +22,7 @@ interface NextProjectSectionProps {
 
 export default function NextProjectSection({ nextProject }: NextProjectSectionProps) {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const [translated, setTranslated] = useState(nextProject);
 
   useEffect(() => {

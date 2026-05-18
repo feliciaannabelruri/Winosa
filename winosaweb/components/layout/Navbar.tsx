@@ -5,19 +5,18 @@ let cachedSettings: any = null;
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import { useTranslate } from "@/lib/useTranslate";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLocaleRouter } from "@/lib/useLocaleRouter";
+
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const { t, tApi } = useTranslate();
-  const { locale, localePath, switchLocale } = useLocaleRouter();
-  const [langOpen, setLangOpen] = useState(false);
+  const { locale, localePath } = useLocaleRouter();
 
   const [logo, setLogo] = useState(
     "https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png"
@@ -71,7 +70,7 @@ export default function Navbar() {
     document.body.style.overflow = open ? "hidden" : "auto";
   }, [open]);
 
-  const displayLang = locale.toUpperCase();
+
 
   // Fallback menus — hrefs are prefixed with the current locale
   const fallbackMenus = [
@@ -118,36 +117,6 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
 
-          {/* ── Language Switcher (desktop) ── */}
-          <div className="relative hidden lg:block">
-            <button
-              onClick={() => setLangOpen(!langOpen)}
-              aria-label="Switch language"
-              className="px-4 py-2 rounded-full border border-black text-black text-sm font-medium flex items-center gap-2 hover:bg-black/10 transition-all"
-            >
-              {displayLang}
-              <span className="text-xs">▾</span>
-            </button>
-
-            {langOpen && (
-              <div className="absolute right-0 mt-2 w-28 bg-white border border-black/10 rounded-xl shadow-md overflow-hidden">
-                {(["en", "nl", "id"] as const).map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => {
-                      switchLocale(lang);
-                      setLangOpen(false);
-                    }}
-                    className={`w-full px-4 py-2 text-left text-sm transition hover:bg-black/10 ${
-                      locale === lang ? "font-bold text-black" : "text-black/70"
-                    }`}
-                  >
-                    {lang.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* ── Hamburger (mobile) ── */}
           <button
@@ -211,28 +180,6 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {/* ── Language Switcher (mobile) ── */}
-            <div className="mt-6">
-              <p className="text-xs text-black/60 mb-2">Language</p>
-              <div className="flex gap-2">
-                {(["en", "nl", "id"] as const).map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => {
-                      switchLocale(lang);
-                      setOpen(false);
-                    }}
-                    className={`px-4 py-2 rounded-full border text-sm ${
-                      locale === lang
-                        ? "bg-black text-white border-black"
-                        : "border-black/20 text-black"
-                    }`}
-                  >
-                    {lang.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       )}

@@ -1,10 +1,10 @@
 "use client";
 
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "./useLocaleRouter";
 import { translations } from "./translations";
 
 export function useTranslate() {
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 
   function t(section: string, key: string): string {
     const sec: any = translations;

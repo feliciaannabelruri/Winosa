@@ -7,9 +7,9 @@ import Image from "next/image";
 import FadeUp from "@/components/animation/FadeUp";
 import EmptyState from "@/components/UI/EmptyState";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
-import { translateHybrid } from "@/lib/translateHybrid";
 import { useLocaleRouter } from "@/lib/useLocaleRouter";
+import { translateHybrid } from "@/lib/translateHybrid";
+
 
 type Blog = {
   _id: string;
@@ -29,7 +29,7 @@ type Props = {
 
 export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props) {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const { localePath } = useLocaleRouter();
 
   const [blogs, setBlogs] = useState<Blog[]>(initialBlogs ?? []);

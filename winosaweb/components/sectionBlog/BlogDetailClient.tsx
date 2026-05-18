@@ -6,9 +6,9 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
-import { translateHybrid } from "@/lib/translateHybrid";
 import { useLocaleRouter } from "@/lib/useLocaleRouter";
+import { translateHybrid } from "@/lib/translateHybrid";
+
 import EmptyState from "@/components/UI/EmptyState";
 
 type Blog = {
@@ -30,7 +30,7 @@ interface BlogDetailClientProps {
 
 export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDetailClientProps) {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const { localePath } = useLocaleRouter();
 
   const [translatedBlog, setTranslatedBlog] = useState<Blog>(initialBlog);

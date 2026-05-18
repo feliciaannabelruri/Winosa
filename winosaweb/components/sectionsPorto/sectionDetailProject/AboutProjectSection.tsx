@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
 import styles from "@/app/[locale]/portofolio/[slug]/detail.module.css";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import { translateHybrid } from "@/lib/translateHybrid";
 import { useTranslate } from "@/lib/useTranslate";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ interface AboutProjectSectionProps {
 
 export default function AboutProjectSection({ longDescription }: AboutProjectSectionProps) {
   const { tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const [text, setText] = useState(longDescription);
 
   useEffect(() => {

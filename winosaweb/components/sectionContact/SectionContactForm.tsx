@@ -7,7 +7,7 @@ import { Phone, MapPin, MessageCircle } from "lucide-react";
 import { useTranslate } from "@/lib/useTranslate";
 import { SiteSettings } from "@/types/settings";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -28,7 +28,7 @@ export default function SectionContactForm() {
 
   const [settings, setSettings] = useState<SiteSettings | null>(null);
 
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 
   const [translatedInfo, setTranslatedInfo] =
   useState<any>(null);

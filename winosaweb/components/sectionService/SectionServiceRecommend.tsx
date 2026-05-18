@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import { translateHybrid } from "@/lib/translateHybrid";
 
 const ML_SERVICE_URL = process.env.NEXT_PUBLIC_ML_URL || "http://localhost:5001";
@@ -80,7 +80,7 @@ async function classifyService(text: string, lang: string = "en"): Promise<Servi
 
 export default function SectionServiceRecommend() {
   const { t, tApi }    = useTranslate();
-  const { language }   = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 
   const [input, setInput]               = useState("");
   const [activeChips, setActiveChips]   = useState<string[]>([]);

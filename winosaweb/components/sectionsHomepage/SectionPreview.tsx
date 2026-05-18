@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 import { Monitor } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
-import { translateHybrid } from "@/lib/translateHybrid";
 import { useLocaleRouter } from "@/lib/useLocaleRouter";
+import { translateHybrid } from "@/lib/translateHybrid";
+
 import Link from "next/link";
 
 type Item = {
@@ -23,7 +23,7 @@ type Item = {
 
 export default function SectionPreview({ title, items = [] }: any) {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const { localePath } = useLocaleRouter();
 
   const [data, setData] = useState<Item[]>([]);

@@ -6,10 +6,10 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import styles from "@/app/[locale]/portofolio/[slug]/detail.module.css";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import { translateHybrid } from "@/lib/translateHybrid";
 import { useEffect, useState } from "react";
-import { useLocaleRouter } from "@/lib/useLocaleRouter";
+
 
 interface HeroSectionProps {
   project: {
@@ -28,7 +28,7 @@ interface HeroSectionProps {
 
 export default function HeroSection({ project }: HeroSectionProps) {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const { localePath } = useLocaleRouter();
   const [translated, setTranslated] = useState(project);
 

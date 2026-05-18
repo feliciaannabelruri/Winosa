@@ -7,9 +7,9 @@ import styles from "@/app/[locale]/portofolio/portfolio.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
-import { translateHybrid } from "@/lib/translateHybrid";
 import { useLocaleRouter } from "@/lib/useLocaleRouter";
+import { translateHybrid } from "@/lib/translateHybrid";
+
 
 type Project = {
   _id: string;
@@ -30,7 +30,7 @@ type FilterType =
 
 export default function SectionPortoCards({ data }: { data: Project[] }) {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const { localePath } = useLocaleRouter();
 
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");

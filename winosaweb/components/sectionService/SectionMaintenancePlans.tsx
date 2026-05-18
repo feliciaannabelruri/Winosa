@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
-import { translateHybrid } from "@/lib/translateHybrid";
 import { useLocaleRouter } from "@/lib/useLocaleRouter";
+import { translateHybrid } from "@/lib/translateHybrid";
+
 
 
 
@@ -99,7 +99,7 @@ export default function SectionMaintenancePlans() {
 
     const [plans, setPlans] = useState(PLANS);
 
-    const { language } = useLanguageStore();
+    const { locale: language } = useLocaleRouter();
 
     const isMounted = useRef(false);
 

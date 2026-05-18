@@ -12,9 +12,9 @@ import Footer from "@/components/layout/Footer";
 import SectionCTA from "@/components/layout/SectionCTA";
 import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
-import { translateHybrid } from "@/lib/translateHybrid";
 import { useLocaleRouter } from "@/lib/useLocaleRouter";
+import { translateHybrid } from "@/lib/translateHybrid";
+
 import {
   Target,
   Rocket,
@@ -96,7 +96,7 @@ const WHY_US_ICONS = [Code2, ShieldCheck, Globe];
 ============================================================ */
 export default function AboutPage() {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const { localePath } = useLocaleRouter();
   
 

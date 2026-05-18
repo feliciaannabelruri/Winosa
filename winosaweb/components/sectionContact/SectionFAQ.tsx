@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { Plus, Minus } from "lucide-react";
 import { useTranslate } from "@/lib/useTranslate";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"));
 
@@ -15,7 +15,7 @@ export default function SectionCompanyInfo() {
   const [active, setActive] = useState<number | null>(0);
   const [faqsData, setFaqsData] = useState<any[]>([]);
 
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 
   const [translatedFaqs, setTranslatedFaqs] =
   useState<any[]>([]);

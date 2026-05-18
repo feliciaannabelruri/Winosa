@@ -6,14 +6,14 @@ import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
 import { useEffect, useState } from "react";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 export default function SectionBlogHero() {
   const { t } = useTranslate();
 
   const [hero, setHero] = useState<any>(null);
   const [loaded, setLoaded] = useState(false); // penting
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 const [translatedHero, setTranslatedHero] = useState<any>(null);
 
   useEffect(() => {

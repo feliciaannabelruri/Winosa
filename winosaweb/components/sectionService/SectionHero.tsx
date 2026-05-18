@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
 import { useEffect, useState } from "react";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLanguageStore } from "@/store/useLanguageStore";
 import { useLocaleRouter } from "@/lib/useLocaleRouter";
+
 
 interface HeroData {
   title?: string;
@@ -27,8 +27,7 @@ export default function SectionHero({
   const { t } = useTranslate();
   const { localePath } = useLocaleRouter();
 
-  const { language } =
-    useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 
   const [translatedHero, setTranslatedHero] =
     useState<any>(null);

@@ -6,9 +6,9 @@ import Link from "next/link";
 import Footer from "@/components/layout/Footer";
 import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
-import { translateHybrid } from "@/lib/translateHybrid";
 import { useLocaleRouter } from "@/lib/useLocaleRouter";
+import { translateHybrid } from "@/lib/translateHybrid";
+
 import { Check, Zap, Shield, Star, ArrowRight, ChevronDown, HelpCircle, X } from "lucide-react";
 
 /* ============================================================
@@ -113,7 +113,7 @@ function FaqItem({ q, a, lang }: { q: Record<string, string>; a: Record<string, 
  ============================================================ */
 export default function SubscriptionsPage() {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const { localePath } = useLocaleRouter();
 
   const [plans, setPlans] = useState<Plan[]>([]);

@@ -12,7 +12,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import { useTranslate } from "@/lib/useTranslate";
 import { translateHybrid } from "@/lib/translateHybrid";
 
@@ -44,8 +44,7 @@ export default function SectionServices({
   initialServices,
 }: Props) {
 
-  const { language } =
-    useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 
   const { t, tApi } =
     useTranslate();

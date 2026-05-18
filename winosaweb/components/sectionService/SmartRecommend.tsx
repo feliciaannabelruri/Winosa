@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 // ─── ML Service URL ──────────────────────────────────────────────────────────
 // Menggantikan HF API (facebook/bart-large-mnli) yang cold start 10-30 detik
@@ -141,7 +141,7 @@ export default function SmartRecommend({ serviceType, onRecommend }: SmartRecomm
     }, []);
   
     const [translated, setTranslated] = useState<Record<string, string>>({});
-    const { language } = useLanguageStore();
+    const { locale: language } = useLocaleRouter();
 
       const th = (text: string) => {
     if (language === "en") return text;

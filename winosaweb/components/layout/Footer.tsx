@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { useTranslate } from "@/lib/useTranslate";
 import { SiteSettings } from "@/types/settings";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLanguageStore } from "@/store/useLanguageStore";
 import { useLocaleRouter } from "@/lib/useLocaleRouter";
+
 
 async function fetchSettings(): Promise<SiteSettings | null> {
   try {
@@ -26,7 +26,7 @@ export default function Footer() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [footerMenus, setFooterMenus] = useState<any>(null);
 
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const { localePath } = useLocaleRouter();
 
   const [translatedMenus, setTranslatedMenus] =

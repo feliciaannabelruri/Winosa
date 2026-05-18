@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
 import { translateHybrid } from "@/lib/translateHybrid";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 export default function ProjectInquiryPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
 const { t } = useTranslate();
 
 const [translated, setTranslated] =

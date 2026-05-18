@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
 import styles from "@/app/[locale]/portofolio/[slug]/detail.module.css";
 import { useTranslate } from "@/lib/useTranslate";
-import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import { translateHybrid } from "@/lib/translateHybrid";
 import { useEffect, useState } from "react";
 
@@ -25,7 +25,7 @@ const STEPS = [
 
 export default function CaseStudySection({ project }: CaseStudySectionProps) {
   const { t, tApi } = useTranslate();
-  const { language } = useLanguageStore();
+  const { locale: language } = useLocaleRouter();
   const [translated, setTranslated] = useState(project);
 
   useEffect(() => {
