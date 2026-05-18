@@ -14,6 +14,7 @@ import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import {
   Target,
   Rocket,
@@ -96,6 +97,7 @@ const WHY_US_ICONS = [Code2, ShieldCheck, Globe];
 export default function AboutPage() {
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
+  const { localePath } = useLocaleRouter();
   
 
   const [team, setTeam] = useState<TeamMember[]>([]);
@@ -464,7 +466,7 @@ export default function AboutPage() {
             className="flex flex-wrap gap-4 justify-center"
           >
             <Link
-              href="/Contact"
+              href={localePath("/Contact")}
               className="px-8 py-3.5 rounded-full bg-black text-white font-semibold text-sm transition-all duration-300 hover:bg-black/80 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 active:scale-95"
             >
               {translatedAbout?.workWithUs ||
@@ -472,7 +474,7 @@ export default function AboutPage() {
                 t("aboutPage", "workWithUs")}
             </Link>
             <Link
-              href="/portofolio"
+              href={localePath("/portofolio")}
               className="px-8 py-3.5 rounded-full border-2 border-black/10 bg-white text-black font-semibold text-sm transition-all duration-300 hover:border-black/30 hover:bg-black/5 hover:-translate-y-0.5 active:scale-95 shadow-sm"
             >
               {translatedAbout?.viewPortfolio ||
@@ -490,7 +492,10 @@ export default function AboutPage() {
            {(
                 translatedAbout?.stats ||
                 aboutContent?.stats ||
-                fallbackStats
+                fallbackStats.map(s => ({
+                  ...s,
+                  label: t("aboutPage", s.label.toLowerCase().replace(" ", ""))
+                }))
               ).map((s: any, i: number) => (
               <FadeUp key={i} delay={i * 0.1}>
                 <div className="text-center group cursor-default">
@@ -624,7 +629,11 @@ export default function AboutPage() {
             {(
                 translatedAbout?.values ||
                 aboutContent?.values ||
-                fallbackValues
+                fallbackValues.map(v => ({
+                  ...v,
+                  title: t("aboutPage", v.key), // Using the key to look up in dictionary
+                  desc: t("aboutPage", `${v.key}Desc`)
+                }))
               ).map((v: any, i: number) => {
               const Icon = v.icon ?? VALUE_ICONS[v.key] ?? Target;
               return (
@@ -719,18 +728,18 @@ export default function AboutPage() {
                 translatedAbout?.whyUs ||
                 aboutContent?.whyUs || [
                   {
-                    label: "Custom Built",
-                    desc: "Tailored digital solutions for every business.",
+                    label: t("aboutPage", "customBuilt"),
+                    desc: t("aboutPage", "customBuiltDesc"),
                     icon: Code2,
                   },
                   {
-                    label: "Security First",
-                    desc: "We prioritize security in every system.",
+                    label: t("aboutPage", "securityFirst"),
+                    desc: t("aboutPage", "securityFirstDesc"),
                     icon: ShieldCheck,
                   },
                   {
-                    label: "Multilingual Support",
-                    desc: "Support for multiple languages and regions.",
+                    label: t("aboutPage", "multilingualSupport"),
+                    desc: t("aboutPage", "multilingualSupportDesc") || "ID · EN · NL",
                     icon: Globe,
                   },
                 ]

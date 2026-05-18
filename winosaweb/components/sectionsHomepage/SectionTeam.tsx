@@ -62,7 +62,7 @@ export default function SectionTeam() {
   if (!loaded) {
     return (
       <section className="w-full bg-white py-10 md:py-10">
-        <div role="status" aria-live="polite" className="text-center">Loading...</div>
+        <div role="status" aria-live="polite" className="text-center">{t("global", "loading")}</div>
       </section>
     );
   }

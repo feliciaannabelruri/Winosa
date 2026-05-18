@@ -9,6 +9,7 @@ import EmptyState from "@/components/UI/EmptyState";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 type Blog = {
   _id: string;
@@ -29,6 +30,7 @@ type Props = {
 export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props) {
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
+  const { localePath } = useLocaleRouter();
 
   const [blogs, setBlogs] = useState<Blog[]>(initialBlogs ?? []);
   const [translatedBlogs, setTranslatedBlogs] = useState<Blog[]>(initialBlogs ?? []);
@@ -143,7 +145,7 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
                 {translatedTrending.map((blog) => (
                   <Link
                     key={blog.slug}
-                    href={`/Blog/${blog.slug}`}
+                    href={localePath(`/Blog/${blog.slug}`)}
                     className="group min-w-[260px] max-w-[280px] flex flex-col bg-white rounded-[20px] overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
                   >
                     <div className="h-32 w-full bg-gray-100 overflow-hidden">
@@ -253,6 +255,7 @@ export default function SectionBlog({ initialBlogs, trendingBlogs = [] }: Props)
 /* card */
 function BlogCard({ blog }: { blog: Blog }) {
   const { t } = useTranslate();
+  const { localePath } = useLocaleRouter();
   const category = blog.tags?.[0] || "";
 
   return (
@@ -294,7 +297,7 @@ function BlogCard({ blog }: { blog: Blog }) {
           </p>
 
           <Link
-            href={`/Blog/${blog.slug}`}
+            href={localePath(`/Blog/${blog.slug}`)}
             aria-label={`Read more about ${blog.title}`}
             className="inline-block px-6 py-2 rounded-full border border-black text-sm transition-all duration-300 hover:bg-black hover:text-white hover:scale-105 active:scale-95"
             onClick={() => {

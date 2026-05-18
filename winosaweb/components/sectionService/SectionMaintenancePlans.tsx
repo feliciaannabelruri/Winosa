@@ -7,6 +7,7 @@ import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 
 
@@ -90,6 +91,8 @@ export default function SectionMaintenancePlans() {
   const { t, tApi } = useTranslate();
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  const { localePath } = useLocaleRouter();
 
   // ─── translate ──────────────────────────────────────────────────────────────
 
@@ -377,7 +380,7 @@ useEffect(() => {
 
                     {/* CTA */}
                       <Link
-                        href={`/rfp?plan=${plan.id}`}
+                        href={localePath(`/rfp?plan=${plan.id}`)}
                         className="mt-auto block"
                       >
                         <button

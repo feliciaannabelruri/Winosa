@@ -8,6 +8,7 @@ import { useTranslate } from "@/lib/useTranslate";
 import { useEffect, useState } from "react";
 import { translateHybrid } from "@/lib/translateHybrid";
 import { useLanguageStore } from "@/store/useLanguageStore";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 interface HeroData {
   title?: string;
@@ -24,6 +25,7 @@ export default function SectionHero({
 }: SectionHeroProps) {
 
   const { t } = useTranslate();
+  const { localePath } = useLocaleRouter();
 
   const { language } =
     useLanguageStore();
@@ -199,7 +201,7 @@ export default function SectionHero({
           }}
         >
           <Link
-            href="/Contact"
+            href={localePath("/Contact")}
             aria-label="Go to contact page"
           >
             <Button

@@ -30,6 +30,9 @@ export interface Blog {
   createdAt: string;
   updatedAt: string;
   commentsCount?: number;
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
 }
 
 export interface BlogFormData {
@@ -41,6 +44,9 @@ export interface BlogFormData {
   tags?: string[];
   isPublished: boolean;
   image?: File;
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
 }
 
 /// Portfolio Types

@@ -152,7 +152,7 @@ const DashboardPage: React.FC = () => {
                         <td className="py-3 px-4 pl-6">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.bg} ${cfg.text}`}>
                             {cfg.icon}
-                            {activity.type}
+                            {t(activity.type.toLowerCase())}
                           </span>
                         </td>
                         <td className="py-3 px-4 overflow-hidden">
@@ -167,8 +167,8 @@ const DashboardPage: React.FC = () => {
                           })}
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusCls}`}>
-                            {activity.status}
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusConfig[activity.status] || 'bg-gray-100 text-gray-500'}`}>
+                            {t(activity.status.toLowerCase())}
                           </span>
                         </td>
                       </tr>
@@ -177,7 +177,6 @@ const DashboardPage: React.FC = () => {
                 ) : (
                   <tr>
                     <td colSpan={4} className="px-6 py-12 text-center text-gray-400 text-sm">
-                      {/* GANTI: "No recent activities yet" → t('dashboard_no_activities') */}
                       {t('dashboard_no_activities')}
                     </td>
                   </tr>

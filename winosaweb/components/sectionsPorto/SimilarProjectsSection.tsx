@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 interface Project {
   slug: string;
@@ -20,6 +21,7 @@ interface Props {
 
 export default function SimilarProjectsSection({ relatedProjects }: Props) {
   const { t } = useTranslate();
+  const { localePath } = useLocaleRouter();
 
   if (!relatedProjects.length) return null;
 
@@ -36,7 +38,7 @@ export default function SimilarProjectsSection({ relatedProjects }: Props) {
           {relatedProjects.map((p) => (
             <Link
               key={p.slug}
-              href={`/portofolio/${p.slug}`}
+              href={localePath(`/portofolio/${p.slug}`)}
               className="group block rounded-[20px] overflow-hidden border border-black/10 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
               <div className="relative h-48 w-full bg-gray-100">

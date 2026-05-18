@@ -8,72 +8,61 @@ import Image from "next/image";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { useTranslate } from "@/lib/useTranslate";
 import { translateHybrid } from "@/lib/translateHybrid";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const { language, setLanguage } = useLanguageStore();
-  const { t } = useTranslate();
+  const { language } = useLanguageStore();
+  const { t, tApi } = useTranslate();
+  const { locale, localePath, switchLocale } = useLocaleRouter();
   const [langOpen, setLangOpen] = useState(false);
 
-  const [logo, setLogo] = useState("https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png");
+  const [logo, setLogo] = useState(
+    "https://ik.imagekit.io/feliciaaaa/winosa/settings/1775642460741_logo_lymnvf9lA4.png"
+  );
   const [menusData, setMenusData] = useState<any[]>([]);
-
-  const [translatedMenus, setTranslatedMenus] =
-  useState<any[]>([]);
-
- useEffect(() => {
-  const api = process.env.NEXT_PUBLIC_API_URL;
-  if (!api) return;
-
-  if (cachedSettings) {
-    if (cachedSettings.logo) setLogo(cachedSettings.logo);
-    if (cachedSettings.navbarMenu) setMenusData(cachedSettings.navbarMenu);
-    return;
-  }
-
-  fetch(`${api}/settings`)
-    .then(r => r.json())
-    .then(json => {
-      const data = json?.data || {};
-      cachedSettings = data;
-
-      if (data.logo) setLogo(data.logo);
-      if (data.navbarMenu) setMenusData(data.navbarMenu);
-    })
-    .catch(() => {});
-}, []);
+  const [translatedMenus, setTranslatedMenus] = useState<any[]>([]);
 
   useEffect(() => {
-  if (!menusData.length) return;
+    const api = process.env.NEXT_PUBLIC_API_URL;
+    if (!api) return;
 
-  const run = async () => {
-    const translated = [];
-
-    for (const menu of menusData) {
-      translated.push({
-        ...menu,
-
-        name: await translateHybrid(
-          menu.name,
-          language
-        ),
-      });
+    if (cachedSettings) {
+      if (cachedSettings.logo) setLogo(cachedSettings.logo);
+      if (cachedSettings.navbarMenu) setMenusData(cachedSettings.navbarMenu);
+      return;
     }
 
-    setTranslatedMenus(translated);
-  };
-
-  run();
-
-}, [menusData, language]);
+    fetch(`${api}/settings`)
+      .then((r) => r.json())
+      .then((json) => {
+        const data = json?.data || {};
+        cachedSettings = data;
+        if (data.logo) setLogo(data.logo);
+        if (data.navbarMenu) setMenusData(data.navbarMenu);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+    if (!menusData.length) return;
+    const run = async () => {
+      const translated = [];
+      for (const menu of menusData) {
+        translated.push({
+          ...menu,
+          name: await translateHybrid(menu.name, language, tApi),
+        });
+      }
+      setTranslatedMenus(translated);
     };
+    run();
+  }, [menusData, language]);
 
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -82,36 +71,29 @@ export default function Navbar() {
     document.body.style.overflow = open ? "hidden" : "auto";
   }, [open]);
 
-  const cycleLanguage = () => {
-    if (language === "en") setLanguage("nl");
-    else if (language === "nl") setLanguage("id");
-    else setLanguage("en");
-  };
+  const displayLang = locale.toUpperCase();
 
-  const displayLang = language.toUpperCase();
+  // Fallback menus — hrefs are prefixed with the current locale
+  const fallbackMenus = [
+    { name: t("navbar", "about"),     href: localePath("/about") },
+    { name: t("navbar", "services"),  href: localePath("/Services") },
+    { name: t("navbar", "portfolio"), href: localePath("/portofolio") },
+    { name: t("navbar", "blog"),      href: localePath("/Blog") },
+    { name: t("navbar", "contact"),   href: localePath("/Contact") },
+  ];
 
- const fallbackMenus = [
-  { name: t("navbar", "about"), href: "/about" },
-  { name: t("navbar", "services"), href: "/Services" },
-  { name: t("navbar", "portfolio"), href: "/portofolio" },
-  { name: t("navbar", "blog"), href: "/Blog" },
-  { name: t("navbar", "contact"), href: "/Contact" },
-];
+  // For API-driven menus, prefix each href with locale
+  const prefixedApiMenus = (translatedMenus.length ? translatedMenus : menusData).map(
+    (m) => ({ ...m, href: localePath(m.href) })
+  );
 
-const menus =
-  translatedMenus.length
-    ? translatedMenus
-    : menusData.length
-    ? menusData
-    : fallbackMenus;
-    
+  const menus = prefixedApiMenus.length ? prefixedApiMenus : fallbackMenus;
+
   return (
-    <nav
-      className="fixed top-0 left-0 w-full z-50 bg-white transition-all duration-300"
-    >
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white transition-all duration-300">
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
 
-        <Link href="/about" aria-label="Go to About page">
+        <Link href={localePath("/about")} aria-label="Go to About page">
           <Image
             src={logo}
             alt="Winosa company logo"
@@ -121,10 +103,7 @@ const menus =
           />
         </Link>
 
-        <ul 
-          role="menubar"
-          className="hidden lg:flex gap-8 text-sm font-medium text-black"
-        >
+        <ul role="menubar" className="hidden lg:flex gap-8 text-sm font-medium text-black">
           {menus.map((m) => (
             <li key={m.name}>
               <Link
@@ -139,9 +118,11 @@ const menus =
 
         <div className="flex items-center gap-4">
 
+          {/* ── Language Switcher (desktop) ── */}
           <div className="relative hidden lg:block">
             <button
               onClick={() => setLangOpen(!langOpen)}
+              aria-label="Switch language"
               className="px-4 py-2 rounded-full border border-black text-black text-sm font-medium flex items-center gap-2 hover:bg-black/10 transition-all"
             >
               {displayLang}
@@ -150,14 +131,16 @@ const menus =
 
             {langOpen && (
               <div className="absolute right-0 mt-2 w-28 bg-white border border-black/10 rounded-xl shadow-md overflow-hidden">
-                {["en", "nl", "id"].map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => {
-                    setLanguage(lang as any);
-                    setLangOpen(false);
-                  }}
-                    className="w-full px-4 py-2 text-left text-sm text-black hover:bg-black/10 transition"
+                {(["en", "nl", "id"] as const).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => {
+                      switchLocale(lang);
+                      setLangOpen(false);
+                    }}
+                    className={`w-full px-4 py-2 text-left text-sm transition hover:bg-black/10 ${
+                      locale === lang ? "font-bold text-black" : "text-black/70"
+                    }`}
                   >
                     {lang.toUpperCase()}
                   </button>
@@ -166,6 +149,7 @@ const menus =
             )}
           </div>
 
+          {/* ── Hamburger (mobile) ── */}
           <button
             onClick={() => setOpen(true)}
             aria-label="Open menu"
@@ -181,19 +165,17 @@ const menus =
         </div>
       </div>
 
+      {/* ── Mobile Drawer ── */}
       {open && (
         <div
           id="mobile-menu"
           role="dialog"
           aria-modal="true"
-          className={`fixed top-0 left-0 w-screen h-screen z-[999] bg-white/90 backdrop-blur-xl px-6 py-8 overflow-y-auto transition-all duration-300 ease-in-out ${
-            open ? "translate-x-0" : "translate-x-full pointer-events-none"
-          }`}
+          className="fixed top-0 left-0 w-screen h-screen z-[999] bg-white/90 backdrop-blur-xl px-6 py-8 overflow-y-auto transition-all duration-300 ease-in-out"
         >
           <div className="flex items-center justify-between">
-
             <Link
-              href="/about"
+              href={localePath("/about")}
               onClick={() => setOpen(false)}
               aria-label="Go to About page"
             >
@@ -213,7 +195,6 @@ const menus =
             >
               ✕
             </button>
-
           </div>
 
           <div className="w-full h-px bg-black/20 my-6" />
@@ -230,18 +211,19 @@ const menus =
               </Link>
             ))}
 
+            {/* ── Language Switcher (mobile) ── */}
             <div className="mt-6">
               <p className="text-xs text-black/60 mb-2">Language</p>
               <div className="flex gap-2">
-                {["en", "nl", "id"].map((lang) => (
+                {(["en", "nl", "id"] as const).map((lang) => (
                   <button
                     key={lang}
                     onClick={() => {
-                        setLanguage(lang as any);
-                        localStorage.setItem("lang", lang);
-                      }}
+                      switchLocale(lang);
+                      setOpen(false);
+                    }}
                     className={`px-4 py-2 rounded-full border text-sm ${
-                      language === lang
+                      locale === lang
                         ? "bg-black text-white border-black"
                         : "border-black/20 text-black"
                     }`}

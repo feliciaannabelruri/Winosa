@@ -7,7 +7,7 @@ import { useTranslate } from "@/lib/useTranslate";
 import { SiteSettings } from "@/types/settings";
 import { translateHybrid } from "@/lib/translateHybrid";
 import { useLanguageStore } from "@/store/useLanguageStore";
-
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 async function fetchSettings(): Promise<SiteSettings | null> {
   try {
@@ -27,6 +27,7 @@ export default function Footer() {
   const [footerMenus, setFooterMenus] = useState<any>(null);
 
   const { language } = useLanguageStore();
+  const { localePath } = useLocaleRouter();
 
   const [translatedMenus, setTranslatedMenus] =
     useState<any>(null);
@@ -135,26 +136,27 @@ useEffect(() => {
 
   const fallbackFooterMenus = {
   about: [
-    { name: t("footer", "company"), href: "/" },
-    { name: t("footer", "aboutUs"), href: "/about" },
+    { name: t("footer", "company"),  href: localePath("/") },
+    { name: t("footer", "aboutUs"),  href: localePath("/about") },
   ],
 
   services: [
-    { name: t("footer", "services"), href: "/Services" },
-    { name: t("footer", "plans"), href: "/subscriptions" },
-    { name: t("footer", "contact"), href: "/Contact" },
+    { name: t("footer", "services"), href: localePath("/Services") },
+    { name: t("footer", "plans"),    href: localePath("/subscriptions") },
+    { name: t("footer", "contact"),  href: localePath("/Contact") },
   ],
 
   insight: [
-    { name: t("footer", "portfolio"), href: "/portofolio" },
-    { name: t("footer", "blog"), href: "/Blog" },
+    { name: t("footer", "portfolio"), href: localePath("/portofolio") },
+    { name: t("footer", "blog"),      href: localePath("/Blog") },
   ],
 };
 
-const menus =
-  translatedMenus ||
-  footerMenus ||
-  fallbackFooterMenus;
+const menus = {
+  about:    (translatedMenus?.about    || footerMenus?.about    || fallbackFooterMenus.about   ).map((i: any) => ({ ...i, href: localePath(i.href) })),
+  services: (translatedMenus?.services || footerMenus?.services || fallbackFooterMenus.services).map((i: any) => ({ ...i, href: localePath(i.href) })),
+  insight:  (translatedMenus?.insight  || footerMenus?.insight  || fallbackFooterMenus.insight ).map((i: any) => ({ ...i, href: localePath(i.href) })),
+};
 
   return (
     <footer className="bg-[#efede9] text-black px-12 py-20">
@@ -221,7 +223,7 @@ const menus =
   <div className="space-y-6">
 
     <div className="flex items-center gap-3">
-      <Link href="/" aria-label="Go to homepage">
+      <Link href={localePath("/")} aria-label="Go to homepage">
         <Image
           src={logo}
           alt="Winosa company logo"

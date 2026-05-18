@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import Button from "@/components/UI/Button";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 const FadeUp = dynamic(() => import("@/components/animation/FadeUp"), {
   ssr: false,
@@ -12,6 +13,7 @@ const FadeUp = dynamic(() => import("@/components/animation/FadeUp"), {
 
 export default function SectionHero() {
   const { t } = useTranslate();
+  const { localePath } = useLocaleRouter();
 
   return (
     <section
@@ -63,7 +65,7 @@ export default function SectionHero() {
 
             <FadeUp delay={0.4}>
               <div className="mt-10 flex justify-end">
-                <Link href="/Contact" aria-label="Go to contact page">
+                <Link href={localePath("/Contact")} aria-label="Go to contact page">
                   <Button text={t("hero", "button")} variant="light" />
                 </Link>
               </div>

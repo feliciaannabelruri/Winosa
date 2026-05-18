@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
+import Link from "next/link";
 
 type Item = {
   _id?: string;
@@ -22,6 +24,7 @@ type Item = {
 export default function SectionPreview({ title, items = [] }: any) {
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
+  const { localePath } = useLocaleRouter();
 
   const [data, setData] = useState<Item[]>([]);
   const previewItems = data.slice(0, 3);
@@ -155,6 +158,7 @@ export default function SectionPreview({ title, items = [] }: any) {
                     whileHover={{ y: -10 }}
                     className="group relative h-[380px]"
                   >
+                    <Link href={item.slug ? localePath(item.slug) : "#"}>
                     <div
                       className="relative h-full rounded-[28px] overflow-hidden bg-white border border-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.15),0_10px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.25),0_20px_40px_rgba(0,0,0,0.12)] transition duration-500"
                       style={{
@@ -218,6 +222,7 @@ export default function SectionPreview({ title, items = [] }: any) {
                         className="absolute inset-0 border border-yellow-400 rounded-[28px] animate-pulse pointer-events-none" />
                       )}
                     </div>
+                    </Link>
                   </motion.div>
                 );
               })}

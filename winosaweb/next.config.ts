@@ -4,11 +4,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   async redirects() {
     return [
-      {
-        source: "/",
-        destination: "/about",
-        permanent: true, // Ubah ke false jika ini cuma sementara
-      },
+      // Root "/" will be caught by middleware and redirected to /en (or detected locale)
+      // Redirect bare /about → /en/about for any direct hits that bypass middleware
     ];
   },
   images: {

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 type Project = {
   _id: string;
@@ -30,6 +31,7 @@ type FilterType =
 export default function SectionPortoCards({ data }: { data: Project[] }) {
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
+  const { localePath } = useLocaleRouter();
 
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -201,7 +203,7 @@ export default function SectionPortoCards({ data }: { data: Project[] }) {
                           {t("portfolioFilters", project.category)}
                         </span>
                         <Link
-                          href={`/portofolio/${project.slug}`}
+                          href={localePath(`/portofolio/${project.slug}`)}
                           aria-label={`View project ${project.title}`}
                           className={styles.learnMore}
                         >

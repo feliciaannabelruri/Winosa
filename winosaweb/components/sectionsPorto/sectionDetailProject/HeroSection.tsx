@@ -9,6 +9,7 @@ import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
 import { useEffect, useState } from "react";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 interface HeroSectionProps {
   project: {
@@ -28,6 +29,7 @@ interface HeroSectionProps {
 export default function HeroSection({ project }: HeroSectionProps) {
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
+  const { localePath } = useLocaleRouter();
   const [translated, setTranslated] = useState(project);
 
   useEffect(() => {
@@ -43,10 +45,10 @@ export default function HeroSection({ project }: HeroSectionProps) {
   }, [project, language]);
 
   const infoPills = [
-    { label: 'Client',   value: project.client   },
-    { label: 'Year',     value: project.year      },
-    { label: 'Duration', value: project.duration  },
-    { label: 'Role',     value: project.role      },
+    { label: t("portfolioDetailMisc", "client"),   value: project.client   },
+    { label: t("portfolioDetailMisc", "year"),     value: project.year      },
+    { label: t("portfolioDetailMisc", "duration"), value: project.duration  },
+    { label: t("portfolioDetailMisc", "role"),     value: project.role      },
   ].filter(p => p.value && p.value !== '-');
 
   return (
@@ -58,7 +60,7 @@ export default function HeroSection({ project }: HeroSectionProps) {
 
         {/* Back button — stay left */}
         <div className={styles.heroNewBackWrapper}>
-          <Link href="/portofolio" className={styles.heroNewBack}>
+          <Link href={localePath("/portofolio")} className={styles.heroNewBack}>
             <ArrowLeft size={14} />
             {t("backButton", "portfolio")}
           </Link>

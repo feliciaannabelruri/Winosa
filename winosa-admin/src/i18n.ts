@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 
 import en from './locales/en/translation.json'
 import nl from './locales/nl/translation.json'
+import id from './locales/id/translation.json'
 
 i18n
   .use(LanguageDetector)
@@ -11,10 +12,11 @@ i18n
   .init({
     resources: {
       en: { translation: en },
-      nl: { translation: nl }
+      nl: { translation: nl },
+      id: { translation: id }
     },
     fallbackLng: 'en',
-    supportedLngs: ['en', 'nl'],
+    supportedLngs: ['en', 'nl', 'id'],
     detection: {
       order: ['navigator'],
       caches: ['localStorage']

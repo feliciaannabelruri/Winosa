@@ -2457,6 +2457,11 @@ maintenancePlans: {
       nl: "Meertalige ondersteuning",
       id: "Dukungan multibahasa",
     },
+    multilingualSupportDesc: {
+      en: "Support for multiple languages and regions.",
+      nl: "Ondersteuning voor meerdere talen en regio's.",
+      id: "Dukungan untuk berbagai bahasa dan wilayah.",
+    },
     multilingualDesc: {
       en: "ID · EN · NL",
       nl: "ID · EN · NL",
@@ -2486,6 +2491,66 @@ maintenancePlans: {
       en: "Client Focus",
       nl: "Klantgericht",
       id: "Fokus Klien",
+    },
+    projectsDone: {
+      en: "Projects Done",
+      nl: "Projecten Voltooid",
+      id: "Proyek Selesai",
+    },
+    happyClients: {
+      en: "Happy Clients",
+      nl: "Tevreden Klanten",
+      id: "Klien Puas",
+    },
+    teamMembers: {
+      en: "Team Members",
+      nl: "Teamleden",
+      id: "Anggota Tim",
+    },
+    yearsExperience: {
+      en: "Years Experience",
+      nl: "Jaren Ervaring",
+      id: "Tahun Pengalaman",
+    },
+    innovation: {
+      en: "Innovation",
+      nl: "Innovatie",
+      id: "Inovasi",
+    },
+    innovationDesc: {
+      en: "We constantly push boundaries to deliver cutting-edge digital solutions that make a real impact.",
+      nl: "Wij verleggen voortdurend grenzen om geavanceerde digitale oplossingen te leveren die een echte impact maken.",
+      id: "Kami terus melampaui batas untuk menghadirkan solusi digital mutakhir yang memberikan dampak nyata.",
+    },
+    integrity: {
+      en: "Integrity",
+      nl: "Integriteit",
+      id: "Integritas",
+    },
+    integrityDesc: {
+      en: "Every commitment we make is backed by transparency, honesty, and accountability.",
+      nl: "Elke verbintenis die wij aangaan wordt ondersteund oleh transparantie, eerlijkheid en verantwoording.",
+      id: "Setiap komitmen yang kami buat didukung oleh transparansi, kejujuran, dan akuntabilitas.",
+    },
+    partnership: {
+      en: "Partnership",
+      nl: "Samenwerking",
+      id: "Kemitraan",
+    },
+    partnershipDesc: {
+      en: "We believe in building long-term relationships with our clients.",
+      nl: "Wij geloven in het opbouwen van langdurige relaties met onze klanten.",
+      id: "Kami percaya pada pembangunan hubungan jangka panjang dengan klien kami.",
+    },
+    impact: {
+      en: "Impact",
+      nl: "Impact",
+      id: "Dampak",
+    },
+    impactDesc: {
+      en: "Every solution we create is measured by real business value.",
+      nl: "Elke oplossing die we creëren wordt gemeten aan de hand van echte bedrijfswaarde.",
+      id: "Setiap solusi yang kami ciptakan diukur dari nilai bisnis yang nyata.",
     },
   },
 
@@ -2535,6 +2600,163 @@ maintenancePlans: {
       nl: "Projectbeschrijving volgt binnenkort.",
       id: "Deskripsi proyek segera hadir.",
     },
+    client: { en: "Client", nl: "Klant", id: "Klien" },
+    year: { en: "Year", nl: "Jaar", id: "Tahun" },
+    duration: { en: "Duration", nl: "Duur", id: "Durasi" },
+    role: { en: "Role", nl: "Rol", id: "Peran" },
   },
 
+  // AI Service Classifier
+  serviceRecommend: {
+    label: { en: "Describe your needs", nl: "Beschrijf uw behoeften", id: "Jelaskan kebutuhan Anda" },
+    placeholder: { en: "e.g. I need a modern website for my jewelry business with a dashboard...", nl: "bijv. Ik heb een moderne website nodig voor mijn sieradenbedrijf...", id: "misal: Saya butuh website modern untuk bisnis perhiasan saya..." },
+    upload: { en: "Attach Reference", nl: "Referentie bijvoegen", id: "Lampirkan Referensi" },
+    uploadHint: { en: "Optional — screenshot, web reference or logo", nl: "Optioneel — screenshot, webreferentie of logo", id: "Opsional — screenshot, referensi web atau logo" },
+    analyzing: { en: "Analyzing with AI...", nl: "Analyseren met AI...", id: "Menganalisis dengan AI..." },
+    analyzeBtn: { en: "Analyze with AI → find the right service", nl: "Analyseer met AI → vind de juiste dienst", id: "Analisis dengan AI → temukan layanan yang tepat" },
+    or: { en: "or", nl: "of", id: "atau" },
+    consultFree: { en: "Contact us directly for a free consultation", nl: "Neem direct contact op voor een gratis consult", id: "Hubungi kami langsung untuk konsultasi gratis" },
+    resultLabel: { en: "AI RECOMMENDATION", nl: "AI AANBEVELING", id: "REKOMENDASI AI" },
+    relevance: { en: "relevance", nl: "relevantie", id: "relevansi" },
+    waBtn: { en: "Discuss on WhatsApp", nl: "Bespreek via WhatsApp", id: "Diskusi via WhatsApp" },
+    retry: { en: "Try Another Idea", nl: "Probeer een ander idee", id: "Coba ide lain" },
+    waTemplate: {
+      en: "Hello Winosa! I'd like to consult about my digital needs.\n\nNeeds: {input}\nRecommended Service: {primary}\n\nCan you help explain further?",
+      nl: "Hallo Winosa! Ik wil graag overleggen over mijn digitale behoeften.\n\nBehoeften: {input}\nAanbevolen Dienst: {primary}\n\nKunt u dit verder toelichten?",
+      id: "Halo Winosa! Saya ingin konsultasi soal kebutuhan digital saya.\n\nKebutuhan: {input}\nLayanan yang direkomendasikan: {primary}\n\nBisa bantu jelasin lebih lanjut?",
+    }
+  },
+
+  serviceRecommendTitles: {
+    title: { en: "AI Service Classifier", nl: "AI Service Classifier", id: "Klasifikasi Layanan AI" },
+    subtitle: { en: "Not sure what you need? Let our AI analyze your project idea and suggest the best solution.", nl: "Niet zeker wat u nodig heeft? Laat onze AI uw projectidee analyseren.", id: "Bingung butuh apa? Biarkan AI kami menganalisis ide proyek Anda." }
+  },
+
+  // Pricing Page
+  pricingPage: {
+    heroLabel: { en: "Pricing", nl: "Prijzen", id: "Harga" },
+    heroTitle: { en: "Simple, Transparent", nl: "Eenvoudig, Transparant", id: "Sederhana, Transparan" },
+    heroSubtitle: { en: "Flexible solutions based on your business needs.", nl: "Flexibele oplossingen op basis van uw bedrijfsbehoeften.", id: "Solusi fleksibel sesuai kebutuhan bisnis Anda." },
+    mostPopular: { en: "Most Popular", nl: "Meest Populair", id: "Paling Populer" },
+    startingFrom: { en: "Starting from", nl: "Vanaf", id: "Mulai dari" },
+    getStarted: { en: "Get Started", nl: "Begin Nu", id: "Mulai Sekarang" },
+    comparisonTitle: { en: "Feature Comparison", nl: "Vergelijking van Functies", id: "Perbandingan Fitur" },
+    comparisonSubtitle: { en: "See exactly what's included in each plan", nl: "Bekijk precies wat er in elk plan is inbegrepen", id: "Lihat rincian apa saja yang termasuk dalam setiap paket" },
+    showComparison: { en: "Show full comparison", nl: "Toon volledige vergelijking", id: "Tampilkan perbandingan lengkap" },
+    hideComparison: { en: "Hide comparison", nl: "Vergelijking verbergen", id: "Sembunyikan perbandingan" },
+    faqTitle: { en: "Frequently Asked Questions", nl: "Veelgestelde Vragen", id: "Pertanyaan Populer (FAQ)" },
+    faqSubtitle: { en: "Everything you need to know before getting started", nl: "Alles wat u moet weten sebelum u begint", id: "Semua yang perlu Anda ketahui sebelum memulai" },
+    stillHaveQuestions: { en: "Still have questions?", nl: "Heeft u nog vragen?", id: "Masih punya pertanyaan?" },
+    faqSupport: { en: "Our team is happy to answer any questions you might have.", nl: "Ons team beantwoordt graag al uw vragen.", id: "Tim kami dengan senang hati menjawab setiap pertanyaan Anda." },
+    needDifferent: { en: "Need something different?", nl: "Iets anders nodig?", id: "Butuh solusi yang berbeda?" },
+    requestCustom: { en: "Request Custom Quote", nl: "Vraag een Maatwerk Offerte aan", id: "Minta Penawaran Kustom" }
+  },
+
+  // --- Added Sections ---
+  team: {
+    title: {
+      en: "Meet Our Team",
+      nl: "Ontmoet Ons Team",
+      id: "Kenali Tim Kami",
+    },
+    subtitle: {
+      en: "The passionate professionals behind Winosa dedicated to your success.",
+      nl: "De gepassioneerde professionals van Winosa die zich inzetten voor uw succes.",
+      id: "Para profesional penuh semangat di Winosa yang berdedikasi untuk kesuksesan Anda.",
+    },
+  },
+
+  missionVision: {
+    title: {
+      en: "Our Mission & Vision",
+      nl: "Onze Missie & Visie",
+      id: "Misi & Visi Kami",
+    },
+    description: {
+      en: "We are committed to delivering excellence through innovation, integrity, and strong partnerships that drive real business impact.",
+      nl: "Wij streven naar uitmuntendheid door innovatie, integriteit en sterke samenwerkingen die echte impact hebben.",
+      id: "Kami berkomitmen menghadirkan keunggulan melalui inovasi, integritas, dan kemitraan kuat yang mendorong dampak bisnis nyata.",
+    },
+    innovationTitle: {
+      en: "Innovation",
+      nl: "Innovatie",
+      id: "Inovasi",
+    },
+    innovationDesc: {
+      en: "We constantly push boundaries to deliver cutting-edge digital solutions.",
+      nl: "Wij verleggen voortdurend grenzen voor geavanceerde digitale oplossingen.",
+      id: "Kami terus melampaui batas untuk menghadirkan solusi digital mutakhir.",
+    },
+    integrityTitle: {
+      en: "Integrity",
+      nl: "Integriteit",
+      id: "Integritas",
+    },
+    integrityDesc: {
+      en: "Every commitment we make is backed by transparency and honesty.",
+      nl: "Elke verbintenis die we aangaan is gebaseerd op transparantie en eerlijkheid.",
+      id: "Setiap komitmen yang kami buat didasarkan pada transparansi dan kejujuran.",
+    },
+    partnershipTitle: {
+      en: "Partnership",
+      nl: "Samenwerking",
+      id: "Kemitraan",
+    },
+    partnershipDesc: {
+      en: "We believe in building long-term relationships with our clients.",
+      nl: "Wij geloven in het opbouwen van langdurige relaties met onze klanten.",
+      id: "Kami percaya pada pembangunan hubungan jangka panjang dengan klien kami.",
+    },
+    impactTitle: {
+      en: "Impact",
+      nl: "Impact",
+      id: "Dampak",
+    },
+    impactDesc: {
+      en: "Every solution we create is measured by real business value.",
+      nl: "Elke oplossing die we maken wordt gemeten aan de hand van echte bedrijfswaarde.",
+      id: "Setiap solusi yang kami ciptakan diukur dari nilai bisnis yang nyata.",
+    },
+  },
+
+  whyIndonesia: {
+    title: {
+      en: "Why Indonesia?",
+      nl: "Waarom Indonesië?",
+      id: "Mengapa Indonesia?",
+    },
+    row1Title: {
+      en: "Fast growing economy",
+      nl: "Snelgroeiende economie",
+      id: "Ekonomi yang tumbuh pesat",
+    },
+    row1Desc: {
+      en: "Indonesia is one of the fastest growing tigers in Southeast Asia, with a flourishing tech sector and a wave of digital transformation.",
+      nl: "Indonesië is een van de snelst groeiende tijgers in Zuidoost-Azië, met een bloeiende techsector.",
+      id: "Indonesia adalah salah satu macan Asia Tenggara yang tumbuh paling cepat, dengan sektor teknologi yang berkembang pesat.",
+    },
+    row2Title: {
+      en: "Huge labor potential",
+      nl: "Groot arbeidspotentieel",
+      id: "Potensi tenaga kerja besar",
+    },
+    row2Desc: {
+      en: "With over 270 million inhabitants, Indonesia has a dynamic and young labor market filled with talented IT professionals.",
+      nl: "Met meer dan 270 miljoen inwoners heeft Indonesië een dynamische en jonge arbeidsmarkt.",
+      id: "Dengan lebih dari 270 juta penduduk, Indonesia memiliki pasar tenaga kerja yang dinamis dan muda.",
+    },
+  },
+
+  joinCulture: {
+    title: {
+      en: "Join Our Culture",
+      nl: "Sluit Je Aan Bij Onze Cultuur",
+      id: "Bergabunglah dengan Budaya Kami",
+    },
+    description: {
+      en: "Grow your career with a supportive global team and impactful projects.",
+      nl: "Groeien je carrière bij een ondersteunend internationaal team.",
+      id: "Kembangkan karier Anda bersama tim global yang suportif.",
+    },
+  },
 } as const;

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import Image from "next/image";
 import Footer from "@/components/layout/Footer";
@@ -122,6 +123,9 @@ export default async function ServiceDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const cookieStore = await cookies();
+  const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+  const localePath = (path: string) => `/${locale}${path.startsWith("/") ? path : `/${path}`}`;
 
   /* Fetch service */
   let service: ServiceData | null = null;
@@ -217,13 +221,13 @@ export default async function ServiceDetailPage({
 
           <div className="flex flex-wrap gap-4 justify-center">
             <Link
-              href={service.ctaLink || "/Contact"}
+              href={localePath(service.ctaLink || "/Contact")}
               className="px-8 py-3.5 rounded-full bg-yellow-400 text-black font-semibold text-sm transition-all duration-300 hover:bg-yellow-300 hover:scale-105 active:scale-95"
             >
               {service.ctaText || "Start Your Project"}
             </Link>
             <Link
-              href="/portofolio"
+              href={localePath("/portofolio")}
               className="px-8 py-3.5 rounded-full border-2 border-white/30 text-white font-semibold text-sm transition-all duration-300 hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95"
             >
               View Portfolio
@@ -497,7 +501,7 @@ export default async function ServiceDetailPage({
                     </ul>
 
                     <Link
-                      href={plan.ctaLink || "/Contact"}
+                      href={localePath(plan.ctaLink || "/Contact")}
                       className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-95 ${
                         isPopular
                           ? "bg-yellow-400 text-black hover:bg-yellow-300"
@@ -518,7 +522,7 @@ export default async function ServiceDetailPage({
                 Not sure which plan is right for you?
               </p>
               <Link
-                href="/Contact"
+                href={localePath("/Contact")}
                 className="inline-flex items-center gap-2 text-sm font-medium text-black hover:underline"
               >
                 Talk to our team <ChevronRight className="w-4 h-4" aria-hidden="true" />
@@ -545,13 +549,13 @@ export default async function ServiceDetailPage({
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link
-              href={service.ctaLink || "/Contact"}
+              href={localePath(service.ctaLink || "/Contact")}
               className="px-10 py-3.5 rounded-full bg-black text-white font-semibold text-sm transition-all duration-300 hover:bg-black/80 hover:scale-105 active:scale-95"
             >
               {service.ctaText || "Start Your Project"}
             </Link>
             <Link
-              href="/subscriptions"
+              href={localePath("/subscriptions")}
               className="px-10 py-3.5 rounded-full border-2 border-black text-black font-semibold text-sm transition-all duration-300 hover:bg-black hover:text-white hover:scale-105 active:scale-95"
             >
               View All Plans

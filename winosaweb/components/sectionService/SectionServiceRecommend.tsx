@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
@@ -20,36 +19,32 @@ type ServiceResult = {
   cta?: string;
 };
 
-const CHIPS_EN = [
-  { label: "New Startup", text: "new startup beginning limited budget mvp simple product" },
-  { label: "Online Store", text: "online store ecommerce shop payment gateway inventory" },
-  { label: "Growing Business", text: "growing business scale analytics dashboard team collaboration" },
-  { label: "Mobile App", text: "mobile application android ios push notification user account" },
-  { label: "Enterprise System", text: "enterprise system large scale custom integration thousands users" },
-  { label: "Still Confused", text: "not sure what I need want guidance consultation first" },
+const CHIPS_DATA = [
+  { label: { en: "New Startup", nl: "Nieuwe Startup", id: "Startup Baru" }, text: "new startup beginning limited budget mvp simple product" },
+  { label: { en: "Online Store", nl: "Webshop", id: "Toko Online" }, text: "online store ecommerce shop payment gateway inventory" },
+  { label: { en: "Growing Business", nl: "Groeiend Bedrijf", id: "Bisnis Berkembang" }, text: "growing business scale analytics dashboard team collaboration" },
+  { label: { en: "Mobile App", nl: "Mobiele App", id: "Aplikasi Mobile" }, text: "mobile application android ios push notification user account" },
+  { label: { en: "Enterprise System", nl: "Enterprise Systeem", id: "Sistem Enterprise" }, text: "enterprise system large scale custom integration thousands users" },
+  { label: { en: "Still Confused", nl: "Nog steeds verward", id: "Masih Bingung" }, text: "not sure what I need want guidance consultation first" },
 ];
 
 function keywordFallback(text: string): ServiceResult {
   const t = text.toLowerCase();
-
   const scores = {
     web: (t.includes("website") ? 3 : 0) + (t.includes("web") ? 2 : 0) + (t.includes("ecommerce") ? 3 : 0) + (t.includes("landing page") ? 3 : 0) + (t.includes("toko") ? 2 : 0),
     mobile: (t.includes("mobile") ? 3 : 0) + (t.includes("aplikasi") ? 3 : 0) + (t.includes("android") ? 3 : 0) + (t.includes("ios") ? 3 : 0) + (t.includes("app") ? 2 : 0),
     uiux: (t.includes("desain") ? 3 : 0) + (t.includes("design") ? 3 : 0) + (t.includes("ui") ? 3 : 0) + (t.includes("figma") ? 3 : 0) + (t.includes("prototype") ? 3 : 0),
     consulting: (t.includes("konsultan") ? 3 : 0) + (t.includes("bingung") ? 3 : 0) + (t.includes("confused") ? 3 : 0) + (t.includes("strategi") ? 2 : 0),
   };
-
   const topKey = (Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0]) as keyof typeof scores;
   const total = Object.values(scores).reduce((a, b) => a + b, 0);
   const conf = Math.min(85, Math.max(65, 65 + Math.min(total * 2, 20)));
-
   const map: Record<string, ServiceResult> = {
     web: { primary: "Web Development", primarySlug: "/Services/web-development", others: ["UI/UX Design"], reasoning: "Based on your needs, a website is the most strategic starting point.", confidence: conf, algorithm: "keyword_fallback", idea: "Website custom yang terintegrasi penuh dengan proses bisnis kamu.", cta: "Yuk diskusi soal ini bareng tim kami!" },
     mobile: { primary: "Mobile App Development", primarySlug: "/Services/mobile-app-development", others: ["UI/UX Design"], reasoning: "Your description points strongly toward mobile app development.", confidence: conf, algorithm: "keyword_fallback", idea: "Aplikasi mobile yang enak dipakai dan sesuai kebutuhan penggunamu.", cta: "Wujudkan app-mu bareng kami!" },
     uiux: { primary: "UI/UX Design", primarySlug: "/Services/ui-ux-design", others: ["Web Development"], reasoning: "Good design is what separates a product people use from one they ignore.", confidence: conf, algorithm: "keyword_fallback", idea: "Desain yang bersih, modern, dan bikin pengguna betah.", cta: "Upgrade tampilan produkmu bareng kami!" },
     consulting: { primary: "IT Consulting", primarySlug: "/Contact", others: ["Web Development", "Mobile App Development"], reasoning: "Starting with a strategy session is the right move before building anything.", confidence: conf, algorithm: "keyword_fallback", idea: "Sesi diskusi untuk petakan kebutuhan dan rencana teknologi yang pas.", cta: "Ngobrol dulu bareng tim kami, gratis!" },
   };
-
   return map[topKey] || map.web;
 }
 
@@ -57,21 +52,16 @@ async function classifyService(text: string, lang: string = "en"): Promise<Servi
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
-
     const res = await fetch(`${ML_SERVICE_URL}/classify/service`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, lang }),
       signal: controller.signal,
     });
-
     clearTimeout(timeout);
-
     if (!res.ok) throw new Error(`ML service ${res.status}`);
-
     const data = await res.json();
     if (!data.success) throw new Error(data.error || "Classification failed");
-
     return {
       primary: data.primary,
       primarySlug: data.primarySlug,
@@ -88,8 +78,6 @@ async function classifyService(text: string, lang: string = "en"): Promise<Servi
   }
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
-
 export default function SectionServiceRecommend() {
   const { t, tApi }    = useTranslate();
   const { language }   = useLanguageStore();
@@ -99,84 +87,30 @@ export default function SectionServiceRecommend() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [status, setStatus]             = useState<"idle" | "thinking" | "done">("idle");
   const [result, setResult]             = useState<ServiceResult | null>(null);
-  const [translatedChips, setTranslatedChips] = useState(CHIPS_EN);
-  const [translatedResult, setTranslatedResult] = useState(result);
+  const [translatedResult, setTranslatedResult] = useState<ServiceResult | null>(null);
 
   const resultRef  = useRef<HTMLDivElement>(null);
   const textareaRef= useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Translate chip labels sesuai bahasa aktif
-
-    const [translated, setTranslated] = useState<Record<string, string>>({});
-
-    const isMounted = useRef(false);
-
-    useEffect(() => {
-      isMounted.current = true;
-
-      return () => {
-        isMounted.current = false;
-      };
-    }, []);
-
-    const th = (text: string) => {
-      if (language === "en") return text;
-
-      if (translated[text]) return translated[text];
-
-      translateHybrid(text, language, tApi).then((res) => {
-        if (!isMounted.current) return; 
-
-        setTranslated((prev) => {
-          if (prev[text]) return prev;
-          return { ...prev, [text]: res };
-        });
-      });
-
-    return text;
-  };
-
+  // Translate result whenever result or language changes
   useEffect(() => {
-  if (!result) return;
-
-  const run = async () => {
-    const primary = await translateHybrid(result.primary, language, tApi);
-
-    const others = await Promise.all(
-      result.others.map((s) => translateHybrid(s, language, tApi))
-    );
-
-    const reasoning = await translateHybrid(result.reasoning, language, tApi);
-    const idea = result.idea ? await translateHybrid(result.idea, language, tApi) : undefined;
-    const cta = result.cta ? await translateHybrid(result.cta, language, tApi) : undefined;
-
-    setTranslatedResult({
-      ...result,
-      primary,
-      others,
-      reasoning,
-      idea,
-      cta,
-    });
-  };
-
-  run();
-}, [result, language]);
-
-  // Translate chip labels sesuai bahasa aktif
-  useEffect(() => {
+    if (!result) {
+      setTranslatedResult(null);
+      return;
+    }
     const run = async () => {
-      const chips = await Promise.all(
-        CHIPS_EN.map(async (c) => ({
-          ...c,
-          label: await translateHybrid(c.label, language, tApi),
-        }))
-      );
-      setTranslatedChips(chips);
+      const [primary, others, reasoning, idea, cta] = await Promise.all([
+        translateHybrid(result.primary, language, tApi),
+        Promise.all((result.others || []).map(s => translateHybrid(s, language, tApi))),
+        translateHybrid(result.reasoning, language, tApi),
+        result.idea ? translateHybrid(result.idea, language, tApi) : undefined,
+        result.cta ? translateHybrid(result.cta, language, tApi) : undefined,
+      ]);
+      setTranslatedResult({ ...result, primary, others, reasoning, idea, cta });
     };
     run();
-  }, [language]);
+  }, [result, language, tApi]);
 
   const fullText  = [input.trim(), ...activeChips].filter(Boolean).join(". ");
   const canAnalyze = fullText.length >= 8;
@@ -208,8 +142,7 @@ export default function SectionServiceRecommend() {
     if (language !== "en") {
       try {
         const api = process.env.NEXT_PUBLIC_API_URL;
-
-          const transRes = await fetch(`${api}/translate`, {
+        const transRes = await fetch(`${api}/translate`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: fullText, target: "en", source: language })
@@ -223,7 +156,6 @@ export default function SectionServiceRecommend() {
       }
     }
 
-    // Artificial delay to make it feel like "Deep-down Analysis"
     const [res] = await Promise.all([
       classifyService(textToAnalyze, language),
       new Promise(resolve => setTimeout(resolve, 2200)) 
@@ -239,12 +171,11 @@ export default function SectionServiceRecommend() {
 
   function goToWa() {
     if (!result) return;
-    const msg =
-      `Halo Winosa! Saya ingin konsultasi soal kebutuhan digital saya.\n\n` +
-      (input ? `Kebutuhan: ${input}\n` : "") +
-      `Layanan yang direkomendasikan: ${result.primary}` +
-      (result.others.length ? `, ${result.others.join(", ")}` : "") +
-      `\n\nBisa bantu jelasin lebih lanjut?`;
+    const template = t("serviceRecommend", "waTemplate");
+    const msg = template
+      .replace("{input}", input || activeChips.join(", "))
+      .replace("{primary}", translatedResult?.primary || result.primary);
+      
     window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(msg)}`, "_blank");
   }
 
@@ -318,8 +249,9 @@ export default function SectionServiceRecommend() {
 
         {/* Chip tags */}
         <div className="flex flex-wrap gap-2 mb-5">
-          {translatedChips.map((chip) => {
+          {CHIPS_DATA.map((chip) => {
             const active = activeChips.includes(chip.text);
+            const label = chip.label[language as keyof typeof chip.label] || chip.label.en;
             return (
               <button
                 key={chip.text}
@@ -334,7 +266,7 @@ export default function SectionServiceRecommend() {
                   color:   active ? "white" : "rgba(0,0,0,0.55)",
                 }}
               >
-                {chip.label}
+                {label}
               </button>
             );
           })}
@@ -400,10 +332,10 @@ export default function SectionServiceRecommend() {
                   >
                     ✦ {t("serviceRecommend", "resultLabel")}
                   </span>
-                  <span className="text-white font-semibold text-sm">{th(result.primary)}</span>
-                  {result.others.length > 0 && (
-                    <span className="text-white/40 text-xs">+ {result.others.join(", ")}</span>
-                  )}
+                  <span className="text-white font-semibold text-sm">{translatedResult?.primary || result.primary}</span>
+                  {translatedResult?.others?.length ? (
+                    <span className="text-white/40 text-xs">+ {translatedResult.others.join(", ")}</span>
+                  ) : null}
                 </div>
                 <span
                   className="text-[11px] px-2.5 py-1 rounded-full font-medium"
@@ -416,14 +348,14 @@ export default function SectionServiceRecommend() {
               {/* Service tags */}
               <div className="px-5 py-4 flex flex-wrap gap-2 border-b border-black/8 bg-white">
                 <span className="px-4 py-1.5 rounded-full text-sm font-medium" style={{ background: "black", color: "white" }}>
-                  {th(result.primary)}
+                  {translatedResult?.primary || result.primary}
                 </span>
-                {result.others.map((s) => (
+                {(translatedResult?.others || result.others).map((s) => (
                   <span
                     key={s}
                     className="px-4 py-1.5 rounded-full text-sm border border-black/15 text-black"
                   >
-                    {th(s)}
+                    {s}
                   </span>
                 ))}
               </div>
@@ -454,12 +386,12 @@ export default function SectionServiceRecommend() {
                 </div>
               )}
 
-              {/* CTA */}
+              {/* CTA Buttons */}
               <div className="px-5 py-4 bg-white flex gap-3 flex-wrap">
                 <button
                   type="button"
                   onClick={goToWa}
-                  className="flex-1 min-w-[160px] flex items-center justify-center gap-2 py-3 rounded-full font-medium text-sm transition-all"
+                  className="flex-1 min-w-[160px] flex items-center justify-center gap-2 py-3 rounded-full font-medium text-sm transition-all hover:opacity-90 active:scale-95"
                   style={{ background: "#25D366", color: "white", fontFamily: "inherit" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

@@ -8,6 +8,7 @@ import FadeUp from "@/components/animation/FadeUp";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 import EmptyState from "@/components/UI/EmptyState";
 
 type Blog = {
@@ -30,6 +31,7 @@ interface BlogDetailClientProps {
 export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDetailClientProps) {
   const { t, tApi } = useTranslate();
   const { language } = useLanguageStore();
+  const { localePath } = useLocaleRouter();
 
   const [translatedBlog, setTranslatedBlog] = useState<Blog>(initialBlog);
   const [translatedRelated, setTranslatedRelated] = useState<Blog[]>(relatedBlogs);
@@ -213,7 +215,7 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
         {/* Back button */}
         <FadeUp>
           <Link
-            href="/Blog"
+            href={localePath("/Blog")}
             className="inline-flex items-center gap-2 text-sm font-medium text-black/50 hover:text-black mb-10 group transition-colors duration-200"
           >
             <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform duration-200" />
@@ -255,7 +257,7 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
               }
             </p>
 
-            <Link href="/rfp">
+            <Link href={localePath("/rfp")}>
               <button
                 type="button"
                 className="px-8 py-3 rounded-full border border-black text-black hover:bg-black hover:text-white transition-all duration-300"
@@ -310,7 +312,7 @@ export default function BlogDetailClient({ initialBlog, relatedBlogs }: BlogDeta
                       </p>
                       <div className="mt-auto">
                         <Link
-                          href={`/Blog/${post.slug}`}
+                          href={localePath(`/Blog/${post.slug}`)}
                           className="inline-flex items-center text-sm font-bold text-black border-b-2 border-primary pb-1 hover:border-black transition-colors"
                         >
                           {t("blogDetail", "readMore")}

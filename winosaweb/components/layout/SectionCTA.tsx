@@ -5,6 +5,7 @@ import Link from "next/link";
 import Button from "@/components/UI/Button";
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
+import { useLocaleRouter } from "@/lib/useLocaleRouter";
 
 declare global {
   interface Window {
@@ -112,6 +113,8 @@ export default function SectionCTA() {
     }
   };
 
+  const { localePath } = useLocaleRouter();
+
   return (
     <section id="cta-section" className="w-full bg-white py-16">
       <div className="max-w-5xl mx-auto px-6 text-center text-black">
@@ -192,7 +195,7 @@ export default function SectionCTA() {
           </p>
 
           <div className="flex justify-center">
-            <Link href="/Contact">
+            <Link href={localePath("/Contact")}>
               <Button
                 text={t("cta", "button")}
                 className={`transition-all duration-300 ${

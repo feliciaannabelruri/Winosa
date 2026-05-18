@@ -218,6 +218,9 @@
     "all": "Alle",
     "active": "Actief",
     "inactive": "Inactief",
+    "subscribers": "Abonnees",
+    "unread": "Ongelezen",
+    "read": "Gelezen",
 
     "total_subscribers": "Totaal aantal abonnees",
 

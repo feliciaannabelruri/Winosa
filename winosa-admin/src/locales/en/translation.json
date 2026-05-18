@@ -218,6 +218,9 @@
     "all": "All",
     "active": "Active",
     "inactive": "Inactive",
+    "subscribers": "Subscribers",
+    "unread": "Unread",
+    "read": "Read",
 
     "total_subscribers": "Total Subscribers",
 
