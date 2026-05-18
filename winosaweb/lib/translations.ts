@@ -110,8 +110,6 @@ export const translations = {
     },
   },
 
-
- // CTA
 cta: {
   title: {
     en: "Ready to Build Your Digital Future?",

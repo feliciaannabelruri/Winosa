@@ -56,15 +56,8 @@ export async function translateHybrid(
   }
 
   try {
-    const now = Date.now();
-    const diff = now - lastRequest;
-
-    // Minimum 500ms between AI requests
-    if (diff < 500) {
-      await new Promise((resolve) => setTimeout(resolve, 500 - diff));
-    }
-
-    lastRequest = Date.now();
+    // We removed the 500ms artificial delay to prevent the page from looking "messy"
+    // while it translates fields sequentially.
     const result = await autoTranslate(text, lang);
     
     if (result && result !== text) {

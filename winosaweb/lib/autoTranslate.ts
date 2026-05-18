@@ -7,10 +7,7 @@ export async function autoTranslate(
 
   const key = `${lang}-${text}`;
 
-  
   try {
-    const api = process.env.NEXT_PUBLIC_API_URL;
-
     const targetLang =
       lang === "nl-NL"
         ? "nl"
@@ -18,12 +15,12 @@ export async function autoTranslate(
         ? "id"
         : lang;
 
-    const res = await fetch(`${api}/translate`, {
+    // Use internal Next.js API route
+    const res = await fetch(`/api/translate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-
       body: JSON.stringify({
         text,
         target: targetLang,
@@ -32,9 +29,9 @@ export async function autoTranslate(
 
     const data = await res.json();
 
+    // The internal API returns `translated`, while some backends return `translatedText`
     const translated =
-      data.translatedText || text;
-
+      data.translated || data.translatedText || text;
 
     return translated;
 
