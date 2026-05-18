@@ -11,12 +11,13 @@ interface HeaderProps {
 
 const LanguageToggle = () => {
   const { i18n } = useTranslation();
+  const currentLang = i18n.language?.split('-')[0] || 'en';
   return (
     <div className="flex items-center gap-1 mr-2">
       <button
         onClick={() => i18n.changeLanguage('en')}
         className={`px-2 py-1 text-xs rounded-md transition-colors ${
-          i18n.language === 'en'
+          currentLang === 'en'
             ? 'bg-gray-900 text-white font-semibold'
             : 'text-gray-500 hover:bg-gray-100'
         }`}
@@ -26,12 +27,22 @@ const LanguageToggle = () => {
       <button
         onClick={() => i18n.changeLanguage('nl')}
         className={`px-2 py-1 text-xs rounded-md transition-colors ${
-          i18n.language === 'nl'
+          currentLang === 'nl'
             ? 'bg-gray-900 text-white font-semibold'
             : 'text-gray-500 hover:bg-gray-100'
         }`}
       >
         NL
+      </button>
+      <button
+        onClick={() => i18n.changeLanguage('id')}
+        className={`px-2 py-1 text-xs rounded-md transition-colors ${
+          currentLang === 'id'
+            ? 'bg-gray-900 text-white font-semibold'
+            : 'text-gray-500 hover:bg-gray-100'
+        }`}
+      >
+        ID
       </button>
     </div>
   );
