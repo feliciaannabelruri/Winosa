@@ -1824,18 +1824,6 @@ plansHero: {
 
 
 //pricing plans//
-serviceRecommendTitles: {
-  title: {
-    en: "Smart Service Recommender",
-    nl: "Slimme Dienstenaanbeveling",
-    id: "Rekomendasi Layanan Pintar",
-  },
-  subtitle: {
-    en: "Tell us your needs, and our AI will suggest the best digital solution.",
-    nl: "Vertel ons uw behoeften en onze AI zal de beste digitale oplossing voorstellen.",
-    id: "Ceritakan kebutuhan Anda, dan AI kami akan menyarankan solusi digital terbaik.",
-  },
-},
 
 plansPricing: {
 
