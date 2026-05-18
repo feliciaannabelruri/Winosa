@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import Image from "next/image";
 import Footer from "@/components/layout/Footer";
 import SectionCTA from "@/components/layout/SectionCTA";
 import { getSiteSettings } from "@/lib/getSiteSettings";
+import { translateObject, translateArray } from "@/lib/serverTranslate";
 import {
   Check,
   ArrowRight,
@@ -82,11 +82,18 @@ interface ServiceData {
   isActive: boolean;
 }
 
+interface PageProps {
+  params: Promise<{
+    slug: string;
+    locale: string;
+  }>;
+}
+
 /* ============================================================
    SEO METADATA
 ============================================================ */
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export async function generateMetadata({ params }: PageProps) {
+  const { slug, locale } = await params;
   const s = await getSiteSettings();
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/${slug}`, {
@@ -95,17 +102,29 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (res.ok) {
       const data = await res.json();
       const service = data?.data;
-      return {
-        title: service?.title
-          ? `${service.title} | ${s?.siteName || "Winosa"}`
-          : `Services | ${s?.siteName || "Winosa"}`,
-        description: service?.description || s?.metaDescription || "",
-        openGraph: {
-          title: service?.title || "Winosa Services",
-          description: service?.description || "",
-          images: [service?.heroImage || s?.logo || "/og-image.jpg"],
-        },
-      };
+      if (service) {
+        const translated = await translateObject(locale, {
+          title: service.title || "",
+          description: service.description || "",
+        });
+        return {
+          title: `${translated.title} | ${s?.siteName || "Winosa"}`,
+          description: translated.description || s?.metaDescription || "",
+          openGraph: {
+            title: `${translated.title} | Winosa Services`,
+            description: translated.description || "",
+            images: [service.heroImage || s?.logo || "/og-image.jpg"],
+          },
+          alternates: {
+            canonical: `https://winosa.com/${locale}/Services/${slug}`,
+            languages: {
+              en: `https://winosa.com/en/Services/${slug}`,
+              nl: `https://winosa.com/nl/Services/${slug}`,
+              id: `https://winosa.com/id/Services/${slug}`,
+            },
+          },
+        };
+      }
     }
   } catch {}
   return {
@@ -117,30 +136,67 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 /* ============================================================
    PAGE COMPONENT
 ============================================================ */
-export default async function ServiceDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const cookieStore = await cookies();
-  const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+export default async function ServiceDetailPage({ params }: PageProps) {
+  const { slug, locale } = await params;
   const localePath = (path: string) => `/${locale}${path.startsWith("/") ? path : `/${path}`}`;
 
   /* Fetch service */
-  let service: ServiceData | null = null;
+  let rawService: ServiceData | null = null;
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/${slug}`, {
       cache: "no-store",
     });
     if (!res.ok) notFound();
     const json = await res.json();
-    service = json?.data ?? null;
+    rawService = json?.data ?? null;
   } catch {
     notFound();
   }
 
-  if (!service || !service.isActive) notFound();
+  if (!rawService || !rawService.isActive) notFound();
+
+  // ✅ Pre-translate service content server-side for local language support
+  const [
+    translatedScalars,
+    translatedFeatures,
+    translatedProcess,
+    translatedWebPlans,
+    translatedMobilePlans,
+    translatedUiuxPlans,
+    translatedMobileFeatures,
+    translatedMobileTech,
+    translatedTools,
+  ] = await Promise.all([
+    translateObject(locale, {
+      title: rawService.title || "",
+      description: rawService.description || "",
+      subtitle: rawService.subtitle || "",
+      heroLabel: rawService.heroLabel || "",
+      ctaText: rawService.ctaText || "",
+      processTitle: rawService.processTitle || "",
+      processSubtitle: rawService.processSubtitle || "",
+      techTitle: rawService.techTitle || "",
+      techSubtitle: rawService.techSubtitle || "",
+      techDescription: rawService.techDescription || "",
+      mobileFeatureTitle: rawService.mobileFeatureTitle || "",
+      mobileFeatureSubtitle: rawService.mobileFeatureSubtitle || "",
+      mobileTechTitle: rawService.mobileTechTitle || "",
+      mobileTechSubtitle: rawService.mobileTechSubtitle || "",
+    }),
+    Promise.all((rawService.features || []).map((f) => import("@/lib/serverTranslate").then((m) => m.translateText(f, locale)))),
+    translateArray<any>(locale, rawService.process || [], ["highlight", "title", "desc"]),
+    translateArray<any>(locale, rawService.webPricingPlans || [], ["name", "desc", "features"]),
+    translateArray<any>(locale, rawService.mobilePricingPlans || [], ["name", "desc", "features"]),
+    translateArray<any>(locale, rawService.uiuxPricingPlans || [], ["name", "desc", "features"]),
+    translateArray<any>(locale, rawService.mobileFeatures || [], ["title", "desc"]),
+    translateArray<any>(locale, rawService.mobileTech || [], ["title", "desc"]),
+    Promise.all((rawService.tools || []).map((t) => import("@/lib/serverTranslate").then((m) => m.translateText(t, locale)))),
+  ]);
+
+  const service = {
+    ...rawService,
+    ...translatedScalars,
+  };
 
   /* Detect service type by slug for icon */
   const isMobile = slug.includes("mobile");
@@ -152,14 +208,14 @@ export default async function ServiceDetailPage({
   /* Pick pricing plans */
   const pricingPlans: PricingPlan[] =
     isMobile
-      ? service.mobilePricingPlans
+      ? translatedMobilePlans
       : isUiux
-      ? service.uiuxPricingPlans
-      : service.webPricingPlans;
+      ? translatedUiuxPlans
+      : translatedWebPlans;
 
   /* Pick tech */
-  const techItems: TechGroup[] | MobileTechItem[] = isMobile
-    ? service.mobileTech
+  const techItems: any[] = isMobile
+    ? translatedMobileTech
     : service.techStack;
 
   return (
@@ -167,14 +223,11 @@ export default async function ServiceDetailPage({
       aria-label={`${service.title} service page`}
       className="w-full bg-white overflow-x-hidden"
     >
-      {/* ══════════════════════════════════════════════════════
-         HERO
-      ══════════════════════════════════════════════════════ */}
+      {/* HERO */}
       <section
         className="relative w-full min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-6"
         aria-labelledby="service-detail-title"
       >
-        {/* BG Image */}
         {service.heroImage ? (
           <>
             <Image
@@ -193,11 +246,9 @@ export default async function ServiceDetailPage({
           <div className="absolute inset-0 bg-gradient-to-br from-black via-black/90 to-black/75 z-0" />
         )}
 
-        {/* Decorative glows */}
         <div className="absolute top-[15%] left-[8%] w-[400px] h-[400px] rounded-full bg-yellow-400/10 blur-[140px] z-10" aria-hidden="true" />
         <div className="absolute bottom-[10%] right-[5%] w-[300px] h-[300px] rounded-full bg-yellow-500/8 blur-[100px] z-10" aria-hidden="true" />
 
-        {/* Content */}
         <div className="relative z-20 max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-yellow-400/50 text-yellow-400 text-xs font-semibold tracking-widest uppercase mb-6">
             <ServiceIcon className="w-3.5 h-3.5" aria-hidden="true" />
@@ -235,14 +286,11 @@ export default async function ServiceDetailPage({
           </div>
         </div>
 
-        {/* Bottom gradient */}
         <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-20 pointer-events-none" />
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-         FEATURES
-      ══════════════════════════════════════════════════════ */}
-      {service.features?.length > 0 && (
+      {/* FEATURES */}
+      {translatedFeatures?.length > 0 && (
         <section className="w-full py-20 bg-white" aria-labelledby="features-title">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-14">
@@ -264,10 +312,9 @@ export default async function ServiceDetailPage({
               )}
             </div>
 
-            {/* Mobile features (rich) */}
-            {isMobile && service.mobileFeatures?.length > 0 ? (
+            {isMobile && translatedMobileFeatures?.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {service.mobileFeatures.map((f, i) => (
+                {translatedMobileFeatures.map((f, i) => (
                   <div
                     key={i}
                     className="group p-7 rounded-[24px] border border-black/10 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_50px_rgba(0,0,0,0.07)] hover:border-black/20 relative overflow-hidden"
@@ -284,9 +331,8 @@ export default async function ServiceDetailPage({
                 ))}
               </div>
             ) : (
-              /* Generic features grid */
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {service.features.map((f, i) => (
+                {translatedFeatures.map((f, i) => (
                   <div
                     key={i}
                     className="flex items-start gap-4 p-6 rounded-[20px] border border-black/8 hover:border-black/15 transition-all duration-200 hover:bg-black/[0.01]"
@@ -303,10 +349,8 @@ export default async function ServiceDetailPage({
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════
-         PROCESS
-      ══════════════════════════════════════════════════════ */}
-      {service.process?.length > 0 && (
+      {/* PROCESS */}
+      {translatedProcess?.length > 0 && (
         <section className="w-full py-20 bg-[#f8f7f5]" aria-labelledby="process-title">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-14">
@@ -324,7 +368,7 @@ export default async function ServiceDetailPage({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {service.process.map((step, i) => (
+              {translatedProcess.map((step, i) => (
                 <div
                   key={i}
                   className="relative p-8 rounded-[24px] bg-white border border-black/8 group hover:-translate-y-1 hover:shadow-[0_16px_50px_rgba(0,0,0,0.07)] transition-all duration-300"
@@ -348,10 +392,8 @@ export default async function ServiceDetailPage({
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════
-         TECH STACK
-      ══════════════════════════════════════════════════════ */}
-      {techItems?.length > 0 && (
+      {/* TECH STACK */}
+      {(techItems?.length > 0 || translatedTools?.length > 0) && (
         <section className="w-full py-20 bg-black text-white" aria-labelledby="tech-title">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-14">
@@ -359,23 +401,18 @@ export default async function ServiceDetailPage({
                 Technology
               </span>
               <h2 id="tech-title" className="text-4xl font-bold mt-3 mb-4">
-                {isMobile
-                  ? service.mobileTechTitle || "Technology Stack"
-                  : service.techTitle || "Technology Stack"}
+                {service.techTitle || "Technology Stack"}
               </h2>
-              {(isMobile
-                ? service.mobileTechSubtitle
-                : service.techSubtitle || service.techDescription) && (
+              {(service.techSubtitle || service.techDescription) && (
                 <p className="text-white/50 max-w-2xl mx-auto text-sm">
-                  {isMobile ? service.mobileTechSubtitle : service.techSubtitle || service.techDescription}
+                  {service.techSubtitle || service.techDescription}
                 </p>
               )}
             </div>
 
             {isMobile ? (
-              /* Mobile tech (rich) */
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {(service.mobileTech || []).map((item, i) => (
+                {techItems.map((item, i) => (
                   <div
                     key={i}
                     className="p-7 rounded-[24px] border border-white/10 bg-white/5 hover:border-yellow-400/30 transition-colors duration-300"
@@ -383,7 +420,7 @@ export default async function ServiceDetailPage({
                     <h3 className="font-bold text-white mb-2 text-sm">{item.title}</h3>
                     <p className="text-white/40 text-xs mb-4 leading-relaxed">{item.desc}</p>
                     <div className="flex flex-wrap gap-2">
-                      {(item.items || []).map((tech) => (
+                      {(item.items || []).map((tech: string) => (
                         <span
                           key={tech}
                           className="px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-300 text-xs"
@@ -395,10 +432,9 @@ export default async function ServiceDetailPage({
                   </div>
                 ))}
               </div>
-            ) : isUiux && service.tools?.length > 0 ? (
-              /* UI/UX tools */
+            ) : isUiux && translatedTools?.length > 0 ? (
               <div className="flex flex-wrap gap-3 justify-center max-w-3xl mx-auto">
-                {service.tools.map((tool) => (
+                {translatedTools.map((tool) => (
                   <span
                     key={tool}
                     className="px-5 py-2.5 rounded-full border border-white/15 text-white/70 text-sm hover:border-yellow-400/40 hover:text-yellow-300 transition-all duration-200"
@@ -408,9 +444,8 @@ export default async function ServiceDetailPage({
                 ))}
               </div>
             ) : (
-              /* Web tech (grouped) */
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {(service.techStack || []).map((group, i) => (
+                {techItems.map((group, i) => (
                   <div
                     key={i}
                     className="p-6 rounded-[20px] border border-white/10 bg-white/5 hover:border-yellow-400/20 transition-colors duration-300"
@@ -419,7 +454,7 @@ export default async function ServiceDetailPage({
                       {group.category}
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {(group.tech || []).map((t) => (
+                      {(group.tech || []).map((t: string) => (
                         <span
                           key={t}
                           className="px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-300 text-xs"
@@ -436,9 +471,7 @@ export default async function ServiceDetailPage({
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════
-         PRICING
-      ══════════════════════════════════════════════════════ */}
+      {/* PRICING */}
       {pricingPlans?.length > 0 && (
         <section className="w-full py-20 bg-white" aria-labelledby="pricing-title">
           <div className="max-w-7xl mx-auto px-6">
@@ -466,7 +499,7 @@ export default async function ServiceDetailPage({
                       isPopular
                         ? "bg-black border-black text-white"
                         : isCustom
-                        ? "bg-[#1a1a1a] border-[#1a1a1a] text-white"
+                        ? "bg-black border-black text-white"
                         : "bg-white border-black/10 text-black"
                     }`}
                   >
@@ -532,9 +565,7 @@ export default async function ServiceDetailPage({
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════
-         CTA BANNER
-      ══════════════════════════════════════════════════════ */}
+      {/* CTA BANNER */}
       <section className="w-full py-20 bg-[#f8f7f5]" aria-label="Start your project">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <span className="text-xs font-semibold text-yellow-600 tracking-widest uppercase">

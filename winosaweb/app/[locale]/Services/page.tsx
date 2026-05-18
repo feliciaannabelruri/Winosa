@@ -1,118 +1,97 @@
 import dynamic from "next/dynamic";
-import { getAllServices } from "@/services/service.service";
+import { getSiteSettings } from "@/lib/getSiteSettings";
+import { translateArray, translateObject } from "@/lib/serverTranslate";
 
-const SectionHero = dynamic(() =>
-  import("@/components/sectionService/SectionHero")
-);
+export const revalidate = 60;
 
-const SectionServices = dynamic(() =>
-  import("@/components/sectionService/SectionService")
-);
+type Params = { params: Promise<{ locale: string }> };
 
-const SectionInfo = dynamic(() =>
-  import("@/components/sectionService/SectionInfo")
-);
+const SectionHero             = dynamic(() => import("@/components/sectionService/SectionHero"));
+const SectionServices         = dynamic(() => import("@/components/sectionService/SectionService"));
+const SectionInfo             = dynamic(() => import("@/components/sectionService/SectionInfo"));
+const SectionServiceRecommend = dynamic(() => import("@/components/sectionService/SectionServiceRecommend"));
+const SectionMaintenancePlans = dynamic(() => import("@/components/sectionService/SectionMaintenancePlans"));
+const Footer                  = dynamic(() => import("@/components/layout/Footer"));
 
-const SectionServiceRecommend = dynamic(() =>
-  import("@/components/sectionService/SectionServiceRecommend")
-);
-
-const SectionMaintenancePlans = dynamic(() =>
-  import("@/components/sectionService/SectionMaintenancePlans")
-);
-
-const Footer = dynamic(() =>
-  import("@/components/layout/Footer")
-);
-
-async function getServicesData() {
+async function getServicesRaw() {
   try {
-    const data = await getAllServices("en");
-    return data || [];
-  } catch (err) {
-    console.error(err);
-    return [];
-  }
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`, { cache: "no-store" });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json?.data ?? [];
+  } catch { return []; }
 }
 
 async function getInfoSection() {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/services/info-section`,
-      { cache: "no-store" }
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/info-section`, { cache: "no-store" });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data ?? null;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 async function getHeroSection() {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/services/hero-services`,
-      { cache: "no-store" }
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/hero-services`, { cache: "no-store" });
     if (!res.ok) return null;
     const json = await res.json();
     if (!json.data?.description) return null;
     return JSON.parse(json.data.description);
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
-// SEO //
-
-import { getSiteSettings } from "@/lib/getSiteSettings";
-
-export async function generateMetadata() {
+export async function generateMetadata({ params }: Params) {
+  const { locale } = await params;
   const s = await getSiteSettings();
+  const titles: Record<string, string> = {
+    en: `Services | ${s?.metaTitle || "Winosa Digital Agency"}`,
+    nl: `Diensten | ${s?.metaTitle || "Winosa Digital Agency"}`,
+    id: `Layanan | ${s?.metaTitle || "Winosa Digital Agency"}`,
+  };
   return {
-    title: s?.metaTitle
-      ? `Services | ${s.metaTitle}`
-      : "Services | Winosa Digital Agency",
-    description:
-      s?.metaDescription ||
-      "Layanan pengembangan web, mobile, dan desain UI/UX profesional dari Winosa.",
-    keywords:
-      "web development, mobile app, ui ux design, it consulting, winosa, lampung",
+    title: titles[locale] ?? titles.en,
+    description: s?.metaDescription || "Professional web, mobile, and UI/UX development from Winosa.",
+    alternates: {
+      canonical: `/${locale}/Services`,
+      languages: { en: "/en/Services", nl: "/nl/Services", id: "/id/Services" },
+    },
     openGraph: {
-      title: s?.metaTitle || "Services | Winosa Digital Agency",
+      title: titles[locale] ?? titles.en,
       description: s?.metaDescription || "",
       images: [s?.logo || "/og-image.jpg"],
     },
   };
 }
 
-// PAGE //
+export default async function ServicesPage({ params }: Params) {
+  const { locale } = await params;
 
-export default async function ServicesPage() {
-  const [services, infoSection, heroData] = await Promise.all([
-    getServicesData(),
+  const [rawServices, infoSection, heroData] = await Promise.all([
+    getServicesRaw(),
     getInfoSection(),
     getHeroSection(),
   ]);
+
+  // ✅ Translate service titles + descriptions at server
+  const services = await translateArray<any>(locale, rawServices, ["title", "description", "desc"]);
+
+  // Translate hero data if exists
+  let translatedHero = heroData;
+  if (heroData && locale !== "en") {
+    translatedHero = await translateObject(locale, heroData);
+  }
 
   const servicesForInfo = infoSection ? [...services, infoSection] : services;
 
   return (
     <main aria-label="Winosa services page">
-
-      <SectionHero heroData={heroData} />
-
+      <SectionHero heroData={translatedHero} />
       <SectionServices initialServices={services} />
-
       <SectionInfo services={servicesForInfo} />
-
       <SectionServiceRecommend />
-
       <SectionMaintenancePlans />
-
       <Footer />
-
     </main>
   );
 }
