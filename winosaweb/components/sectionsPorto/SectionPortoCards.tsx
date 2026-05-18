@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
-import styles from "@/app/portofolio/portfolio.module.css";
+import styles from "@/app/[locale]/portofolio/portfolio.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslate } from "@/lib/useTranslate";

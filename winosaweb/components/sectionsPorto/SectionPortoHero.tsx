@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTranslate } from "@/lib/useTranslate";
-import styles from "@/app/portofolio/portfolio.module.css";
+import styles from "@/app/[locale]/portofolio/portfolio.module.css";
 
 interface HeroData {
   title?: string;

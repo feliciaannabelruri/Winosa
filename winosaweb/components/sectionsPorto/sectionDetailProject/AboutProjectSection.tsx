@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
-import styles from "@/app/portofolio/[slug]/detail.module.css";
+import styles from "@/app/[locale]/portofolio/[slug]/detail.module.css";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
 import { useTranslate } from "@/lib/useTranslate";

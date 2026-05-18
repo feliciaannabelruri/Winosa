@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import FadeUp from "@/components/animation/FadeUp";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import styles from "@/app/portofolio/[slug]/detail.module.css";
+import styles from "@/app/[locale]/portofolio/[slug]/detail.module.css";
 import { useTranslate } from "@/lib/useTranslate";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { translateHybrid } from "@/lib/translateHybrid";
