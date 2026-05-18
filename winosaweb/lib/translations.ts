@@ -2283,6 +2283,11 @@ maintenancePlans: {
         id: "Masih Bingung",
       },
     },
+    waTemplate: {
+      en: "Hello Winosa! I'd like to consult about my digital needs.\n\nNeeds: {input}\nRecommended Service: {primary}\n\nCan you help explain further?",
+      nl: "Hallo Winosa! Ik wil graag overleggen over mijn digitale behoeften.\n\nBehoeften: {input}\nAanbevolen Dienst: {primary}\n\nKunt u dit verder toelichten?",
+      id: "Halo Winosa! Saya ingin konsultasi soal kebutuhan digital saya.\n\nKebutuhan: {input}\nLayanan yang direkomendasikan: {primary}\n\nBisa bantu jelasin lebih lanjut?",
+    },
   },
 
 
@@ -2606,26 +2611,6 @@ maintenancePlans: {
     role: { en: "Role", nl: "Rol", id: "Peran" },
   },
 
-  // AI Service Classifier
-  serviceRecommend: {
-    label: { en: "Describe your needs", nl: "Beschrijf uw behoeften", id: "Jelaskan kebutuhan Anda" },
-    placeholder: { en: "e.g. I need a modern website for my jewelry business with a dashboard...", nl: "bijv. Ik heb een moderne website nodig voor mijn sieradenbedrijf...", id: "misal: Saya butuh website modern untuk bisnis perhiasan saya..." },
-    upload: { en: "Attach Reference", nl: "Referentie bijvoegen", id: "Lampirkan Referensi" },
-    uploadHint: { en: "Optional — screenshot, web reference or logo", nl: "Optioneel — screenshot, webreferentie of logo", id: "Opsional — screenshot, referensi web atau logo" },
-    analyzing: { en: "Analyzing with AI...", nl: "Analyseren met AI...", id: "Menganalisis dengan AI..." },
-    analyzeBtn: { en: "Analyze with AI → find the right service", nl: "Analyseer met AI → vind de juiste dienst", id: "Analisis dengan AI → temukan layanan yang tepat" },
-    or: { en: "or", nl: "of", id: "atau" },
-    consultFree: { en: "Contact us directly for a free consultation", nl: "Neem direct contact op voor een gratis consult", id: "Hubungi kami langsung untuk konsultasi gratis" },
-    resultLabel: { en: "AI RECOMMENDATION", nl: "AI AANBEVELING", id: "REKOMENDASI AI" },
-    relevance: { en: "relevance", nl: "relevantie", id: "relevansi" },
-    waBtn: { en: "Discuss on WhatsApp", nl: "Bespreek via WhatsApp", id: "Diskusi via WhatsApp" },
-    retry: { en: "Try Another Idea", nl: "Probeer een ander idee", id: "Coba ide lain" },
-    waTemplate: {
-      en: "Hello Winosa! I'd like to consult about my digital needs.\n\nNeeds: {input}\nRecommended Service: {primary}\n\nCan you help explain further?",
-      nl: "Hallo Winosa! Ik wil graag overleggen over mijn digitale behoeften.\n\nBehoeften: {input}\nAanbevolen Dienst: {primary}\n\nKunt u dit verder toelichten?",
-      id: "Halo Winosa! Saya ingin konsultasi soal kebutuhan digital saya.\n\nKebutuhan: {input}\nLayanan yang direkomendasikan: {primary}\n\nBisa bantu jelasin lebih lanjut?",
-    }
-  },
 
   serviceRecommendTitles: {
     title: { en: "AI Service Classifier", nl: "AI Service Classifier", id: "Klasifikasi Layanan AI" },
