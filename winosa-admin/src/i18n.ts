@@ -18,7 +18,8 @@ i18n
     fallbackLng: 'en',
     supportedLngs: ['en', 'nl', 'id'],
     detection: {
-      order: ['navigator'],
+      order: ['path', 'localStorage', 'navigator'],
+      lookupFromPathIndex: 0,
       caches: ['localStorage']
     },
     interpolation: {

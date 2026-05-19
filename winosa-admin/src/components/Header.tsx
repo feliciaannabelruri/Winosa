@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { LogOut, User, ChevronDown, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 interface HeaderProps {
@@ -11,11 +11,32 @@ interface HeaderProps {
 
 const LanguageToggle = () => {
   const { i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const currentLang = i18n.language?.split('-')[0] || 'en';
+
+  const handleLangChange = (newLang: string) => {
+    i18n.changeLanguage(newLang);
+
+    // Replace the current locale segment in pathname with newLang
+    const pathSegments = location.pathname.split('/');
+    const supportedLocales = ['en', 'nl', 'id'];
+
+    if (pathSegments.length > 1 && supportedLocales.includes(pathSegments[1])) {
+      pathSegments[1] = newLang;
+    } else {
+      pathSegments.splice(1, 0, newLang);
+    }
+
+    const newPath = pathSegments.join('/') + location.search;
+    navigate(newPath, { replace: true });
+  };
+
   return (
     <div className="flex items-center gap-1 mr-2">
       <button
-        onClick={() => i18n.changeLanguage('en')}
+        onClick={() => handleLangChange('en')}
         className={`px-2 py-1 text-xs rounded-md transition-colors ${
           currentLang === 'en'
             ? 'bg-gray-900 text-white font-semibold'
@@ -25,7 +46,7 @@ const LanguageToggle = () => {
         EN
       </button>
       <button
-        onClick={() => i18n.changeLanguage('nl')}
+        onClick={() => handleLangChange('nl')}
         className={`px-2 py-1 text-xs rounded-md transition-colors ${
           currentLang === 'nl'
             ? 'bg-gray-900 text-white font-semibold'
@@ -35,7 +56,7 @@ const LanguageToggle = () => {
         NL
       </button>
       <button
-        onClick={() => i18n.changeLanguage('id')}
+        onClick={() => handleLangChange('id')}
         className={`px-2 py-1 text-xs rounded-md transition-colors ${
           currentLang === 'id'
             ? 'bg-gray-900 text-white font-semibold'

@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Briefcase, FolderOpen, FileText,
   Mail, Menu, Crown, Users, Settings,
@@ -26,6 +27,13 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle, mobileOpen, onClose }) => {
+  const { i18n } = useTranslation();
+  const currentLang = i18n.language?.split('-')[0] || 'en';
+
+  const localizedTo = (to: string) => {
+    return `/${currentLang}${to}`;
+  };
+
   return (
     <aside
       style={{ top: '4rem', bottom: 0 }}
@@ -63,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle, mobileOpen, onCl
           {navItems.map(({ to, icon: Icon, label }) => (
             <li key={to}>
               <NavLink
-                to={to}
+                to={localizedTo(to)}
                 onClick={onClose}
                 className={({ isActive }) =>
                   `transition-all duration-200 flex items-center gap-3 px-4 py-3 rounded-2xl lg:rounded-full ${

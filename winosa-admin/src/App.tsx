@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useParams, useLocation, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -23,6 +23,49 @@ import ProfilePage from './pages/ProfilePage';
 import ContentPage from './pages/ContentPage';
 import BlogCommentsPage from './pages/BlogCommentsPage';
 
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+
+const SUPPORTED_LOCALES = ['en', 'nl', 'id'];
+
+function LocaleWrapper() {
+  const { locale } = useParams<{ locale: string }>();
+  const { i18n } = useTranslation();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (locale && SUPPORTED_LOCALES.includes(locale)) {
+      if (i18n.language !== locale) {
+        i18n.changeLanguage(locale);
+      }
+    }
+  }, [locale, i18n]);
+
+  if (!locale || !SUPPORTED_LOCALES.includes(locale)) {
+    const currentLang = i18n.language?.split('-')[0] || 'en';
+    const activeLocale = SUPPORTED_LOCALES.includes(currentLang) ? currentLang : 'en';
+    
+    // Normalize target path: make sure there is no double slash
+    const cleanPath = location.pathname.startsWith('/') ? location.pathname : `/${location.pathname}`;
+    const targetPath = `/${activeLocale}${cleanPath}${location.search}`;
+    return <Navigate to={targetPath} replace />;
+  }
+
+  return <Outlet />;
+}
+
+function LocaleRedirect() {
+  const { i18n } = useTranslation();
+  const location = useLocation();
+  
+  const currentLang = i18n.language?.split('-')[0] || 'en';
+  const activeLocale = SUPPORTED_LOCALES.includes(currentLang) ? currentLang : 'en';
+  
+  const cleanPath = location.pathname.startsWith('/') ? location.pathname : `/${location.pathname}`;
+  const targetPath = `/${activeLocale}${cleanPath}${location.search}`;
+  return <Navigate to={targetPath} replace />;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -43,50 +86,56 @@ function App() {
           }}
         />
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="blogs" element={<BlogsPage />} />
-            <Route path="blogs/new" element={<BlogFormPage />} />
-            <Route path="blogs/edit/:id" element={<BlogFormPage />} />
-            <Route path="/blogs/:id/comments"element={<BlogCommentsPage />}/>
+          {/* Routes wrapped in locale path */}
+          <Route path="/:locale" element={<LocaleWrapper />}>
+            <Route path="login" element={<LoginPage />} />
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="blogs" element={<BlogsPage />} />
+              <Route path="blogs/new" element={<BlogFormPage />} />
+              <Route path="blogs/edit/:id" element={<BlogFormPage />} />
+              <Route path="blogs/:id/comments" element={<BlogCommentsPage />} />
 
-            {/* Portfolio */}
-            <Route path="portfolio" element={<PortfolioPage />} />
-            <Route path="portfolio/add" element={<PortfolioFormPage />} />
-            <Route path="portfolio/edit/:id" element={<PortfolioFormPage />} />
-            <Route path="portfolio/:slug" element={<PortfolioDetailPage />} />
+              {/* Portfolio */}
+              <Route path="portfolio" element={<PortfolioPage />} />
+              <Route path="portfolio/add" element={<PortfolioFormPage />} />
+              <Route path="portfolio/edit/:id" element={<PortfolioFormPage />} />
+              <Route path="portfolio/:slug" element={<PortfolioDetailPage />} />
 
-            {/* Services — specific routes BEFORE :id */}
-            <Route path="services" element={<ServicesPage />} />
-            <Route path="services/add" element={<ServiceFormPage />} />
-            <Route path="services/edit/:id" element={<ServiceFormPage />} />
-            <Route path="services/info-section" element={<ServiceInfoPage />} />
+              {/* Services */}
+              <Route path="services" element={<ServicesPage />} />
+              <Route path="services/add" element={<ServiceFormPage />} />
+              <Route path="services/edit/:id" element={<ServiceFormPage />} />
+              <Route path="services/info-section" element={<ServiceInfoPage />} />
 
-            <Route path="contacts" element={<ContactsPage />} />
+              <Route path="contacts" element={<ContactsPage />} />
 
-            {/* Subscriptions */}
-            <Route path="subscriptions" element={<SubscriptionsPage />} />
-            <Route path="subscriptions/add" element={<SubscriptionFormPage />} />
-            <Route path="subscriptions/edit/:id" element={<SubscriptionFormPage />} />
+              {/* Subscriptions */}
+              <Route path="subscriptions" element={<SubscriptionsPage />} />
+              <Route path="subscriptions/add" element={<SubscriptionFormPage />} />
+              <Route path="subscriptions/edit/:id" element={<SubscriptionFormPage />} />
 
-            <Route path="content" element={<ContentPage />} />
+              <Route path="content" element={<ContentPage />} />
 
-            {/* Newsletter */}
-            <Route path="newsletter" element={<NewsletterPage />} />
+              {/* Newsletter */}
+              <Route path="newsletter" element={<NewsletterPage />} />
 
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="account" element={<ProfilePage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="account" element={<ProfilePage />} />
+            </Route>
+            {/* If locale matches but route doesn't, go to dashboard */}
+            <Route path="*" element={<Navigate to="dashboard" replace />} />
           </Route>
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
+          {/* Direct fallback to redirect to default locale */}
+          <Route path="*" element={<LocaleRedirect />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
